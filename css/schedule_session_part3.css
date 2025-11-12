@@ -1,0 +1,187 @@
+    .custom-modal-overlay {
+  position: fixed; left:0; top:0; right:0; bottom:0;
+  background: rgba(48,48,48,0.14);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 5000;
+  transition: opacity .18s;
+}
+.custom-modal-content, .absence-modal-content {
+  background: #fff;
+  border-radius: 22px;
+  box-shadow: 0 8px 46px rgba(40,40,40,0.19);
+  padding: 38px 28px 34px 28px;
+  max-width: 420px;
+  width: 97vw;
+  text-align: center;
+  position: relative;
+}
+.congrats-emoji {
+  width: 82px; margin-bottom: 18px;
+}
+.congrats-title {
+  font-size: 2.4rem; font-weight: 700;
+  margin-bottom: 13px; color: #181818;
+  font-family: 'Inter', Arial, sans-serif;
+}
+.congrats-desc {
+  font-size: 1.19rem; color: #222; margin-bottom: 30px;
+  font-family: 'Inter', Arial, sans-serif;
+}
+.congrats-btn {
+  background: #FF3B18;
+  color: #fff; font-weight: 700; font-size: 1.25rem;
+  padding: 18px 0 16px 0; width: 100%; border-radius: 12px;
+  border: 2px solid #FF3B18;
+  box-shadow: 0 2px 12px rgba(255,59,24,0.12);
+  cursor: pointer;
+  transition: background 0.13s, border 0.13s;
+}
+
+.absence-modal-content {
+  text-align: left;
+  max-width: 540px;
+  padding: 36px 28px 30px 28px;
+  font-family: 'Inter', Arial, sans-serif;
+  position: relative;
+}
+.absence-back-btn, .absence-close-btn {
+  background: none; border: none; font-size: 1.75rem;
+  position: absolute; cursor: pointer; color: #222;
+}
+.absence-back-btn { left: 18px; top: 14px; }
+.absence-close-btn { right: 18px; top: 12px; font-size: 2.1rem; }
+.absence-title {
+  font-size: 2.15rem; font-weight: 700;
+  margin-bottom: 13px; color: #181818; margin-top: 14px;
+}
+.absence-desc {
+  font-size: 1.13rem; color: #353535; margin-bottom: 24px;
+}
+.absence-label {
+  font-weight: 600; margin-bottom: 9px; font-size: 1.1rem;
+}
+.absence-select-wrapper {
+  margin-bottom: 18px;
+}
+.absence-select {
+  width: 100%; padding: 16px 12px;
+  border-radius: 9px; border: 2px solid #E4E4E7;
+  font-size: 1.11rem; color: #222;
+  background: #fff;
+  margin-bottom: 16px;
+  appearance: none;
+}
+.absence-textarea {
+  width: 100%; min-height: 90px;
+  padding: 14px 12px; border-radius: 9px; border: 2px solid #E4E4E7;
+  font-size: 1.08rem; margin-bottom: 23px; color: #222;
+  font-family: inherit;
+  resize: vertical;
+}
+.absence-submit-btn {
+  width: 100%; background: #FF3B18;
+  color: #fff; font-size: 1rem; font-weight: 500;
+  border-radius: 12px; border: 2px solid #FF3B18;
+  padding: 12px 0 12px 0; cursor: pointer;
+  box-shadow: 0 2px 12px rgba(255,59,24,0.12);
+  transition: background 0.13s, border 0.13s;
+}
+
+
+.absence-submit-btn:hover, .absence-submit-btn:focus{
+    background: #ea5132;
+    border-color: #ea5132;
+}
+
+@media (max-width: 600px) {
+  .custom-modal-content, .absence-modal-content { padding: 28px 7px 22px 7px; }
+  .absence-title { font-size: 1.37rem; }
+}
+
+
+
+.custom-select-selected {
+  border: 1px solid #232323;
+  border-radius: 13px;
+  padding: 19px 49px 19px 19px;
+  background: #fff;
+  font-size: 1.13rem;
+  color: #888;
+  font-weight: 500;
+  cursor: pointer;
+  min-height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  transition: border 0.18s;
+  margin-bottom: 0;
+}
+
+/* .custom-select-selected:focus,
+.absence-select-wrapper.open .custom-select-selected {
+  border-color: #ff3b18;
+  outline: none;
+} */
+
+
+ .custom-select-selected:hover,
+ .absence-textarea:hover{
+border: 3px solid #232323;
+ }
+
+
+
+.custom-select-arrow {
+  font-size: 1.17rem;
+  color: #222;
+  margin-left: 16px;
+  transition: transform 0.14s;
+  pointer-events: none;
+  position: absolute;
+  right: 22px;
+}
+.absence-select-wrapper.open .custom-select-arrow {
+  transform: rotate(180deg);
+}
+.custom-select-list {
+  display: none;
+  position: absolute;
+  left: 0; 
+
+  width: 100%;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 6px 32px rgba(60,60,60,0.14);
+  z-index: 3000;
+  padding: 8px 0 10px 0;
+  font-size: 1.11rem;
+  max-height: 245px;
+  overflow-y: auto;
+  border: 2px solid #eee;
+}
+.absence-select-wrapper.open .custom-select-list {
+  display: block;
+}
+.custom-select-option {
+  padding: 16px 24px 16px 24px;
+  cursor: pointer;
+  border-radius: 11px;
+  transition: background 0.12s, color 0.12s;
+  color: #222;
+  font-size: 1rem;
+}
+
+
+/* .custom-select-option:hover,
+.custom-select-option.selected {
+  background: #faf2f1;
+  color: #ff3b18;
+  font-weight: 600;
+} */
+
+ .custom-select-option:hover{
+  font-weight: 600;
+    background: #e5e5e5;
+ }
+

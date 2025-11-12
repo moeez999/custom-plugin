@@ -1,0 +1,199 @@
+
+    /* ---------- Variables ---------- */
+    :root {
+      --border: #d0d5dd;
+      --border-focus: #2563eb;
+      --bg: #ffffff;
+      --bg-hover: #f2f4f7;
+      --text: #101828;
+      --text-muted: #667085;
+      --text-section: #1d2939;
+      --accent: #f53d2d;
+      --input-bg: #f9fafb;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f8f9fb;
+      margin: 20px;
+      color: var(--text);
+    }
+
+    /* ---------- Filter Dropdowns ---------- */
+    .filters { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px; }
+    .filter { position: relative; min-width: 200px; }
+    .filter-button {
+      width: 100%; border: 1px solid var(--border); border-radius: 8px;
+      background: var(--bg); padding: 12px; cursor: pointer;
+    }
+    .filter-button.open { border-color: var(--border-focus); }
+    .filter-button .label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
+    .filter-button .selection { display: flex; justify-content: space-between; align-items: center; }
+    .filter-button .value { font-size: 16px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .filter-button .icon { font-size: 14px; color: var(--text-muted); }
+
+    .dropdown_filters {
+      position: absolute; top: calc(100% + 4px); left: 0; min-width: 300px;
+      background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1); display: none; z-index: 1000;
+      padding-bottom: 12px;
+    }
+    .dropdown_filters.open { display: block; }
+
+    .search-wrapper { position: relative; margin: 12px; }
+    .search-wrapper input {
+      width: 100%; padding: 10px 12px 10px 36px; border: 1px solid var(--border);
+      border-radius: 6px; background: var(--input-bg); font-size: 14px;
+    }
+    .search-wrapper .search-icon {
+      position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+      font-size: 16px; color: var(--text-muted);
+    }
+
+    .dropdown_filters ul { list-style: none; margin: 0; padding: 0; }
+    .dropdown_filters li.section-label {
+      padding: 8px 12px; font-size: 14px; font-weight: 600; color: var(--text-section);
+    }
+    .dropdown_filters li.item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 12px; cursor: pointer; font-size: 16px;
+    }
+    .dropdown_filters li.item + li.item { border-top: 1px solid #f2f4f7; }
+    .dropdown_filters li.item:hover { background: var(--bg-hover); }
+
+    .checkbox {
+      width: 20px; height: 20px; border: 1px solid var(--border);
+      border-radius: 4px; display: flex; align-items: center; justify-content: center;
+    }
+    .checkbox.selected { background: var(--accent); border: none; }
+    .checkbox.selected::after { content: "\2713"; color: #fff; font-size: 14px; }
+
+    /* Availability */
+    .segment-group { margin: 0 12px 12px; }
+    .segment-group .segment-label { font-size: 13px; color: var(--text); margin-bottom: 6px; }
+    .segment-options { display: flex; gap: 8px; flex-wrap: wrap; }
+    .segment-options .time-option {
+      flex: 1 1 calc(33.333% - 8px); padding: 12px; border: 1px solid var(--border);
+      border-radius: 6px; background: var(--bg); font-size: 14px; color: var(--text);
+      text-align: center; cursor: pointer;
+    }
+    .segment-options .time-option.selected {
+      background: var(--accent); color: #fff; border-color: var(--accent);
+    }
+    .day-options { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 12px; }
+    .day-options .day-option {
+      padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px;
+      background: var(--bg); font-size: 14px; color: var(--text); cursor: pointer;
+    }
+    .day-options .day-option.selected {
+      background: var(--accent); color: #fff; border-color: var(--accent);
+    }
+
+    /* Slider */
+    .slider-dropdown { padding: 12px; }
+    .slider-dropdown .range-label {
+      text-align: center; font-size: 16px; font-weight: 600; margin-bottom: 12px;
+    }
+    .slider-container {
+      position: relative; height: 40px; margin: 0 12px;
+    }
+    .slider-track {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      height: 4px; background: var(--text); border-radius: 2px;
+    }
+    .slider-container input[type=range] {
+      -webkit-appearance: none; position: absolute; width: 100%; height: 4px;
+      background: transparent; pointer-events: none;
+    }
+    .slider-container input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none; width: 16px; height: 16px;
+      background: var(--bg); border: 2px solid var(--text); border-radius: 4px;
+      cursor: pointer; pointer-events: all;
+    }
+
+    /* ---------- Teachers Section ---------- */
+    #teacherSection { margin-top: 32px; display: flex; gap: 16px; }
+    #teacherSection .card-wrapper { display: none; }
+    #teacherSection .teacher-card {
+      flex: 0 0 70%; display: flex; background: var(--bg);
+      border: 2px solid var(--border); border-radius: 8px;
+      padding: 16px; position: relative;
+      height: 320px;
+    }
+    #teacherSection .teacher-avatar img {
+      width: 140px; height: 140px; border-radius: 8px;
+      object-fit: cover;
+    }
+    #teacherSection .teacher-details {
+      flex: 1; margin-left: 16px;
+      display: flex; flex-direction: column;
+    }
+    #teacherSection .teacher-header {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    #teacherSection .teacher-name { font-size: 20px; margin: 0; }
+    #teacherSection .verified { color: var(--accent); }
+    #teacherSection .favorite {
+      background: none; border: none; font-size: 24px; cursor: pointer;
+      color: var(--text-muted);
+    }
+    #teacherSection .meta-list {
+      list-style: none; padding: 0; margin: 12px 0;
+      font-size: 14px; color: var(--text-muted);
+    }
+    #teacherSection .meta-list li {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 4px;
+    }
+    #teacherSection .bio {
+      font-size: 14px; line-height: 1.5; margin-bottom: 16px;
+      overflow: hidden; max-height: 4.5em;
+    }
+    #teacherSection .see-more {
+      font-size: 14px; color: var(--accent); text-decoration: none;
+    }
+    #teacherSection .action-panel {
+      flex: 0 0 30%; display: flex; flex-direction: column; gap: 12px;
+    }
+    #teacherSection .rating {
+      display: flex; align-items: baseline; gap: 4px;
+      font-size: 18px; font-weight: 600;
+    }
+    #teacherSection .rating small {
+      font-size: 12px; color: var(--text-muted);
+    }
+    #teacherSection .stats {
+      display: flex; justify-content: space-between;
+      font-size: 16px; font-weight: 600;
+    }
+    #teacherSection .stats small {
+      display: block; font-size: 12px; font-weight: 400;
+      color: var(--text-muted);
+    }
+    #teacherSection .btn-primary,
+    #teacherSection .btn-outline {
+      padding: 12px; font-size: 16px; border-radius: 6px;
+      cursor: pointer; width: 100%;
+    }
+    #teacherSection .btn-primary { background: var(--accent); color: #fff; border: none; }
+    #teacherSection .btn-outline { background: none; border: 1px solid var(--accent); color: var(--text); }
+    #teacherSection .schedule-panel {
+      flex: 0 0 30%; display: none; flex-direction: column;
+      border: 2px solid var(--border); border-radius: 8px;
+      background: var(--bg);
+    }
+    #teacherSection .schedule-panel.visible { display: flex; }
+    #teacherSection .schedule-preview {
+      position: relative; width: 100%; padding-top: 56.25%;
+      background: #eee center/cover url('https://via.placeholder.com/300x200');
+    }
+    #teacherSection .play-icon {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      font-size: 32px; background: var(--accent); color: #fff;
+      border-radius: 50%; width: 48px; height: 48px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    #teacherSection .schedule-btn {
+      margin: 16px; padding: 12px; background: var(--bg);
+      border: 1px solid var(--border); border-radius: 6px;
+      font-size: 16px; cursor: pointer;
+    }

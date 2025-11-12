@@ -1,0 +1,362 @@
+:root {
+  /* Layout */
+  --cal-setup-timecol: 76px;
+  --cal-setup-hour: 60px; /* 60px per hour */
+  --cal-setup-half: 30px; /* 30-min slot */
+  --cal-setup-night-start-hour: 1; /* ⬅️ gray band starts 01:00 */
+  --cal-setup-night-end-hour: 5; /* ⬅️ gray band ends 05:00 */
+
+  /* Backgrounds */
+  --cal-setup-pagebg: #f3f4f8; /* page bg */
+  --cal-setup-bg: #f6f7fb; /* left panel bg */
+  --cal-setup-card: #fff;
+
+  /* Lines & text */
+  --cal-setup-border: #e7e8f1;
+  --cal-setup-grid: #e8e8f2;
+  --cal-setup-grid-strong: #3a3a45;
+  --cal-setup-text: #141414;
+  --cal-setup-muted: #6f7380;
+
+  /* Alternating rows */
+  --cal-setup-row-alt: #fbfbfe;
+  --cal-setup-night-bg: #eff1f6; /* middle gray band */
+
+  /* Blocks & heat */
+  --cal-setup-accent: #0f56d8;
+  --cal-setup-accent-ink: #fff;
+  --cal-setup-slot-peak: #ffb2a8; /* warm mid-day */
+  --cal-setup-slot-late: #b7c0ea; /* cool evening */
+}
+
+body {
+  color: var(--cal-setup-text);
+  font-weight: 400;
+  background: var(--cal-setup-pagebg);
+}
+.calendar_admin_details_setup_availablity_wrap {
+  padding: 18px;
+  max-width: 1640px;
+  margin: 0 auto;
+}
+
+.calendar_admin_details_setup_availablity_title {
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  font-size: clamp(22px, 2.2vw, 38px);
+  margin: 6px 0 18px;
+}
+
+/* ===== Layout ===== */
+.calendar_admin_details_setup_availablity_layout {
+  display: grid;
+  grid-template-columns: 330px 1fr;
+  gap: 20px;
+}
+@media (max-width: 992px) {
+  .calendar_admin_details_setup_availablity_layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===== Sidebar ===== */
+.calendar_admin_details_setup_availablity_sidebar {
+  background: var(--cal-setup-bg);
+  border: 1px solid var(--cal-setup-border);
+  border-radius: 22px;
+  padding: 16px;
+  position: sticky;
+  top: 12px;
+  height: max-content;
+}
+.calendar_admin_details_setup_availablity_userbtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: #fff;
+  border: 1px solid var(--cal-setup-border);
+  border-radius: 16px;
+  padding: 12px 14px;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(10, 10, 20, 0.06);
+}
+.calendar_admin_details_setup_availablity_userbtn_left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.calendar_admin_details_setup_availablity_avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+.calendar_admin_details_setup_availablity_username {
+  font-weight: 600;
+}
+.calendar_admin_details_setup_availablity_chev {
+  transition: transform 0.15s ease;
+}
+.calendar_admin_details_setup_availablity_userbtn.open
+  .calendar_admin_details_setup_availablity_chev {
+  transform: rotate(180deg);
+}
+
+.calendar_admin_details_setup_availablity_menu {
+  position: absolute;
+  width: 520px;
+  max-width: 92vw;
+  max-height: 420px;
+  overflow: auto;
+  background: #fff;
+  border: 1px solid var(--cal-setup-border);
+  border-radius: 18px;
+  box-shadow: 0 24px 60px rgba(20, 20, 50, 0.18);
+  z-index: 5000;
+  display: none;
+  padding: 8px 0;
+}
+.calendar_admin_details_setup_availablity_menu_item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  cursor: pointer;
+}
+.calendar_admin_details_setup_availablity_menu_item:hover {
+  background: #f7f8ff;
+}
+.calendar_admin_details_setup_availablity_menu_avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+.calendar_admin_details_setup_availablity_menu_name {
+  font-weight: 600;
+}
+
+.calendar_admin_details_setup_availablity_sidebtn {
+  width: 100%;
+  text-align: left;
+  font-weight: 600;
+  background: #fff;
+  color: #111;
+  border: 1px solid var(--cal-setup-border);
+  padding: 14px 16px;
+  border-radius: 16px;
+  margin-top: 12px;
+}
+.calendar_admin_details_setup_availablity_sidebtn.active {
+  border: 2px solid #111;
+  padding: 13px 15px;
+}
+
+.calendar_admin_details_setup_availablity_viewbox {
+  background: #fff;
+  border: 1px solid var(--cal-setup-border);
+  border-radius: 16px;
+  padding: 14px;
+  margin-top: 14px;
+}
+.calendar_admin_details_setup_availablity_viewtitle {
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+/* ===== Calendar ===== */
+.calendar_admin_details_setup_availablity_calendar {
+  background: #fff;
+  border: 1px solid var(--cal-setup-border);
+  border-radius: 20px;
+  overflow: hidden;
+}
+.calendar_admin_details_setup_availablity_head {
+  display: grid;
+  grid-template-columns: var(--cal-setup-timecol) repeat(7, 1fr);
+  align-items: center;
+  border-bottom: 1px solid var(--cal-setup-grid);
+  background: #fff;
+}
+.calendar_admin_details_setup_availablity_timehead {
+  color: transparent;
+}
+.calendar_admin_details_setup_availablity_daycell {
+  text-align: center;
+  padding: 14px 6px;
+  font-weight: 600;
+}
+
+.calendar_admin_details_setup_availablity_body {
+  position: relative;
+  height: calc(100vh - 260px);
+  min-height: 560px;
+  overflow: auto;
+  background: #fff;
+}
+.calendar_admin_details_setup_availablity_grid {
+  position: relative;
+  min-width: 980px;
+  display: grid;
+  grid-template-columns: var(--cal-setup-timecol) repeat(7, 1fr);
+}
+
+/* Time column */
+.calendar_admin_details_setup_availablity_timecol {
+  border-right: 1px solid var(--cal-setup-grid);
+  background: #fff;
+  position: relative;
+  z-index: 6;
+}
+.calendar_admin_details_setup_availablity_hourlabel {
+  height: var(--cal-setup-hour);
+  border-bottom: 1px solid var(--cal-setup-grid);
+  color: var(--cal-setup-muted);
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 8px 0 0;
+  background: #fff;
+}
+
+/* Day columns with 30-min boxes */
+.calendar_admin_details_setup_availablity_day {
+  position: relative;
+  border-right: 1px solid var(--cal-setup-grid);
+}
+.calendar_admin_details_setup_availablity_halfbox {
+  height: var(--cal-setup-half);
+  border-bottom: 1px solid var(--cal-setup-grid);
+  background: #fff;
+}
+
+/* Zebra rows – skip the night band */
+.calendar_admin_details_setup_availablity_day
+  .calendar_admin_details_setup_availablity_halfbox:nth-child(odd):not(
+    .calendar_admin_details_setup_availablity_nightbg
+  ) {
+  background: var(--cal-setup-row-alt);
+}
+
+/* Middle gray band cells */
+.calendar_admin_details_setup_availablity_halfbox.calendar_admin_details_setup_availablity_nightbg {
+  background: var(--cal-setup-night-bg) !important;
+}
+
+/* Heat overlay */
+.calendar_admin_details_setup_availablity_heat {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--cal-setup-timecol);
+  right: 0;
+  pointer-events: none;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  z-index: 2;
+}
+.calendar_admin_details_setup_availablity_heat > div {
+  position: relative;
+}
+.calendar_admin_details_setup_availablity_midday {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background: linear-gradient(
+    to bottom,
+    var(--cal-setup-slot-peak),
+    transparent 75%
+  );
+  opacity: 0.65;
+}
+.calendar_admin_details_setup_availablity_evening {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--cal-setup-slot-late) 80%
+  );
+  opacity: 0.7;
+}
+
+/* “Night time” divider + chip at END hour */
+.calendar_admin_details_setup_availablity_nightline {
+  position: absolute;
+  left: var(--cal-setup-timecol);
+  right: 0;
+  top: calc(var(--cal-setup-hour) * var(--cal-setup-night-end-hour));
+  border-top: 2px solid var(--cal-setup-grid-strong);
+  z-index: 3;
+}
+.calendar_admin_details_setup_availablity_nightchip {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: calc(var(--cal-setup-hour) * var(--cal-setup-night-end-hour) - 16px);
+  background: #2e2f3a;
+  color: #fff;
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  z-index: 4;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+}
+
+/* Blocks */
+.calendar_admin_details_setup_availablity_blocklayer {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+}
+.calendar_admin_details_setup_availablity_block {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: 0 8px;
+  background: var(--cal-setup-accent);
+  color: var(--cal-setup-accent-ink);
+  border-radius: 18px;
+  box-shadow: 0 12px 28px rgba(10, 80, 200, 0.18);
+  font-weight: 700;
+  font-size: 0.98rem;
+  padding: 12px 14px;
+  line-height: 1;
+  pointer-events: auto;
+  user-select: none;
+}
+.calendar_admin_details_setup_availablity_resize {
+  position: absolute;
+  bottom: -11px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  color: #111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+  cursor: ns-resize;
+}
+
+/* Mobile */
+@media (max-width: 576px) {
+  :root {
+    --cal-setup-timecol: 58px;
+  }
+  .calendar_admin_details_setup_availablity_grid {
+    min-width: 760px;
+  }
+  .calendar_admin_details_setup_availablity_hourlabel {
+    height: 56px;
+  }
+}

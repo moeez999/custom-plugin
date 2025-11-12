@@ -1,0 +1,880 @@
+    body { margin: 0; font-family: 'Inter', Arial, sans-serif; background: #fafbfc;}
+
+    /* .my_lesson_tutor_detail_change_your_plan_button {
+      display: inline-block;
+      background: #232323;
+      color: #fff;
+      font-size: 1.1rem;
+      padding: 12px 28px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin: 50px auto;
+      font-family: inherit;
+      transition: background 0.2s;
+    } */
+    .my_lesson_tutor_detail_change_your_plan_button:hover { background: #363636; }
+    .my_lesson_tutor_detail_change_your_plan_modal_backdrop {
+      display: none;
+      position: fixed;
+      z-index: 9998;
+      left: 0; top: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.23);
+    }
+    .my_lesson_tutor_detail_change_your_plan_modal {
+      position: fixed;
+      z-index: 9999;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 6px 36px rgba(0,0,0,0.11);
+      width: 97%;
+      max-width: 430px;
+      padding: 0;
+      box-sizing: border-box;
+      display: none;
+      font-family: 'Inter', Arial, sans-serif;
+      min-height: 340px;
+      overflow: visible;
+      animation: modalIn 0.2s;
+      transition: all 0.22s cubic-bezier(.7,.2,.23,1);
+    }
+    .my_lesson_tutor_detail_change_your_plan_modal.fullscreen {
+      left: 0; top: 0; right: 0; bottom: 0;
+      width: 100vw;
+      max-width: 100vw;
+      height: 100vh;
+      min-height: unset;
+      border-radius: 0;
+      transform: none;
+      box-shadow: none;
+      overflow-y: auto;
+    }
+    .my_lesson_tutor_detail_change_your_plan_modal.confirmation {
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 97%;
+      max-width: 440px;
+      height: auto;
+      min-height: 0;
+      border-radius: 14px;
+      box-shadow: 0 6px 36px rgba(0,0,0,0.11);
+      background: #fff;
+      overflow-y: visible;
+      transition: all 0.23s cubic-bezier(.7,.2,.23,1);
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: translate(-50%, -44%);}
+      to   { opacity: 1; transform: translate(-50%, -50%);}
+    }
+    .my_lesson_tutor_detail_change_your_plan_modal_content {
+      padding: 36px 32px 42px 32px;
+      position: relative;
+      background: #fff;
+      max-width: 100vw;
+      min-width: 0;
+      box-sizing: border-box;
+    }
+    .my_lesson_tutor_detail_change_your_plan_modal_close {
+      position: absolute;
+      top: 18px;
+      right: 24px;
+      font-size: 1.45rem;
+      color: #232323;
+      cursor: pointer;
+      font-weight: 500;
+      transition: color 0.2s;
+      z-index: 3;
+    }
+    .my_lesson_tutor_detail_change_your_plan_modal_close:hover { color: #fa2a2a; }
+    .my_lesson_tutor_detail_change_your_plan_modal_title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      text-align: center;
+      margin: 0 0 36px 0;
+      color: #232323;
+    }
+    .my_lesson_tutor_detail_change_your_plan_modal_option {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 30px;
+      cursor: pointer;
+      transition: background 0.11s;
+      padding: 7px 0 7px 0;
+      border-radius: 8px;
+    }
+    .my_lesson_tutor_detail_change_your_plan_modal_option:last-child { margin-bottom: 0; }
+    .my_lesson_tutor_detail_change_your_plan_modal_option:hover { background: #f7f7f7; }
+    .my_lesson_tutor_detail_change_your_plan_modal_option_icon {
+      font-size: 1.35rem;
+      color: #232323;
+      width: 30px;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .my_lesson_tutor_detail_change_your_plan_modal_option_label {
+      font-size: 1.13rem;
+      font-weight: 500;
+      color: #232323;
+      font-family: inherit;
+      letter-spacing: 0.01em;
+    }
+    /* Steps Back Arrows */
+    .my_lesson_tutor_detail_change_your_plan_step2_back,
+    .my_lesson_tutor_detail_change_your_plan_step3_back,
+    .my_lesson_tutor_detail_change_your_plan_step4_back,
+    .my_lesson_tutor_detail_change_your_plan_step2d_back,
+    .my_lesson_tutor_detail_change_your_plan_step3d_back {
+      position: absolute;
+      top: 23px;
+      left: 18px;
+      font-size: 1.45rem;
+      color: #232323;
+      cursor: pointer;
+      z-index: 3;
+      transition: color 0.18s;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step2_back:hover,
+    .my_lesson_tutor_detail_change_your_plan_step3_back:hover,
+    .my_lesson_tutor_detail_change_your_plan_step4_back:hover,
+    .my_lesson_tutor_detail_change_your_plan_step2d_back:hover,
+    .my_lesson_tutor_detail_change_your_plan_step3d_back:hover {
+      color: #fa2a2a;
+    }
+    /* Userpic shared */
+    .my_lesson_tutor_detail_change_your_plan_step2_userpic,
+    .my_lesson_tutor_detail_change_your_plan_step3_userpic,
+    .my_lesson_tutor_detail_change_your_plan_step2d_userpic {
+      width: 50px;
+      height: 50px;
+      border-radius: 8px;
+      object-fit: cover;
+      margin-bottom: 18px;
+      margin-top: 2px;
+      box-shadow: 0 1px 6px rgba(80,80,80,0.13);
+    }
+    /* STEP 2 Upgrade */
+    .my_lesson_tutor_detail_change_your_plan_step2_heading {
+      font-size: 1.26rem;
+      font-weight: 700;
+      margin: 0 0 7px 0;
+      color: #232323;
+      line-height: 1.23;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step2_heading .highlight { color: #ff3a1e; }
+    .my_lesson_tutor_detail_change_your_plan_step2_current {
+      margin-bottom: 20px;
+      font-size: 1rem;
+      color: #232323;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step2_current b { font-weight: 600; }
+    .my_lesson_tutor_detail_change_your_plan_step2_planoption {
+      background: #fff;
+      border: 2px solid #bbb;
+      border-radius: 10px;
+      padding: 16px 17px 11px 17px;
+      margin-bottom: 15px;
+      cursor: pointer;
+      transition: border-color 0.17s, box-shadow 0.17s;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step2_planoption.selected,
+    .my_lesson_tutor_detail_change_your_plan_step2_planoption:hover {
+      border-color: #232323;
+      box-shadow: 0 0 0 2px #eee;
+      background: #fafbfc;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step2_planoption_label {
+      font-size: 1.13rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: #232323;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step2_planoption_desc {
+      font-size: 1rem;
+      color: #232323;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step2_planoption:last-child { margin-bottom: 18px; }
+    .my_lesson_tutor_detail_change_your_plan_step2_note {
+      color: #767676;
+      font-size: 0.97rem;
+      text-align: center;
+      margin-bottom: 15px;
+      margin-top: 16px;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step2_continue_btn {
+      width: 100%;
+      font-size: 1.14rem;
+      padding: 12px 0;
+      background: #ff3a1e;
+      color: #fff;
+      border: 2px solid #ff3a1e;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 9px;
+      transition: background 0.18s, color 0.18s;
+      margin-bottom: 0;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step2_continue_btn:hover {
+      background: #ff653e;
+      border-color: #ff653e;
+      color: #fff;
+    }
+    /* STEP 2D Downgrade */
+    .my_lesson_tutor_detail_change_your_plan_step2d_heading {
+      font-size: 1.46rem;
+      font-weight: 700;
+      margin: 0 0 19px 0;
+      color: #232323;
+      line-height: 1.14;
+      letter-spacing: -0.5px;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step2d_userpic {
+      width: 50px;
+      height: 50px;
+      border-radius: 8px;
+      object-fit: cover;
+      margin-bottom: 18px;
+      margin-top: 2px;
+      box-shadow: 0 1px 6px rgba(80,80,80,0.13);
+    }
+    .my_lesson_tutor_detail_change_your_plan_step2d_planlist {
+      margin-bottom: 15px;
+      margin-top: 15px;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step2d_planoption {
+      background: #fff;
+      border: 2px solid #bbb;
+      border-radius: 10px;
+      padding: 16px 17px 11px 17px;
+      margin-bottom: 15px;
+      cursor: pointer;
+      transition: border-color 0.17s, box-shadow 0.17s;
+      position: relative;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step2d_planoption.selected,
+    .my_lesson_tutor_detail_change_your_plan_step2d_planoption:hover {
+      border-color: #232323;
+      box-shadow: 0 0 0 2px #eee;
+      background: #fafbfc;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step2d_planoption.current {
+      border-color: #232323;
+      background: #fff;
+      pointer-events: none;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step2d_planoption_badge {
+      position: absolute;
+      right: 16px;
+      top: 19px;
+      background: #ff2305;
+      color: #fff;
+      font-size: 1.02rem;
+      border-radius: 7px;
+      padding: 3px 13px 2px 13px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step2d_planoption_label {
+      font-size: 1.13rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: #232323;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step2d_planoption_desc {
+      font-size: 1rem;
+      color: #232323;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step2d_note {
+      color: #767676;
+      font-size: 0.97rem;
+      text-align: center;
+      margin-bottom: 15px;
+      margin-top: 16px;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step2d_continue_btn {
+      width: 100%;
+      font-size: 1.14rem;
+      padding: 12px 0;
+      background: #ff3a1e;
+      color: #fff;
+      border: 2px solid #ff3a1e;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 9px;
+      transition: background 0.18s, color 0.18s;
+      margin-bottom: 0;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step2d_continue_btn:disabled {
+      background: #ffb1a1;
+      border-color: #ffb1a1;
+      color: #fff;
+      cursor: not-allowed;
+    }
+
+    /* STEP 3: UPGRADE */
+    .my_lesson_tutor_detail_change_your_plan_step3_userpic {
+      width: 50px;
+      height: 50px;
+      border-radius: 8px;
+      object-fit: cover;
+      margin-bottom: 18px;
+      margin-top: 2px;
+      box-shadow: 0 1px 6px rgba(80,80,80,0.13);
+    }
+    .my_lesson_tutor_detail_change_your_plan_step3_heading {
+      font-size: 1.45rem;
+      font-weight: 700;
+      margin: 0 0 20px 0;
+      color: #232323;
+      line-height: 1.23;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step3_plans {
+      margin-bottom: 18px;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step3_planrow {
+      margin-bottom: 3px;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step3_plan_title {
+      font-weight: 700;
+      font-size: 1.16rem;
+      color: #232323;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step3_plan_desc {
+      color: #636363;
+      font-size: 1.01rem;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step3_planrow_arrow {
+      font-size: 1.7rem;
+      margin-bottom: 2px;
+      color: #232323;
+      text-align: left;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step3_when_heading {
+      font-size: 1.09rem;
+      font-weight: 700;
+      margin: 22px 0 11px 0;
+      color: #232323;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step3_when_row {
+      display: flex;
+      align-items: flex-start;
+      gap: 13px;
+      background: #fff;
+      border: 2px solid #bbb;
+      border-radius: 10px;
+      padding: 13px 15px 11px 15px;
+      margin-bottom: 13px;
+      cursor: pointer;
+      transition: border-color 0.17s, box-shadow 0.17s, background 0.11s;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step3_when_row.selected,
+    .my_lesson_tutor_detail_change_your_plan_step3_when_row:hover {
+      border-color: #232323;
+      background: #fafbfc;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step3_when_icon {
+      font-size: 1.3rem;
+      color: #232323;
+      margin-top: 3px;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step3_when_label {
+      font-weight: 700;
+      font-size: 1.04rem;
+      color: #232323;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step3_when_desc.box-detail {
+      font-size: 0.98rem;
+      color: #232323;
+      margin-top: 3px;
+      display: none;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step3_when_row.selected .my_lesson_tutor_detail_change_your_plan_step3_when_desc.box-detail {
+      display: block;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step3_when_desc.secondary { color: #767676; }
+    .my_lesson_tutor_detail_change_your_plan_step3_action_btn {
+      width: 100%;
+      font-size: 1.14rem;
+      padding: 13px 0;
+      background: #ff3a1e;
+      color: #fff;
+      border: 2px solid #ff3a1e;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 13px;
+      transition: background 0.18s,color 0.18s;
+      margin-bottom: 0;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step3_action_btn:hover {background: #ff653e;}
+    .my_lesson_tutor_detail_change_your_plan_step3_divider {
+      border-top: 1px solid #eee;
+      margin: 20px 0 18px 0;
+    }
+    /* STEP 3d: DOWNGRADE */
+    .step3d-review-box {margin-bottom: 12px;}
+    .step3d-review-title { font-weight:700;font-size:1.16rem;color:#232323;}
+    .step3d-review-desc {color:#636363;font-size:1.01rem;margin-bottom:7px;}
+    .step3d-arrow {font-size:1.7rem;margin-bottom:2px;color:#232323;}
+    .step3d-new-plan-title {font-weight:700;font-size:1.16rem;color:#232323;}
+    .step3d-new-plan-desc {color:#636363;font-size:1.01rem;}
+    .step3d-review-box-divider {border-top:1px solid #eee;margin:20px 0 18px 0;}
+    .step3d-box {
+      display:flex;align-items:flex-start;gap:13px;background:#fff;border:2px solid #bbb;border-radius:10px;padding:13px 15px 11px 15px;margin-bottom:14px;
+    }
+    .step3d-box-icon {font-size:1.3rem;color:#232323;margin-top:2px;}
+    .step3d-box-desc {font-size:0.98rem;color:#232323;}
+    .my_lesson_tutor_detail_change_your_plan_step3d_action_btn {
+      width:100%;font-size:1.14rem;padding:13px 0;background:#ff3a1e;color:#fff;border:2px solid #ff3a1e;border-radius:8px;font-weight:700;cursor:pointer;margin-top:13px;transition:background 0.18s,color 0.18s;margin-bottom:0;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step3d_action_btn:hover {background: #ff653e;}
+    /* STEP 4: CHECKOUT (Upgrade) */
+    .my_lesson_tutor_detail_change_your_plan_modal.fullscreen .my_lesson_tutor_detail_change_your_plan_modal_content.step4 {
+      display: flex;
+      flex-direction: row;
+      gap: 30px;
+      min-height: 100vh;
+      padding: 0;
+      background: #fff;
+      max-width: 100vw;
+      width: 100vw;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step4_left {
+      flex: 1 1 330px;
+      background: #fff;
+      padding: 45px 36px 22px 36px;
+      border-right: 1px solid #ececec;
+      min-width: 330px;
+      max-width: 390px;
+      box-sizing: border-box;
+      min-height: 100vh;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step4_right {
+      flex: 2 1 360px;
+      background: #fff;
+      padding: 45px 38px 20px 38px;
+      box-sizing: border-box;
+      min-height: 100vh;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step4_tutorbox {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step4_tutorimg {
+      width: 52px;
+      height: 52px;
+      border-radius: 8px;
+      object-fit: cover;
+      margin-right: 13px;
+      box-shadow: 0 1px 7px rgba(0,0,0,0.14);
+    }
+    .my_lesson_tutor_detail_change_your_plan_step4_tutorinfo {}
+    .my_lesson_tutor_detail_change_your_plan_step4_tutorname {
+      font-weight: 700;
+      font-size: 1.12rem;
+      color: #232323;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step4_flag {
+      font-size: 1.14rem;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step4_rating {
+      color: #ff3a1e;
+      font-weight: 700;
+      margin-top: 3px;
+      font-size: 0.99rem;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step4_stats {
+      display: flex;
+      gap: 18px;
+      font-size: 0.98rem;
+      color: #4e4e4e;
+      margin-bottom: 17px;
+      margin-top: 8px;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step4_stat {display: flex; align-items: center;}
+    .my_lesson_tutor_detail_change_your_plan_step4_line {
+      border-top: 1px solid #ececec;
+      margin: 16px 0;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step4_subtle {
+      font-size: 1.01rem;
+      color: #767676;
+      margin-bottom: 2px;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step4_yourorder {
+      margin-top: 17px;
+      font-weight: 700;
+      color: #232323;
+      font-size: 1.08rem;
+      margin-bottom: 5px;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step4_orderline {
+      display: flex; justify-content: space-between; margin-bottom: 2px; font-size: 1.03rem; color: #232323;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step4_orderline.total {
+      font-weight: 700; margin-top: 2px;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step4_promo {
+      display: inline-block;
+      font-size: 1.02rem;
+      color: #232323;
+      margin-top: 12px;
+      text-decoration: underline;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step4_hint {
+      display: flex;
+      gap: 10px;
+      background: #dff8f0;
+      border-radius: 7px;
+      padding: 12px 10px 9px 12px;
+      color: #232323;
+      margin-top: 16px;
+      font-size: 1.02rem;
+      align-items: center;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step4_pm_title {
+      font-weight: 700;
+      font-size: 1.13rem;
+      margin-bottom: 16px;
+      color: #232323;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step4_card {
+      display: flex;
+      align-items: center;
+      background: #fff;
+      border: 2px solid #bbb;
+      border-radius: 10px;
+      padding: 13px 17px 11px 17px;
+      font-size: 1.12rem;
+      color: #232323;
+      margin-bottom: 19px;
+      gap: 12px;
+      font-weight: 500;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step4_cardimg {
+      height: 23px;
+      margin-right: 8px;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step4_confirmbtn {
+      width: 100%;
+      font-size: 1.14rem;
+      padding: 13px 0;
+      background: #ff3a1e;
+      color: #fff;
+      border: 2px solid #ff3a1e;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.18s, color 0.18s;
+      margin-bottom: 14px;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step4_confirmbtn:hover {
+      background: #ff653e;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step4_policy {
+      color: #232323;
+      font-size: 0.97rem;
+      margin-bottom: 23px;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step4_reviews_box {
+      background: #fff;
+      border-radius: 12px;
+      padding: 18px 16px 16px 16px;
+      border: 1.3px solid #ececec;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step4_reviews_head {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      margin-bottom: 9px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #232323;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step4_reviews_nav {
+      margin-left: auto;
+      display: flex;
+      gap: 4px;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step4_reviews_navbtn {
+      background: #f0f0f0;
+      border-radius: 50%;
+      width: 27px;
+      height: 27px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: background 0.13s;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step4_reviews_navbtn:hover {background:#ddd;}
+    .my_lesson_tutor_detail_change_your_plan_step4_reviewitem {
+      margin-top: 7px;
+      font-size: 1.02rem;
+      color: #232323;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step4_reviewitem_head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 2px;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step4_reviewitem_img {
+      width: 34px;
+      height: 34px;
+      border-radius: 7px;
+      object-fit: cover;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step4_reviewitem_name {
+      font-weight: 700;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step4_reviewitem_body {
+      font-size: 1rem;
+      color: #232323;
+      margin-bottom: 1px;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step4_reviewitem_more {
+      font-size: 0.99rem;
+      color: #ff3a1e;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+    /* STEP 5: Confirmation */
+    .my_lesson_tutor_detail_change_your_plan_step5_top {
+      display: flex; align-items: center; gap: 15px; margin-bottom: 20px; margin-top: 12px;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step5_number {
+      background: #ff3a1e;
+      color: #fff;
+      font-size: 2rem;
+      font-weight: 700;
+      border-radius: 8px;
+      padding: 10px 24px;
+      display: inline-block;
+      margin-right: 8px;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step5_heading {
+      font-size: 1.55rem;
+      font-weight: 700;
+      color: #232323;
+      margin-bottom: 0;
+      margin-top: 0;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step5_body {
+      margin-top: 22px;
+      font-size: 1.2rem;
+      color: #232323;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step5_bold {
+      font-weight: 700;
+      color: #232323;
+      font-size: 1.13rem;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step5_btn {
+      width: 100%;
+      font-size: 1.13rem;
+      padding: 12px 0;
+      background: #ff3a1e;
+      color: #fff;
+      border: 2px solid #ff3a1e;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 33px;
+      margin-bottom: 0;
+      transition: background 0.18s, color 0.18s;
+    }
+    .my_lesson_tutor_detail_change_your_plan_step5_btn:hover {background: #ff653e;}
+    @media (max-width: 950px) {
+      .my_lesson_tutor_detail_change_your_plan_modal.fullscreen .my_lesson_tutor_detail_change_your_plan_modal_content.step4 {
+        flex-direction: column;
+        gap: 0;
+        min-height: unset;
+        padding: 0;
+      }
+      .my_lesson_tutor_detail_change_your_plan_step4_left, .my_lesson_tutor_detail_change_your_plan_step4_right {
+        min-width: 0;
+        max-width: none;
+        min-height: unset;
+        padding: 32px 8vw 19px 8vw;
+        border-right: none;
+        border-bottom: 1px solid #ececec;
+      }
+      .my_lesson_tutor_detail_change_your_plan_step4_right { border-bottom: none;}
+    }
+    @media (max-width: 600px) {
+      .my_lesson_tutor_detail_change_your_plan_modal_content {
+        padding: 20px 4vw 22px 4vw;
+      }
+      .my_lesson_tutor_detail_change_your_plan_modal {
+        padding: 0;
+        min-height: unset;
+        max-width: 99vw;
+      }
+    }
+
+
+
+
+
+
+
+
+
+
+    /* Downgrade Custom Plan Step (step2dcustom) */
+.my_lesson_tutor_detail_change_your_plan_modal_content.step2dcustom {
+  padding: 36px 32px 42px 32px;
+  background: #fff;
+  border-radius: 14px;
+  box-sizing: border-box;
+}
+
+.my_lesson_tutor_detail_change_your_plan_modal_content.step2dcustom .my_lesson_tutor_detail_change_your_plan_modal_close {
+  position: absolute;
+  top: 18px;
+  right: 24px;
+  font-size: 1.45rem;
+  color: #232323;
+  cursor: pointer;
+  font-weight: 500;
+  transition: color 0.2s;
+  z-index: 3;
+}
+
+.my_lesson_tutor_detail_change_your_plan_modal_content.step2dcustom .my_lesson_tutor_detail_change_your_plan_step2dcustom_back {
+  position: absolute;
+  top: 23px;
+  left: 18px;
+  font-size: 1.45rem;
+  color: #232323;
+  cursor: pointer;
+  z-index: 3;
+  transition: color 0.18s;
+}
+
+.my_lesson_tutor_detail_change_your_plan_modal_content.step2dcustom .my_lesson_tutor_detail_change_your_plan_step2custom_heading {
+  font-size: 2rem; 
+  font-weight: 700; 
+  margin-top: 5px; 
+  margin-bottom: 5px; 
+  color: #232323;
+  line-height: 1.22;
+  text-align: left;
+}
+
+.my_lesson_tutor_detail_change_your_plan_modal_content.step2dcustom .my_lesson_tutor_detail_change_your_plan_step2custom_current {
+  font-size: 1.09rem;
+  color: #6a6a6a;
+  margin-bottom: 0;
+  margin-top: 10px;
+  text-align: left;
+}
+
+.my_lesson_tutor_detail_change_your_plan_modal_content.step2dcustom .custom-btn {
+  width: 46px;
+  height: 46px;
+  font-size: 2.1rem;
+  font-weight: 600;
+  background: #fff;
+  color: #232323;
+  border: 2px solid #e1e1e1;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.17s, border 0.17s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+}
+
+.my_lesson_tutor_detail_change_your_plan_modal_content.step2dcustom .custom-btn:active { 
+  background: #fafbfc; 
+  border-color: #bababa; 
+}
+
+.my_lesson_tutor_detail_change_your_plan_modal_content.step2dcustom .my_lesson_tutor_detail_change_your_plan_step2dcustom_lessons {
+  font-size: 2.6rem;
+  font-weight: 700;
+  color: #232323;
+}
+
+.my_lesson_tutor_detail_change_your_plan_modal_content.step2dcustom .my_lesson_tutor_detail_change_your_plan_step2dcustom_price {
+  font-size: 1.18rem; 
+  font-weight: 700; 
+  color: #232323;
+}
+
+.my_lesson_tutor_detail_change_your_plan_modal_content.step2dcustom .my_lesson_tutor_detail_change_your_plan_step2dcustom_continue_btn {
+  width: 100%;
+  font-size: 1.14rem;
+  padding: 13px 0;
+  background: #ff3a1e;
+  color: #fff;
+  border: 2px solid #ff3a1e;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 32px;
+  margin-bottom: 0;
+  transition: background 0.18s, color 0.18s;
+}
+
+.my_lesson_tutor_detail_change_your_plan_modal_content.step2dcustom .my_lesson_tutor_detail_change_your_plan_step2dcustom_continue_btn:hover {
+  background: #ff653e;
+}
+
+
+  .my_lesson_tutor_detail_change_your_plan_step2custom_heading {
+    font-size: 2rem; font-weight: 700; margin-top: 5px; margin-bottom: 5px; color: #232323;
+    line-height: 1.22;
+  }
+  .my_lesson_tutor_detail_change_your_plan_step2custom_current {
+    font-size: 1.09rem;
+    color: #6a6a6a;
+    margin-bottom: 0;
+    margin-top: 10px;
+  }
+  .custom-btn {
+    width: 46px;
+    height: 46px;
+    font-size: 2.1rem;
+    font-weight: 600;
+    background: #fff;
+    color: #232323;
+    border: 2px solid #e1e1e1;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.17s, border 0.17s;
+  }
+  .custom-btn:active { background: #fafbfc; border-color: #bababa; }
+  .my_lesson_tutor_detail_change_your_plan_step2custom_continue_btn {
+    width: 100%;
+    font-size: 1.14rem;
+    padding: 13px 0;
+    background: #ff3a1e;
+    color: #fff;
+    border: 2px solid #ff3a1e;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.18s, color 0.18s;
+    margin-bottom: 0;
+  }
+  .my_lesson_tutor_detail_change_your_plan_step2custom_continue_btn:hover {background: #ff653e;}

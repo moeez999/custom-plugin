@@ -1,0 +1,100 @@
+/* Backdrop */
+#my_lessons_tutor_profile_modal_backdrop {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 999;
+}
+
+/* Modal container */
+#my_lessons_tutor_profile_modal {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  max-width: 90%;
+  max-height: 80vh;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  z-index: 1000;
+  overflow: hidden;
+}
+
+/* Header */
+.my_lessons_tutor_profile_modal_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f5f5f5;
+  padding: 12px 16px;
+}
+.my_lessons_tutor_profile_modal_company {
+  font-size: 14px;
+  color: #444;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.my_lessons_tutor_profile_modal_drop_arrow { cursor: pointer; }
+.my_lessons_tutor_profile_modal_close { font-size: 20px; background: none; border: none; cursor: pointer; }
+
+/* Body */
+.my_lessons_tutor_profile_modal_body {
+  padding: 24px;
+  font-family: system-ui, sans-serif;
+  color: #1d1d1f;
+  overflow-y: auto;
+  max-height: calc(80vh - 64px);
+}
+.my_lessons_tutor_profile_modal_body h3 {
+  margin: 0 0 16px;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.my_lessons_tutor_profile_modal_info { color: #6e6e73; }
+
+/* Rating summary */
+.my_lessons_tutor_profile_modal_rating_summary { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
+.modal_avg { font-size: 3rem; line-height: 1; }
+.modal_stars { font-size: 1.2rem; color: #f5a623; }
+.modal_total { color: #6e6e73; font-size: 0.9rem; }
+
+/* Breakdown bars */
+.my_lessons_tutor_profile_modal_bars { list-style: none; padding: 0; margin: 0 0 24px; }
+.my_lessons_tutor_profile_modal_bars li { display: flex; align-items: center; margin-bottom: 6px; gap: 8px; }
+.my_lessons_tutor_profile_modal_bars li > span:first-child { width: 16px; font-size: 0.9rem; }
+.bar_bg { flex: 1; height: 8px; background: #eee; border-radius: 4px; overflow: hidden; }
+.bar_fill { height: 100%; background: #1d1d1f; }
+
+/* Reviews list */
+.my_lessons_tutor_profile_modal_reviews { margin-bottom: 24px; }
+.review-item { margin-bottom: 24px; }
+.review-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin-right: 12px; }
+.review-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.review-name { font-weight: bold; font-size: 1rem; }
+.review-date { font-size: 0.85rem; color: #6e6e73; }
+.review-stars { color: #f5a623; margin-bottom: 8px; }
+.review-text { font-size: 0.95rem; line-height: 1.4; }
+
+/* Edit section */
+.my_lessons_tutor_profile_modal_review_edit { margin-top: 16px; }
+.my_lessons_tutor_profile_modal_avatar { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; margin-bottom: 12px; }
+.my_lessons_tutor_profile_modal_review_meta { font-size: 0.9rem; color: #3c3c43; display: flex; gap: 8px; margin-bottom: 12px; align-items: center; }
+.my_lessons_tutor_profile_modal_star_input { margin-bottom: 16px; }
+.my_lessons_tutor_profile_modal_star_input span { font-size: 24px; cursor: pointer; color: #ccc; margin-right: 4px; }
+.my_lessons_tutor_profile_modal_star_input .selected { color: #f5a623; }
+#my_lessons_tutor_profile_modal_text { width: 100%; border: 1px solid #ccc; border-radius: 4px; padding: 8px; font-size: 1rem; margin-bottom: 24px; resize: vertical; }
+.my_lessons_tutor_profile_modal_actions { display: flex; justify-content: flex-end; gap: 12px; }
+#my_lessons_tutor_profile_modal_cancel, #my_lessons_tutor_profile_modal_update { padding: 8px 16px; border-radius: 4px; cursor: pointer; }
+#my_lessons_tutor_profile_modal_cancel { background: #fff; border: 1px solid #444; color: #444; }
+#my_lessons_tutor_profile_modal_update { background: #ff3b30; border: none; color: #fff; }
+

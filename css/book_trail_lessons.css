@@ -1,0 +1,224 @@
+/* 0) Overlay & Modal Window */
+.modal-overlay {
+  display: none;
+  position: fixed; inset:0;
+  background: rgba(0,0,0,0.5);
+  z-index:1000;
+  justify-content:center; align-items:center;
+}
+.modal-window {
+  background:#fff;
+  border-radius:8px;
+  width:380px;
+  max-width:95%;
+  max-height:95vh;
+  box-shadow:0 8px 24px rgba(0,0,0,0.2);
+  animation:fadeIn 200ms ease-out;
+  overflow:hidden;
+  display:flex; flex-direction:column;
+}
+@keyframes fadeIn {
+  from{opacity:0;transform:translateY(-10px);}
+  to{opacity:1;transform:translateY(0);}
+}
+
+/* 1) Step 1 */
+.book_trial_step1 .step-header {
+  display:flex; align-items:center;
+  padding:12px 16px; border-bottom:1px solid #eee;
+}
+.book_trial_step1 .step-title {
+  flex:1; margin:0; font-size:18px; text-align:center;
+}
+.book_trial_step1 .step-close {
+  font-size:20px; cursor:pointer; user-select:none;
+}
+.book_trial_step1 .step-body {
+  padding-bottom:16px;
+  /* optional scroll if content overflows */
+}
+.book_trial_step1 .duration-option {
+  display:flex; align-items:center;
+  border:1px solid #ddd; border-radius:6px;
+  padding:12px; margin:16px;
+  cursor:pointer; transition:background .15s;
+}
+.book_trial_step1 .duration-option:hover {
+  background:#f9f9f9;
+}
+.book_trial_step1 .opt-icon { font-size:24px; margin-right:12px; }
+.book_trial_step1 .opt-text h3 { margin:0 0 4px; font-size:16px; }
+.book_trial_step1 .opt-text p  { margin:0; font-size:14px; color:#555; }
+.book_trial_step1 .opt-arrow    { margin-left:auto; font-size:20px; }
+
+/* 2) Step 2 */
+.book_trial_step2 .step-header {
+  display:flex; align-items:center;
+  padding:12px 16px; border-bottom:1px solid #eee;
+}
+.book_trial_step2 .step-back,
+.book_trial_step2 .step-close {
+  font-size:20px; cursor:pointer; user-select:none;
+}
+.book_trial_step2 .step-back { margin-right:12px; }
+.book_trial_step2 .step-title { flex:1; margin:0; font-size:16px; text-align:center; }
+.book_trial_step2 .step-body {
+  max-height:75vh; overflow-y:scroll;
+  /* hide scrollbar */
+  scrollbar-width:none; -ms-overflow-style:none;
+}
+.book_trial_step2 .step-body::-webkit-scrollbar {
+  width:0; background:transparent;
+}
+.book_trial_step2 .duration-tabs { display:flex; margin:12px 16px 0; }
+.book_trial_step2 .duration-tab {
+  flex:1; padding:10px 0; font-size:16px;
+  border:1px solid #ddd; background:#f0f0f0; cursor:pointer;
+}
+.book_trial_step2 .duration-tab:first-child { border-radius:6px 0 0 6px; }
+.book_trial_step2 .duration-tab:last-child  { border-radius:0 6px 6px 0; }
+.book_trial_step2 .duration-tab.active      { background:#fff; border-bottom-color:#fff; }
+.book_trial_step2 .calendar-nav {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 16px; margin:8px 0;
+}
+.book_trial_step2 .nav-arrow {
+  background:none; border:none; font-size:18px; cursor:pointer;
+}
+.book_trial_step2 .week-label { font-weight:600; font-size:14px; }
+.book_trial_step2 .calendar-days {
+  display:flex; justify-content:space-between; padding:0 16px; margin-bottom:8px;
+}
+.book_trial_step2 .day { text-align:center; cursor:pointer; }
+.book_trial_step2 .day-name { display:block; font-size:12px; color:#888; }
+.book_trial_step2 .day-num {
+  display:block; margin-top:4px; width:24px; height:24px;
+  line-height:24px; font-size:14px;
+}
+.book_trial_step2 .day.selected .day-num {
+  background:#ff3b30; color:#fff; border-radius:50%;
+}
+.book_trial_step2 .day.today .day-num { font-weight:600; }
+.book_trial_step2 .time-section {
+  display:flex; align-items:center;
+  font-size:16px; font-weight:600;
+  margin:16px 16px 8px;
+}
+.book_trial_step2 .time-icon { font-size:18px; margin-right:8px; }
+.book_trial_step2 .time-slots {
+  display:flex; flex-wrap:wrap; gap:8px; padding:0 16px 8px;
+}
+.book_trial_step2 .time-slot {
+  flex:1 1 45%; padding:10px;
+  border:1px solid #ddd; border-radius:6px;
+  background:#fff; cursor:pointer; font-size:14px;
+}
+.book_trial_step2 .time-slot.selected {
+  border-color:#ff3b30; color:#ff3b30;
+}
+.book_trial_step2 .btn-continue {
+  width:calc(100% - 32px); margin:0 16px 16px;
+  padding:12px; background:#ff3b30; color:#fff;
+  font-size:16px; border:none; border-radius:6px;
+  cursor:pointer;
+}
+
+/* 3) Step 3 */
+.book_trial_step3 .step-header {
+  display:flex; align-items:center;
+  padding:12px 16px; border-bottom:1px solid #eee;
+}
+.book_trial_step3 .step-back,
+.book_trial_step3 .step-close {
+  font-size:20px; cursor:pointer; user-select:none;
+}
+.book_trial_step3 .step-back { margin-right:12px; }
+.book_trial_step3 .step3-title {
+  flex:1; margin:0; font-size:18px; text-align:center;
+}
+.book_trial_step3 .step-body {
+  max-height:85vh; overflow-y:scroll;
+  padding-bottom:16px;
+}
+.book_trial_step3 .step-body::-webkit-scrollbar {
+  width:0; background:transparent;
+}
+.book_trial_step3 .order-container {
+  display:flex; flex-wrap:wrap; gap:16px; padding:16px;
+}
+.book_trial_step3 .teacher-card {
+  flex:1 1 250px; border:1px solid #ddd;
+  border-radius:6px; padding:16px;
+}
+.book_trial_step3 .teacher-subject { font-size:12px; color:#888; }
+.book_trial_step3 .teacher-profile {
+  display:flex; align-items:center; margin:8px 0;
+}
+.book_trial_step3 .teacher-avatar {
+  width:48px; height:48px; border-radius:50%;
+  margin-right:12px;
+}
+.book_trial_step3 .teacher-info { flex:1; }
+.book_trial_step3 .teacher-name { margin:0; font-size:18px; }
+.book_trial_step3 .teacher-rating { font-size:14px; color:#555; }
+.book_trial_step3 .teacher-tags .tag {
+  display:inline-block; font-size:12px;
+  padding:2px 6px; margin-right:4px; border-radius:4px;
+  background:#eef;
+}
+.book_trial_step3 .lessons-info {
+  list-style:disc inside; margin:12px 0; padding:0;
+}
+.book_trial_step3 .your-order h3 {
+  margin:12px 0; font-size:16px;
+}
+.book_trial_step3 .order-line {
+  display:flex; justify-content:space-between; margin:4px 0;
+}
+.book_trial_step3 .order-total {
+  display:flex; justify-content:space-between;
+  font-weight:600; margin:8px 0;
+}
+.book_trial_step3 .promo-link {
+  display:block; margin-top:8px;
+  text-decoration:underline; font-size:14px;
+}
+.book_trial_step3 .payment-section {
+  flex:1 1 250px;
+}
+.book_trial_step3 .payment-select {
+  width:100%; padding:10px; margin:8px 0 16px;
+  border:1px solid #ddd; border-radius:6px;
+}
+.book_trial_step3 .btn-confirm {
+  width:100%; padding:12px; margin-bottom:16px;
+  background:#ff3b30; color:#fff; font-size:16px;
+  border:none; border-radius:6px; cursor:pointer;
+}
+.book_trial_step3 .review-carousel {
+  display:flex; justify-content:flex-end; gap:8px;
+  margin-bottom:8px;
+}
+.book_trial_step3 .rev-arrow {
+  background:none; border:1px solid #ddd;
+  border-radius:4px; padding:4px 8px; cursor:pointer;
+}
+.book_trial_step3 .review-card {
+  display:flex; border:1px solid #ddd;
+  border-radius:6px; padding:12px; margin-bottom:16px;
+}
+.book_trial_step3 .review-avatar {
+  width:40px; height:40px; border-radius:50%;
+  overflow:hidden; margin-right:12px;
+}
+.book_trial_step3 .review-content .review-author {
+  font-weight:600; margin-bottom:4px;
+}
+.book_trial_step3 .promo-cta {
+  background:#e6fffa; border-radius:6px;
+  padding:12px; font-size:14px; margin-bottom:16px;
+}
+.book_trial_step3 .promo-disclaimer {
+  background:#f7f7f7; border-radius:6px;
+  padding:12px; font-size:14px;
+}

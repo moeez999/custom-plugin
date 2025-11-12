@@ -1,0 +1,258 @@
+.create_new_cohort_tab_select_color_left_row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 9px;
+  margin-bottom: 8px;
+  margin-top: 10px;
+}
+
+/* Label aligned center with button */
+.create_new_cohort_tab_select_color_left_label {
+  font-size: 1rem;
+  color: #1649c7;
+  font-weight: 500;
+  margin-bottom: 0;
+  margin-right: 0;
+  white-space: nowrap;
+  /* Optional: add min-width if needed for alignment */
+}
+
+.create_new_cohort_tab_select_color_left_dropdown {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  border: 2px solid #e0e0e0;
+  border-radius: 22px;
+  padding: 0 10px 0 1px;
+  min-width: 75px;
+  height: 37px;
+  box-shadow: 0 1px 4px #0001;
+  cursor: pointer;
+  transition: border-color 0.18s;
+}
+
+.create_new_cohort_tab_select_color_left_dropdown:hover {
+  border: 2px solid #232323;
+}
+
+.create_new_cohort_tab_select_color_left_dropdown:focus-within,
+.create_new_cohort_tab_select_color_left_dropdown.active {
+  border-color: #1649c7;
+}
+
+.create_new_cohort_tab_select_color_left_selected {
+  display: flex;
+  align-items: center;
+  height: 24px;
+}
+
+.create_new_cohort_tab_select_color_left_circle {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: inline-block;
+  border: 2px solid #e0e0e0;
+  background: #1649c7;
+}
+
+.create_new_cohort_tab_select_color_left_arrow {
+  margin-left: 6px;
+  pointer-events: none;
+  display: inline-block;
+}
+
+/* Dropdown menu: fixed width, pops to the left of button, matches your snapshot */
+.create_new_cohort_tab_select_color_left_list {
+  display: none;
+  position: absolute;
+  /* top: 0;
+   */
+  margin-bottom: 215px;
+  right: 110%; /* to the left of the button */
+  width: 58px; /* This matches the width in your screenshot */
+  min-height: 210px; /* approx the height of your menu in screenshot */
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 5px 18px #0002;
+  z-index: 50;
+  padding: 8px 0;
+  animation: fadeIn 0.13s;
+  overflow-y: auto;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.create_new_cohort_tab_select_color_left_list ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.create_new_cohort_tab_select_color_left_list li {
+  width: 36px;
+  height: 36px;
+  margin: 10px auto;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: box-shadow 0.13s, border 0.12s;
+  border: 2.5px solid transparent;
+  box-sizing: border-box;
+}
+.create_new_cohort_tab_select_color_left_list li:hover,
+.create_new_cohort_tab_select_color_left_list li.selected {
+  border: 2.5px solid #1649c7;
+  box-shadow: 0 2px 10px #1649c732;
+}
+
+/* Responsive for mobile */
+@media (max-width: 600px) {
+  .create_new_cohort_tab_select_color_left_dropdown,
+  .create_new_cohort_tab_select_color_left_list {
+    min-width: 46px;
+    max-width: 46px;
+    width: 46px;
+  }
+  .create_new_cohort_tab_select_color_left_list {
+    width: 46px;
+    min-height: 140px;
+    padding: 2px 0;
+  }
+}
+.create_new_cohort_tab_select_color_right_row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 9px;
+  margin-bottom: 8px;
+  margin-top: 10px;
+}
+
+.create_new_cohort_tab_select_color_right_label {
+  font-size: 1rem;
+  color: #1649c7;
+  font-weight: 500;
+  margin-bottom: 0;
+  margin-right: 0;
+  white-space: nowrap;
+}
+
+.create_new_cohort_tab_select_color_right_dropdown {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  border: 2px solid #e0e0e0;
+  border-radius: 22px;
+  padding: 0 10px 0 1px;
+  min-width: 75px;
+  height: 37px;
+  box-shadow: 0 1px 4px #0001;
+  cursor: pointer;
+  transition: border-color 0.18s;
+}
+
+.create_new_cohort_tab_select_color_right_dropdown:hover {
+  border: 2px solid #232323;
+}
+.create_new_cohort_tab_select_color_right_dropdown:focus-within,
+.create_new_cohort_tab_select_color_right_dropdown.active {
+  border-color: #1649c7;
+}
+
+.create_new_cohort_tab_select_color_right_selected {
+  display: flex;
+  align-items: center;
+  height: 24px;
+}
+
+.create_new_cohort_tab_select_color_right_circle {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: inline-block;
+  border: 2px solid #e0e0e0;
+  background: #1649c7;
+}
+
+.create_new_cohort_tab_select_color_right_arrow {
+  margin-left: 6px;
+  pointer-events: none;
+  display: inline-block;
+}
+
+.create_new_cohort_tab_select_color_right_list {
+  display: none;
+  position: absolute;
+  /* top: 0; */
+  margin-bottom: 215px;
+  right: 110%; /* pops to the right of the button */
+  width: 58px;
+  min-height: 210px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 5px 18px #0002;
+  z-index: 50;
+  padding: 8px 0;
+  animation: fadeIn 0.13s;
+  overflow-y: auto;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.create_new_cohort_tab_select_color_right_list ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.create_new_cohort_tab_select_color_right_list li {
+  width: 36px;
+  height: 36px;
+  margin: 10px auto;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: box-shadow 0.13s, border 0.12s;
+  border: 2.5px solid transparent;
+  box-sizing: border-box;
+}
+.create_new_cohort_tab_select_color_right_list li:hover,
+.create_new_cohort_tab_select_color_right_list li.selected {
+  border: 2.5px solid #1649c7;
+  box-shadow: 0 2px 10px #1649c732;
+}
+
+@media (max-width: 600px) {
+  .create_new_cohort_tab_select_color_right_dropdown,
+  .create_new_cohort_tab_select_color_right_list {
+    min-width: 46px;
+    max-width: 46px;
+    width: 46px;
+  }
+  .create_new_cohort_tab_select_color_right_list {
+    width: 46px;
+    min-height: 140px;
+    padding: 2px 0;
+  }
+}

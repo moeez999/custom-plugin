@@ -1,0 +1,330 @@
+:root {
+  --start-hour: 7;
+  --end-hour: 24;
+
+  /* 30-minute grid */
+  --slot-h: 36px;
+  --rows: 34;
+
+  /* colors */
+  --page-bg: #f5f6fb;
+  --day-bg: #f6f7fb;
+  --slot-line: #e6e8f2;
+  --hour-line: #dfe2ec;
+  --col-border: #e1e3ec;
+
+  --text: #0f1320;
+  --muted: #6b7280;
+
+  --event-radius: 5px;
+  --stack-offset: 18px; /* horizontal offset for overlaps */
+  --stack-cap: 3;
+
+  /* keep 3 lanes clickable/visible */
+  --reveal-front: 12px; /* extra right reveal for lane 0 */
+  --reveal-mid: 8px; /* extra right reveal for lane 1 */
+}
+
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: var(--page-bg);
+  font-family: Inter, system-ui, Segoe UI, Roboto, Arial, sans-serif;
+  color: var(--text);
+}
+.wrap {
+  max-width: 1220px;
+  margin: 20px auto;
+  padding: 0 14px;
+}
+.cal {
+  background: #fff;
+  border: 1px solid var(--col-border);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(20, 20, 40, 0.08);
+}
+
+.cal-head {
+  display: grid;
+  grid-template-columns: 84px repeat(7, 1fr);
+  border-bottom: 1px solid var(--col-border);
+}
+.cal-head .gutter {
+  border-right: 1px solid var(--col-border);
+}
+.day-h {
+  padding: 14px 6px 12px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  color: var(--muted);
+  border-right: 1px solid var(--col-border);
+}
+.day-h .dow {
+  font-size: 15px;
+}
+.day-h .dt {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 84px repeat(7, 1fr);
+  max-height: calc(var(--rows) * var(--slot-h) + 2px);
+  overflow: auto;
+}
+
+.gutter {
+  position: sticky;
+  left: 0;
+  z-index: 5;
+  background: #fff;
+  border-right: 1px solid var(--col-border);
+}
+.time-row {
+  height: var(--slot-h);
+  position: relative;
+  border-top: none !important;
+}
+.time-row:nth-child(even) {
+  border-bottom: 1px solid var(--col-border);
+}
+
+.time-label {
+  position: absolute;
+  right: 8px;
+  background: #fff;
+  padding: 0 4px;
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 600;
+  line-height: 1;
+  top: calc(var(--slot-h) - 0.7em);
+}
+
+.day {
+  position: relative;
+  background: var(--day-bg);
+  border-left: 1px solid var(--col-border);
+}
+.day-inner {
+  position: relative;
+  height: calc(var(--rows) * var(--slot-h));
+  background: #f4f3f8;
+}
+.day-inner .slots {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  display: grid;
+  grid-template-rows: repeat(var(--rows), var(--slot-h));
+}
+.day-inner .slots > div {
+  border-top: 1px solid var(--slot-line);
+  height: 48px;
+}
+.day-inner .slots > div:first-child {
+  border-top-color: var(--hour-line);
+  height: 48px;
+}
+.day-inner .slots > div:nth-child(2n + 1) {
+  border-top-color: var(--hour-line);
+  height: 48px;
+}
+
+/* Events */
+/* replace your current .event block */
+/* final .event: identical size always, no size/position animation */
+.event {
+  position: absolute;
+  z-index: 1;
+  overflow: hidden;
+  background: #fff;
+  border: 2px solid #7c96ff;
+  border-bottom: 5px solid #7c96ff;
+  border-radius: var(--event-radius);
+  padding: 8px 8px 6px;
+  box-shadow: 0 4px 10px rgba(25, 35, 60, 0.08);
+  width: calc(100% - 12px);
+  left: 4px;
+  cursor: pointer;
+  transition: box-shadow 0.15s ease; /* no width/left transition */
+}
+/* REMOVE any .event.is-front block */
+
+/* clicked one sits on top; same size */
+.event.is-front {
+  box-shadow: 0 10px 24px rgba(17, 24, 39, 0.18);
+  filter: saturate(1.05);
+}
+
+.ev-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+.ev-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.ev-avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #fff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06);
+}
+.ev-repeat {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+
+  font-size: 10px;
+
+  line-height: 1;
+}
+
+.ev-when {
+  font-size: 11px;
+  font-weight: 500;
+
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ev-title {
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 5px;
+}
+
+.e-blue {
+  border-color: #7c96ff;
+}
+.e-green {
+  border-color: #2faa7f;
+}
+.e-rose {
+  border-color: #ea3a3a;
+}
+.e-purple {
+  border-color: #a855f7;
+}
+.e-gold {
+  border-color: #d4a017;
+}
+.e-gray {
+  border-color: rgba(255, 138, 6, 0.7);
+  background: rgba(255, 138, 6, 0.05);
+}
+
+/* Teacher indicator dot on event */
+.event::after {
+  content: "";
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #ccc;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.event.has-teacher-indicator::after {
+  opacity: 1;
+}
+
+/* Teacher color dots - 10 colors */
+.event.teacher-1::after {
+  background-color: var(--teacher-color-1);
+}
+.event.teacher-2::after {
+  background-color: var(--teacher-color-2);
+}
+.event.teacher-3::after {
+  background-color: var(--teacher-color-3);
+}
+.event.teacher-4::after {
+  background-color: var(--teacher-color-4);
+}
+.event.teacher-5::after {
+  background-color: var(--teacher-color-5);
+}
+.event.teacher-6::after {
+  background-color: var(--teacher-color-6);
+}
+.event.teacher-7::after {
+  background-color: var(--teacher-color-7);
+}
+.event.teacher-8::after {
+  background-color: var(--teacher-color-8);
+}
+.event.teacher-9::after {
+  background-color: var(--teacher-color-9);
+}
+.event.teacher-10::after {
+  background-color: var(--teacher-color-10);
+}
+
+/* NOW line: arrows pointing toward each other */
+.now {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: #ff3b30;
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* Left arrow should point RIGHT (→) */
+.now::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0px;
+  transform: translateY(-50%);
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-left: 10px solid #ff3b30; /* Was border-right before */
+}
+
+/* Right arrow should point LEFT (←) */
+.now::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 0px;
+  transform: translateY(-50%);
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-right: 10px solid #ff3b30; /* Was border-left before */
+}
+
+@media (max-width: 700px) {
+  .cal-head,
+  .grid {
+    grid-template-columns: 70px repeat(7, 320px);
+  }
+}

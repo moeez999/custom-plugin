@@ -1,0 +1,99 @@
+  /* Backdrop & modal */
+  #my_lessson_tutor_profile_detail_show_more_backdrop {
+    display:none; position:fixed; inset:0;
+    background:rgba(0,0,0,0.4); z-index:999;
+  }
+  #my_lessson_tutor_profile_detail_show_more_modal {
+    display:none; position:fixed;
+    top:50%; left:50%; transform:translate(-50%,-50%);
+    width:600px; max-width:90%; max-height:80vh;
+    background:#fff; border-radius:8px;
+    box-shadow:0 8px 24px rgba(0,0,0,0.2);
+    overflow:hidden; font-family:system-ui,sans-serif; z-index:1000;
+  }
+  /* Header */
+  .my_lessson_tutor_profile_detail_show_more_header {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 24px; border-bottom:1px solid #eee;
+  }
+  .my_lessson_tutor_profile_detail_show_more_header h2 {
+    margin:0; font-size:18px; font-weight:600;
+  }
+  .my_lessson_tutor_profile_detail_show_more_info {
+    margin-left:8px; cursor:help; color:#888;
+  }
+  .my_lessson_tutor_profile_detail_show_more_header .buttons {
+    display:flex; align-items:center;
+  }
+  #my_lessson_tutor_profile_detail_show_more_edit {
+    font-size:14px; padding:4px 8px; margin-right:12px;
+    border:1px solid #ccc; border-radius:4px; background:#f5f5f5;
+    cursor:pointer;
+  }
+  .my_lessson_tutor_profile_detail_show_more_close {
+    background:none; border:none; font-size:24px; cursor:pointer;
+  }
+  /* Scroll area */
+  .my_lessson_tutor_profile_detail_show_more_scroll {
+    overflow-y:auto; max-height:calc(80vh - 64px);
+  }
+  .summary, .my_lessson_tutor_profile_detail_show_more_edit_body {
+    padding:24px;
+  }
+  /* Summary */
+  .overall { flex:1; text-align:center; }
+  .overall .number { font-size:48px; font-weight:700; line-height:1; }
+  .overall .stars { font-size:20px; margin:4px 0; }
+  .overall .count { font-size:14px; color:#666; }
+  .distribution .row { display:flex; align-items:center; margin:4px 0; }
+  .distribution .row span { width:24px; font-size:14px; }
+  .distribution .bar {
+    flex:1; height:8px; background:#eee;
+    margin:0 8px; border-radius:4px; overflow:hidden;
+  }
+  .distribution .bar div { height:100%; background:#000; }
+  /* Reviews */
+  .review { border-top:1px solid #eee; padding:16px 24px; }
+  .review:first-of-type { border-top:none; }
+  .review-header {
+    display:flex; justify-content:space-between; align-items:center;
+    margin-bottom:12px;
+  }
+  .reviewer { display:flex; align-items:center; }
+  .reviewer img { border-radius:50%; margin-right:12px; }
+  .info strong { font-size:14px; }
+  .info small { font-size:12px; color:#666; }
+  #my_lessson_tutor_profile_detail_show_more_review_edit {
+    font-size:13px; padding:4px 8px;
+    border:1px solid #ccc; border-radius:4px;
+    background:#f5f5f5; cursor:pointer;
+  }
+  .rating { font-size:16px; margin-bottom:8px; }
+  .review p { font-size:14px; margin-bottom:16px; }
+  .reply {
+    background:#f9f9f9; padding:12px; border-radius:6px;
+  }
+  .reply .reviewer { margin-bottom:6px; }
+  .reply p { font-size:13px; margin:0; }
+  /* Edit form */
+  .star-inputs span {
+    font-size:24px; cursor:pointer; margin-right:4px;
+  }
+  #my_lessson_tutor_profile_detail_show_more_edit_text {
+    width:100%; height:120px; padding:8px;
+    font-size:14px; border:1px solid #ddd; border-radius:4px;
+    resize:vertical;
+  }
+  .my_lessson_tutor_profile_detail_show_more_edit_actions {
+    display:flex; justify-content:flex-end; gap:12px; margin:16px 24px;
+  }
+  #my_lessson_tutor_profile_detail_show_more_cancel_edit,
+  #my_lessson_tutor_profile_detail_show_more_update_edit {
+    padding:8px 16px; font-size:14px; border-radius:4px; cursor:pointer;
+  }
+  #my_lessson_tutor_profile_detail_show_more_cancel_edit {
+    background:#fff; border:1px solid #333;
+  }
+  #my_lessson_tutor_profile_detail_show_more_update_edit {
+    background:#e60000; border:none; color:#fff;
+  }

@@ -1,0 +1,117 @@
+#addTimeTabContent {
+  padding: 0 6px;
+}
+.addtime-label {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #232323;
+  margin-bottom: 6px;
+  display: block;
+}
+.addtime-teacher-dropdown {
+  width: 100%;
+  margin-bottom: 13px;
+}
+.addtime-teacher-selected {
+  display: flex;
+  align-items: center;
+  background: #fafbfc;
+  border: 2px solid #dadada;
+  border-radius: 12px !important;
+  padding: 10px 16px;
+  min-height: 48px;
+  font-size: 1.09rem;
+  font-weight: 500;
+  color: #232323;
+}
+.addtime-teacher-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  margin-right: 11px;
+  border: 1.2px solid #ececec;
+  object-fit: cover;
+  background: #eaeaea;
+}
+.addtime-title-input {
+  width: 100%;
+  border: 2px solid #dadada;
+  border-radius: 8px !important;
+  padding: 12px 15px !important;
+  font-size: 1.09rem;
+  margin-top: 5px;
+  margin-bottom: 13px;
+  background: #fff;
+}
+.addtime-title-input:hover {
+  border: 2px solid #232323;
+}
+.addtime-row {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 10px;
+}
+.addtime-col {
+  flex: 1 1 180px;
+  min-width: 150px;
+}
+.addtime-picker-row {
+  display: flex;
+  gap: 11px;
+  margin-top: 6px;
+}
+.addtime-date-btn,
+.addtime-time-btn {
+  background: #fff;
+  border: 2px solid #dadada;
+  border-radius: 21px;
+  padding: 11px 0;
+  font-size: 1.07rem;
+  font-weight: 500;
+  width: 100%;
+  cursor: pointer;
+  transition: border 0.13s;
+}
+.addtime-date-btn.selected,
+.addtime-time-btn.selected {
+  border: 2px solid #fe2e0c;
+  color: #fe2e0c;
+  background: #fff4f1;
+}
+.addtime-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.07rem;
+  color: #232323;
+  margin-top: 6px;
+}
+.addtime-checkbox-label input[type="checkbox"] {
+  width: 19px;
+  height: 19px;
+  accent-color: #fe2e0c;
+  margin-right: 2px;
+}
+.addtime-submit-btn {
+  width: 100%;
+  background: #fe2e0c;
+  color: #fff;
+  border: none;
+  font-weight: bold;
+  font-size: 1.1rem;
+  border-radius: 9px;
+  padding: 15px 0;
+  margin-top: 28px;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  box-shadow: 0 3px 13px 0 rgba(254, 46, 12, 0.07);
+}
+@media (max-width: 600px) {
+  .addtime-row {
+    flex-direction: column;
+    gap: 7px;
+  }
+  .addtime-col {
+    min-width: 0;
+  }
+}

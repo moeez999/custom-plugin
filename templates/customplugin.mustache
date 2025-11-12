@@ -1,0 +1,18 @@
+<div class="local-customplugin-wrap">
+  <div class="local-customplugin-badge">{{#enabled}}Enabled{{/enabled}}{{^enabled}}Disabled{{/enabled}}</div>
+
+  <h3>{{hello}}</h3>
+  <p class="local-customplugin-muted">{{intro}}</p>
+
+  {{#apikey}}
+    <p><strong>API key set:</strong> {{apikey}}</p>
+  {{/apikey}}
+  {{^apikey}}
+    <p><em>No API key configured yet.</em></p>
+  {{/apikey}}
+
+  {{#manageonly}}
+    <hr>
+    <p>{{manageonly}}</p>
+  {{/manageonly}}
+</div>

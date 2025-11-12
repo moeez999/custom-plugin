@@ -1,0 +1,82 @@
+  /* Shared Backdrop */
+  #my_lessons_tutor_profile_details_post_review_backdrop {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 999;
+  }
+
+  /* Common modal container styles */
+  #my_lessons_tutor_profile_details_post_review_modal,
+  #my_lessons_tutor_profile_details_post_review_thankyou_modal {
+    display: none;
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 360px; max-width: 90%;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    z-index: 1000;
+    overflow: hidden;
+    font-family: system-ui, sans-serif;
+  }
+
+  /* Close Button */
+  .my_lessons_tutor_profile_details_post_review_header,
+  .my_lessons_tutor_profile_details_post_review_thankyou_content {
+    display: flex; justify-content: flex-end;
+    padding: 12px 16px;
+  }
+  .my_lessons_tutor_profile_details_post_review_close {
+    background: none; border: none;
+    font-size: 24px; cursor: pointer;
+  }
+
+  /* Post-Review Body */
+  .my_lessons_tutor_profile_details_post_review_body {
+    padding: 0 24px 24px;
+    text-align: center;
+  }
+  .my_lessons_tutor_profile_details_post_review_avatar {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    margin-bottom: 12px;
+  }
+  .my_lessons_tutor_profile_details_post_review_title {
+    margin: 0; font-size: 20px; font-weight: 600;
+  }
+  .my_lessons_tutor_profile_details_post_review_subtitle {
+    margin: 4px 0 16px;
+    color: #555; font-size: 14px;
+  }
+  .my_lessons_tutor_profile_details_post_review_stars {
+    font-size: 28px; color: #555; margin-bottom: 16px;
+    cursor: pointer;
+  }
+  #my_lessons_tutor_profile_details_post_review_textarea {
+    width: 100%; height: 100px; padding: 8px;
+    font-size: 14px; border: 1px solid #ddd;
+    border-radius: 8px; resize: vertical;
+    margin-bottom: 16px;
+  }
+  #my_lessons_tutor_profile_details_post_review_submit {
+    width: 100%; padding: 12px;
+    font-size: 16px; font-weight: 500;
+    background: #e60000; color: #fff;
+    border: none; border-radius: 8px;
+    cursor: pointer;
+  }
+
+  /* Thank-You Content */
+  .my_lessons_tutor_profile_details_post_review_thankyou_content {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 24px;
+  }
+  .my_lessons_tutor_profile_details_post_review_thankyou_content h2 {
+    margin: 0; font-size: 22px; font-weight: 600;
+  }
+  .my_lessons_tutor_profile_details_post_review_thankyou_content p {
+    margin: 8px 0 0; font-size: 14px; color: #555;
+  }

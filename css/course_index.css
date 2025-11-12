@@ -1,0 +1,81 @@
+<style>
+    .card-row-section {
+      display: flex;
+      gap: 15px;
+      padding: 16px 0;
+      background: #fff;
+    }
+    .card-box {
+      flex: 1 1 0;
+      background: #fff;
+      border: 2px solid #e0e0ec;
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 18px 10px 14px 10px;
+      min-width: 180px;
+      min-height: 92px;
+      box-sizing: border-box;
+      transition: box-shadow 0.2s;
+    }
+    .card-box:hover {
+      box-shadow: 0 2px 12px rgba(40,60,160,0.08);
+    }
+    .card-title {
+      font-size: 10px;
+      color: #888a95;
+      font-weight: 400;
+      margin-bottom: 2px;
+      text-align: center;
+      letter-spacing: 0.01em;
+    }
+    .card-main-link {
+      font-size: 12px;
+      font-weight: 700;
+      color: #0033cc;
+      text-decoration: none;
+      line-height: 1.1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-align: center;
+    }
+    /* Ellipsis for overflow text */
+    .ellipsis {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 165px;
+      display: inline-block;
+      vertical-align: bottom;
+    }
+    /* Checkmark circle SVG */
+    .card-check {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 1.4px solid #0033cc;
+      margin-left: 5px;
+    }
+    .card-check svg {
+      display: block;
+      width: 13px;
+      height: 13px;
+      color: #0033cc;
+    }
+    @media (max-width: 700px) {
+      .card-row-section {
+        flex-direction: column;
+        gap: 15px;
+      }
+      .card-box {
+        min-width: 0;
+        width: 100%;
+      }
+    }
+  </style>

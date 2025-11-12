@@ -1,0 +1,167 @@
+    /* PAGE WRAPPER */
+    #my_lessons_page {
+      position: relative;
+      min-height: 100vh;
+    }
+
+    /* BACKDROP (transparent, non-blocking) */
+    #my_modal_backdrop {
+      display: none;
+      position: fixed; top:0; left:0; right:0; bottom:0;
+      background: transparent;
+      pointer-events: none;
+      z-index: 50;
+    }
+
+    /* COMMON MODAL PANEL */
+    .my_modal {
+      display: none;
+      position: fixed; 
+      top: 200px;    /* adjust under your header */
+      right: 40px;  /* align over the right card */
+      width: 500px;
+      max-width: 90%;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: none;
+      z-index: 100;
+      overflow: visible;
+      font-family: system-ui, sans-serif;
+      border: 1px solid;
+      z-index: 99999 !important;
+}
+      
+    
+    /* HEADER (both steps) */
+    .my_modal_header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-bottom: 1px solid #eee;
+    }
+    .my_modal_header .left {
+      display: flex; align-items: center;
+    }
+    .my_modal_header .left i {
+      font-size: 1.2rem;
+      margin-right: 8px;
+      cursor: pointer;
+    }
+    .my_modal_header .left img {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+    .my_modal_header .left h2 {
+      margin: 0; font-size: 1rem; cursor: default;
+    }
+    .my_modal_header .right i,
+    .my_modal_header .right a {
+      margin-left: 12px;
+      font-size: 1.1rem;
+      color: #333;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+    }
+    .my_modal_header .right a i {
+      margin-right: 4px;
+    }
+
+    /* STEP 1 BODY */
+    #send_message_body {
+      padding: 12px 16px;
+      background: #fafafa;
+    }
+    .sm_date {
+      display: inline-block;
+      padding: 4px 12px;
+      background: #eee;
+      border-radius: 12px;
+      font-size: 12px;
+      margin-bottom: 12px;
+    }
+    .sm_msg {
+      display: flex; margin-bottom: 12px;
+    }
+    .sm_msg .avatar {
+      width: 28px; height: 28px; border-radius: 50%;
+      margin-right: 8px; flex-shrink: 0;
+    }
+    .sm_msg .content {
+      background: #fff; padding: 8px 12px; border-radius: 8px;
+    }
+    .sm_msg .meta {
+      font-size: 12px; color: #666; margin-bottom: 4px;
+    }
+    .sm_msg p {
+      margin: 0; font-size: 14px; line-height: 1.4;
+    }
+    #send_message_footer {
+      display: flex; align-items: center;
+      padding: 10px 16px; border-top: 1px solid #eee;
+    }
+    #send_message_footer .icon {
+      font-size: 1.2rem; color: #888; margin-right: 10px; cursor: pointer;
+    }
+    #send_message_footer input {
+      flex: 1; padding: 8px 12px;
+      border: 1px solid #ddd; border-radius: 20px;
+      outline: none; font-size: 14px;
+    }
+    #send_message_footer .send {
+      margin-left: 10px; font-size: 1.2rem; color: #444; cursor: pointer;
+    }
+
+    /* STEP 2 BODY: Messages List */
+    #messages_list_body {
+      padding: 12px 16px;
+    }
+    .msgs_tabs {
+      display: flex; gap: 16px; margin-bottom: 12px;
+    }
+    .msgs_tabs .tab {
+      position: relative; padding-bottom: 4px; cursor: pointer;
+      color: #555; font-size: 14px;
+    }
+    .msgs_tabs .tab.active {
+      color: #E63946; /* red underline */
+    }
+    .msgs_tabs .tab.active::after {
+      content: "";
+      position: absolute; left:0; right:0; bottom:0;
+      height: 2px; background: #E63946;
+    }
+    .msgs_tabs .badge {
+      background: #ddd;
+      border-radius: 50%;
+      padding: 2px 6px;
+      font-size: 12px;
+      margin-left: 4px;
+    }
+    .message_item {
+      display: flex; align-items: center;
+      padding: 8px 0; border-bottom: 1px solid #eee;
+    }
+    .message_item:last-child { border-bottom: none; }
+    .message_item img {
+      width: 36px; height: 36px; border-radius: 50%;
+      margin-right: 12px;
+      flex-shrink: 0;
+    }
+    .message_item .info {
+      flex: 1;
+    }
+    .message_item .info h3 {
+      margin: 0; font-size: 15px; color: #333;
+    }
+    .message_item .info p {
+      margin: 4px 0 0; font-size: 13px; color: #666;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      max-width: 200px;
+    }
+    .message_item .date {
+      font-size: 12px; color: #999;
+      margin-left: 8px; white-space: nowrap;
+    }

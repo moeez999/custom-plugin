@@ -1,0 +1,554 @@
+    /* ===== Global & Header ===== */
+    #my_lessons_container {
+      /* max-width: 960px; */
+      margin: 40px auto;
+      padding: 0 20px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .my_lessons_header {
+      font-size: 32px;
+      font-weight: 700;
+      margin: 0;
+    }
+    .my_lessons_actions {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 12px;
+      margin: 20px 0;
+    }
+    .my_lessons_btn_outline {
+      padding: 8px 16px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background: transparent;
+      cursor: pointer;
+    }
+    .my_lessons_schedule_dropdown {
+      position: relative;
+    }
+    .my_lessons_btn_primary {
+      padding: 8px 16px;
+      font-size: 14px;
+      border: none;
+      border-radius: 6px;
+      background: #ff3b30;
+      color: #fff;
+      cursor: pointer;
+    }
+    .my_lessons_btn_primary i {
+      margin-left: 6px;
+    }
+
+    /* ===== Schedule Dropdown Card ===== */
+    .my_lessons_dropdown_menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      right: 0;
+      width: 300px;
+      background: #fff;
+      border: 1px solid #e4e4e4;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin-top: 6px;
+      z-index: 10;
+      overflow: hidden;
+    }
+    .my_lessons_schedule_option {
+      display: flex;
+      align-items: flex-start;
+      padding: 16px;
+      cursor: pointer;
+    }
+    .my_lessons_schedule_option + .my_lessons_schedule_option {
+      border-top: 1px solid #e4e4e4;
+    }
+    .my_lessons_option_icon {
+      font-size: 24px;
+      margin-right: 12px;
+      color: #333;
+    }
+    .my_lessons_option_text {
+      flex: 1;
+    }
+    .my_lessons_recommended_pill {
+      display: inline-block;
+      background: #d0e8ff;
+      color: #1a73e8;
+      font-size: 12px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-bottom: 6px;
+    }
+    .my_lessons_option_text h4 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: #111;
+    }
+    .my_lessons_option_text p {
+      margin: 6px 0 0;
+      font-size: 14px;
+      color: #666;
+      line-height: 1.4;
+    }
+
+    /* ===== Tabs ===== */
+    .my_lessons_tabs {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      border-bottom: 1px solid #e4e4e4;
+    }
+    .my_lessons_tab_item {
+      padding: 12px 24px;
+      cursor: pointer;
+      color: #333;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      position: relative;
+    }
+    .my_lessons_tab_item.active {
+      color: #ff3b30;
+      font-weight: 600;
+    }
+    .my_lessons_tab_item.active::after {
+      content: "";
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: #ff3b30;
+      border-radius: 3px 3px 0 0;
+    }
+    .my_lessons_tab_content {
+      display: none;
+      padding: 20px 0;
+    }
+
+    /* ===== Lessons Panel ===== */
+    .my_lessons_section_heading {
+      font-size: 20px;
+      font-weight: 600;
+      margin: 24px 0 12px;
+    }
+    .my_lessons_lesson_card {
+      position: relative;
+      display: flex;
+      align-items: center;
+      background: #fff;
+      border: 1px solid #e4e4e4;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .my_lessons_lesson_avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 10%;
+      object-fit: cover;
+      margin-right: 14px;
+    }
+    .my_lessons_lesson_details {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .my_lessons_lesson_header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 15px;
+      font-weight: 500;
+      color: #111;
+    }
+    .my_lessons_lesson_icon {
+      font-size: 18px;
+      color: #333;
+    }
+    .my_lessons_lesson_time {
+      /* inherited */
+    }
+    .my_lessons_lesson_subject {
+      font-size: 14px;
+      color: #666;
+      margin-top: 4px;
+    }
+    .my_lessons_menu_section {
+      width: 40px;
+      text-align: right;
+    }
+    .my_lessons_menu_icon {
+      font-size: 20px;
+      color: #333;
+      cursor: pointer;
+    }
+
+    /* Context menu on lesson */
+    .my_lessons_card_menu {
+      position: absolute;
+      top: 50%;
+      right: 0;
+      transform: translateY(-50%);
+      background: #fff;
+      border: 1px solid #e4e4e4;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      padding: 8px 0;
+      display: none;
+      min-width: 200px;
+      z-index: 20;
+    }
+    .my_lessons_card_menu ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .my_lessons_card_menu li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: #333;
+      padding: 8px 16px;
+      cursor: pointer;
+    }
+    .my_lessons_card_menu li:hover {
+      background: #f7f7f7;
+    }
+    .my_lessons_card_menu li.my_lessons_cancel {
+      color: #d93025;
+    }
+
+    /* ===== Calendar Panel ===== */
+    .my_lessons_calendar_actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .my_lessons_calendar_nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .my_lessons_today_btn,
+    .my_lessons_calendar_nav .my_lessons_btn_outline {
+      padding: 6px 14px;
+    }
+    .my_lessons_calendar_date {
+      font-size: 16px;
+      font-weight: 600;
+      margin-left: 12px;
+    }
+    .my_lessons_calendar_legend {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      font-size: 14px;
+      color: #555;
+    }
+    .my_lessons_calendar_legend i {
+      font-size: 16px;
+    }
+    .my_lessons_calendar_table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .my_lessons_calendar_table th,
+    .my_lessons_calendar_table td {
+      border: 1px solid #e4e4e4;
+      padding: 0;
+    }
+    .my_lessons_calendar_table thead th {
+      text-align: center;
+      background: #fafafa;
+      height: 40px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .my_lessons_calendar_table tbody th {
+      text-align: right;
+      padding: 0 8px;
+      color: #888;
+      width: 60px;
+      font-size: 14px;
+    }
+    .my_lessons_calendar_table tbody td {
+      position: relative;
+      height: 80px;
+      vertical-align: top;
+    }
+    .my_lessons_calendar_event {
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      right: 4px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      overflow: hidden;
+      padding: 4px 8px 8px;
+    }
+    .my_lessons_event_avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      object-fit: cover;
+    }
+    .my_lessons_event_icon {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      font-size: 18px;
+    }
+    .my_lessons_event_time {
+      margin-top: 40px;
+      font-size: 12px;
+      color: #333;
+    }
+    .my_lessons_event_name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #111;
+      line-height: 1.2;
+    }
+    .my_lessons_event_confirmed {
+      background: #fff;
+      border: 2px solid #ff3b30;
+      cursor: pointer;
+    }
+
+    .my_lessons_event_confirmed .my_lessons_event_icon {
+      color: #ff3b30;
+    }
+    
+    .my_lessons_event_weekly {
+      background: #ffe4e6;
+      cursor: pointer;
+    }
+
+    .my_lessons_event_single {
+      background: #e5f5ff;
+    }
+
+    /* ===== Tutors Panel ===== */
+    .my_lessons_card {
+      display: flex;
+      align-items: center;
+      background: #fff;
+      border: 1px solid #e4e4e4;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .my_lessons_profile_section {
+      flex: 2;
+      display: flex;
+      align-items: center;
+    }
+    .my_lessons_avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 14px;
+    }
+    .my_lessons_profile_info {
+      display: flex;
+      flex-direction: column;
+    }
+    .my_lessons_name {
+      font-size: 16px;
+      font-weight: 600;
+      color: #111;
+      text-decoration: none;
+    }
+    .my_lessons_name:hover {
+      text-decoration: underline;
+    }
+    .my_lessons_subtitle {
+      font-size: 14px;
+      color: #666;
+      margin-top: 2px;
+    }
+    .my_lessons_lessons_section {
+      flex: 1;
+      text-align: center;
+    }
+    .my_lessons_lessons_count {
+      font-size: 16px;
+      font-weight: 600;
+      color: #111;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .my_lessons_lessons_text {
+      font-size: 14px;
+      font-weight: 400;
+      color: #666;
+    }
+    .my_lessons_sync_icon {
+      color: #28a745;
+    }
+    .my_lessons_price_section {
+      flex: 1;
+      text-align: center;
+    }
+    .my_lessons_price {
+      font-size: 16px;
+      font-weight: 600;
+      color: #111;
+    }
+    .my_lessons_price_text {
+      font-size: 14px;
+      font-weight: 400;
+      color: #666;
+      margin-left: 4px;
+    }
+    .my_lessons_actions_section {
+      flex: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+    .my_lessons_chat_btn {
+      width: 40px;
+      height: 40px;
+      border: 1px solid #e4e4e4;
+      border-radius: 8px;
+      background: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .my_lessons_chat_btn i {
+      font-size: 16px;
+      color: #333;
+    }
+    .my_lessons_schedule_action_btn,
+    .my_lessons_subscribe_btn {
+      padding: 8px 16px;
+      font-size: 14px;
+      border: 1px solid #333;
+      border-radius: 8px;
+      background: #fff;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+
+
+
+
+
+.highlight-today {
+  background: #eaf6ff !important;
+  font-weight: bold;
+}
+
+.my_lessons_today_line {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+.my_lessons_today_line_dot {
+  width: 14px;
+  height: 14px;
+  background: #fe4c22;
+  border-radius: 50%;
+  position: absolute;
+  left: -7px;
+  top: -7px;
+}
+.my_lessons_today_line_bar {
+  height: 4px;
+  width: 100%;
+  background: #fe4c22;
+  border-radius: 4px;
+  position: absolute;
+  left: 0;
+  top: -2px;
+}
+
+
+
+  .tutor-action-dot {
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 50%;
+  background: none;
+  font-size: 22px;
+  transition: background 0.2s;
+  position: relative;
+}
+.tutor-action-dot:hover {
+  background: #f2f2f2;
+}
+.tutor-action-menu {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 36px;
+  min-width: 300px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.11);
+  border-radius: 13px;
+  z-index: 9999;
+  padding: 14px 0 12px 0;
+  font-size: 1.10rem;
+}
+.tutor-action-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.tutor-action-menu li {
+  padding: 10px 26px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  border-radius: 6px;
+  transition: background 0.16s;
+}
+.tutor-action-menu li:hover {
+  background: #f2f2f2;
+}
+.tutor-action-menu i {
+  margin-right: 13px;
+  font-size: 1.2em;
+}
+
+.my-subscription-tooltip {
+  display: none;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 32px;
+  min-width: 270px;
+  background: #222;
+  color: #fff;
+  border-radius: 15px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.18);
+  padding: 20px 18px 16px 18px;
+  z-index: 2000;
+  font-size: 16px;
+  text-align: left;
+  white-space: normal;
+}
+

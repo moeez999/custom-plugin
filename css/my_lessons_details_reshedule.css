@@ -1,0 +1,179 @@
+  .my_lessons_details_reshedule_scrollbarNone { -ms-overflow-style: none; scrollbar-width: none; }
+  .my_lessons_details_reshedule_scrollbarNone::-webkit-scrollbar { display: none; }
+
+  .my_lessons_details_reshedule_cell { min-height:56px; display:flex; align-items:center; justify-content:center; }
+
+  /* time pill (not bold) */
+  .my_lessons_details_reshedule_slot{
+    width:168px; height:56px; max-width:90vw;
+    display:flex; align-items:center; justify-content:center;
+    padding:0 14px; background:#fff; color:#0f1115;
+    font-weight:500; font-size:16px; line-height:1; user-select:none; cursor:pointer;
+    border:2px solid #e6e7ef; border-radius:12px;
+    box-shadow:0 1px 0 rgba(16,18,27,.04);
+    transition:transform .06s ease, background-color .12s ease,
+              border-color .12s ease, color .12s ease, box-shadow .12s ease;
+  }
+  .my_lessons_details_reshedule_slot:hover{ background:#fbfbfe; border-color:#dfe2ea; box-shadow:0 2px 6px rgba(16,18,27,.06); }
+  .my_lessons_details_reshedule_slot:active{ transform:scale(.985); }
+  .my_lessons_details_reshedule_selected{ background:#0f1115 !important; color:#fff !important; border-color:#0f1115 !important; box-shadow:0 4px 10px rgba(16,18,27,.16); }
+  .my_lessons_details_reshedule_disabled{ background:#f2f3f7 !important; color:#a6adba !important; border-color:#dadce6 !important; cursor:not-allowed !important; box-shadow:none !important; }
+  .my_lessons_details_reshedule_redborder{ border-color:#ff3b1f !important; }
+
+  /* tooltip */
+  .my_lessons_details_reshedule_tip{
+    position:fixed; z-index:9999; background:#0f1115; color:#fff;
+    padding:10px 14px; border-radius:5px; font-weight:500; font-size: 10px;
+    box-shadow:0 10px 24px rgba(0,0,0,.25); max-width:min(90vw,420px);
+  }
+  .my_lessons_details_reshedule_tip .my_lessons_details_reshedule_tip_sub{ display:block; margin-top:2px; font-weight:600; color:#cfd3dc; }
+  .my_lessons_details_reshedule_tip:after{
+    content:""; position:absolute; left:50%; transform:translateX(-50%);
+    top:100%; border:7px solid transparent; border-top-color:#0f1115;
+  }
+
+
+  /* Hard reset for anything injecting numbers into the menu */
+#my_lessons_details_reshedule_duration_menu ul{
+  list-style: none !important;
+  padding-left: 0 !important;
+  counter-reset: none !important;
+}
+#my_lessons_details_reshedule_duration_menu li{
+  list-style: none !important;
+  counter-increment: none !important;
+}
+#my_lessons_details_reshedule_duration_menu li::marker{ content: "" !important; }
+#my_lessons_details_reshedule_duration_menu *::before,
+#my_lessons_details_reshedule_duration_menu *::after{
+  content: none !important;
+  display: none !important;   /* belt + suspenders */
+}
+
+
+/* Compact row height + remove any injected markers/counters */
+#my_lessons_details_reshedule_duration_menu .mylessons-row{
+  line-height: 20px;            /* compact */
+}
+#my_lessons_details_reshedule_duration_menu *::before,
+#my_lessons_details_reshedule_duration_menu *::after{
+  content: none !important;     /* kills the “200” from globals */
+  display: none !important;
+}
+#my_lessons_details_reshedule_duration_menu{
+  --menu-radius: 12px;
+  border-radius: var(--menu-radius);
+  box-shadow: 0 12px 28px rgba(16,18,27,.12);
+}
+/* Optional: crisper hover like your screenshot */
+#my_lessons_details_reshedule_duration_menu .mylessons-row:hover{
+  background: #f2f3f7;          /* slightly darker than gray-100 */
+}
+
+
+
+#my_lessons_details_reshedule_tzbar{
+  font-size:12px;
+  line-height:20px;
+  color:#6b7280;      /* Tailwind gray-500 */
+  font-weight:500;
+}
+
+#my_lessons_details_reshedule_tzText {
+  font-size: 12px;              /* match the lighter UI text */
+  line-height: 20px;
+  color: #6b7280;               /* Tailwind gray-500 */
+  font-weight: 500;             /* medium, like in snapshot */
+}
+
+
+
+/* Pager icon sizing & color match */
+.mylessons-pager-ico{
+  width:16px; height:16px;
+  display:block; pointer-events:none;  /* keep clicks on the button */
+  filter: none;                        /* ensure original #121117 is used */
+}
+
+/* Optional: subtle press animation like native buttons */
+.mylessons-pager-btn:active .mylessons-pager-ico{
+  transform: translateX(-1px);         /* prev nudges left */
+}
+#my_lessons_details_reshedule_next:active .mylessons-pager-ico{
+  transform: translateX(1px);          /* next nudges right */
+}
+
+
+.my_lessons_details_reshedule_caret{
+  width:14px; height:14px; display:inline-block; vertical-align:middle;
+  pointer-events:none; transition:transform .15s ease; margin-left:2px; opacity:.9;
+}
+#my_lessons_details_reshedule_duration_toggle[aria-expanded="true"] 
+  .my_lessons_details_reshedule_caret{ transform:rotate(180deg); }
+
+
+
+
+
+/* Close (X) hover box */
+#my_lessons_details_reshedule_close{
+  width: 32px !important;              /* give the icon some padding area */
+  height: 32px !important;
+  border-radius: 4px;                  /* rounded box like the snapshot */
+  background: transparent;
+  color: #3e3e3e !important;                       /* default icon color */
+  line-height: 1;                       /* keep the X centered */
+  transition: background-color .15s ease, color .15s ease, box-shadow .15s ease;
+  z-index: 50;                          /* sit above the card edge */
+}
+
+#my_lessons_details_reshedule_close:hover{
+  background: #e1e3e7;                  /* light gray hover box */
+  color: #000;                          /* full black X on hover */
+  box-shadow: 0 6px 16px rgba(16,18,27,.12);
+}
+
+
+
+/* Remove any counters/pseudo content from the CTA button */
+#my_lessons_details_reshedule_cta,
+#my_lessons_details_reshedule_cta *{
+  list-style: none !important;
+  counter-reset: none !important;
+  counter-increment: none !important;
+}
+
+#my_lessons_details_reshedule_cta::before,
+#my_lessons_details_reshedule_cta::after{
+  content: none !important;   /* completely remove injected content */
+  display: none !important;
+}
+
+
+/* Disabled CTA look (matches your screenshot) */
+#my_lessons_details_reshedule_cta[disabled]{
+  background: #CFCFDC !important;   /* tweak if you want: #D0D1DF / #CECFDC */
+  color: #6B6F7D !important;
+  border-color: #AEB1BF !important;
+  cursor: not-allowed !important;
+}
+
+
+/* Active red CTA: black border ONLY when active */
+#my_lessons_details_reshedule_cta.active-red{
+  background:#FF3B1F !important;
+  color:#fff !important;
+  border-color:#000 !important;
+}
+
+/* Authoritative disabled style (wins over everything) */
+button#my_lessons_details_reshedule_cta[disabled],
+button#my_lessons_details_reshedule_cta[disabled].active-red,
+button#my_lessons_details_reshedule_cta[disabled]:hover,
+button#my_lessons_details_reshedule_cta[disabled]:focus{
+  background:#CFCFDC !important;
+  color:#6B6F7D !important;
+  border:1px solid #AEB1BF !important;   /* ← force the soft gray border */
+  box-shadow:none !important;
+  pointer-events:none;                    /* prevents global :hover from flipping colors */
+}
