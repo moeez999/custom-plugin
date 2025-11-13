@@ -1153,6 +1153,13 @@ function formatMinutesToDisplay(minutes) {
 }
 
 function getSelectedDurationInMinutes() {
+    // First try to get from the display element's data attribute
+    const displayEl = document.getElementById('durationDropdownDisplayManage');
+    if (displayEl && displayEl.dataset.minutes) {
+        return parseInt(displayEl.dataset.minutes) || 50;
+    }
+
+    // Fallback to selected option
     const selectedOption = document.querySelector('.one2one-duration-option.selected');
     return selectedOption ? parseInt(selectedOption.dataset.minutes) || 50 : 50;
 }
@@ -2508,7 +2515,7 @@ document.addEventListener('DOMContentLoaded', function() {
        8) MAIN SCHEDULE BUTTON
     ========================================== */
 
-    scheduleBtn?.addEventListener('click', () => {
+    scheduleBtn?.addEventListener('click', async () => { // Added 'async' keyword
         const teacher = {
             id: teacherTrigger?.dataset.userid || null,
             name: teacherLabel?.textContent.trim() || 'Unknown Teacher',
@@ -2529,14 +2536,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const selectedSingleEl = document.querySelector(
                 '.single-lesson-dropdown-card .single-lesson-dropdown-item.selected');
             const displayEl = document.getElementById('singleLessonDropdownDisplayManage');
-            cmid = window.selectedCmidManage ?? selectedSingleEl?.dataset?.cmid ?? displayEl?.dataset
-                ?.cmid ?? null;
+            cmid = window.selectedCmidManage ?? selectedSingleEl?.dataset?.cmid ?? displayEl
+                ?.dataset?.cmid ?? null;
         } else {
             const selectedWeeklyEl = document.querySelector(
                 '.weekly-single-lesson-container .weekly-single-lesson-item.selected');
             const displayEl = document.getElementById('weeklyLessonDropdownDisplayManage');
-            cmid = window.selectedCmidManage ?? selectedWeeklyEl?.dataset?.cmid ?? displayEl?.dataset
-                ?.cmid ?? null;
+            cmid = window.selectedCmidManage ?? selectedWeeklyEl?.dataset?.cmid ?? displayEl
+                ?.dataset?.cmid ?? null;
         }
 
         const formData = {
@@ -2545,7 +2552,7 @@ document.addEventListener('DOMContentLoaded', function() {
             teacherId: teacher.id || null,
             studentId: student.id || null,
             lessonType,
-            cmid: cmid, // Add cmid to root level
+            cmid: cmid,
             timestamp: new Date().toISOString()
         };
 
@@ -2563,8 +2570,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const time = $('.time-input')?.value.trim() || '';
 
             formData.singleLesson = {
-                duration: durationMinutes, // Store as minutes (integer)
-                durationDisplay: durationDisplay, // Human-readable format
+                duration: durationMinutes,
+                durationDisplay: durationDisplay,
                 date,
                 time,
                 cmid: cmid,
@@ -2592,10 +2599,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     ?.textContent || '';
                 const start = widget.querySelector(
                     '.weekly_lesson_widget_hour_minute_manage.start')?.textContent || '';
-                const end = widget.querySelector('.weekly_lesson_widget_hour_minute_manage.end')
-                    ?.textContent || '';
+                const end = widget.querySelector(
+                    '.weekly_lesson_widget_hour_minute_manage.end')?.textContent || '';
                 const period1 = widget.querySelector(
-                    '.weekly_lesson_widget_period_manage.start-period')?.textContent || '';
+                        '.weekly_lesson_widget_period_manage.start-period')?.textContent ||
+                    '';
                 const period2 = widget.querySelector(
                     '.weekly_lesson_widget_period_manage.end-period')?.textContent || '';
 
@@ -2618,12 +2626,47 @@ document.addEventListener('DOMContentLoaded', function() {
                 occurrences,
                 days: selectedDays,
                 totalDays: selectedDays.length,
-                cmid: cmid // Add cmid to weekly lesson object
+                cmid: cmid
             };
         }
 
         console.log('Manage Schedule 1:1 Form Data:', formData);
         console.log('CMID for this lesson:', cmid);
+
+        const payload = {
+            data: formData
+        };
+
+        console.log('Sending UPDATE payload:', payload);
+
+        try {
+            const response = await fetch('ajax/update_one2one.php', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+
+            console.log('Update One-to-One Response:', result);
+
+            if (!result.success) {
+                alert('Error: ' + result.message);
+                return;
+            }
+
+            alert('Session updated successfully!');
+
+            // Optionally refresh UI here
+            // refreshCalendar();
+
+        } catch (error) {
+            console.error('Update One-to-One Error:', error);
+            alert('Something went wrong while updating the session.');
+        }
     });
 });
 </script>
