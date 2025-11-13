@@ -1198,6 +1198,96 @@ document.addEventListener("DOMContentLoaded", () => {
     getSelectedCohort: () => selectedCohortId,
     getSelectedStudents: () => [...selectedStudentIds],
   };
+
+  // ----------------- Reset buttons for cohort widget -----------------
+  // These buttons live in the cohort widget header. "Reset" clears the
+  // currently visible tab. "Reset All" clears all cohort-related selections.
+  const cohortResetBtnEl = document.getElementById("cohort-reset");
+  const cohortResetAllBtnEl = document.getElementById("cohort-reset-all");
+
+  function resetActiveCohortTab() {
+    try {
+      const activeBtn = document.querySelector(
+        ".cohort-tab-btn.cohort-tab-active"
+      );
+      const tab =
+        (activeBtn && activeBtn.dataset && activeBtn.dataset.tab) || "cohort";
+
+      if (tab === "cohort") {
+        // clear radio selection
+        cohortFieldset.querySelectorAll("input[type=radio]").forEach((r) => {
+          r.checked = false;
+          const opt = r.closest(".cohort-option");
+          if (opt) opt.classList.remove("selected");
+          r.dispatchEvent(new Event("change", { bubbles: true }));
+        });
+        selectedCohortId = null;
+        if (cohortHidden) cohortHidden.value = "";
+        if (cohortDisplayText) cohortDisplayText.textContent = "Select Cohort";
+      } else {
+        // clear checkboxes for the active multi-select tab
+        const fs = document.getElementById(tab + "-options-fieldset");
+        if (fs) {
+          fs.querySelectorAll("input[type=checkbox]:checked").forEach((cb) => {
+            cb.checked = false;
+            cb.dispatchEvent(new Event("change", { bubbles: true }));
+          });
+        }
+      }
+    } catch (err) {
+      console.error("resetActiveCohortTab error", err);
+    }
+  }
+
+  function resetAllCohortTabs() {
+    try {
+      // Clear cohort radio selections
+      cohortFieldset.querySelectorAll("input[type=radio]").forEach((r) => {
+        r.checked = false;
+        const opt = r.closest(".cohort-option");
+        if (opt) opt.classList.remove("selected");
+        r.dispatchEvent(new Event("change", { bubbles: true }));
+      });
+      selectedCohortId = null;
+      if (cohortHidden) cohortHidden.value = "";
+      if (cohortDisplayText) cohortDisplayText.textContent = "Select Cohort";
+
+      // Clear all multi-select tabs (oneonone / conference / peertalk)
+      ["oneonone", "conference", "peertalk"].forEach((t) => {
+        const fs = document.getElementById(t + "-options-fieldset");
+        if (fs) {
+          fs.querySelectorAll("input[type=checkbox]:checked").forEach((cb) => {
+            cb.checked = false;
+            cb.dispatchEvent(new Event("change", { bubbles: true }));
+          });
+        }
+        // clear any selected-pill containers
+        const container = document.getElementById(t + "-selected-container");
+        if (container) container.innerHTML = "";
+      });
+    } catch (err) {
+      console.error("resetAllCohortTabs error", err);
+    }
+  }
+
+  if (cohortResetBtnEl) {
+    cohortResetBtnEl.addEventListener("click", (e) => {
+      e.preventDefault();
+      resetActiveCohortTab();
+      // trigger calendar reload via exposed helper
+      if (typeof triggerCalendarReload === "function") triggerCalendarReload();
+      else if (typeof fetchCalendarEvents === "function") fetchCalendarEvents();
+    });
+  }
+
+  if (cohortResetAllBtnEl) {
+    cohortResetAllBtnEl.addEventListener("click", (e) => {
+      e.preventDefault();
+      resetAllCohortTabs();
+      if (typeof triggerCalendarReload === "function") triggerCalendarReload();
+      else if (typeof fetchCalendarEvents === "function") fetchCalendarEvents();
+    });
+  }
 });
 
 (function () {

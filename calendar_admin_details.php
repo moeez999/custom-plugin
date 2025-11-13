@@ -175,34 +175,116 @@
                 <!-- Cohort Trigger -->
                 <div class="cohort-search-dropdown" id="cohort-search-trigger">
                     <div class="cohort-search-trigger">
-                        <span id="cohort-display-text">Select Cohort</span>
+                        <span id="cohort-display-text">Select Session</span>
                         <span class="dropdown-arrow"><img src="./img/dropdown-arrow-down.svg" alt=""></span>
                     </div>
                 </div>
                 <input type="hidden" id="cohort-value" name="cohort" value="">
 
-                <!-- Cohort Widget -->
+                <!-- Cohort Widget with Subtabs -->
                 <section id="search-cohort" class="search-cohort-section">
                     <div class="cohort-search-widget-container" id="cohort-search-widget" style="display:none">
-                        <h1 class="widget-title">Select Cohort</h1>
+                        <div class="cohort-widget-header">
+                            <h1 class="widget-title">Search Session</h1>
+                            <div class="cohort-controls">
+                                <button type="button" id="cohort-reset" class="calendar-control-btn"><img
+                                        src="./img/reset-icon.svg" alt=""> Reset</button>
+                                <button type="button" id="cohort-reset-all" class="calendar-control-btn"><img
+                                        src="./img/reset-icon.svg" alt=""> Reset
+                                    All</button>
+                            </div>
+                        </div>
                         <div class="search-component">
-                            <div class="search-input-wrapper">
-                                <input type="text" class="search-input-placeholder" id="cohort-search-input"
-                                    placeholder="Search Cohort" />
+                            <div class="cohort-tabs">
+                                <button type="button" class="cohort-tab-btn cohort-tab-active"
+                                    data-tab="cohort">Cohort</button>
+                                <button type="button" class="cohort-tab-btn" data-tab="oneonone">1:1 Class</button>
+                                <button type="button" class="cohort-tab-btn" data-tab="conference">Conference</button>
+                                <button type="button" class="cohort-tab-btn" data-tab="peertalk">Peer talk</button>
                             </div>
 
-                            <div id="cohort-no-results"
-                                style="display:none;padding:8px 2px;color:#6a697c;font-size:12px;">
-                                No cohorts found
-                            </div>
+                            <div class="cohort-tab-contents">
+                                <!-- Cohort (single-select radios) -->
+                                <div class="cohort-tab-content" id="cohort-tab">
+                                    <div class="search-input-wrapper">
+                                        <input type="text" class="search-input-placeholder" id="cohort-search-input"
+                                            placeholder="Entre cohort name" />
+                                    </div>
 
-                            <div class="cohort-list-wrapper">
-                                <form class="cohort-list-form">
-                                    <fieldset id="cohort-options-fieldset">
-                                        <legend class="visually-hidden">Select a cohort</legend>
-                                        <!-- JS injected -->
-                                    </fieldset>
-                                </form>
+                                    <div id="cohort-no-results" class="cohort-no-results"
+                                        style="display:none;padding:12px 10px;color:#6a697c;font-size:13px;background:#fff;border-radius:8px;margin-top:12px;">
+                                        No cohorts found
+                                    </div>
+
+                                    <div class="cohort-list-wrapper">
+                                        <form class="cohort-list-form">
+                                            <fieldset id="cohort-options-fieldset">
+                                                <legend class="visually-hidden">Select a cohort</legend>
+                                                <!-- JS injected (radio inputs expected) -->
+                                            </fieldset>
+                                        </form>
+                                    </div>
+                                </div>
+
+                                <!-- 1:1 Class (multi-select, pills) -->
+                                <div class="cohort-tab-content" id="oneonone-tab" style="display:none">
+                                    <div class="search-input-wrapper">
+                                        <input type="text" class="search-input-placeholder" id="oneonone-search-input"
+                                            placeholder="Search 1:1 classes or teachers" />
+                                    </div>
+                                    <div id="oneonone-no-results" class="cohort-no-results"
+                                        style="display:none;padding:12px 10px;color:#6a697c;font-size:13px;background:#fff;border-radius:8px;margin-top:12px;">
+                                        No items found</div>
+                                    <div class="selected-items-container" id="oneonone-selected-container"></div>
+                                    <div class="oneonone-list-wrapper">
+                                        <form class="oneonone-list-form">
+                                            <fieldset id="oneonone-options-fieldset">
+                                                <legend class="visually-hidden">Select 1:1 items</legend>
+                                                <!-- JS injected (checkbox inputs expected) -->
+                                            </fieldset>
+                                        </form>
+                                    </div>
+                                </div>
+
+                                <!-- Conference (multi-select, pills) -->
+                                <div class="cohort-tab-content" id="conference-tab" style="display:none">
+                                    <div class="search-input-wrapper">
+                                        <input type="text" class="search-input-placeholder" id="conference-search-input"
+                                            placeholder="Search Conference" />
+                                    </div>
+                                    <div id="conference-no-results" class="cohort-no-results"
+                                        style="display:none;padding:12px 10px;color:#6a697c;font-size:13px;background:#fff;border-radius:8px;margin-top:12px;">
+                                        No items found</div>
+                                    <div class="selected-items-container" id="conference-selected-container"></div>
+                                    <div class="conference-list-wrapper">
+                                        <form class="conference-list-form">
+                                            <fieldset id="conference-options-fieldset">
+                                                <legend class="visually-hidden">Select conference items</legend>
+                                                <!-- JS injected (checkbox inputs expected) -->
+                                            </fieldset>
+                                        </form>
+                                    </div>
+                                </div>
+
+                                <!-- PeerTalk (multi-select, pills) -->
+                                <div class="cohort-tab-content" id="peertalk-tab" style="display:none">
+                                    <div class="search-input-wrapper">
+                                        <input type="text" class="search-input-placeholder" id="peertalk-search-input"
+                                            placeholder="Search Peer talk" />
+                                    </div>
+                                    <div id="peertalk-no-results" class="cohort-no-results"
+                                        style="display:none;padding:12px 10px;color:#6a697c;font-size:13px;background:#fff;border-radius:8px;margin-top:12px;">
+                                        No items found</div>
+                                    <div class="selected-items-container" id="peertalk-selected-container"></div>
+                                    <div class="peertalk-list-wrapper">
+                                        <form class="peertalk-list-form">
+                                            <fieldset id="peertalk-options-fieldset">
+                                                <legend class="visually-hidden">Select peertalk items</legend>
+                                                <!-- JS injected (checkbox inputs expected) -->
+                                            </fieldset>
+                                        </form>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -252,6 +334,131 @@
         #grid .day .day-inner .slots>div.slot-white {
             background: #fff !important;
         }
+
+        /* Cohort widget small styles to match tabbed UI */
+        .cohort-tabs {
+            display: flex;
+
+            margin-bottom: 12px;
+            border-radius: 8px;
+            background: #F4F4F4;
+        }
+
+        .cohort-tab-btn {
+            color: #232323;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            font-size: 14px;
+        }
+
+        .cohort-tab-btn.cohort-tab-active {
+            background: #FFFFFF;
+            color: #232323;
+            border: 1px solid #e6e6e9;
+
+        }
+
+        /* Controls on cohort widget header */
+        .cohort-widget-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            border-bottom: 1px solid #e6e6e9;
+            padding-bottom: 12px;
+        }
+
+        .cohort-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .calendar-control-btn {
+            background: transparent;
+            border: 1px solid #e6e6e9;
+            padding: 6px 10px;
+            color: #232323;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+
+        .cohort-no-results {
+            text-align: left;
+        }
+
+        .selected-pill {
+            display: inline-block;
+            background: #eef2ff;
+            color: #111827;
+            margin-right: 8px;
+            padding: 6px 8px;
+            border-radius: 16px;
+            font-size: 13px;
+        }
+
+        .selected-pill .remove-pill {
+            background: transparent;
+            border: 0;
+            font-weight: 600;
+            margin-left: 6px;
+            cursor: pointer;
+        }
+
+        .teacher-list-wrapper::-webkit-scrollbar,
+        .cohort-list-wrapper::-webkit-scrollbar,
+        .student-list-wrapper::-webkit-scrollbar,
+        .peertalk-list-wrapper::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .teacher-list-wrapper::-webkit-scrollbar-thumb,
+        .cohort-list-wrapper::-webkit-scrollbar-thumb,
+        .student-list-wrapper::-webkit-scrollbar-thumb,
+        .peertalk-list-wrapper::-webkit-scrollbar-thumb {
+            background: #d1d1d1;
+            border-radius: 2px;
+            border: 1px solid transparent;
+        }
+
+        .teacher-list-wrapper::-webkit-scrollbar-thumb:hover,
+        .cohort-list-wrapper::-webkit-scrollbar-thumb:hover,
+        .student-list-wrapper::-webkit-scrollbar-thumb:hover,
+        .peertalk-list-wrapper::-webkit-scrollbar-thumb:hover {
+            background: #a3a3a3;
+        }
+
+        .teacher-list-wrapper::-webkit-scrollbar-track,
+        .cohort-list-wrapper::-webkit-scrollbar-track,
+        .student-list-wrapper::-webkit-scrollbar-track,
+        .peertalk-list-wrapper::-webkit-scrollbar-track {
+            background-color: transparent;
+        }
+
+        .cohort-list-wrapper form fieldset {
+            margin-top: 8px;
+        }
+
+        /* make radio appear on the right like the screenshot: assume each item is a block with label and input on right */
+        .cohort-list-wrapper .cohort-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: #f6f6f8;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .cohort-list-wrapper label {
+            margin: 0;
+        }
         </style>
 
         <div class="wrap" id="calendar_admin_calendar_flexrow">
@@ -283,6 +490,142 @@ $(function() {
         $('#calendar_admin_semana_btn').removeClass('active');
         $('#calendar_admin_calendar_flexrow').hide();
         $('#calendar_admin_agenda_content').show();
+    });
+});
+</script>
+
+<script>
+$(function() {
+    // Tab switching for cohort widget
+    function showCohortTab(name) {
+        $('.cohort-tab-content').hide();
+        $('#' + name + '-tab').show();
+        $('.cohort-tab-btn').removeClass('cohort-tab-active');
+        $('.cohort-tab-btn[data-tab="' + name + '"]').addClass('cohort-tab-active');
+        // show per-tab no-results if no inputs injected
+        // cohort -> check #cohort-options-fieldset
+        var map = {
+            'cohort': '#cohort-options-fieldset',
+            'oneonone': '#oneonone-options-fieldset',
+            'conference': '#conference-options-fieldset',
+            'peertalk': '#peertalk-options-fieldset'
+        };
+        var selector = map[name];
+        if (selector) {
+            var $fs = $(selector);
+            var hasInputs = $fs.find('input').length > 0;
+            $('#' + name + '-no-results').toggle(!hasInputs);
+        }
+    }
+
+    // initialize
+    showCohortTab('cohort');
+
+    // click handler for tabs (delegate to container for robustness)
+    $('.cohort-tabs').on('click', '.cohort-tab-btn', function(e) {
+        e.preventDefault();
+        var t = $(this).data('tab');
+        if (!t) {
+            // fallback: try to read from text
+            t = $(this).text().toLowerCase().replace(/[^a-z0-9]+/g, '');
+        }
+        showCohortTab(t);
+    });
+
+    // Utility to update hidden input and display text
+    function updateCohortValue(obj) {
+        try {
+            $('#cohort-value').val(JSON.stringify(obj));
+        } catch (e) {
+            $('#cohort-value').val('');
+        }
+
+        if (!obj) {
+            $('#cohort-display-text').text('Select Cohort');
+            return;
+        }
+
+        if (obj.type === 'cohort') {
+            var id = obj.id || '';
+            if (!id) {
+                $('#cohort-display-text').text('Select Cohort');
+            } else {
+                // try to find label text for selected radio
+                var $input = $('#cohort-options-fieldset input[value="' + id + '"]');
+                var text = id;
+                if ($input.length) {
+                    var rid = $input.attr('id');
+                    var lab = $('label[for="' + rid + '"]').text();
+                    if (lab) {
+                        text = lab;
+                    }
+                }
+                $('#cohort-display-text').text(text);
+            }
+        } else {
+            var count = (obj.ids || []).length;
+            $('#cohort-display-text').text(count ? (count + ' selected') : 'Select Cohort');
+        }
+    }
+
+    // handle cohort radio selection (single-select)
+    $(document).on('change', '#cohort-options-fieldset input[type=radio]', function() {
+        var val = $(this).val();
+        updateCohortValue({
+            type: 'cohort',
+            id: val
+        });
+    });
+
+    // handle multi-select (checkbox) behavior for oneonone / conference / peertalk
+    var multiTypes = ['oneonone', 'conference', 'peertalk'];
+    multiTypes.forEach(function(type) {
+        // checkbox change -> rebuild pills and update hidden value
+        $(document).on('change', '#' + type + '-options-fieldset input[type=checkbox]', function() {
+            var selected = [];
+            $('#' + type + '-options-fieldset input[type=checkbox]:checked').each(function() {
+                selected.push($(this).val());
+            });
+
+            var $container = $('#' + type + '-selected-container');
+            $container.empty();
+            selected.forEach(function(sid) {
+                var iid = $('#' + type + '-options-fieldset input[value="' + sid + '"]')
+                    .attr('id');
+                var label = $('label[for="' + iid + '"]').text() || sid;
+                var $pill = $('<span class="selected-pill" data-id="' + sid +
+                    '" data-type="' + type + '">' + label +
+                    ' <button type="button" class="remove-pill">×</button></span>');
+                $container.append($pill);
+            });
+
+            updateCohortValue({
+                type: type,
+                ids: selected
+            });
+        });
+
+        // click remove on pill -> uncheck corresponding checkbox
+        $(document).on('click', '#' + type + '-selected-container .remove-pill', function(e) {
+            var pid = $(this).parent().data('id');
+            var $cb = $('#' + type + '-options-fieldset input[value="' + pid + '"]');
+            if ($cb.length) {
+                $cb.prop('checked', false).trigger('change');
+            } else {
+                // if input not present, just remove pill
+                $(this).parent().remove();
+                // rebuild value
+                var remaining = [];
+                $('#' + type + '-options-fieldset input[type=checkbox]:checked').each(
+                    function() {
+                        remaining.push($(this).val());
+                    });
+                updateCohortValue({
+                    type: type,
+                    ids: remaining
+                });
+            }
+        });
     });
 });
 </script>

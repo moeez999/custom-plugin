@@ -1413,13 +1413,21 @@ function populateSingleLessonDropdown(jsonData) {
 
             const startTime = formatTime12HourFromParts(parseInt(gm.starthour), parseInt(gm.startminute));
             const endTime = formatTime12HourFromParts(parseInt(gm.endhour), parseInt(gm.endminute));
-            const durationMinutes = ((gm.endhour * 60 + gm.endminute) - (gm.starthour * 60 + gm.startminute));
+            debugger
+            const durationMinutes = gm.events[0].duration
 
             const item = document.createElement('div');
             item.className = 'single-lesson-dropdown-item';
             item.dataset.activityIndex = idx;
             item.dataset.startTime = startTime;
             item.dataset.endTime = endTime;
+            // expose cmid on the DOM element and to the global selected variable when chosen
+            try {
+                console.log('single activity gm:', gm);
+            } catch (e) {}
+            if (activity && typeof activity.cmid !== 'undefined' && activity.cmid !== null) {
+                item.dataset.cmid = String(activity.cmid);
+            }
 
             item.innerHTML = `
                 <div class="single-lesson-dropdown-item__date">
@@ -1444,9 +1452,32 @@ function populateSingleLessonDropdown(jsonData) {
                 this.classList.add('selected');
 
                 const disp = document.getElementById('singleLessonDropdownDisplayManage');
-                if (disp)
+                if (disp) {
                     disp.textContent = `${month} ${day}, ${dayOfWeek}, ${startTime} - ${endTime}`;
+                    const cmidVal = (gm && typeof activity.cmid !== 'undefined') ? activity.cmid : (this
+                        .dataset
+                        ?.cmid ?? null);
+                    if (cmidVal !== null && typeof cmidVal !== 'undefined' && cmidVal !== '') {
+                        disp.dataset.cmid = String(cmidVal);
+                        // also reflect on wrapper for easier querying
+                        const wrapper = document.getElementById('singleLessonDropdownWrapper');
+                        if (wrapper) wrapper.dataset.cmid = String(cmidVal);
+                    } else {
+                        disp.removeAttribute('data-cmid');
+                        const wrapper = document.getElementById('singleLessonDropdownWrapper');
+                        if (wrapper) wrapper.removeAttribute('data-cmid');
+                    }
+                }
 
+                // store the selected cmid globally so payload builders can read it
+                window.selectedCmidManage = (gm && typeof activity.cmid !== 'undefined') ? activity
+                    .cmid : (this
+                        .dataset?.cmid ?? null);
+                try {
+                    console.log('single selected cmid:', window.selectedCmidManage, 'element dataset:',
+                        this.dataset.cmid, 'display dataset:', document.getElementById(
+                            'singleLessonDropdownDisplayManage')?.dataset?.cmid, 'gm:', gm);
+                } catch (e) {}
                 updateDateTimeFields(startDate, startTime, endTime, durationMinutes);
             });
 
@@ -1526,6 +1557,13 @@ function populateWeeklyLessonDropdown(jsonData) {
             item.dataset.activityIndex = idx;
             item.dataset.startTime = startTime;
             item.dataset.endTime = endTime;
+            // expose cmid on the DOM element for later use
+            try {
+                console.log('weekly activity gm:', gm);
+            } catch (e) {}
+            if (gm && typeof activity.cmid !== 'undefined' && activity.cmid !== null) {
+                item.dataset.cmid = String(activity.cmid);
+            }
 
             item.innerHTML = `
                 <img src="${getDayIcon(activeDays[0])}" alt="Repeat icon" class="weekly-single-lesson-icon">
@@ -1541,9 +1579,31 @@ function populateWeeklyLessonDropdown(jsonData) {
                 this.classList.add('selected');
 
                 const disp = document.getElementById('weeklyLessonDropdownDisplayManage');
-                if (disp)
+                if (disp) {
                     disp.textContent = `Every ${joinedDays}, ${startTime} - ${endTime}`;
+                    const cmidVal = (gm && typeof activity.cmid !== 'undefined') ? activity.cmid : (this
+                        .dataset
+                        ?.cmid ?? null);
+                    if (cmidVal !== null && typeof cmidVal !== 'undefined' && cmidVal !== '') {
+                        disp.dataset.cmid = String(cmidVal);
+                        const wrapper = document.getElementById('weeklyLessonDropdownWrapper');
+                        if (wrapper) wrapper.dataset.cmid = String(cmidVal);
+                    } else {
+                        disp.removeAttribute('data-cmid');
+                        const wrapper = document.getElementById('weeklyLessonDropdownWrapper');
+                        if (wrapper) wrapper.removeAttribute('data-cmid');
+                    }
+                }
 
+                // record the selected cmid for payloads (fallback to element dataset if gm missing)
+                window.selectedCmidManage = (gm && typeof activity.cmid !== 'undefined') ? activity
+                    .cmid : (this
+                        .dataset?.cmid ?? null);
+                try {
+                    console.log('weekly selected cmid:', window.selectedCmidManage, 'element dataset:',
+                        this.dataset.cmid, 'display dataset:', document.getElementById(
+                            'weeklyLessonDropdownDisplayManage')?.dataset?.cmid, 'gm:', gm);
+                } catch (e) {}
                 populateWeeklyModalWithData(gm, joinedDays, idx, startTime, endTime);
             });
 
@@ -1745,8 +1805,36 @@ document.addEventListener('DOMContentLoaded', function() {
     const addStudentBtn = $('#one2oneAddStudentBtnManage');
     const scheduleBtn = $('.calendar_admin_details_create_cohort_schedule_btn_manage');
     const lessonTypeBtns = $$('.one2one-lesson-type-btn-manage');
+    // global holder for selected cmid (from activity.cmid) for the currently chosen activity
+    window.selectedCmidManage = null;
     const singleSection = $('#custom-single-lesson-manage');
     const weeklySection = $('#custom-weekly-lesson-manage');
+
+    // When the Update button is clicked, build a minimal payload and log the cmid (if any)
+    if (scheduleBtn) {
+        scheduleBtn.addEventListener('click', () => {
+            const lessonType = document.querySelector('.one2one-lesson-type-btn-manage.selected')
+                ?.dataset.type || 'single';
+            let selectedElement = null;
+            if (lessonType === 'single') {
+                selectedElement = document.querySelector(
+                    '.single-lesson-dropdown-card .single-lesson-dropdown-item.selected');
+            } else {
+                selectedElement = document.querySelector(
+                    '.weekly-single-lesson-container .weekly-single-lesson-item.selected');
+            }
+
+            const cmid = window.selectedCmidManage ?? selectedElement?.dataset?.cmid ?? null;
+            const payload = {
+                lessonType,
+                cmid,
+                activityIndex: selectedElement?.dataset?.activityIndex ?? null
+            };
+
+            // log the payload so you can see the cmid that will be sent/updated
+            console.log('Update 1:1 class payload (manage):', payload);
+        });
+    }
 
     /* =======================================================
        HELPER: FETCH CLASSES BASED ON LESSON TYPE
@@ -2363,6 +2451,7 @@ document.addEventListener('DOMContentLoaded', function() {
     /* =========================================
        8) MAIN SCHEDULE BUTTON
     ========================================== */
+
     scheduleBtn?.addEventListener('click', () => {
         const teacher = {
             id: teacherTrigger?.dataset.userid || null,
@@ -2378,17 +2467,34 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const lessonType = $('.one2one-lesson-type-btn-manage.selected')?.dataset.type || 'single';
 
+        // Get cmid based on lesson type
+        let cmid = null;
+        if (lessonType === 'single') {
+            const selectedSingleEl = document.querySelector(
+                '.single-lesson-dropdown-card .single-lesson-dropdown-item.selected');
+            const displayEl = document.getElementById('singleLessonDropdownDisplayManage');
+            cmid = window.selectedCmidManage ?? selectedSingleEl?.dataset?.cmid ?? displayEl?.dataset
+                ?.cmid ?? null;
+        } else {
+            const selectedWeeklyEl = document.querySelector(
+                '.weekly-single-lesson-container .weekly-single-lesson-item.selected');
+            const displayEl = document.getElementById('weeklyLessonDropdownDisplayManage');
+            cmid = window.selectedCmidManage ?? selectedWeeklyEl?.dataset?.cmid ?? displayEl?.dataset
+                ?.cmid ?? null;
+        }
+
         const formData = {
             teacher,
             student,
             teacherId: teacher.id || null,
             studentId: student.id || null,
             lessonType,
+            cmid: cmid, // Add cmid to root level
             timestamp: new Date().toISOString()
         };
 
         console.log(
-            `Teacher ID: ${formData.teacherId ?? 'N/A'} | Student ID: ${formData.studentId ?? 'N/A'}`
+            `Teacher ID: ${formData.teacherId ?? 'N/A'} | Student ID: ${formData.studentId ?? 'N/A'} | CMID: ${cmid ?? 'N/A'}`
         );
 
         if (lessonType === 'single') {
@@ -2401,6 +2507,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 duration,
                 date,
                 time,
+                cmid: cmid, // Use the cmid we captured above
                 fullDateTime: `${date} at ${time}`
             };
         } else {
@@ -2448,11 +2555,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 endsOn,
                 occurrences,
                 days: selectedDays,
-                totalDays: selectedDays.length
+                totalDays: selectedDays.length,
+                cmid: cmid // Add cmid to weekly lesson object
             };
         }
 
         console.log('Manage Schedule 1:1 Form Data:', formData);
+        console.log('CMID for this lesson:', cmid);
     });
 });
 </script>
