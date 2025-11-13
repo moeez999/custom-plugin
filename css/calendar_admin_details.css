@@ -754,6 +754,69 @@ body {
 .today-btn:hover {
   background: rgba(0, 0, 0, 0.03);
 }
+.cohort-pill-container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.cohort-summary-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  background: #f0f0f0;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #222;
+  white-space: nowrap;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.selected-cohorts-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 8px;
+
+  border-radius: 8px;
+}
+
+.selected-cohort-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px 6px 12px;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 16px;
+  font-size: 13px;
+  color: #222;
+}
+
+.pill-cohort-name {
+  font-weight: 500;
+}
+
+.selected-cohort-pill .pill-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+
+.selected-cohort-pill .pill-close-btn:hover {
+  background: #f0f0f0;
+}
 .teacher-pill-container {
   display: flex;
   align-items: center;
