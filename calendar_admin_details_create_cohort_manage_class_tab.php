@@ -886,14 +886,15 @@ echo $studentsItemsHtml;
             </section>
         </div>
         <label class="one2one-section-label">Date and time</label>
+
         <div class="dropdown-container" id="durationDropdownWrapper">
-            <div class="dropdown-display" id="durationDropdownDisplayManage">50 Minutes ( Standard time
-                )
-            </div>
+            <div class="dropdown-display" id="durationDropdownDisplayManage">50 Minutes (Standard time)</div>
             <div class="dropdown-content" id="durationDropdownListManage">
-                <div class="one2one-duration-option">20 Minutes</div>
-                <div class="one2one-duration-option selected">50 Minutes</div>
-                <div class="one2one-duration-option">1 Hour</div>
+                <div class="one2one-duration-option" data-minutes="20">20 Minutes</div>
+                <div class="one2one-duration-option selected" data-minutes="50">50 Minutes</div>
+                <div class="one2one-duration-option" data-minutes="60">1 Hour</div>
+                <div class="one2one-duration-option" data-minutes="90">1 Hour 30 Minutes</div>
+                <div class="one2one-duration-option" data-minutes="120">2 Hours</div>
             </div>
         </div>
 
@@ -1135,6 +1136,27 @@ const DropdownManager = {
 };
 
 // ====== GLOBAL FUNCTIONS ======
+
+function formatMinutesToDisplay(minutes) {
+    if (minutes < 60) {
+        return `${minutes} Minutes`;
+    }
+
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+
+    if (mins === 0) {
+        return hours === 1 ? '1 Hour' : `${hours} Hours`;
+    }
+
+    return `${hours} Hour${hours > 1 ? 's' : ''} ${mins} Minutes`;
+}
+
+function getSelectedDurationInMinutes() {
+    const selectedOption = document.querySelector('.one2one-duration-option.selected');
+    return selectedOption ? parseInt(selectedOption.dataset.minutes) || 50 : 50;
+}
+
 function updateEndsUI() {
     const $ = (sel, root = document) => root.querySelector(sel);
     const onChecked = $('#weeklyLessonEndOnManage')?.checked;
@@ -1413,8 +1435,9 @@ function populateSingleLessonDropdown(jsonData) {
 
             const startTime = formatTime12HourFromParts(parseInt(gm.starthour), parseInt(gm.startminute));
             const endTime = formatTime12HourFromParts(parseInt(gm.endhour), parseInt(gm.endminute));
-            debugger
-            const durationMinutes = gm.events[0].duration
+
+            const durationSeconds = gm.events[0]?.duration || 0;
+            const durationMinutes = Math.round(durationSeconds / 60);
 
             const item = document.createElement('div');
             item.className = 'single-lesson-dropdown-item';
@@ -1425,8 +1448,8 @@ function populateSingleLessonDropdown(jsonData) {
             try {
                 console.log('single activity gm:', gm);
             } catch (e) {}
-            if (activity && typeof activity.cmid !== 'undefined' && activity.cmid !== null) {
-                item.dataset.cmid = String(activity.cmid);
+            if (gm && typeof gm.id !== 'undefined' && gm.id !== null) {
+                item.dataset.cmid = String(gm.id);
             }
 
             item.innerHTML = `
@@ -1454,8 +1477,7 @@ function populateSingleLessonDropdown(jsonData) {
                 const disp = document.getElementById('singleLessonDropdownDisplayManage');
                 if (disp) {
                     disp.textContent = `${month} ${day}, ${dayOfWeek}, ${startTime} - ${endTime}`;
-                    const cmidVal = (gm && typeof activity.cmid !== 'undefined') ? activity.cmid : (this
-                        .dataset
+                    const cmidVal = (gm && typeof gm.id !== 'undefined') ? gm.id : (this.dataset
                         ?.cmid ?? null);
                     if (cmidVal !== null && typeof cmidVal !== 'undefined' && cmidVal !== '') {
                         disp.dataset.cmid = String(cmidVal);
@@ -1470,9 +1492,8 @@ function populateSingleLessonDropdown(jsonData) {
                 }
 
                 // store the selected cmid globally so payload builders can read it
-                window.selectedCmidManage = (gm && typeof activity.cmid !== 'undefined') ? activity
-                    .cmid : (this
-                        .dataset?.cmid ?? null);
+                window.selectedCmidManage = (gm && typeof gm.id !== 'undefined') ? gm.id : (this
+                    .dataset?.cmid ?? null);
                 try {
                     console.log('single selected cmid:', window.selectedCmidManage, 'element dataset:',
                         this.dataset.cmid, 'display dataset:', document.getElementById(
@@ -1561,8 +1582,8 @@ function populateWeeklyLessonDropdown(jsonData) {
             try {
                 console.log('weekly activity gm:', gm);
             } catch (e) {}
-            if (gm && typeof activity.cmid !== 'undefined' && activity.cmid !== null) {
-                item.dataset.cmid = String(activity.cmid);
+            if (gm && typeof gm.id !== 'undefined' && gm.id !== null) {
+                item.dataset.cmid = String(gm.id);
             }
 
             item.innerHTML = `
@@ -1581,8 +1602,7 @@ function populateWeeklyLessonDropdown(jsonData) {
                 const disp = document.getElementById('weeklyLessonDropdownDisplayManage');
                 if (disp) {
                     disp.textContent = `Every ${joinedDays}, ${startTime} - ${endTime}`;
-                    const cmidVal = (gm && typeof activity.cmid !== 'undefined') ? activity.cmid : (this
-                        .dataset
+                    const cmidVal = (gm && typeof gm.id !== 'undefined') ? gm.id : (this.dataset
                         ?.cmid ?? null);
                     if (cmidVal !== null && typeof cmidVal !== 'undefined' && cmidVal !== '') {
                         disp.dataset.cmid = String(cmidVal);
@@ -1596,9 +1616,8 @@ function populateWeeklyLessonDropdown(jsonData) {
                 }
 
                 // record the selected cmid for payloads (fallback to element dataset if gm missing)
-                window.selectedCmidManage = (gm && typeof activity.cmid !== 'undefined') ? activity
-                    .cmid : (this
-                        .dataset?.cmid ?? null);
+                window.selectedCmidManage = (gm && typeof gm.id !== 'undefined') ? gm.id : (this
+                    .dataset?.cmid ?? null);
                 try {
                     console.log('weekly selected cmid:', window.selectedCmidManage, 'element dataset:',
                         this.dataset.cmid, 'display dataset:', document.getElementById(
@@ -1754,7 +1773,7 @@ function populateWeeklyModalWithData(googleMeet, selectedDay, activityIndex, sta
 
 
 
-function updateDateTimeFields(date, startTime, endTime, duration) {
+function updateDateTimeFields(date, startTime, endTime, durationMinutes) {
     // Update date field
     const dateElement = document.getElementById('selectedDateTextManage');
     if (dateElement) {
@@ -1764,23 +1783,34 @@ function updateDateTimeFields(date, startTime, endTime, duration) {
             day: 'numeric'
         });
         dateElement.textContent = formattedDate;
-        // store deterministic ISO date for later parsing/opening
         try {
             dateElement.dataset.fullDate = (new Date(date)).toISOString().split('T')[0];
         } catch (e) {}
     }
 
-    // Update time input with the selected lesson's start time
+    // Update time input
     const timeInput = document.querySelector('#manageclassTabContent .custom-time-pill .time-input');
     if (timeInput) {
-        // Convert to lowercase to match your example "10:00 am"
         timeInput.value = startTime.toLowerCase();
     }
 
-    // Update duration dropdown
+    // Update duration dropdown with minutes
     const durationDisplay = document.getElementById('durationDropdownDisplayManage');
-    if (durationDisplay) {
-        durationDisplay.textContent = `${duration} Minutes (Standard time)`;
+    if (durationDisplay && durationMinutes) {
+        const displayText = formatMinutesToDisplay(durationMinutes);
+        durationDisplay.textContent = `${displayText} (Standard time)`;
+        durationDisplay.dataset.minutes = durationMinutes;
+
+        // Update selected option in dropdown
+        const durationList = document.getElementById('durationDropdownListManage');
+        if (durationList) {
+            durationList.querySelectorAll('.one2one-duration-option').forEach(opt => {
+                opt.classList.remove('selected');
+                if (parseInt(opt.dataset.minutes) === durationMinutes) {
+                    opt.classList.add('selected');
+                }
+            });
+        }
     }
 }
 
@@ -1792,6 +1822,32 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize dropdown manager
     DropdownManager.init();
+
+    // Add after DropdownManager.init();
+    const durationDropdownList = document.getElementById('durationDropdownListManage');
+    if (durationDropdownList) {
+        durationDropdownList.addEventListener('click', (event) => {
+            const option = event.target.closest('.one2one-duration-option');
+            if (!option) return;
+
+            // Remove previous selection
+            durationDropdownList.querySelectorAll('.one2one-duration-option').forEach(opt =>
+                opt.classList.remove('selected')
+            );
+
+            // Select clicked option
+            option.classList.add('selected');
+
+            // Update display
+            const minutes = parseInt(option.dataset.minutes);
+            const displayText = formatMinutesToDisplay(minutes);
+            const displayEl = document.getElementById('durationDropdownDisplayManage');
+            if (displayEl) {
+                displayEl.textContent = `${displayText} (Standard time)`;
+                displayEl.dataset.minutes = minutes; // Store minutes in data attribute
+            }
+        });
+    }
 
     /* =========================
        ELEMENT REFERENCES
@@ -1805,7 +1861,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const addStudentBtn = $('#one2oneAddStudentBtnManage');
     const scheduleBtn = $('.calendar_admin_details_create_cohort_schedule_btn_manage');
     const lessonTypeBtns = $$('.one2one-lesson-type-btn-manage');
-    // global holder for selected cmid (from activity.cmid) for the currently chosen activity
+    // global holder for selected cmid (from gm.id) for the currently chosen activity
     window.selectedCmidManage = null;
     const singleSection = $('#custom-single-lesson-manage');
     const weeklySection = $('#custom-weekly-lesson-manage');
@@ -2498,18 +2554,24 @@ document.addEventListener('DOMContentLoaded', function() {
         );
 
         if (lessonType === 'single') {
-            const duration = $('#durationDropdownDisplayManage')?.textContent.trim() || '';
+            // Get duration in minutes
+            const durationMinutes = getSelectedDurationInMinutes();
+            const durationDisplay = formatMinutesToDisplay(durationMinutes);
+
             const dateEl = document.getElementById('selectedDateTextManage');
             const date = dateEl?.dataset?.fullDate || dateEl?.textContent.trim() || '';
             const time = $('.time-input')?.value.trim() || '';
 
             formData.singleLesson = {
-                duration,
+                duration: durationMinutes, // Store as minutes (integer)
+                durationDisplay: durationDisplay, // Human-readable format
                 date,
                 time,
-                cmid: cmid, // Use the cmid we captured above
+                cmid: cmid,
                 fullDateTime: `${date} at ${time}`
             };
+
+            console.log(`Duration: ${durationMinutes} minutes (displayed as: ${durationDisplay})`);
         } else {
             const interval = $('#weeklyLessonIntervalDisplayManage')?.textContent.trim() || '1';
             const period = $('#weeklyLessonPeriodDisplayManage')?.textContent.trim() || 'Week';

@@ -1385,3 +1385,132 @@ body {
   height: 16px;
   flex-shrink: 0;
 }
+
+/* calendar css */
+
+#grid .day .day-inner .slots > div.slot-white {
+  background: #fff !important;
+}
+
+/* Cohort widget small styles to match tabbed UI */
+.cohort-tabs {
+  display: flex;
+
+  margin-bottom: 12px;
+  border-radius: 8px;
+  background: #f4f4f4;
+}
+
+.cohort-tab-btn {
+  color: #232323;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  font-size: 14px;
+}
+
+.cohort-tab-btn.cohort-tab-active {
+  background: #ffffff;
+  color: #232323;
+  border: 1px solid #e6e6e9;
+}
+
+/* Controls on cohort widget header */
+.cohort-widget-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid #e6e6e9;
+  padding-bottom: 12px;
+}
+
+.cohort-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.calendar-control-btn {
+  background: transparent;
+  border: 1px solid #e6e6e9;
+  padding: 6px 10px;
+  color: #232323;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.cohort-no-results {
+  text-align: left;
+}
+
+.selected-pill {
+  display: inline-block;
+  background: #eef2ff;
+  color: #111827;
+  margin-right: 8px;
+  padding: 6px 8px;
+  border-radius: 16px;
+  font-size: 13px;
+}
+
+.selected-pill .remove-pill {
+  background: transparent;
+  border: 0;
+  font-weight: 600;
+  margin-left: 6px;
+  cursor: pointer;
+}
+
+.teacher-list-wrapper::-webkit-scrollbar,
+.cohort-list-wrapper::-webkit-scrollbar,
+.student-list-wrapper::-webkit-scrollbar,
+.peertalk-list-wrapper::-webkit-scrollbar {
+  width: 6px;
+}
+
+.teacher-list-wrapper::-webkit-scrollbar-thumb,
+.cohort-list-wrapper::-webkit-scrollbar-thumb,
+.student-list-wrapper::-webkit-scrollbar-thumb,
+.peertalk-list-wrapper::-webkit-scrollbar-thumb {
+  background: #d1d1d1;
+  border-radius: 2px;
+  border: 1px solid transparent;
+}
+
+.teacher-list-wrapper::-webkit-scrollbar-thumb:hover,
+.cohort-list-wrapper::-webkit-scrollbar-thumb:hover,
+.student-list-wrapper::-webkit-scrollbar-thumb:hover,
+.peertalk-list-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #a3a3a3;
+}
+
+.teacher-list-wrapper::-webkit-scrollbar-track,
+.cohort-list-wrapper::-webkit-scrollbar-track,
+.student-list-wrapper::-webkit-scrollbar-track,
+.peertalk-list-wrapper::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+.cohort-list-wrapper form fieldset {
+  margin-top: 8px;
+}
+
+/* make radio appear on the right like the screenshot: assume each item is a block with label and input on right */
+.cohort-list-wrapper .cohort-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: #f6f6f8;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.cohort-list-wrapper label {
+  margin: 0;
+}
