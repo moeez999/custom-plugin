@@ -562,6 +562,9 @@ document.addEventListener("DOMContentLoaded", () => {
     wrap.dataset.teacherName = t.name;
     wrap.dataset.teacherImg = t.avatar || "";
 
+    // Get teacher color for the indicator dot
+    const teacherColor = getTeacherColor(t.id);
+
     wrap.innerHTML = `
             <label class="teacher-label">
                 <div class="teacher-details">
@@ -570,7 +573,9 @@ document.addEventListener("DOMContentLoaded", () => {
                           t.avatar || ""
                         }" alt="${t.name}">
                     </div>
-                    <span class="teacher-name">${t.name}</span>
+                    <span class="teacher-name">${
+                      t.name
+                    }<span class="teacher-color-dot" style="--dot-color: ${teacherColor}; display: none;"></span></span>
                 </div>
                 <div class="radio-custom">
                     <div class="radio-custom-dot"></div>
@@ -583,6 +588,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (e.target.tagName === "INPUT") return;
 
       const checkbox = wrap.querySelector(".teacher-checkbox");
+      const colorDot = wrap.querySelector(".teacher-color-dot");
       const id = parseInt(wrap.dataset.teacherId, 10);
       const wasChecked = checkbox.checked;
       checkbox.checked = !wasChecked;
@@ -590,9 +596,11 @@ document.addEventListener("DOMContentLoaded", () => {
       if (checkbox.checked) {
         if (!selectedTeacherIds.includes(id)) selectedTeacherIds.push(id);
         wrap.classList.add("selected");
+        if (colorDot) colorDot.style.display = "inline-block";
       } else {
         selectedTeacherIds = selectedTeacherIds.filter((x) => x !== id);
         wrap.classList.remove("selected");
+        if (colorDot) colorDot.style.display = "none";
       }
 
       updateTeacherPills();

@@ -5,6 +5,7 @@ define('AJAX_SCRIPT', true);
 require_once(__DIR__ . '/../../../config.php');
 require_once($CFG->dirroot . '/course/lib.php');
 require_once($CFG->dirroot . '/course/modlib.php');
+require_once($CFG->libdir . '/gradelib.php'); // Needed for grade_item etc.
 
 require_login();
 // require_sesskey();
@@ -24,9 +25,6 @@ try {
         throw new moodle_exception('invaliddata', 'error', '', 'Invalid JSON');
     }
 
-    // Same fixed course as in schedule_one2one.php
-    $courseid = 24;
-
     $data = $json['data'] ?? null;
     if (!is_array($data)) {
         throw new moodle_exception('missingparam', 'error', '', 'data required');
@@ -35,14 +33,15 @@ try {
     // --- IDs from payload ---
     $teacherid = (int)($data['teacher']['id'] ?? $data['teacherId'] ?? 0);
     $studentid = (int)($data['student']['id'] ?? $data['studentId'] ?? 0);
-    // cmid might come at root or inside singleLesson/weeklyLesson
-    $cmid      = (int)($data['cmid'] ?? ($data['singleLesson']['cmid'] ?? ($data['weeklyLesson']['cmid'] ?? 0)));
+
+    // In payload, "cmid" is actually the googlemeet INSTANCE id.
+    $instanceid = (int)($data['cmid'] ?? ($data['singleLesson']['cmid'] ?? ($data['weeklyLesson']['cmid'] ?? 0)));
 
     if (!$teacherid || !$studentid) {
         throw new moodle_exception('missingparam', 'error', '', 'teacher.id and student.id required');
     }
-    if (!$cmid) {
-        throw new moodle_exception('missingparam', 'error', '', 'cmid required to update existing session');
+    if (!$instanceid) {
+        throw new moodle_exception('missingparam', 'error', '', 'googlemeet id (cmid in payload) required to update existing session');
     }
 
     // --- Fetch main records ---
@@ -57,19 +56,21 @@ try {
     $studentEmail  = trim((string)$student->email);
     $studentFull   = trim($studentFirst . ' ' . $studentLast);
 
-    // Course & cm.
-    $course = get_course($courseid);
-    $context = context_course::instance($courseid);
-    require_capability('moodle/course:manageactivities', $context);
-    require_capability('mod/googlemeet:addinstance', $context);
+    // The Google Meet instance we are updating.
+    $meet = $DB->get_record('googlemeet', ['id' => $instanceid], '*', MUST_EXIST);
 
-    // The CM we are updating.
-    $cm = get_coursemodule_from_id('googlemeet', $cmid, $courseid, false, MUST_EXIST);
+    // Find its course module (cmid) from the instance.
+    $cm = get_coursemodule_from_instance('googlemeet', $meet->id, 0, false, MUST_EXIST);
+
+    // Derive course from cm.
+    $courseid = (int)$cm->course;
+    $course   = get_course($courseid);
+
+    // Cap checks.
+    $coursecontext = context_course::instance($courseid);
+    require_capability('moodle/course:manageactivities', $coursecontext);
     $modcontext = context_module::instance($cm->id);
-    require_capability('moodle/course:manageactivities', $modcontext);
-
-    // The Google Meet instance.
-    $meet = $DB->get_record('googlemeet', ['id' => $cm->instance], '*', MUST_EXIST);
+    require_capability('mod/googlemeet:addinstance', $modcontext);
 
     // --- Helpers (same spirit as schedule_one2one) ---
     $dayname_to_index = [
@@ -129,18 +130,28 @@ try {
         return json_encode($tree, JSON_UNESCAPED_SLASHES);
     };
 
-    // --- Availability for the student (update cm) ---
-    $activityAvailability = $profile_availability('email', $studentEmail);
+    // --- Start from core moduleinfo (so update_moduleinfo runs all plugin logic) ---
+    $moduleinfo = (object)get_moduleinfo_data($cm, $course);
 
-    // Update course_modules availability to match the (possibly new) student.
-    $cmupdate = (object)[
-        'id'           => $cm->id,
-        'availability' => $activityAvailability,
-    ];
-    $DB->update_record('course_modules', $cmupdate);
+    // Make sure moduleinfo has all required identity fields.
+    $moduleinfo->modulename = 'googlemeet';   // so mod/googlemeet/lib.php is used
+    $moduleinfo->instance   = $meet->id;      // instance id for update
+    $moduleinfo->id         = $meet->id;      // plugin_update_instance usually expects ->id
 
-    // Base name (if you ever want to change it on update, you can adapt here).
-    $baseMeetName = $meet->name ?: ('1:1 ' . $studentFull . ' with Teacher ' . $teacherFirst);
+    // Ensure visibility fields are not null (fix for dmlwriteexception).
+    $moduleinfo->visible             = isset($moduleinfo->visible) ? $moduleinfo->visible : $cm->visible;
+    $moduleinfo->visibleoncoursepage = isset($moduleinfo->visibleoncoursepage)
+        ? $moduleinfo->visibleoncoursepage
+        : ($cm->visibleoncoursepage ?? 1);
+    $moduleinfo->visibleold          = isset($moduleinfo->visibleold) ? $moduleinfo->visibleold : $cm->visible;
+
+    // Availability for the student.
+    $activityAvailability       = $profile_availability('email', $studentEmail);
+    $moduleinfo->availability   = $activityAvailability;
+
+    // Base name (if you want different naming, change here).
+    $baseMeetName               = $meet->name ?: ('1:1 ' . $studentFull . ' with Teacher ' . $teacherFirst);
+    $moduleinfo->name           = $baseMeetName;
 
     $lessonType  = strtolower((string)($data['lessonType'] ?? 'single'));
     $tzid        = null;
@@ -152,7 +163,7 @@ try {
         $single  = $data['singleLesson'] ?? [];
         $dateLbl = (string)($single['date'] ?? '');
         $timeLbl = (string)($single['time'] ?? '');
-       $durLbl  = (string)($single['duration'] ?? '60'); // duration in minutes
+        $durLbl  = (string)($single['duration'] ?? '60'); // duration in minutes
 
         if ($dateLbl === '' || $timeLbl === '') {
             throw new moodle_exception('missingparam', 'error', '', 'date/time required for single lesson');
@@ -167,7 +178,7 @@ try {
             $duration = 60;
         }
 
-        $eventdate = $make_ts($Y, $n, $j, 0, 0, $tzid);
+        $eventdate   = $make_ts($Y, $n, $j, 0, 0, $tzid);
         $starthour   = $H;
         $startminute = $i;
 
@@ -176,22 +187,36 @@ try {
         $endhour      = intdiv($totalminutes, 60) % 24;
         $endminute    = $totalminutes % 60;
 
+        // Recompute days array like create script (single day).
+        $wIndex   = (int)date('w', $make_ts($Y, $n, $j, $H, $i, $tzid));
+        $dayKey   = $index_to_daykey[$wIndex];
+        $days     = ['Sun'=>"0",'Mon'=>"0",'Tue'=>"0",'Wed'=>"0",'Thu'=>"0",'Fri'=>"0",'Sat'=>"0"];
+        $days[$dayKey] = "1";
 
+        // Map into moduleinfo (same fields as create_module call).
+        $moduleinfo->eventdate     = $eventdate;
+        $moduleinfo->starthour     = $starthour;
+        $moduleinfo->startminute   = $startminute;
+        $moduleinfo->endhour       = $endhour;
+        $moduleinfo->endminute     = $endminute;
+        $moduleinfo->eventenddate  = $eventdate;
+        $moduleinfo->period        = 1;     // Single.
+        $moduleinfo->addmultiply   = "1";
+        $moduleinfo->days          = $days;
 
-        // Update main googlemeet record.
-        $meet->name          = $baseMeetName;
-        $meet->eventdate     = $eventdate;
-        $meet->starthour     = $starthour;
-        $meet->startminute   = $startminute;
-        $meet->endhour       = $endhour;
-        $meet->endminute     = $endminute;
-        $meet->eventenddate  = $eventdate;
-        $meet->period        = 1;  // Single.
-        $meet->addmultiply   = 1;  // Keep original behaviour.
+        // Required by update_moduleinfo.
+        if (empty($moduleinfo->introeditor)) {
+            $moduleinfo->introeditor = [
+                'text'   => $moduleinfo->intro ?? '',
+                'format' => $moduleinfo->introformat ?? FORMAT_HTML,
+                'itemid' => 0,
+            ];
+        }
+        $moduleinfo->coursemodule = $cm->id;
 
-        // NOTE: We are NOT touching the "days" pattern here (keeps existing day-of-week).
+        // 🔁 This is the key call: triggers googlemeet_update_instance and calendar/event updates.
+        list($cm, $moduleinfo) = update_moduleinfo($cm, $moduleinfo, $course, null);
 
-        $DB->update_record('googlemeet', $meet);
         $updated = 1;
 
     // ================= WEEKLY / RECURRING UPDATE =================
@@ -254,25 +279,33 @@ try {
             $eventenddate = $eventdate;
         }
 
-        // Simple days array (if your table has a proper 'days' column, adapt here).
+        // Build days array.
         $days = ['Sun'=>"0",'Mon'=>"0",'Tue'=>"0",'Wed'=>"0",'Thu'=>"0",'Fri'=>"0",'Sat'=>"0"];
         foreach ($normalized as $t) {
             $days[$t['key']] = "1";
         }
 
-        $meet->name         = $baseMeetName;
-        $meet->eventdate    = $eventdate;
-        $meet->starthour    = $first['H'];
-        $meet->startminute  = $first['i'];
-        $meet->endhour      = $first['eH'];
-        $meet->endminute    = $first['eI'];
-        $meet->eventenddate = $eventenddate;
-        $meet->period       = $interval;
-        $meet->addmultiply  = 1;
+        $moduleinfo->eventdate    = $eventdate;
+        $moduleinfo->eventenddate = $eventenddate;
+        $moduleinfo->starthour    = $first['H'];
+        $moduleinfo->startminute  = $first['i'];
+        $moduleinfo->endhour      = $first['eH'];
+        $moduleinfo->endminute    = $first['eI'];
+        $moduleinfo->period       = $interval;
+        $moduleinfo->addmultiply  = "1";
+        $moduleinfo->days         = $days;
 
-        // If your googlemeet table has a 'days' field, map $days into it here.
+        if (empty($moduleinfo->introeditor)) {
+            $moduleinfo->introeditor = [
+                'text'   => $moduleinfo->intro ?? '',
+                'format' => $moduleinfo->introformat ?? FORMAT_HTML,
+                'itemid' => 0,
+            ];
+        }
+        $moduleinfo->coursemodule = $cm->id;
 
-        $DB->update_record('googlemeet', $meet);
+        list($cm, $moduleinfo) = update_moduleinfo($cm, $moduleinfo, $course, null);
+
         $updated = 1;
     }
 
@@ -280,9 +313,9 @@ try {
         'success' => true,
         'updated' => $updated,
         'item'    => [
-            'cmid'     => (int)$cm->id,
-            'instance' => (int)$cm->instance,
-            'name'     => (string)$meet->name,
+            'cmid'     => (int)$cm->id,       // real course_modules id
+            'instance' => (int)$meet->id,     // googlemeet.id
+            'name'     => (string)$moduleinfo->name,
         ],
         'student' => [
             'id'    => $student->id,

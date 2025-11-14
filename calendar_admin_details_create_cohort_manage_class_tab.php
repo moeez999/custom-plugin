@@ -665,6 +665,44 @@ hr.weekly_lesson_hr.large {
 .dropdown-backdrop.active {
     display: block;
 }
+
+/* Disabled dropdown states */
+.one2one-student-dropdown-wrapper.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
+.one2one-add-student-card.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: #f5f5f5;
+}
+
+/* Loader overlay */
+.loader-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.6);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+}
+
+.loader-overlay.active {
+    display: flex;
+}
+
+/* Disabled button state */
+.calendar_admin_details_create_cohort_schedule_btn_manage:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: #cccccc;
+}
 </style>
 
 <div class="calendar_admin_details_create_cohort_content tab-content" id="manageclassTabContent" style="display:none;">
@@ -755,15 +793,15 @@ echo $teachersItemsHtml;
     </div>
 
     <label class="one2one-section-label">Student</label>
-    <div class="one2one-student-dropdown-wrapper">
-        <div class="one2one-add-student-card" id="one2oneAddStudentBtnManage" tabindex="0">
+    <div class="one2one-student-dropdown-wrapper disabled" id="studentDropdownWrapper">
+        <div class="one2one-add-student-card disabled" id="one2oneAddStudentBtnManage" tabindex="0">
             <span class="one2one-add-student-icon">
                 <svg width="21" height="21" viewBox="0 0 20 20" fill="none">
                     <circle cx="10" cy="7" r="4" fill="#000" />
                     <ellipse cx="10" cy="15.3" rx="6.5" ry="3.3" fill="#000" />
                 </svg>
             </span>
-            <span class="one2one-add-student-placeholder" style="color:#aaa;">Add student</span>
+            <span class="one2one-add-student-placeholder" style="color:#aaa;">Select a teacher first</span>
         </div>
         <div class="one2one-student-dropdown-list" id="one2oneStudentDropdownManage" style="display:none;">
             <input type="text" id="studentSearchInputManage" class="dropdown-search"
@@ -1039,7 +1077,12 @@ echo $studentsItemsHtml;
         </div>
     </div>
 
-    <button class="calendar_admin_details_create_cohort_schedule_btn_manage">Update 1:1 class</button>
+    <button class="calendar_admin_details_create_cohort_schedule_btn_manage" disabled>Update 1:1 class</button>
+</div>
+
+<!-- Loader Overlay -->
+<div class="loader-overlay" id="loaderOverlay">
+    <img src="../../img/loader.png" alt="Loading..." class="spin-logo" style="width:100px;height:100px;">
 </div>
 
 <!-- Custom Calendar Modal -->
@@ -1341,8 +1384,13 @@ function getDayIcon(day) {
 async function loadStudentsForTeacher(teacherId, selectFirst = true) {
     const studentDropdownWrap = document.getElementById('one2oneStudentDropdownManage');
     const addStudentBtn = document.getElementById('one2oneAddStudentBtnManage');
+    const studentDropdownWrapper = document.getElementById('studentDropdownWrapper');
+    const loaderOverlay = document.getElementById('loaderOverlay');
 
     if (!teacherId || !studentDropdownWrap) return;
+
+    // Show loader
+    if (loaderOverlay) loaderOverlay.classList.add('active');
 
     try {
         const response = await fetch('ajax/ajax_one2one_students.php?teacherid=' + encodeURIComponent(teacherId), {
@@ -1360,6 +1408,13 @@ async function loadStudentsForTeacher(teacherId, selectFirst = true) {
                 addStudentBtn.innerHTML = `<span style="color:#aaa;">No student selected</span>`;
                 addStudentBtn.classList.remove('active');
             }
+            // Enable dropdown wrapper even if no students
+            if (studentDropdownWrapper) {
+                studentDropdownWrapper.classList.remove('disabled');
+                addStudentBtn.classList.remove('disabled');
+            }
+            if (loaderOverlay) loaderOverlay.classList.remove('active');
+            validateForm();
             return;
         }
 
@@ -1368,6 +1423,12 @@ async function loadStudentsForTeacher(teacherId, selectFirst = true) {
         <input type="text" id="studentSearchInputManage" class="dropdown-search" placeholder="Enter student name...">
         ${data.html}
     `;
+
+        // Enable dropdown wrapper
+        if (studentDropdownWrapper) {
+            studentDropdownWrapper.classList.remove('disabled');
+            if (addStudentBtn) addStudentBtn.classList.remove('disabled');
+        }
 
         // auto-select first student if available
         if (selectFirst) {
@@ -1395,6 +1456,9 @@ async function loadStudentsForTeacher(teacherId, selectFirst = true) {
                 }
             }
         }
+        // Hide loader after students loaded
+        if (loaderOverlay) loaderOverlay.classList.remove('active');
+        validateForm();
     } catch (error) {
         console.warn('Could not load students for teacher', error);
         // reset if request failed
@@ -1406,6 +1470,31 @@ async function loadStudentsForTeacher(teacherId, selectFirst = true) {
             addStudentBtn.innerHTML = `<span style="color:#aaa;">No student selected</span>`;
             addStudentBtn.classList.remove('active');
         }
+        // Hide loader on error
+        if (loaderOverlay) loaderOverlay.classList.remove('active');
+        validateForm();
+    }
+}
+
+// ====== FORM VALIDATION ======
+function validateForm() {
+    const scheduleBtn = document.querySelector('.calendar_admin_details_create_cohort_schedule_btn_manage');
+    if (!scheduleBtn) return;
+
+    const teacherTrigger = document.getElementById('calendar_admin_details_create_cohort_manage_class_tab_trigger');
+    const teacherId = teacherTrigger?.dataset.userid;
+
+    const studentDropdownWrap = document.getElementById('one2oneStudentDropdownManage');
+    const selectedStudent = studentDropdownWrap?.querySelector('.one2one-student-list-item.selected');
+    const studentId = selectedStudent?.dataset.userid;
+
+    const lessonType = document.querySelector('.one2one-lesson-type-btn-manage.selected')?.dataset.type;
+
+    // Enable button only if all required fields are selected
+    if (teacherId && studentId && lessonType) {
+        scheduleBtn.disabled = false;
+    } else {
+        scheduleBtn.disabled = true;
     }
 }
 
@@ -1720,6 +1809,13 @@ function populateWeeklyModalWithData(googleMeet, selectedDay, activityIndex, sta
         const endDate = parseUnixTimestamp(endDateStr);
         if (endDateBtn) {
             endDateBtn.textContent = formatDate(endDate);
+            // Store the date in dataset to avoid timezone issues
+            try {
+                const yyyy = endDate.getFullYear();
+                const mm = String(endDate.getMonth() + 1).padStart(2, '0');
+                const dd = String(endDate.getDate()).padStart(2, '0');
+                endDateBtn.dataset.fullDate = `${yyyy}-${mm}-${dd}`;
+            } catch (e) {}
             window.weeklyLessonEndDate = endDate;
         }
         if (endOnRadio) endOnRadio.checked = true;
@@ -1806,7 +1902,11 @@ function updateDateTimeFields(date, startTime, endTime, durationMinutes) {
         });
         dateElement.textContent = formattedDate;
         try {
-            dateElement.dataset.fullDate = (new Date(date)).toISOString().split('T')[0];
+            // Format date manually to avoid timezone issues
+            const yyyy = date.getFullYear();
+            const mm = String(date.getMonth() + 1).padStart(2, '0');
+            const dd = String(date.getDate()).padStart(2, '0');
+            dateElement.dataset.fullDate = `${yyyy}-${mm}-${dd}`;
         } catch (e) {}
     }
 
@@ -1881,8 +1981,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const teacherLabel = $('#calendar_admin_details_create_cohort_manage_class_tab_current_label');
     const studentDropdownWrap = $('#one2oneStudentDropdownManage');
     const addStudentBtn = $('#one2oneAddStudentBtnManage');
+    const studentDropdownWrapper = $('#studentDropdownWrapper');
     const scheduleBtn = $('.calendar_admin_details_create_cohort_schedule_btn_manage');
     const lessonTypeBtns = $$('.one2one-lesson-type-btn-manage');
+    const loaderOverlay = $('#loaderOverlay');
     // global holder for selected cmid (from gm.id) for the currently chosen activity
     window.selectedCmidManage = null;
     const singleSection = $('#custom-single-lesson-manage');
@@ -1891,8 +1993,28 @@ document.addEventListener('DOMContentLoaded', function() {
     // When the Update button is clicked, build a minimal payload and log the cmid (if any)
     if (scheduleBtn) {
         scheduleBtn.addEventListener('click', () => {
+            // Validate before submission
+            const teacherId = teacherTrigger?.dataset.userid;
+            const selectedStudent = $('.one2one-student-list-item.selected', studentDropdownWrap);
+            const studentId = selectedStudent?.dataset.userid;
+
+            if (!teacherId) {
+                alert('Please select a teacher first.');
+                return;
+            }
+
+            if (!studentId) {
+                alert('Please select a student first.');
+                return;
+            }
+
             const lessonType = document.querySelector('.one2one-lesson-type-btn-manage.selected')
-                ?.dataset.type || 'single';
+                ?.dataset.type;
+
+            if (!lessonType) {
+                alert('Please select a lesson type.');
+                return;
+            }
             let selectedElement = null;
             if (lessonType === 'single') {
                 selectedElement = document.querySelector(
@@ -1925,8 +2047,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (!teacherId || !studentId) {
             console.warn('Cannot fetch classes: Teacher or student not selected');
+            validateForm();
             return;
         }
+
+        // Show loader
+        if (loaderOverlay) loaderOverlay.classList.add('active');
 
         const url =
             `ajax/ajax_one2one_getclasses.php?teacherid=${teacherId}&studentid=${studentId}&classtype=${lessonType}`;
@@ -1943,9 +2069,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     populateWeeklyLessonDropdown(data);
                 }
+                // Hide loader after data loaded
+                if (loaderOverlay) loaderOverlay.classList.remove('active');
+                validateForm();
             })
             .catch(error => {
                 console.error(`Error fetching ${lessonType} lessons:`, error);
+                // Hide loader on error
+                if (loaderOverlay) loaderOverlay.classList.remove('active');
+                validateForm();
             });
     }
 
@@ -1999,6 +2131,7 @@ document.addEventListener('DOMContentLoaded', function() {
             loadStudentsForTeacher(userId);
         } else {
             console.warn('No teacher ID available to load students');
+            validateForm();
         }
     })();
 
@@ -2030,11 +2163,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 teacherTrigger.dataset.img = imageUrl || '';
             }
 
-            if (userId) loadStudentsForTeacher(userId);
+            if (userId) {
+                loadStudentsForTeacher(userId);
+            } else {
+                // Disable student dropdown if no teacher
+                if (studentDropdownWrapper) {
+                    studentDropdownWrapper.classList.add('disabled');
+                    if (addStudentBtn) {
+                        addStudentBtn.classList.add('disabled');
+                        addStudentBtn.innerHTML =
+                            `<span style="color:#aaa;">Select a teacher first</span>`;
+                    }
+                }
+            }
             if (teacherMenu) teacherMenu.style.display = 'none';
 
             // Fetch classes after teacher change
             fetchClassesForLessonType();
+            validateForm();
         });
     }
 
@@ -2070,6 +2216,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // **FETCH CLASSES WHEN STUDENT SELECTED**
             fetchClassesForLessonType();
+            validateForm();
         });
     }
 
@@ -2127,6 +2274,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Fetch classes when lesson type changes
             fetchClassesForLessonType();
+            validateForm();
         });
     });
 
@@ -2278,21 +2426,45 @@ document.addEventListener('DOMContentLoaded', function() {
         if (startDateText) {
             startDateText.textContent = formatDate(weeklyLessonStartDate);
             try {
-                startDateText.dataset.fullDate = weeklyLessonStartDate.toISOString().split('T')[0];
+                const yyyy = weeklyLessonStartDate.getFullYear();
+                const mm = String(weeklyLessonStartDate.getMonth() + 1).padStart(2, '0');
+                const dd = String(weeklyLessonStartDate.getDate()).padStart(2, '0');
+                startDateText.dataset.fullDate = `${yyyy}-${mm}-${dd}`;
             } catch (e) {}
         }
         if (endDateBtn) {
             endDateBtn.disabled = false;
             endDateBtn.textContent = formatDate(weeklyLessonEndsOnDate);
             try {
-                endDateBtn.dataset.fullDate = weeklyLessonEndsOnDate.toISOString().split('T')[0];
+                const yyyy = weeklyLessonEndsOnDate.getFullYear();
+                const mm = String(weeklyLessonEndsOnDate.getMonth() + 1).padStart(2, '0');
+                const dd = String(weeklyLessonEndsOnDate.getDate()).padStart(2, '0');
+                endDateBtn.dataset.fullDate = `${yyyy}-${mm}-${dd}`;
             } catch (e) {}
         }
 
         $('#weeklyLessonStartDateBtnManage')?.addEventListener('click', () => {
             calendarTarget = 'start';
-            selectedDate = new Date(weeklyLessonStartDate);
-            selectedDate.setHours(0, 0, 0, 0);
+
+            // Parse current date from button if available
+            if (startDateText && startDateText.dataset.fullDate) {
+                const dateStr = startDateText.dataset.fullDate;
+                const parts = dateStr.split('-');
+                if (parts.length === 3) {
+                    const year = parseInt(parts[0]);
+                    const month = parseInt(parts[1]) - 1;
+                    const day = parseInt(parts[2]);
+                    selectedDate = new Date(year, month, day, 0, 0, 0);
+                    weeklyLessonStartDate = new Date(selectedDate);
+                } else {
+                    selectedDate = new Date(weeklyLessonStartDate);
+                    selectedDate.setHours(0, 0, 0, 0);
+                }
+            } else {
+                selectedDate = new Date(weeklyLessonStartDate);
+                selectedDate.setHours(0, 0, 0, 0);
+            }
+
             viewMonth = selectedDate.getMonth();
             viewYear = selectedDate.getFullYear();
             renderCalendar();
@@ -2302,8 +2474,26 @@ document.addEventListener('DOMContentLoaded', function() {
         $('#weeklyLessonEndDateBtnManage')?.addEventListener('click', function() {
             if (this.disabled) return;
             calendarTarget = 'ends';
-            selectedDate = new Date(weeklyLessonEndsOnDate);
-            selectedDate.setHours(0, 0, 0, 0);
+
+            // Parse current date from button if available
+            if (endDateBtn && endDateBtn.dataset.fullDate) {
+                const dateStr = endDateBtn.dataset.fullDate;
+                const parts = dateStr.split('-');
+                if (parts.length === 3) {
+                    const year = parseInt(parts[0]);
+                    const month = parseInt(parts[1]) - 1;
+                    const day = parseInt(parts[2]);
+                    selectedDate = new Date(year, month, day, 0, 0, 0);
+                    weeklyLessonEndsOnDate = new Date(selectedDate);
+                } else {
+                    selectedDate = new Date(weeklyLessonEndsOnDate);
+                    selectedDate.setHours(0, 0, 0, 0);
+                }
+            } else {
+                selectedDate = new Date(weeklyLessonEndsOnDate);
+                selectedDate.setHours(0, 0, 0, 0);
+            }
+
             viewMonth = selectedDate.getMonth();
             viewYear = selectedDate.getFullYear();
             renderCalendar();
@@ -2339,8 +2529,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (startDateText) {
                     startDateText.textContent = formatDate(weeklyLessonStartDate);
                     try {
-                        startDateText.dataset.fullDate = weeklyLessonStartDate.toISOString().split(
-                            'T')[0];
+                        const yyyy = weeklyLessonStartDate.getFullYear();
+                        const mm = String(weeklyLessonStartDate.getMonth() + 1).padStart(2, '0');
+                        const dd = String(weeklyLessonStartDate.getDate()).padStart(2, '0');
+                        startDateText.dataset.fullDate = `${yyyy}-${mm}-${dd}`;
                     } catch (e) {}
                 }
             } else {
@@ -2348,8 +2540,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (endDateBtn) {
                     endDateBtn.textContent = formatDate(weeklyLessonEndsOnDate);
                     try {
-                        endDateBtn.dataset.fullDate = weeklyLessonEndsOnDate.toISOString().split(
-                            'T')[0];
+                        const yyyy = weeklyLessonEndsOnDate.getFullYear();
+                        const mm = String(weeklyLessonEndsOnDate.getMonth() + 1).padStart(2, '0');
+                        const dd = String(weeklyLessonEndsOnDate.getDate()).padStart(2, '0');
+                        endDateBtn.dataset.fullDate = `${yyyy}-${mm}-${dd}`;
                     } catch (e) {}
                 }
             }
@@ -2524,6 +2718,158 @@ document.addEventListener('DOMContentLoaded', function() {
 
         createTimeDropdown(startInput);
         createTimeDropdown(endInput);
+    })();
+
+    /* =========================================
+       7B) SINGLE LESSON DATE CALENDAR MODAL
+    ========================================== */
+    (function initSingleLessonCalendar() {
+        const customDateDisplay = $('#customDateDropdownDisplayManage');
+        const calendarBackdrop = $('#calendarModalBackdropManage');
+        const calendarPrevBtn = $('#calendarPrevMonthManage');
+        const calendarNextBtn = $('#calendarNextMonthManage');
+        const calendarDoneBtn = $('#calendarDoneBtnManage');
+        const calendarMonthYear = $('#calendarMonthYearManage');
+        const calendarDaysGrid = $('#calendarDaysGridManage');
+
+        if (!customDateDisplay || !calendarBackdrop) return;
+
+        let currentDate = new Date();
+        let viewYear = currentDate.getFullYear();
+        let viewMonth = currentDate.getMonth();
+        let selectedDate = new Date(currentDate);
+
+        // Parse current date from button text if exists
+        function parseCurrentDate() {
+            const dateText = $('#selectedDateTextManage');
+            if (dateText && dateText.dataset.fullDate) {
+                try {
+                    // Parse date string manually to avoid timezone issues
+                    const dateStr = dateText.dataset.fullDate;
+                    const parts = dateStr.split('-');
+                    if (parts.length === 3) {
+                        const year = parseInt(parts[0]);
+                        const month = parseInt(parts[1]) - 1; // Month is 0-indexed
+                        const day = parseInt(parts[2]);
+                        selectedDate = new Date(year, month, day, 12, 0, 0);
+                        viewYear = year;
+                        viewMonth = month;
+                    }
+                } catch (e) {
+                    console.warn('Could not parse date:', e);
+                }
+            }
+        }
+
+        // Open calendar when clicking date display
+        customDateDisplay.addEventListener('click', () => {
+            parseCurrentDate(); // Parse the current date before opening
+            renderSingleCalendar();
+            calendarBackdrop.style.display = 'flex';
+        });
+
+        // Previous month
+        if (calendarPrevBtn) {
+            calendarPrevBtn.addEventListener('click', () => {
+                viewMonth--;
+                if (viewMonth < 0) {
+                    viewMonth = 11;
+                    viewYear--;
+                }
+                renderSingleCalendar();
+            });
+        }
+
+        // Next month
+        if (calendarNextBtn) {
+            calendarNextBtn.addEventListener('click', () => {
+                viewMonth++;
+                if (viewMonth > 11) {
+                    viewMonth = 0;
+                    viewYear++;
+                }
+                renderSingleCalendar();
+            });
+        }
+
+        // Done button
+        if (calendarDoneBtn) {
+            calendarDoneBtn.addEventListener('click', () => {
+                const dateText = $('#selectedDateTextManage');
+                if (dateText) {
+                    const formatted = selectedDate.toLocaleDateString('en-US', {
+                        weekday: 'short',
+                        month: 'short',
+                        day: 'numeric'
+                    });
+                    dateText.textContent = formatted;
+
+                    // Store full date
+                    const yyyy = selectedDate.getFullYear();
+                    const mm = String(selectedDate.getMonth() + 1).padStart(2, '0');
+                    const dd = String(selectedDate.getDate()).padStart(2, '0');
+                    dateText.dataset.fullDate = `${yyyy}-${mm}-${dd}`;
+                }
+                calendarBackdrop.style.display = 'none';
+            });
+        }
+
+        // Close on backdrop click
+        calendarBackdrop.addEventListener('click', (e) => {
+            if (e.target === calendarBackdrop) {
+                calendarBackdrop.style.display = 'none';
+            }
+        });
+
+        function renderSingleCalendar() {
+            const monthNames = ["January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"
+            ];
+
+            if (calendarMonthYear) {
+                calendarMonthYear.textContent = `${monthNames[viewMonth]} ${viewYear}`;
+            }
+
+            if (calendarDaysGrid) {
+                calendarDaysGrid.innerHTML = '';
+
+                const firstDay = new Date(viewYear, viewMonth, 1).getDay();
+                const offset = firstDay === 0 ? 6 : firstDay - 1; // Monday first
+                const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+
+                // Add empty cells for offset
+                for (let i = 0; i < offset; i++) {
+                    const emptyDiv = document.createElement('div');
+                    emptyDiv.className = 'calendar-modal-day inactive';
+                    calendarDaysGrid.appendChild(emptyDiv);
+                }
+
+                // Add day cells
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dayDiv = document.createElement('div');
+                    dayDiv.className = 'calendar-modal-day';
+                    dayDiv.textContent = day;
+
+                    // Check if this day is selected
+                    const isSelected = day === selectedDate.getDate() &&
+                        viewMonth === selectedDate.getMonth() &&
+                        viewYear === selectedDate.getFullYear();
+
+                    if (isSelected) {
+                        dayDiv.classList.add('selected');
+                    }
+
+                    dayDiv.addEventListener('click', () => {
+                        selectedDate = new Date(viewYear, viewMonth, day, 12, 0, 0);
+                        renderSingleCalendar();
+                    });
+
+                    calendarDaysGrid.appendChild(dayDiv);
+                }
+            }
+        }
+
+        renderSingleCalendar();
     })();
 
 
@@ -2793,10 +3139,176 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             alert('Session updated successfully!');
+
+            // Reset form after successful submission
+            resetManageClassForm();
         } catch (error) {
             console.error('Update Error:', error);
             alert('Something went wrong while updating the session.');
         }
     });
+
+    /* =======================================================
+       RESET FORM FUNCTION
+    ======================================================== */
+    function resetManageClassForm() {
+        // Reset teacher selection (keep first teacher if available)
+        const firstTeacher = teacherList?.querySelector(
+            '.calendar_admin_details_create_cohort_manage_class_tab_item[role="option"]');
+        if (firstTeacher && teacherTrigger && teacherImg && teacherLabel) {
+            const userId = firstTeacher.dataset?.userid;
+            const name = firstTeacher.dataset?.name;
+            const imageUrl = firstTeacher.dataset?.img;
+
+            teacherTrigger.dataset.userid = userId || '';
+            teacherTrigger.dataset.name = name || '';
+            teacherTrigger.dataset.img = imageUrl || '';
+
+            if (imageUrl) teacherImg.src = imageUrl;
+            if (name) teacherLabel.textContent = name;
+
+            $$('.calendar_admin_details_create_cohort_manage_class_tab_item[aria-selected="true"]', teacherList)
+                .forEach(el => el.removeAttribute('aria-selected'));
+            firstTeacher.setAttribute('aria-selected', 'true');
+        }
+
+        // Reset student dropdown
+        if (addStudentBtn) {
+            addStudentBtn.innerHTML = `
+                <span class="one2one-add-student-icon">
+                    <svg width="21" height="21" viewBox="0 0 20 20" fill="none">
+                        <circle cx="10" cy="7" r="4" fill="#000" />
+                        <ellipse cx="10" cy="15.3" rx="6.5" ry="3.3" fill="#000" />
+                    </svg>
+                </span>
+                <span class="one2one-add-student-placeholder" style="color:#aaa;">Select a teacher first</span>
+            `;
+            addStudentBtn.classList.remove('active');
+        }
+
+        if (studentDropdownWrapper) {
+            studentDropdownWrapper.classList.add('disabled');
+        }
+
+        if (studentDropdownWrap) {
+            $$('.one2one-student-list-item', studentDropdownWrap).forEach(item => {
+                item.classList.remove('selected');
+            });
+        }
+
+        // Reset lesson type selection
+        lessonTypeBtns.forEach(btn => {
+            btn.classList.remove('selected');
+            const radio = btn.querySelector('input[type="radio"]');
+            if (radio) radio.checked = false;
+        });
+
+        // Show single section by default to prevent button from moving to top
+        if (singleSection) singleSection.style.display = 'block';
+        if (weeklySection) weeklySection.style.display = 'none';
+
+        // Reset single lesson dropdown
+        const singleDropdownDisplay = $('#singleLessonDropdownDisplayManage');
+        if (singleDropdownDisplay) {
+            singleDropdownDisplay.textContent = 'Single Lessons';
+        }
+
+        const singleDropdownCard = $('.single-lesson-dropdown-card');
+        if (singleDropdownCard) {
+            singleDropdownCard.innerHTML = '';
+        }
+
+        // Reset duration dropdown
+        const durationDisplay = $('#durationDropdownDisplayManage');
+        if (durationDisplay) {
+            durationDisplay.textContent = '50 Minutes (Standard time)';
+            durationDisplay.dataset.minutes = '50';
+        }
+
+        $$('.one2one-duration-option').forEach(opt => opt.classList.remove('selected'));
+        const defaultDuration = $('.one2one-duration-option[data-minutes="50"]');
+        if (defaultDuration) defaultDuration.classList.add('selected');
+
+        // Reset date display
+        const dateText = $('#selectedDateTextManage');
+        if (dateText) {
+            dateText.textContent = 'Tue, Feb11';
+            delete dateText.dataset.fullDate;
+        }
+
+        // Reset time input
+        const timeInput = $('#manageclassTabContent .custom-time-pill .time-input');
+        if (timeInput) {
+            timeInput.value = '10:30 am';
+        }
+
+        // Reset weekly lesson dropdown
+        const weeklyDropdownDisplay = $('#weeklyLessonDropdownDisplayManage');
+        if (weeklyDropdownDisplay) {
+            weeklyDropdownDisplay.textContent = 'Weekly Lessons';
+        }
+
+        const weeklyDropdownContainer = $('.weekly-single-lesson-container');
+        if (weeklyDropdownContainer) {
+            weeklyDropdownContainer.innerHTML = '';
+        }
+
+        // Reset weekly widgets
+        const weeklyWidgets = $$('.weekly_lesson_scroll_widget_manage');
+        weeklyWidgets.forEach(widget => {
+            widget.classList.remove('selected');
+            const timeElement = widget.querySelector('.weekly_lesson_widget_time_manage');
+            if (timeElement) timeElement.remove();
+            const button = widget.querySelector('.weekly_lesson_widget_button_manage');
+            if (button) {
+                button.classList.remove('has-time');
+                const dot = button.querySelector('.weekly_lesson_dot');
+                if (dot) dot.remove();
+            }
+        });
+
+        // Reset weekly modal values
+        const intervalDisplay = $('#weeklyLessonIntervalDisplayManage');
+        if (intervalDisplay) intervalDisplay.textContent = '1';
+
+        const periodDisplay = $('#weeklyLessonPeriodDisplayManage');
+        if (periodDisplay) periodDisplay.textContent = 'Week';
+
+        const startDateText = $('#weeklyLessonStartDateTextManage');
+        if (startDateText) {
+            startDateText.textContent = 'Select start date';
+            delete startDateText.dataset.fullDate;
+        }
+
+        // Reset end options
+        const endNeverRadio = $('#weeklyLessonEndNeverManage');
+        if (endNeverRadio) endNeverRadio.checked = true;
+
+        const endOnRadio = $('#weeklyLessonEndOnManage');
+        if (endOnRadio) endOnRadio.checked = false;
+
+        const endAfterRadio = $('#weeklyLessonEndAfterManage');
+        if (endAfterRadio) endAfterRadio.checked = false;
+
+        const occurrenceDisplay = $('#weeklyLessonOccurrenceDisplayManage');
+        if (occurrenceDisplay) occurrenceDisplay.textContent = '13 occurrences';
+
+        // Clear global variables
+        window.selectedCmidManage = null;
+        if (window.weeklyLessonDayTimes) {
+            window.weeklyLessonDayTimes = {};
+        }
+
+        // Re-validate form (should disable submit button)
+        validateForm();
+
+        // Reload students if teacher is selected
+        const teacherId = teacherTrigger?.dataset.userid;
+        if (teacherId) {
+            loadStudentsForTeacher(teacherId, true);
+        }
+
+        console.log('Form reset successfully');
+    }
 });
 </script>

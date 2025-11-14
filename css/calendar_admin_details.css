@@ -1139,6 +1139,18 @@ body {
   font-weight: 500;
   line-height: 21px;
   color: #000000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Teacher color indicator dot */
+.teacher-color-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background-color: var(--dot-color, #ccc);
 }
 
 .radio-custom {
