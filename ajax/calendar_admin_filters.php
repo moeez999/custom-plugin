@@ -422,15 +422,20 @@ try {
             if (count($cohort_ids) > 0) {
                 list($in_sql, $params) = $DB->get_in_or_equal($cohort_ids, SQL_PARAMS_NAMED);
                 $sql = "
-                    SELECT DISTINCT u.id, u.firstname, u.lastname, u.picture, u.imagealt,
-                                    u.firstnamephonetic, u.lastnamephonetic,
-                                    u.middlename, u.alternatename
+                    SELECT u.id, u.firstname, u.lastname, u.picture, u.imagealt,
+                           u.firstnamephonetic, u.lastnamephonetic,
+                           u.middlename, u.alternatename,
+                           cm.cohortid,
+                           c.name as cohort_name,
+                           c.idnumber as cohort_idnumber,
+                           c.shortname as cohort_shortname
                       FROM {cohort_members} cm
                       JOIN {user} u ON u.id = cm.userid
+                      JOIN {cohort} c ON c.id = cm.cohortid
                      WHERE cm.cohortid $in_sql
                        AND u.deleted = 0
                        AND u.suspended = 0
-                     ORDER BY u.firstname ASC, u.lastname ASC
+                     ORDER BY c.name ASC, u.firstname ASC, u.lastname ASC
                 ";
                 $students = $DB->get_records_sql($sql, $params);
             } else {
@@ -439,40 +444,52 @@ try {
         } elseif ($cohortid > 0) {
             // Students in the selected cohort.
             $sql = "
-                SELECT DISTINCT u.id, u.firstname, u.lastname, u.picture, u.imagealt,
-                                u.firstnamephonetic, u.lastnamephonetic,
-                                u.middlename, u.alternatename
+                SELECT u.id, u.firstname, u.lastname, u.picture, u.imagealt,
+                       u.firstnamephonetic, u.lastnamephonetic,
+                       u.middlename, u.alternatename,
+                       cm.cohortid,
+                       c.name as cohort_name,
+                       c.idnumber as cohort_idnumber,
+                       c.shortname as cohort_shortname
                   FROM {cohort_members} cm
                   JOIN {user} u ON u.id = cm.userid
+                  JOIN {cohort} c ON c.id = cm.cohortid
                  WHERE cm.cohortid = :cid
                    AND u.deleted = 0
                    AND u.suspended = 0
-                 ORDER BY u.firstname ASC, u.lastname ASC
+                 ORDER BY c.name ASC, u.firstname ASC, u.lastname ASC
             ";
             $students = $DB->get_records_sql($sql, ['cid' => $cohortid]);
         } else {
             // All students across visible cohorts.
             $sql = "
-                SELECT DISTINCT u.id, u.firstname, u.lastname, u.picture, u.imagealt,
-                                u.firstnamephonetic, u.lastnamephonetic,
-                                u.middlename, u.alternatename
+                SELECT u.id, u.firstname, u.lastname, u.picture, u.imagealt,
+                       u.firstnamephonetic, u.lastnamephonetic,
+                       u.middlename, u.alternatename,
+                       cm.cohortid,
+                       c.name as cohort_name,
+                       c.idnumber as cohort_idnumber,
+                       c.shortname as cohort_shortname
                   FROM {cohort_members} cm
                   JOIN {cohort} c ON c.id = cm.cohortid
                   JOIN {user} u   ON u.id = cm.userid
                  WHERE c.visible = 1
                    AND u.deleted = 0
                    AND u.suspended = 0
-                 ORDER BY u.firstname ASC, u.lastname ASC
+                 ORDER BY c.name ASC, u.firstname ASC, u.lastname ASC
             ";
             $students = $DB->get_records_sql($sql);
         }
 
         $data = [];
         foreach ($students as $s) {
+            $cohort_label = trim((string)$s->cohort_idnumber) !== '' ? $s->cohort_shortname : $s->cohort_name;
             $data[] = [
-                'id'     => (int)$s->id,
-                'name'   => fullname($s, true),
-                'avatar' => caf_get_user_avatar_url($s),
+                'id'           => (int)$s->id,
+                'name'         => fullname($s, true),
+                'avatar'       => caf_get_user_avatar_url($s),
+                'cohortid'     => (int)$s->cohortid,
+                'cohortname'   => $cohort_label,
             ];
         }
 

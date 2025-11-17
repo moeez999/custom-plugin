@@ -1475,17 +1475,43 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // Add students to list (selection will be driven by events)
+    // Group students by cohort
+    const studentsByCohort = {};
     list.forEach((s) => {
-      const option = createStudentOption(s);
-      studentFieldset.appendChild(option);
+      const cohortKey = s.cohortid || 0;
+      const cohortName = s.cohortname || "Unknown Cohort";
 
-      // Restore selection state if previously selected
-      if (selectedStudentIds.includes(s.id)) {
-        const checkbox = option.querySelector(".student-checkbox");
-        if (checkbox) checkbox.checked = true;
-        option.classList.add("selected");
+      if (!studentsByCohort[cohortKey]) {
+        studentsByCohort[cohortKey] = {
+          name: cohortName,
+          students: [],
+        };
       }
+      studentsByCohort[cohortKey].students.push(s);
+    });
+
+    // Render grouped students
+    Object.keys(studentsByCohort).forEach((cohortKey) => {
+      const cohortGroup = studentsByCohort[cohortKey];
+
+      // Add cohort header
+      const cohortHeader = document.createElement("div");
+      cohortHeader.className = "student-cohort-header";
+      cohortHeader.textContent = cohortGroup.name;
+      studentFieldset.appendChild(cohortHeader);
+
+      // Add students under this cohort
+      cohortGroup.students.forEach((s) => {
+        const option = createStudentOption(s);
+        studentFieldset.appendChild(option);
+
+        // Restore selection state if previously selected
+        if (selectedStudentIds.includes(s.id)) {
+          const checkbox = option.querySelector(".student-checkbox");
+          if (checkbox) checkbox.checked = true;
+          option.classList.add("selected");
+        }
+      });
     });
 
     updateStudentPills();

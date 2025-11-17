@@ -1326,6 +1326,21 @@ body {
 }
 
 /* options */
+.student-cohort-header {
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6a697c;
+  background-color: #f8f9fa;
+
+  margin-top: 8px;
+  width: max-content;
+  border-radius: 8px;
+}
+.student-cohort-header:first-child {
+  margin-top: 0;
+}
+
 .student-option {
   border-radius: 10px;
   transition: background 0.2s;
