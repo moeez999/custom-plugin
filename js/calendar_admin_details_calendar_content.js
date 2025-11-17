@@ -428,7 +428,14 @@ $(function () {
             <div class="ev-when">${fmt12(ev.start)} – ${fmt12(ev.end)}</div>
             ${
               !isShortEvent
-                ? `<div class="ev-title">${ev.title || ""}</div>`
+                ? `<div class="ev-title">${
+                    (ev.classType === "one2one_weekly" ||
+                      ev.classType === "one2one_single") &&
+                    ev.studentnames &&
+                    ev.studentnames.length > 0
+                      ? ev.studentnames.join(", ")
+                      : ev.title || ""
+                  }</div>`
                 : ""
             }
           </div>
@@ -440,7 +447,14 @@ $(function () {
           const $tooltip = $(`
             <div class="event-tooltip">
               <div class="tooltip-header">
-                <strong>${ev.title || "Event"}</strong>
+                <strong>${
+                  (ev.classType === "one2one_weekly" ||
+                    ev.classType === "one2one_single") &&
+                  ev.studentnames &&
+                  ev.studentnames.length > 0
+                    ? ev.studentnames.join(", ")
+                    : ev.title || "Event"
+                }</strong>
               </div>
               <div class="tooltip-time">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -2272,6 +2286,8 @@ document.addEventListener("DOMContentLoaded", () => {
             avatar: "",
             teacherId: teacherId,
             classType: ev.class_type,
+            studentnames: ev.studentnames || [],
+            studentids: ev.studentids || [],
           };
         });
 

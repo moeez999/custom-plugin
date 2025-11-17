@@ -157,7 +157,7 @@ body {
     #ffffff
   );
   border: 1px solid var(--event-border-color, #7c96ff);
-  border-bottom: 5px solid var(--event-border-color, #7c96ff);
+  border-bottom: 3px solid var(--event-border-color, #7c96ff);
   border-radius: var(--event-radius);
   padding: 8px 8px 6px;
   box-shadow: 0 4px 10px rgba(25, 35, 60, 0.08);
@@ -210,7 +210,7 @@ body {
   border-color: #095df3;
   border-style: dashed;
   border-width: 2px;
-  border-bottom-width: 5px;
+  border-bottom-width: 3px;
   border-bottom-style: dashed;
   background: color-mix(in srgb, #095df3 10%, #ffffff);
 }
