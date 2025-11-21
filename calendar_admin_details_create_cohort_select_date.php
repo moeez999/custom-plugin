@@ -911,6 +911,18 @@ $(function() {
             
             $dateBtn.text(formattedDate);
             $dateBtn.data('raw-date', rawDate);
+        } else if (calendarTarget === 'peertalk' && window.peertalkDateButton) {
+            // Update peertalk date button
+            const year = calSelectedDate.getFullYear();
+            const month = calSelectedDate.getMonth();
+            const day = calSelectedDate.getDate();
+            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const formattedDate = monthNames[month] + ' ' + day + ', ' + year;
+            const rawDate = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+            
+            window.peertalkDateButton.text(formattedDate);
+            window.peertalkDateButton.data('raw-date', rawDate);
+            window.peertalkDateButton.removeClass('field-error');
         }
         $('#monthly_cal_modal_backdrop').fadeOut(80);
     });

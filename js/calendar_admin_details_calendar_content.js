@@ -155,6 +155,519 @@ $(function () {
     $("#classTabContent").css("display", "none");
   }
 
+  /* ========= Open PeerTalk Modal With Event Data ========= */
+  function openPeerTalkModalWithData(eventData) {
+    console.log("Opening PeerTalk modal with data:", eventData);
+
+    // Collect all events with the same eventid for recurrence
+    let recurrenceEvents = [];
+    if (eventData.eventid && window.events) {
+      recurrenceEvents = window.events.filter(function (ev) {
+        return (
+          ev.eventid === eventData.eventid &&
+          (ev.classType === "peertalk" || ev.source === "peertalk")
+        );
+      });
+
+      console.log(
+        `Found ${recurrenceEvents.length} peertalk events with eventid ${eventData.eventid}`
+      );
+    }
+
+    // Show modal backdrop
+    $("#calendar_admin_details_create_cohort_modal_backdrop").fadeIn();
+
+    const $bd = $("#calendar_admin_details_create_cohort_modal_backdrop");
+
+    // Activate peertalk tab
+    $bd.find(".calendar_admin_details_create_cohort_tab").removeClass("active");
+    $bd
+      .find('.calendar_admin_details_create_cohort_tab[data-tab="peertalk"]')
+      .addClass("active");
+
+    // Hide other tab contents and show peertalk tab
+    $("#calendar_admin_details_create_cohort_content").html("");
+    $("#mergeTabContent").css("display", "none");
+    $("#conferenceTabContent").css("display", "none");
+    $("#addTimeTabContent").css("display", "none");
+    $("#addExtraSlotsTabContent").css("display", "none");
+    $("#mainModalContent").css("display", "none");
+    $("#classTabContent").css("display", "none");
+    $("#peerTalkTabContent").css("display", "block");
+
+    // Populate the peertalk form with event data and recurrence info
+    populatePeerTalkForm(eventData, recurrenceEvents);
+  }
+
+  /* ========= Populate PeerTalk Form With Event Data ========= */
+  function populatePeerTalkForm(eventData, recurrenceEvents) {
+    console.log("Populating PeerTalk form with:", eventData);
+    console.log("Recurrence events:", recurrenceEvents);
+
+    // Populate date if available
+    if (eventData.date) {
+      const dateBtn = $(".peertalk_modal_date_btn");
+
+      // Parse date properly to avoid timezone issues
+      // eventData.date is in format "YYYY-MM-DD"
+      const dateParts = eventData.date.split("-");
+      const year = parseInt(dateParts[0], 10);
+      const month = parseInt(dateParts[1], 10) - 1; // Month is 0-indexed
+      const day = parseInt(dateParts[2], 10);
+      const dateObj = new Date(year, month, day);
+
+      const formattedDate = dateObj.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+      dateBtn.text(formattedDate);
+      dateBtn.data("raw-date", eventData.date);
+
+      console.log(`Set date button: ${formattedDate} (raw: ${eventData.date})`);
+    }
+
+    // Populate cohorts if available - trigger clicks on the actual items
+    if (eventData.cohortids && eventData.cohortids.length > 0) {
+      // Wait a bit for the modal to be fully loaded
+      setTimeout(function () {
+        // Click each cohort item to trigger the existing selection logic
+        eventData.cohortids.forEach(function (cohortId) {
+          const $cohortItem = $(
+            `#peertalkCohortsList li.peertalk_cohort_item[data-id="${cohortId}"]`
+          );
+          if ($cohortItem.length > 0) {
+            console.log(
+              "Clicking cohort:",
+              cohortId,
+              $cohortItem.text().trim()
+            );
+            $cohortItem.trigger("click");
+          }
+        });
+      }, 100);
+    }
+
+    // Populate teachers if available - trigger click on the actual item
+    if (eventData.teacherId) {
+      // Wait a bit for the modal to be fully loaded
+      setTimeout(function () {
+        // Click the teacher item to trigger the existing selection logic
+        const $teacherItem = $(
+          `#peertalkTeachersList li.peertalk_teacher_item[data-userid="${eventData.teacherId}"]`
+        );
+        if ($teacherItem.length > 0) {
+          console.log(
+            "Clicking teacher:",
+            eventData.teacherId,
+            $teacherItem.find(".teacher_name").text().trim()
+          );
+          $teacherItem.trigger("click");
+        }
+      }, 150);
+    }
+
+    // Populate time if available
+    if (eventData.start && eventData.end) {
+      // Convert minutes to time format
+      function minutesToTime(mins) {
+        const hours = Math.floor(mins / 60);
+        const minutes = mins % 60;
+        return (
+          String(hours).padStart(2, "0") +
+          ":" +
+          String(minutes).padStart(2, "0")
+        );
+      }
+
+      console.log(
+        "Event times - Start:",
+        eventData.start,
+        "End:",
+        eventData.end
+      );
+      // These are already in minutes since midnight, so we can use them directly
+      // Note: The calendar might have already converted them, so we check the type
+      const startMins =
+        typeof eventData.start === "number"
+          ? eventData.start
+          : parseInt(eventData.start);
+      const endMins =
+        typeof eventData.end === "number"
+          ? eventData.end
+          : parseInt(eventData.end);
+
+      console.log(
+        "Converted times - Start mins:",
+        startMins,
+        "End mins:",
+        endMins
+      );
+    }
+
+    // Populate title if available
+    if (eventData.title) {
+      // There might be a title field in the peertalk form - look for it
+      const $titleInput = $("#peerTalkForm")
+        .find('input[name="title"], input[type="text"]')
+        .first();
+      if ($titleInput.length > 0) {
+        $titleInput.val(eventData.title);
+      }
+    }
+
+    // Populate color if available
+    if (eventData.color) {
+      // Update color dropdown
+      const colorValue = eventData.color.replace("e-", "#"); // Convert e-purple to color code if needed
+      // You might need to adjust this based on how colors are stored
+    }
+
+    // Build custom recurrence array from events with same eventid
+    if (recurrenceEvents && recurrenceEvents.length > 0) {
+      const customRecurrenceArray = recurrenceEvents.map(function (ev) {
+        console.log("Processing recurrence event:", ev);
+
+        // Convert minutes (from midnight) to HH:MM format
+        function minutesToTime(minutes) {
+          if (minutes === undefined || minutes === null) return "00:00";
+          const h = Math.floor(minutes / 60);
+          const m = minutes % 60;
+          return String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0");
+        }
+
+        // Convert timestamp to HH:MM format
+        function timestampToTime(ts) {
+          if (!ts) return "00:00";
+          const date = new Date(ts * 1000); // Convert seconds to milliseconds
+          const h = date.getHours();
+          const m = date.getMinutes();
+          return String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0");
+        }
+
+        // Convert timestamp to YYYY-MM-DD date
+        function timestampToDate(ts) {
+          if (!ts) return "";
+          const date = new Date(ts * 1000);
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, "0");
+          const day = String(date.getDate()).padStart(2, "0");
+          return `${year}-${month}-${day}`;
+        }
+
+        // Get date from timestamp or existing date
+        const eventDate = ev.start_ts ? timestampToDate(ev.start_ts) : ev.date;
+
+        // Parse date to get day name
+        const dateObj = new Date(eventDate);
+        const dayNames = [
+          "Sunday",
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+        ];
+        const dayName = dayNames[dateObj.getDay()];
+
+        // Get times - handle different formats
+        let startTime, endTime;
+
+        console.log(
+          `Event data - start: ${ev.start} (type: ${typeof ev.start}), end: ${
+            ev.end
+          } (type: ${typeof ev.end}), start_ts: ${ev.start_ts}, end_ts: ${
+            ev.end_ts
+          }`
+        );
+
+        // Check if start/end are already in HH:MM format (string)
+        if (typeof ev.start === "string" && ev.start.includes(":")) {
+          startTime = ev.start;
+          endTime = ev.end;
+          console.log(`Using time strings directly: ${startTime} - ${endTime}`);
+        }
+        // Check if start/end are numbers (minutes from midnight)
+        else if (typeof ev.start === "number" && !isNaN(ev.start)) {
+          startTime = minutesToTime(ev.start);
+          endTime = minutesToTime(ev.end);
+          console.log(`Converted from minutes: ${startTime} - ${endTime}`);
+        }
+        // Try parsing as numbers
+        else if (!isNaN(parseInt(ev.start, 10))) {
+          const startMinutes = parseInt(ev.start, 10);
+          const endMinutes = parseInt(ev.end, 10);
+          startTime = minutesToTime(startMinutes);
+          endTime = minutesToTime(endMinutes);
+          console.log(`Parsed and converted: ${startTime} - ${endTime}`);
+        }
+        // Fall back to timestamps
+        else if (ev.start_ts) {
+          startTime = timestampToTime(ev.start_ts);
+          endTime = timestampToTime(ev.end_ts);
+          console.log(`Converted from timestamps: ${startTime} - ${endTime}`);
+        }
+        // Default fallback
+        else {
+          startTime = "00:00";
+          endTime = "00:00";
+          console.log(`Using default times: ${startTime} - ${endTime}`);
+        }
+
+        return {
+          date: eventDate, // Start date (YYYY-MM-DD)
+          day: dayName, // Day name
+          start_time: startTime, // Start time (HH:MM)
+          end_time: endTime, // End time (HH:MM)
+          start_ts: ev.start_ts, // Start timestamp
+          end_ts: ev.end_ts, // End timestamp
+        };
+      });
+
+      console.log("Custom recurrence array built:", customRecurrenceArray);
+
+      // Store the recurrence array globally or in a data attribute for form submission
+      window.peerTalkRecurrenceData = customRecurrenceArray;
+
+      // Update the repeat button text in the format: "Weekly on Mon(09:00 AM - 10:00 AM), Tue(09:00 AM - 10:00 AM)"
+      const $repeatBtn = $(".peertalk_repeat_btn");
+      if ($repeatBtn.length > 0) {
+        // Convert 24h time to 12h format with AM/PM
+        function formatTime12h(time24) {
+          const [hours, minutes] = time24.split(":").map(Number);
+          const period = hours >= 12 ? "PM" : "AM";
+          const hours12 = hours % 12 || 12;
+          return `${String(hours12).padStart(2, "0")}:${String(
+            minutes
+          ).padStart(2, "0")} ${period}`;
+        }
+
+        // Get short day names
+        const shortDays = {
+          Sunday: "Sun",
+          Monday: "Mon",
+          Tuesday: "Tue",
+          Wednesday: "Wed",
+          Thursday: "Thu",
+          Friday: "Fri",
+          Saturday: "Sat",
+        };
+
+        // Build the text: "Weekly on Mon(time), Tue(time), ..."
+        const dayTimeParts = customRecurrenceArray.map(function (item) {
+          const shortDay = shortDays[item.day];
+          const startTime12 = formatTime12h(item.start_time);
+          const endTime12 = formatTime12h(item.end_time);
+          return `${shortDay}(<span class="time-range">${startTime12} - ${endTime12}</span>)`;
+        });
+
+        const repeatText = "Weekly on " + dayTimeParts.join(", ");
+
+        // Update button HTML while preserving the arrow
+        $repeatBtn.html(
+          repeatText + '<span style="float:right; font-size:1rem;">▼</span>'
+        );
+
+        console.log("Updated repeat button to:", repeatText);
+      }
+
+      // Optionally populate the custom recurrence UI if it exists
+      populateCustomRecurrenceUI(customRecurrenceArray);
+    }
+  }
+
+  /* ========= Populate Custom Recurrence UI ========= */
+  function populateCustomRecurrenceUI(recurrenceArray) {
+    // Find the custom recurrence container (adjust selector based on your HTML)
+    const $recurrenceContainer = $("#peertalk_custom_recurrence_container");
+
+    if ($recurrenceContainer.length === 0) {
+      console.log("Custom recurrence container not found");
+      return;
+    }
+
+    // Clear existing content
+    $recurrenceContainer.empty();
+
+    // Build the recurrence UI
+    recurrenceArray.forEach(function (item, index) {
+      const $row = $(`
+        <div class="recurrence-item" data-index="${index}">
+          <span class="recurrence-date">${item.date}</span>
+          <span class="recurrence-day">${item.day}</span>
+          <span class="recurrence-time">${item.start_time} - ${item.end_time}</span>
+          <button type="button" class="remove-recurrence-item" data-index="${index}">×</button>
+        </div>
+      `);
+      $recurrenceContainer.append($row);
+    });
+
+    console.log(`Populated ${recurrenceArray.length} recurrence items in UI`);
+  }
+
+  // Expose function globally for testing
+  window.openPeerTalkModalWithData = openPeerTalkModalWithData;
+
+  /* ========= Handle PeerTalk Repeat Button Click ========= */
+  $(document).on("click", ".peertalk_repeat_btn", function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    console.log("PeerTalk repeat button clicked");
+
+    // Check if we have recurrence data
+    if (
+      window.peerTalkRecurrenceData &&
+      window.peerTalkRecurrenceData.length > 0
+    ) {
+      console.log(
+        "Populating custom recurrence modal with:",
+        window.peerTalkRecurrenceData
+      );
+
+      // Open the custom recurrence modal
+      $("#customRecurrenceModalBackdrop").fadeIn();
+
+      // Populate the modal with existing recurrence data
+      setTimeout(function () {
+        populateCustomRecurrenceModal(window.peerTalkRecurrenceData);
+      }, 100);
+    } else {
+      console.log("No recurrence data available");
+    }
+  });
+
+  /* ========= Populate Custom Recurrence Modal ========= */
+  function populateCustomRecurrenceModal(recurrenceArray) {
+    console.log("Populating custom recurrence modal with:", recurrenceArray);
+
+    if (!recurrenceArray || recurrenceArray.length === 0) {
+      console.log("No recurrence data to populate");
+      return;
+    }
+
+    // Map day names to day keys (0=Sunday, 1=Monday, etc.)
+    const dayNameToKey = {
+      Sunday: 0,
+      Monday: 1,
+      Tuesday: 2,
+      Wednesday: 3,
+      Thursday: 4,
+      Friday: 5,
+      Saturday: 6,
+    };
+
+    // Set "Repeat Every 1 Week"
+    $("#customrec_interval").text("1");
+    $("#customrec_period_val").text("Week");
+
+    // Get unique days from recurrence array and their times
+    const dayTimesMap = {};
+    recurrenceArray.forEach(function (item) {
+      const dayKey = dayNameToKey[item.day];
+      if (dayKey !== undefined) {
+        if (!dayTimesMap[dayKey]) {
+          dayTimesMap[dayKey] = [];
+        }
+        dayTimesMap[dayKey].push({
+          start_time: item.start_time,
+          end_time: item.end_time,
+        });
+      }
+    });
+
+    console.log("Day times map:", dayTimesMap);
+
+    // Helper function to format time to 12h with AM/PM
+    function formatTime12h(time24) {
+      const [hours, minutes] = time24.split(":");
+      let h = parseInt(hours, 10);
+      const ampm = h >= 12 ? "PM" : "AM";
+      h = h % 12 || 12;
+      const formattedTime = (h < 10 ? "0" + h : h) + ":" + minutes;
+      console.log(`formatTime12h: ${time24} -> ${formattedTime} ${ampm}`);
+      return { time: formattedTime, period: ampm };
+    }
+
+    // Select and set times for each day widget
+    Object.keys(dayTimesMap).forEach(function (dayKey) {
+      const $widget = $(`.scroll-widget[data-key="${dayKey}"]`);
+      if ($widget.length > 0) {
+        // Mark widget as selected
+        $widget.attr("aria-pressed", "true");
+        $widget.addClass("selected active");
+
+        // Get the first time entry for this day
+        const times = dayTimesMap[dayKey];
+        const firstTime = times[0];
+
+        // Format start and end times
+        const startFormatted = formatTime12h(firstTime.start_time);
+        const endFormatted = formatTime12h(firstTime.end_time);
+
+        // Find or create the time display container
+        let $timeContainer = $widget.find(".scroll-widget__time");
+        if ($timeContainer.length === 0) {
+          $timeContainer = $(
+            '<div class="scroll-widget__time has-time"></div>'
+          );
+          $widget.find(".scroll-widget__divider").after($timeContainer);
+        } else {
+          $timeContainer.addClass("has-time");
+        }
+
+        // Populate time display
+        $timeContainer.html(`
+          <div class="scroll-widget__hm s">${startFormatted.time}</div>
+          <span class="scroll-widget__period sp">${startFormatted.period}</span>
+          <span class="scroll-widget__dash">-</span>
+          <div class="scroll-widget__hm e">${endFormatted.time}</div>
+          <span class="scroll-widget__period ep">${endFormatted.period}</span>
+        `);
+
+        // Add has-time class to button
+        $widget.find(".scroll-widget__button").addClass("has-time");
+
+        // Store time data on the widget
+        $widget.data("times", times);
+
+        console.log(`Selected day ${dayKey} with times:`, times);
+      }
+    });
+
+    // Set end date from last occurrence
+    if (recurrenceArray.length > 0) {
+      const lastItem = recurrenceArray[recurrenceArray.length - 1];
+      const endDate = new Date(lastItem.date);
+      const formattedEndDate = endDate.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+
+      // Set "Ends On" option
+      $("#customrec_end_on").prop("checked", true);
+      $("#customrec_end_date_btn")
+        .text(formattedEndDate)
+        .prop("disabled", false);
+      $("#customrec_occ_val")
+        .closest(".customrec_occurrence_counter")
+        .find(".customrec_stepper")
+        .prop("disabled", true);
+    }
+
+    // Set occurrence count
+    $("#customrec_occ_val").text(`${recurrenceArray.length} occurrences`);
+
+    console.log(
+      `Populated custom recurrence modal with ${recurrenceArray.length} occurrences`
+    );
+  }
+
+  // Expose globally
+  window.populateCustomRecurrenceModal = populateCustomRecurrenceModal;
+
   // // Button → open same modal (kept your trigger class)
   // $(".calendar_admin_details_create_cohort_open")
   //   .off("click.openCohort")
@@ -211,11 +724,21 @@ $(function () {
         );
       });
 
-      // Only open menu dropdown for group lessons (not 1:1 lessons)
+      // Check event type and open appropriate modal or menu
       if (currentClickedEvent) {
         const classType = currentClickedEvent.classType;
-        // Check if it's NOT a 1:1 lesson
-        if (classType !== "one2one_weekly" && classType !== "one2one_single") {
+        const source = currentClickedEvent.source;
+
+        // Check if it's a peertalk event
+        if (classType === "peertalk" || source === "peertalk") {
+          // Open peertalk modal with event data
+          openPeerTalkModalWithData(currentClickedEvent);
+        }
+        // Check if it's NOT a 1:1 lesson (for regular group lessons)
+        else if (
+          classType !== "one2one_weekly" &&
+          classType !== "one2one_single"
+        ) {
           // This is a group lesson, open the dropdown menu
           openMenuOptionsDropdown(e, this);
         }
@@ -2135,6 +2658,40 @@ document.addEventListener("DOMContentLoaded", () => {
     return wrap;
   }
 
+  // Function to populate peertalk cohorts dropdown
+  function populatePeerTalkCohorts(cohortsList) {
+    const $peertalkDropdownList = $("#peertalkCohortsDropdownList ul");
+    if (!$peertalkDropdownList.length) return;
+
+    // Clear existing items (except search input)
+    $peertalkDropdownList.empty();
+
+    // Filter out one-on-one cohorts for peertalk
+    const groupCohorts = cohortsList.filter((c) => c.cohorttype !== "one1one");
+
+    if (groupCohorts.length === 0) {
+      $peertalkDropdownList.append(
+        '<li style="pointer-events:none;opacity:.6;">No cohorts available</li>'
+      );
+      return;
+    }
+
+    // Add each cohort to the dropdown
+    groupCohorts.forEach((cohort) => {
+      const cohortName = cohort.name || cohort.idnumber || "";
+      const cohortId = cohort.id;
+      const cohortIdnumber = cohort.idnumber || "";
+      const $li = $(
+        `<li class="peertalk_cohort_item" data-id="${cohortId}" data-idnumber="${cohortIdnumber}" data-name="${cohortName}">${cohortName}</li>`
+      );
+      $peertalkDropdownList.append($li);
+    });
+
+    console.log(
+      `Populated ${groupCohorts.length} cohorts in peertalk dropdown`
+    );
+  }
+
   async function loadAllCohorts() {
     clear(cohortFieldset);
     clear(oneOnOneFieldset);
@@ -2149,6 +2706,9 @@ document.addEventListener("DOMContentLoaded", () => {
       cohortNoResults.style.display = "block";
       return [];
     }
+
+    // Populate peertalk cohorts dropdown
+    populatePeerTalkCohorts(list);
 
     // Remove duplicates based on cohort ID
     const uniqueList = Array.from(new Map(list.map((c) => [c.id, c])).values());
@@ -2224,6 +2784,9 @@ document.addEventListener("DOMContentLoaded", () => {
       cohortNoResults.style.display = "block";
       return [];
     }
+
+    // Populate peertalk cohorts dropdown
+    populatePeerTalkCohorts(list);
 
     // Remove duplicates based on cohort ID
     const uniqueList = Array.from(new Map(list.map((c) => [c.id, c])).values());
@@ -3349,9 +3912,20 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       const data = await response.json();
+      console.log("Fetched calendar events:", data);
 
+      // Merge regular events and peertalk events
+      let allEvents = [];
       if (data.ok && Array.isArray(data.events)) {
-        window.events = data.events.map((ev) => {
+        allEvents = [...data.events];
+      }
+      if (data.ok && Array.isArray(data.peertalk)) {
+        console.log("Adding peertalk events:", data.peertalk);
+        allEvents = [...allEvents, ...data.peertalk];
+      }
+
+      if (allEvents.length > 0) {
+        window.events = allEvents.map((ev) => {
           const startDate = new Date(ev.start);
           const endDate = new Date(ev.end);
 
@@ -3386,6 +3960,8 @@ document.addEventListener("DOMContentLoaded", () => {
             ev.class_type === "one2one_single"
           ) {
             eventColor = "e-green";
+          } else if (ev.class_type === "peertalk" || ev.source === "peertalk") {
+            eventColor = "e-purple"; // Purple for peertalk events
           }
 
           return {
@@ -3396,9 +3972,11 @@ document.addEventListener("DOMContentLoaded", () => {
             color: eventColor,
             repeat: ev.is_recurring,
             meetingurl: ev.meetingurl,
+            viewurl: ev.viewurl || ev.meetingurl,
             avatar: "",
             teacherId: teacherId,
             classType: ev.class_type,
+            source: ev.source || "event",
             studentnames: ev.studentnames || [],
             studentids: ev.studentids || [],
             cohortids: ev.cohortids || [],

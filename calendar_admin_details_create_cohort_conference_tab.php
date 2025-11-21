@@ -77,22 +77,85 @@
         </div>
 
         <div class="conference_modal_fieldrow">
+            <?php
+require_once(__DIR__ . '/../../config.php');
+require_login();
+
+global $DB;
+
+/** Fetch cohorts with valid idnumber */
+$sql = "SELECT id, name, idnumber
+          FROM {cohort}
+         WHERE idnumber IS NOT NULL AND idnumber <> ''
+      ORDER BY timemodified DESC, id DESC";
+
+$cohorts = $DB->get_records_sql($sql);
+?>
+
             <div>
                 <span class="conference_modal_label">Attending Cohorts</span>
                 <div class="conference_modal_dropdown_btn" id="conferenceCohortsDropdown">
-                    XX#
+                    Select Cohort
                     <span style="float:right; font-size:1rem;"><img src="./img/dropdown-arrow-down.svg" alt=""></span>
                 </div>
                 <div class="conference_modal_dropdown_list" id="conferenceCohortsDropdownList">
                     <input type="text" id="searchCohorts" class="dropdown-search" placeholder="Search cohorts...">
-                    <ul>
-                        <li>FL1</li>
-                        <li>TX1</li>
-                        <li>NY2</li>
-                        <li>OHI2</li>
+                    <ul id="conferenceCohortsList">
+                        <?php
+            if ($cohorts) {
+                foreach ($cohorts as $c) {
+                    $shortname = format_string($c->name);
+                    $idn       = trim((string)$c->idnumber);
+
+                    echo '<li class="conference_cohort_item" 
+                              data-id="'.(int)$c->id.'" 
+                              data-idnumber="'.s($idn).'" 
+                              data-name="'.s($shortname).'">'.
+                              $shortname.
+                         '</li>';
+                }
+            } else {
+                echo '<li style="pointer-events:none;opacity:.6;">No cohorts found</li>';
+            }
+            ?>
                     </ul>
                 </div>
             </div>
+
+            <?php
+require_once(__DIR__ . '/../../config.php');
+require_login();
+
+global $DB, $PAGE, $OUTPUT;
+
+/** Collect unique teacher user IDs from cohorts */
+$userIds = $DB->get_fieldset_sql("
+    SELECT DISTINCT uid
+      FROM (
+            SELECT cohortmainteacher AS uid FROM {cohort}
+             WHERE cohortmainteacher IS NOT NULL AND cohortmainteacher > 0
+            UNION
+            SELECT cohortguideteacher AS uid FROM {cohort}
+             WHERE cohortguideteacher IS NOT NULL AND cohortguideteacher > 0
+      ) t
+");
+
+/** Fetch user records (not deleted/suspended) */
+$teachers = [];
+if ($userIds) {
+    list($inSql, $params) = $DB->get_in_or_equal($userIds, SQL_PARAMS_NAMED);
+    $fields = "id, firstname, lastname, picture, imagealt,
+               firstnamephonetic, lastnamephonetic, middlename, alternatename";
+    $teachers = $DB->get_records_select(
+        'user',
+        "id $inSql AND deleted = 0 AND suspended = 0",
+        $params,
+        'firstname ASC, lastname ASC',
+        $fields
+    );
+}
+
+?>
 
             <div>
                 <span class="conference_modal_label">Teachers</span>
@@ -102,11 +165,32 @@
                 </div>
                 <div class="conference_modal_dropdown_list" id="conferenceTeachersDropdownList">
                     <input type="text" id="searchTeachers" class="dropdown-search" placeholder="Search teachers...">
-                    <ul>
-                        <li><img src="https://randomuser.me/api/portraits/men/11.jpg"
-                                class="calendar_admin_details_create_cohort_teacher_avatar"> Edwards</li>
-                        <li><img src="https://randomuser.me/api/portraits/women/44.jpg"
-                                class="calendar_admin_details_create_cohort_teacher_avatar"> Daniela</li>
+                    <ul id="conferenceTeachersList">
+                        <?php
+            if (!empty($teachers)) {
+                foreach ($teachers as $teacher) {
+                    $picture = new user_picture($teacher);
+                    $picture->size = 40;
+                    $imageurl = $picture->get_url($PAGE)->out(false);
+                    $fullname = fullname($teacher, true);
+
+                    echo '<li class="conference_teacher_item" 
+                              data-userid="'.(int)$teacher->id.'" 
+                              data-name="'.s($fullname).'" 
+                              data-img="'.s($imageurl).'">';
+
+                    echo '<img src="'.s($imageurl).'" 
+                              class="calendar_admin_details_create_cohort_teacher_avatar" 
+                              alt="'.s($fullname).'" /> ';
+
+                    echo format_string($fullname);
+
+                    echo '</li>';
+                }
+            } else {
+                echo '<li aria-disabled="true">No teachers found</li>';
+            }
+            ?>
                     </ul>
                 </div>
             </div>
@@ -221,20 +305,27 @@ $(document).ready(function() {
             )
             .hide();
     });
-    $parent.find('#conferenceCohortsDropdownList li').click(function() {
-        const cohort = $(this).text().trim();
+    $parent.find('#conferenceCohortsDropdownList').on('click', 'li.conference_cohort_item', function(e) {
+        e.stopPropagation();
+        const $item = $(this);
+        const cohortName = $item.data('name') || $item.text().trim();
+        const cohortId = $item.data('id');
+        const cohortIdnumber = $item.data('idnumber');
+
+        console.log('Conference Cohort clicked:', {cohortName, cohortId, cohortIdnumber});
+
         const $dropdown = $parent.find('#conferenceCohortsDropdown');
         const firstNode = $dropdown.contents().first()[0];
         if (firstNode) {
-            firstNode.textContent = cohort + " ";
+            firstNode.textContent = cohortName + " ";
         }
         $parent.find('#conferenceCohortsDropdownList').hide();
-        if ($parent.find('.conference_modal_cohort_list li[data-cohort="' + cohort + '"]').length ===
-            0) {
+
+        if ($parent.find('.conference_modal_cohort_list li[data-cohort-id="' + cohortId + '"]').length === 0) {
             $parent.find('.conference_modal_cohort_list').append(`
-                <li data-cohort="${cohort}">
+                <li data-cohort-id="${cohortId}" data-cohort-name="${cohortName}" data-cohort-idnumber="${cohortIdnumber}">
                     <span class="conference_modal_attendee_name">
-                        <span class="conference_modal_cohort_chip">${cohort}</span> ${cohort}
+                        <span class="conference_modal_cohort_chip">${cohortName}</span> ${cohortName}
                     </span>
                     <span class="conference_modal_remove"><img src="./img/delete.svg" alt=""></span>
                 </li>
@@ -252,17 +343,28 @@ $(document).ready(function() {
             )
             .hide();
     });
-    $parent.find('#conferenceTeachersDropdownList li').click(function() {
-        const name = $(this).text().trim();
-        const imgHtml = $(this).find('img').prop('outerHTML');
-        $parent.find('#conferenceTeachersDropdown').html($(this).html() +
-            '<span style="float:right; font-size:1rem;"><img src="./img/dropdown-arrow-down.svg" alt=""></span>'
-        );
+    $parent.find('#conferenceTeachersDropdownList').on('click', 'li.conference_teacher_item', function(e) {
+        e.stopPropagation();
+        const $item = $(this);
+        const teacherName = $item.data('name') || $item.text().trim();
+        const teacherId = $item.data('userid');
+        const teacherImg = $item.data('img') || $item.find('img').attr('src');
+
+        console.log('Conference Teacher clicked:', {teacherName, teacherId, teacherImg});
+
+        const $dropdown = $parent.find('#conferenceTeachersDropdown');
+        const firstNode = $dropdown.contents().first()[0];
+        if (firstNode) {
+            firstNode.textContent = teacherName + " ";
+        }
         $parent.find('#conferenceTeachersDropdownList').hide();
-        if ($parent.find('.conference_modal_attendees_list li:contains("' + name + '")').length === 0) {
+
+        if ($parent.find('.conference_modal_attendees_list li[data-teacher-id="' + teacherId + '"]').length === 0) {
             $parent.find('.conference_modal_attendees_list').append(`
-                <li class="conference_modal_attendee">
-                    <span>${imgHtml} ${name}</span>
+                <li data-teacher-id="${teacherId}" data-teacher-name="${teacherName}">
+                    <span class="conference_modal_attendee_name">
+                        <img src="${teacherImg}" class="calendar_admin_details_create_cohort_teacher_avatar" alt="${teacherName}"> ${teacherName}
+                    </span>
                     <span class="conference_modal_remove"><img src="./img/delete.svg" alt=""></span>
                 </li>
             `);
@@ -361,10 +463,17 @@ $(document).ready(function() {
             color,
             scheduleArray,
             cohorts: cohorts.map(function() {
-                return $(this).data('cohort');
+                return {
+                    id: $(this).data('cohort-id'),
+                    name: $(this).data('cohort-name'),
+                    idnumber: $(this).data('cohort-idnumber')
+                };
             }).get(),
             teachers: teachers.map(function() {
-                return $(this).text().trim();
+                return {
+                    id: $(this).data('teacher-id'),
+                    name: $(this).data('teacher-name')
+                };
             }).get(),
             submittedAt: new Date().toISOString()
         };

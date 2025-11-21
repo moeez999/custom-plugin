@@ -1,9 +1,3 @@
-<!-- ===== Trigger button (demo) ===== -->
-<!-- <button type="button" class="calendar_admin_details_lesson_information_btn"
-        style="border:1.5px solid #e7e7ef;border-radius:10px;padding:10px 16px;font-weight:700;background:#111;color:#fff;">
-  Lesson info
-</button> -->
-
 <!-- ===== Toast (top-right notification) ===== -->
 <div id="calendar_admin_toast" class="calendar_admin_toast" role="status" aria-live="polite" aria-atomic="true">
     <div class="calendar_admin_toast_icon" aria-hidden="true">
@@ -142,126 +136,125 @@
     </div>
 
     <!-- ===== CENTER MODAL: Reschedule Lesson — STEP 2 ===== -->
-    <div class="calendar_admin_reschedule_modal" role="dialog" aria-modal="true" aria-labelledby="resched_title">
-        <div class="calendar_admin_reschedule_header">
-            <button type="button" class="calendar_admin_reschedule_back" aria-label="Back to cancel step">
-                <svg width="22" height="22" viewBox="0 0 24 24">
-                    <polyline points="15 19 8 12 15 5" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round" />
-                </svg>
-            </button>
-            <h5 id="resched_title" class="calendar_admin_reschedule_title">Reschedule lesson</h5>
-            <button type="button" class="calendar_admin_reschedule_close" aria-label="Close">
-                <svg width="22" height="22" viewBox="0 0 24 24">
-                    <path d="M6 6l12 12M18 6L6 18" stroke="#111" stroke-width="2" stroke-linecap="round" />
-                </svg>
-            </button>
-        </div>
-
-        <div class="calendar_admin_reschedule_body">
-            <div class="calendar_admin_reschedule_label">Current lesson</div>
-
-            <!-- Lesson card -->
-            <div class="calendar_admin_details_lesson_information_card mb-3">
-                <div class="calendar_admin_details_lesson_information_row">
-                    <div class="calendar_admin_details_lesson_information_header_avatar" style="border-radius:10px;">
-                        <svg width="22" height="22" viewBox="0 0 24 24">
-                            <circle cx="12" cy="8" r="4" fill="#fff" />
-                            <path d="M4 20c1.8-4 6.2-6 8-6s6.2 2 8 6" stroke="#fff" stroke-width="1.5" fill="none" />
-                        </svg>
-                    </div>
-                    <div class="calendar_admin_details_lesson_information_main">
-                        <div class="calendar_admin_details_lesson_information_day">Friday , Sep 06</div>
-                        <div class="calendar_admin_details_lesson_information_time">6:00 – 6:25 PM</div>
-                    </div>
-                </div>
-                <hr class="calendar_admin_details_lesson_information_divider">
-                <div class="calendar_admin_details_lesson_information_meta_row">
-                    <div class="calendar_admin_details_lesson_information_meta">Mary Janes | Subscription</div>
-                    <div class="calendar_admin_details_lesson_information_wallet">
-                        <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true">
-                            <path d="M21 7H5a2 2 0 0 1 0-4h12" fill="none" stroke="#444" stroke-width="1.6"
-                                stroke-linecap="round" />
-                            <rect x="3" y="5" width="18" height="14" rx="2" ry="2" fill="none" stroke="#444"
-                                stroke-width="1.6" />
-                            <circle cx="17" cy="12" r="1.2" fill="#444" />
-                        </svg>
-                        <span class="calendar_admin_details_lesson_information_lessons">2 Lessons</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="calendar_admin_reschedule_label">Date and time</div>
-
-            <!-- Custom dropdown: Duration -->
-            <div class="ca_dd_wrap" id="resched_duration_dd">
-                <button type="button" class="ca_dd_btn" aria-haspopup="listbox" aria-expanded="false">
-                    <span class="ca_dd_placeholder">50 Minutes ( Standard time )</span>
-                    <span class="ca_dd_value" style="display:none;"></span>
-                    <span class="ca_dd_caret" aria-hidden="true">▾</span>
+    <section class="calendar_admin_reschedule_modal" role="dialog" aria-modal="true" aria-labelledby="resched_title">
+        <div class="calendar_admin_reschedule_modal_inner">
+            <header class="calendar_admin_reschedule_header">
+                <h1 id="resched_title" class="calendar_admin_reschedule_title">Reschedule lesson</h1>
+                <button type="button" class="calendar_admin_reschedule_close" aria-label="Close">
+                    <svg width="24" height="24" viewBox="0 0 24 24">
+                        <path d="M6 6l12 12M18 6L6 18" stroke="#111" stroke-width="2" stroke-linecap="round" />
+                    </svg>
                 </button>
+            </header>
 
-                <div class="ca_dd_menu" role="listbox" tabindex="-1">
-                    <div class="ca_dd_opt" role="option" data-value="25">25 Minutes</div>
-                    <div class="ca_dd_opt" role="option" data-value="50">50 Minutes</div>
-                    <div class="ca_dd_opt" role="option" data-value="60">1 Hour</div>
-                    <div class="ca_dd_opt" role="option" data-value="90">1.5 Hour</div>
-                </div>
-
-                <!-- Keep the SAME id your JS uses -->
-                <input type="hidden" id="resched_duration" value="50">
-            </div>
-
-            <div class="ca_res_row">
-                <!-- DATE FIELD (no dropdown) -->
-                <div class="ca_res_col">
-                    <div class="ca_res_selectwrap">
-                        <!-- Visible button that looks like your select -->
-                        <button type="button" id="resched_date_field"
-                            class="form-select calendar_admin_details_lesson_info_calendar_modal_field"
-                            aria-haspopup="dialog" aria-expanded="false">
-                            <span id="resched_date_label">Tue, Feb11</span>
-                        </button>
-
-                        <!-- Hidden value used by your existing code: $('#resched_date').val() -->
-                        <input type="hidden" id="resched_date" value="Tue, Feb11">
-
-                        <!-- <span class="ca_res_select_icon" aria-hidden="true">▾</span> -->
+            <div class="calendar_admin_reschedule_body">
+                <div class="calendar_admin_reschedule_current_lesson_group">
+                    <h2 class="calendar_admin_reschedule_label">Current lesson</h2>
+                    <div class="calendar_admin_details_lesson_information_card">
+                        <div class="calendar_admin_details_lesson_information_row">
+                            <div class="calendar_admin_details_lesson_information_header_avatar">
+                                <svg width="22" height="22" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="8" r="4" fill="#fff" />
+                                    <path d="M4 20c1.8-4 6.2-6 8-6s6.2 2 8 6" stroke="#fff" stroke-width="1.5"
+                                        fill="none" />
+                                </svg>
+                            </div>
+                            <div class="calendar_admin_details_lesson_information_main">
+                                <p class="calendar_admin_details_lesson_information_day">Friday , Sep 06</p>
+                                <p class="calendar_admin_details_lesson_information_time">6:00 - 6:25 PM</p>
+                            </div>
+                        </div>
+                        <hr class="calendar_admin_details_lesson_information_divider">
+                        <div class="calendar_admin_details_lesson_information_meta_row">
+                            <p class="calendar_admin_details_lesson_information_meta">Mary Janes | Subscription</p>
+                            <div class="calendar_admin_details_lesson_information_wallet">
+                                <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M21 7H5a2 2 0 0 1 0-4h12" fill="none" stroke="#444" stroke-width="1.6"
+                                        stroke-linecap="round" />
+                                    <rect x="3" y="5" width="18" height="14" rx="2" ry="2" fill="none" stroke="#444"
+                                        stroke-width="1.6" />
+                                    <circle cx="17" cy="12" r="1.2" fill="#444" />
+                                </svg>
+                                <span class="calendar_admin_details_lesson_information_lessons">2 lessons</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- TIME (unchanged, still a normal dropdown) -->
-                <div class="ca_res_col">
-                    <div class="ca_res_selectwrap">
-                        <select class="form-select" id="resched_time">
-                            <option selected>12:00 AM</option>
-                            <option>12:30 AM</option>
-                            <option>1:00 AM</option>
-                            <option>1:30 AM</option>
-                        </select>
-                        <span class="ca_res_select_icon" aria-hidden="true">▾</span>
-                    </div>
+                <form class="calendar_admin_reschedule_form">
+                    <fieldset class="calendar_admin_reschedule_form_group">
+                        <legend class="calendar_admin_reschedule_label calendar_admin_reschedule_label_form">Date and
+                            time</legend>
+
+                        <!-- Custom dropdown: Duration -->
+                        <div class="ca_dd_wrap calendar_admin_reschedule_select_control calendar_admin_reschedule_select_control_full_width"
+                            id="resched_duration_dd">
+                            <button type="button" class="ca_dd_btn" aria-haspopup="listbox" aria-expanded="false">
+                                <span class="ca_dd_placeholder">50 Minutes ( Standard time )</span>
+                                <span class="ca_dd_value" style="display:none;"></span>
+                                <span class="ca_dd_caret" aria-hidden="true">▾</span>
+                            </button>
+
+                            <div class="ca_dd_menu" role="listbox" tabindex="-1">
+                                <div class="ca_dd_opt" role="option" data-value="25">25 Minutes</div>
+                                <div class="ca_dd_opt" role="option" data-value="50">50 Minutes</div>
+                                <div class="ca_dd_opt" role="option" data-value="60">1 Hour</div>
+                                <div class="ca_dd_opt" role="option" data-value="90">1.5 Hour</div>
+                            </div>
+
+                            <!-- Keep the SAME id your JS uses -->
+                            <input type="hidden" id="resched_duration" value="50">
+                        </div>
+
+                        <div class="ca_res_row calendar_admin_reschedule_form_row">
+                            <!-- DATE FIELD (no dropdown) -->
+                            <div class="ca_res_col">
+                                <div class="ca_res_selectwrap calendar_admin_reschedule_select_control">
+                                    <!-- Visible button that looks like your select -->
+                                    <button type="button" id="resched_date_field"
+                                        class="form-select calendar_admin_details_lesson_info_calendar_modal_field">
+                                        <span id="resched_date_label">Tue,Feb11</span>
+                                        <span class="ca_res_select_icon" aria-hidden="true">▾</span>
+                                    </button>
+
+                                    <!-- Hidden value used by your existing code: $('#resched_date').val() -->
+                                    <input type="hidden" id="resched_date" value="Tue, Feb11">
+                                </div>
+                            </div>
+
+                            <!-- TIME (unchanged, still a normal dropdown) -->
+                            <div class="ca_res_col">
+                                <div class="ca_res_selectwrap calendar_admin_reschedule_select_control">
+                                    <select class="form-select" id="resched_time">
+                                        <option selected>12:00 AM</option>
+                                        <option>12:30 AM</option>
+                                        <option>1:00 AM</option>
+                                        <option>1:30 AM</option>
+                                    </select>
+                                    <span class="ca_res_select_icon" aria-hidden="true">▾</span>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+
+                <div class="calendar_admin_reschedule_hint calendar_admin_reschedule_info_banner">
+                    <svg width="18" height="18" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="9" fill="none" stroke="#777" stroke-width="1.6" />
+                        <path d="M12 8v5m0 4h0" stroke="#777" stroke-width="1.6" stroke-linecap="round" />
+                    </svg>
+                    <p>That's Sunday at 16:30 for Mary Janes</p>
                 </div>
             </div>
 
-
-
-
-
-            <div class="calendar_admin_reschedule_hint">
-                <svg width="18" height="18" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="9" fill="none" stroke="#777" stroke-width="1.6" />
-                    <path d="M12 8v5m0 4h0" stroke="#777" stroke-width="1.6" stroke-linecap="round" />
-                </svg>
-                <span>That's Sunday at 16:30 for Mary Janes</span>
-            </div>
-
-            <button type="button" class="btn calendar_admin_reschedule_continue w-100"
-                id="calendar_admin_reschedule_continue_btn">
-                Continue
-            </button>
+            <footer class="calendar_admin_reschedule_footer">
+                <button type="button" class="btn calendar_admin_reschedule_continue w-100"
+                    id="calendar_admin_reschedule_continue_btn">
+                    Continue
+                </button>
+            </footer>
         </div>
-    </div>
+    </section>
 
     <!-- ===== CENTER MODAL: Reschedule Lesson — STEP 3 (CONFIRM) ===== -->
     <div class="calendar_admin_reschedule_confirm_modal" role="dialog" aria-modal="true"
@@ -452,6 +445,20 @@
             </div>
         </div>
     </aside>
+</div>
+
+<!-- Calendar Modal for Reschedule Date Selection -->
+<div class="calendar_admin_details_create_cohort_calendar_modal_backdrop" id="rescheduleCalendarBackdrop"
+    style="display:none;">
+    <div class="calendar_admin_details_create_cohort_calendar_modal" id="rescheduleCalendarModal">
+        <div class="calendar_admin_details_create_cohort_calendar_nav">
+            <button class="reschedule_calendar_prev">&lt;</button>
+            <span id="rescheduleCalendarMonth"></span>
+            <button class="reschedule_calendar_next">&gt;</button>
+        </div>
+        <div class="calendar_admin_details_create_cohort_calendar_days"></div>
+        <button class="calendar_admin_details_create_cohort_calendar_done_btn">Done</button>
+    </div>
 </div>
 
 <?php require_once('calendar_admin_details_lesson_information_calendar_modal.php');?>
@@ -1052,117 +1059,315 @@ require_once('calendar_admin_details_lesson_information_cancel_lesson.php'); */?
 
 /* ===== Reschedule Modal (STEP 2) ===== */
 .calendar_admin_reschedule_modal {
-    width: 100%;
-    max-width: 530px;
-    background: #fff;
-    border: 1px solid #e9e9f0;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, .12);
     display: none;
+    justify-content: center;
+    align-items: flex-start;
+    max-width: 500px;
+    width: 100%;
+}
+
+.calendar_admin_reschedule_modal_inner {
+    background-color: #ffffff;
+    border: 1px solid #f4f4f8;
+    border-radius: 8px;
+    box-shadow: 0px 8px 32px 0px rgba(18, 17, 23, 0.15), 0px 16px 48px 0px rgba(18, 17, 23, 0.15);
+    max-width: 500px;
+    width: 100%;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
 }
 
 .calendar_admin_reschedule_header {
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    gap: 8px;
-    padding: 14px 16px;
-    border-bottom: 1px solid #f0f0f4;
-}
-
-.calendar_admin_reschedule_back,
-.calendar_admin_reschedule_close {
-    background: transparent;
-    border: 0;
-    width: 38px;
-    height: 38px;
-    border-radius: 8px;
-    display: grid;
-    place-items: center;
-    cursor: pointer;
+    align-items: center;
+    margin-bottom: 28px;
 }
 
 .calendar_admin_reschedule_title {
-    /* margin:0; 
-   */
+    color: #121117;
+    font-family: 'Poppins', sans-serif;
     font-weight: 600;
-    font-size: 1.9rem;
-    line-height: 1.15;
-    color: #111;
-    text-align: left;
-    flex: 1;
-    margin-left: 6px;
-    margin-top: 50px;
+    font-size: 27.875px;
+    line-height: 41.8125px;
+    margin: 0;
+}
+
+.calendar_admin_reschedule_close {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    line-height: 0;
 }
 
 .calendar_admin_reschedule_body {
-    padding: 18px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
 }
 
 .calendar_admin_reschedule_label {
-    color: #7d8392;
-    font-weight: 800;
-    letter-spacing: .3px;
-    margin-bottom: 8px;
+    color: #121117;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 24px;
+    margin-bottom: 6px;
+}
+
+.calendar_admin_details_lesson_information_card {
+    border: 1px solid #dcdce5;
+    border-radius: 8px;
+    padding: 17px;
+}
+
+.calendar_admin_details_lesson_information_row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.calendar_admin_details_lesson_information_header_avatar {
+    width: 48px;
+    height: 48px;
+    background-color: #f4f4f8;
+    border: 1px solid rgba(18, 17, 23, 0.06);
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.calendar_admin_details_lesson_information_main {
+    display: flex;
+    flex-direction: column;
+}
+
+.calendar_admin_details_lesson_information_day {
+    color: #121117;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 28px;
+    margin: 0;
+}
+
+.calendar_admin_details_lesson_information_time {
+    color: #4d4c5c;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 24px;
+    margin: 0;
+}
+
+.calendar_admin_details_lesson_information_divider {
+    height: 1px;
+    background-color: #dcdce5;
+    border: none;
+    margin: 14px 0;
+}
+
+.calendar_admin_details_lesson_information_meta_row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.calendar_admin_details_lesson_information_meta,
+.calendar_admin_details_lesson_information_wallet span {
+    color: #121117;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 24px;
+    margin: 0;
+}
+
+.calendar_admin_details_lesson_information_wallet {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: 0.7;
+}
+
+.calendar_admin_reschedule_form {
+    display: flex;
+    flex-direction: column;
+}
+
+.calendar_admin_reschedule_form_group {
+    border: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.calendar_admin_reschedule_label_form {
+    color: #000000;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 18px;
+    margin-bottom: -4px;
+}
+
+.calendar_admin_reschedule_select_control {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 2px solid rgba(0, 0, 0, 0.12);
+    border-radius: 8.93px;
+    padding: 0 12px;
+    height: 60px;
+    cursor: pointer;
+    flex-grow: 1;
+}
+
+.calendar_admin_reschedule_select_control_full_width {
+    width: 100%;
+}
+
+.ca_dd_wrap.calendar_admin_reschedule_select_control .ca_dd_btn {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: transparent;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0;
+    outline: none;
+}
+
+.ca_dd_wrap.calendar_admin_reschedule_select_control .ca_dd_btn span {
+    color: #000000;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 21px;
 }
 
 .ca_res_selectwrap {
     position: relative;
+    width: 100%;
+}
+
+.ca_res_selectwrap.calendar_admin_reschedule_select_control {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 2px solid rgba(0, 0, 0, 0.12);
+    border-radius: 8.93px;
+    padding: 0 12px;
+    height: 60px;
+    cursor: pointer;
 }
 
 .ca_res_selectwrap .form-select {
-    height: 58px;
-    border-radius: 12px;
-    border: 1.6px solid #e1e3eb;
-    padding: 14px 44px 14px 16px;
-    font-size: 1.05rem;
-    line-height: 1.2;
-    background: #fff;
+    width: 100%;
+    border: none;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 21px;
+    color: #000000;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ca_res_selectwrap.calendar_admin_reschedule_select_control .form-select {
+    height: 100%;
+    outline: none;
+}
+
+.ca_res_selectwrap:not(.calendar_admin_reschedule_select_control) .form-select {
+    border: 2px solid rgba(0, 0, 0, 0.12);
+    border-radius: 8.93px;
+    padding: 0 12px;
+    height: 60px;
 }
 
 .ca_res_select_icon {
-    position: absolute;
-    right: 14px;
-    top: 50%;
-    transform: translateY(-50%);
+    position: static;
     pointer-events: none;
     color: #222;
     font-weight: 700;
     font-size: 30px;
+    margin-left: 8px;
 }
 
-.ca_res_row {
+.ca_res_selectwrap:not(.calendar_admin_reschedule_select_control) .ca_res_select_icon {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.ca_res_row,
+.calendar_admin_reschedule_form_row {
     display: flex;
     gap: 12px;
-    margin-top: 8px;
-    margin-bottom: 8px;
 }
 
 .ca_res_col {
     flex: 1 1 0;
 }
 
-.calendar_admin_reschedule_hint {
+.calendar_admin_reschedule_hint,
+.calendar_admin_reschedule_info_banner {
     display: flex;
     align-items: center;
     gap: 8px;
-    color: #474c57;
-    font-weight: 700;
-    margin: 6px 0 14px;
+}
+
+.calendar_admin_reschedule_hint p,
+.calendar_admin_reschedule_info_banner p {
+    color: #4d4c5c;
+    font-family: 'Figtree', sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 24px;
+    margin: 0;
+}
+
+.calendar_admin_reschedule_footer {
+    margin-top: 24px;
 }
 
 .calendar_admin_reschedule_continue {
-    height: 60px;
-    border-radius: 12px;
-    font-weight: 900;
-    font-size: 1.08rem;
-    letter-spacing: .2px;
-    background: #ef2d17;
-    color: #fff;
-    border: 0;
-    padding: 12px 16px;
-    box-shadow: 0 10px 26px rgba(239, 45, 23, .25);
+    width: 100%;
+    background-color: #ff2500;
+    border: 2px solid #121117;
+    border-radius: 8px;
+    padding: 11px 20px;
+    color: #ffffff;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 26px;
+    cursor: pointer;
+    text-align: center;
+}
+
+@media (max-width: 480px) {
+
+    .ca_res_row,
+    .calendar_admin_reschedule_form_row {
+        flex-direction: column;
+    }
+
+    .calendar_admin_reschedule_title {
+        font-size: 24px;
+    }
 }
 
 /* ===== Reschedule Modal (STEP 3 — Confirm) ===== */
@@ -1416,6 +1621,114 @@ require_once('calendar_admin_details_lesson_information_cancel_lesson.php'); */?
 .ca_dd_opt:hover,
 .ca_dd_opt[aria-selected="true"] {
     background: #f7f8fb;
+}
+
+/* ===== Reschedule Calendar Modal ===== */
+.calendar_admin_details_create_cohort_calendar_modal_backdrop {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.calendar_admin_details_create_cohort_calendar_modal {
+    background: #fff;
+    border-radius: 13px;
+    box-shadow: 0 10px 36px 0 rgba(0, 0, 0, .16);
+    width: 340px;
+    padding: 20px 18px 18px 18px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 96vw;
+}
+
+.calendar_admin_details_create_cohort_calendar_nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 1.18rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.calendar_admin_details_create_cohort_calendar_nav button {
+    background: #fafafa;
+    border: none;
+    font-size: 1.45rem;
+    border-radius: 7px;
+    padding: 2px 13px;
+    cursor: pointer;
+    color: #222;
+    transition: background .15s;
+}
+
+.calendar_admin_details_create_cohort_calendar_nav button:hover {
+    background: #ececec;
+}
+
+.calendar_admin_details_create_cohort_calendar_days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 3px;
+    text-align: center;
+    font-size: 1.07rem;
+    margin-bottom: 10px;
+}
+
+.calendar_admin_details_create_cohort_calendar_day_header {
+    color: #b2b2b2;
+    font-weight: 600;
+    padding: 7px 0 4px 0;
+}
+
+.calendar_admin_details_create_cohort_calendar_day,
+.calendar_admin_details_create_cohort_calendar_day_inactive {
+    padding: 11px 0;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.11rem;
+    font-weight: 500;
+    transition: background .15s, color .15s, border .17s;
+}
+
+.calendar_admin_details_create_cohort_calendar_day_inactive {
+    color: #bdbdbd;
+    background: #fafafa;
+    cursor: not-allowed;
+}
+
+.calendar_admin_details_create_cohort_calendar_day.selected {
+    border: 2px solid #fe2e0c;
+    color: #fe2e0c;
+    background: #fff;
+    font-weight: 700;
+}
+
+.calendar_admin_details_create_cohort_calendar_done_btn {
+    width: 100%;
+    background: #fe2e0c;
+    color: #fff;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 0;
+    margin-top: 14px;
+    font-size: 1.12rem;
+    cursor: pointer;
+    box-shadow: 0 3px 11px 0 rgba(254, 46, 12, .07);
+}
+
+@media (max-width: 600px) {
+    .calendar_admin_details_create_cohort_calendar_modal {
+        width: 96vw;
+        padding: 13px 1vw;
+    }
 }
 </style>
 
@@ -2156,5 +2469,161 @@ require_once('calendar_admin_details_lesson_information_cancel_lesson.php'); */?
             $match.attr('aria-selected', 'true');
         }
     })();
+
+    // ===== Reschedule Calendar Logic =====
+    let rescheduleCalendarTargetBtn = null;
+    let rescheduleCalendarMonth = null;
+    let rescheduleSelectedDate = null;
+
+    function daysInMonth(year, month) {
+        return new Date(year, month + 1, 0).getDate();
+    }
+
+    // Verify button exists after page loads
+    console.log('=== RESCHEDULE CALENDAR INITIALIZATION ===');
+    console.log('jQuery version:', $.fn.jquery);
+    console.log('Date field button exists:', $('#resched_date_field').length);
+    console.log('Date label exists:', $('#resched_date_label').length);
+    console.log('Calendar backdrop exists:', $('#rescheduleCalendarBackdrop').length);
+    console.log('==========================================');
+
+    // Open calendar when clicking date button in reschedule modal
+    // Using wildcard selector to catch clicks on button AND all its children (spans)
+    $(document).on('click', '#resched_date_field, #resched_date_field *', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        console.log('✓ Date button clicked!');
+        console.log('Clicked element:', this);
+        console.log('Element ID:', $(this).attr('id'));
+        console.log('Target type:', this.tagName);
+
+        rescheduleCalendarTargetBtn = $('#resched_date_label');
+        console.log('Target button found:', rescheduleCalendarTargetBtn.length);
+
+        let now = new Date();
+        rescheduleCalendarMonth = {
+            year: now.getFullYear(),
+            month: now.getMonth()
+        };
+        rescheduleSelectedDate = null;
+
+        console.log('Rendering calendar for:', rescheduleCalendarMonth);
+
+        renderRescheduleCalendar();
+
+        const $backdrop = $('#rescheduleCalendarBackdrop');
+        console.log('Backdrop found:', $backdrop.length);
+        console.log('Backdrop display before:', $backdrop.css('display'));
+
+        $backdrop.fadeIn(150);
+
+        setTimeout(function() {
+            console.log('Backdrop display after:', $backdrop.css('display'));
+            console.log('Is visible:', $backdrop.is(':visible'));
+        }, 200);
+    });
+
+    // Previous month
+    $(document).on('click', '.reschedule_calendar_prev', function() {
+        rescheduleCalendarMonth.month--;
+        if (rescheduleCalendarMonth.month < 0) {
+            rescheduleCalendarMonth.month = 11;
+            rescheduleCalendarMonth.year--;
+        }
+        renderRescheduleCalendar();
+    });
+
+    // Next month
+    $(document).on('click', '.reschedule_calendar_next', function() {
+        rescheduleCalendarMonth.month++;
+        if (rescheduleCalendarMonth.month > 11) {
+            rescheduleCalendarMonth.month = 0;
+            rescheduleCalendarMonth.year++;
+        }
+        renderRescheduleCalendar();
+    });
+
+    // Render calendar
+    function renderRescheduleCalendar() {
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September",
+            "October", "November", "December"
+        ];
+        let y = rescheduleCalendarMonth.year;
+        let m = rescheduleCalendarMonth.month;
+
+        $('#rescheduleCalendarMonth').text(monthNames[m] + ' ' + y);
+
+        let html = '';
+        let dayHeaders = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
+
+        for (let d = 0; d < 7; d++) {
+            html += '<div class="calendar_admin_details_create_cohort_calendar_day_header">' + dayHeaders[d] +
+                '</div>';
+        }
+
+        let firstDay = new Date(y, m, 1).getDay();
+        firstDay = (firstDay + 6) % 7;
+
+        let totalDays = daysInMonth(y, m);
+
+        for (let i = 0; i < firstDay; i++) {
+            html += '<div class="calendar_admin_details_create_cohort_calendar_day_inactive"></div>';
+        }
+
+        for (let d = 1; d <= totalDays; d++) {
+            let sel = rescheduleSelectedDate &&
+                rescheduleSelectedDate.getFullYear() === y &&
+                rescheduleSelectedDate.getMonth() === m &&
+                rescheduleSelectedDate.getDate() === d ? ' selected' : '';
+            html += '<div class="calendar_admin_details_create_cohort_calendar_day' + sel + '" data-day="' + d +
+                '">' + d + '</div>';
+        }
+
+        let rem = (firstDay + totalDays) % 7;
+        if (rem > 0) {
+            for (let i = rem; i < 7; i++) {
+                html += '<div class="calendar_admin_details_create_cohort_calendar_day_inactive"></div>';
+            }
+        }
+
+        $('#rescheduleCalendarBackdrop .calendar_admin_details_create_cohort_calendar_days').html(html);
+    }
+
+    // Select a day
+    $(document).on('click', '#rescheduleCalendarBackdrop .calendar_admin_details_create_cohort_calendar_day',
+        function() {
+            $('#rescheduleCalendarBackdrop .calendar_admin_details_create_cohort_calendar_day').removeClass(
+                'selected');
+            $(this).addClass('selected');
+            let day = parseInt($(this).attr('data-day'));
+            rescheduleSelectedDate = new Date(rescheduleCalendarMonth.year, rescheduleCalendarMonth.month, day);
+        });
+
+    // Done button
+    $(document).on('click', '#rescheduleCalendarBackdrop .calendar_admin_details_create_cohort_calendar_done_btn',
+        function() {
+            if (rescheduleSelectedDate && rescheduleCalendarTargetBtn) {
+                let d = rescheduleSelectedDate;
+                let nice = d.toLocaleDateString('en-GB', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric'
+                });
+
+                rescheduleCalendarTargetBtn.text(nice);
+                $('#resched_date').val(nice);
+
+                $('#rescheduleCalendarBackdrop').fadeOut(150);
+            }
+        });
+
+    // Click outside to close
+    $(document).on('click', '#rescheduleCalendarBackdrop', function(e) {
+        if (e.target === this) {
+            $(this).fadeOut(150);
+        }
+    });
+
 })(jQuery);
 </script>

@@ -18,10 +18,10 @@
 //  - Group classes (courseid = 2)
 //
 // Each returned event includes:
-//  - eventid        : id from {googlemeet_events}
-//  - main_event_id  : stable parent id per googlemeet
+//  - eventid        : id from {googlemeet_events} (or planificationclass.id for peertalk)
+//  - main_event_id  : stable parent id per series
 //  - is_parent      : bool
-//  - sequence       : order within that meet
+//  - sequence       : order within that series
 //  - googlemeetid, cmid, courseid
 //  - teacherids[],  teachernames[]
 //  - studentids[],  studentnames[]
@@ -29,6 +29,7 @@
 //  - class_type     :
 //        * courseid 24 → 'one2one_single' | 'one2one_weekly'
 //        * courseid  2 → 'main' | 'tutoring'
+//        * peertalk  → 'peertalk'
 //  - is_recurring   : bool
 //  - start, end, start_ts, end_ts
 //  - viewurl, meetingurl
@@ -794,7 +795,7 @@ try {
         $filtered[] = $ev;
     }
 
-    // ------- NEW: attach statuses from {local_gm_event_status} -------
+    // ------- attach statuses from {local_gm_event_status} -------
     $eventids = [];
     foreach ($filtered as $ev) {
         if (!empty($ev['eventid'])) {
@@ -834,9 +835,426 @@ try {
             : [];
     }
     unset($ev);
-    // ------- END NEW STATUS BLOCK -------
+    // ------- END STATUS BLOCK -------
 
     usort($filtered, fn($a, $b) => $a['start_ts'] <=> $b['start_ts']);
+
+    // ----------------------------------------------------------
+    // Peer Talk / Videocalling classes as EVENT OBJECTS
+    // ----------------------------------------------------------
+    $peertalkEvents = [];
+
+    try {
+        $rangeStart = $startts;
+        $rangeEnd   = $endts;
+
+        // Which teacher(s) to consider for Peer Talk:
+        //  - if teacher filter present → those IDs
+        //  - else → current user (for own dashboard)
+        $peertalkTeacherIds = !empty($teacherids) ? $teacherids : [$USER->id];
+
+        // Teacher record for display (first teacher in list or current user)
+        $displayTeacherId = $peertalkTeacherIds[0];
+        $displayTeacher = $DB->get_record(
+            'user',
+            ['id' => $displayTeacherId, 'deleted' => 0, 'suspended' => 0],
+            'id, firstname, lastname, firstnamephonetic, lastnamephonetic, middlename, alternatename',
+            IGNORE_MISSING
+        );
+        $displayTeacherName = $displayTeacher ? fullname($displayTeacher, true) : '';
+
+        // 1) Build cohortids based on teacher / student / cohort filters.
+        $cohortids = [];
+
+        // a) From teacher filter (cohortmainteacher / cohortguideteacher).
+        if (!empty($teacherids)) {
+            list($tin, $tparams) = $DB->get_in_or_equal($peertalkTeacherIds, SQL_PARAMS_NAMED);
+
+            // cohorts where one of these teachers is main
+            $mainCohorts = $DB->get_records_select(
+                'cohort',
+                "visible = 1 AND cohortmainteacher $tin",
+                $tparams,
+                '',
+                'id'
+            );
+            // cohorts where one of these teachers is guide
+            $guideCohorts = $DB->get_records_select(
+                'cohort',
+                "visible = 1 AND cohortguideteacher $tin",
+                $tparams,
+                '',
+                'id'
+            );
+
+            foreach ($mainCohorts as $c) {
+                $cohortids[] = (int)$c->id;
+            }
+            foreach ($guideCohorts as $c) {
+                $cohortids[] = (int)$c->id;
+            }
+        } elseif (!$teacherids && !$studentid && !$cohortid) {
+            // No explicit filter → fallback: cohorts where current user is main/guide teacher.
+            $cohorts = $DB->get_records_sql(
+                "SELECT id
+                   FROM {cohort}
+                  WHERE visible = 1
+                    AND (cohortmainteacher = :uid OR cohortguideteacher = :uid)",
+                ['uid' => $USER->id]
+            );
+            foreach ($cohorts as $c) {
+                $cohortids[] = (int)$c->id;
+            }
+        }
+
+        $cohortids = array_values(array_unique($cohortids));
+
+        // b) Apply explicit cohort filter, if provided.
+        if ($cohortid) {
+            if (!empty($cohortids)) {
+                $cohortids = array_values(array_intersect($cohortids, [$cohortid]));
+            } else {
+                $cohortids = [$cohortid];
+            }
+        }
+
+        // c) Apply student filter: cohorts where this student is a member.
+        if ($studentid) {
+            if (!empty($cohortids)) {
+                list($insql, $params) = $DB->get_in_or_equal($cohortids, SQL_PARAMS_NAMED);
+                $params['uid'] = $studentid;
+                $rows = $DB->get_records_sql(
+                    "SELECT DISTINCT cohortid
+                       FROM {cohort_members}
+                      WHERE userid = :uid
+                        AND cohortid $insql",
+                    $params
+                );
+            } else {
+                $rows = $DB->get_records(
+                    'cohort_members',
+                    ['userid' => $studentid],
+                    '',
+                    'cohortid'
+                );
+            }
+
+            $cohortids = [];
+            foreach ($rows as $r) {
+                $cohortids[] = (int)$r->cohortid;
+            }
+            $cohortids = array_values(array_unique($cohortids));
+        }
+
+        // 2) From those cohortids, collect idplanificaction via assignamentcohortforclass.
+        $idplanificactions = [];
+
+        if (!empty($cohortids)) {
+            list($in, $params) = $DB->get_in_or_equal($cohortids, SQL_PARAMS_NAMED);
+
+            $sql = "SELECT DISTINCT idplanificaction
+                      FROM {assignamentcohortforclass}
+                     WHERE idcohort $in
+                       AND idplanificaction IS NOT NULL";
+
+            $idplanificactions = $DB->get_fieldset_sql($sql, $params);
+        }
+
+        // 3) Also add any planifications where filtered teacher(s) are directly assigned.
+        if (!empty($peertalkTeacherIds)) {
+            list($tin2, $tparams2) = $DB->get_in_or_equal($peertalkTeacherIds, SQL_PARAMS_NAMED);
+
+            $sqlT = "SELECT DISTINCT idplanificaction
+                       FROM {assignamentteachearforclass}
+                      WHERE iduserteacher $tin2";
+
+            $teacherPlanifs = $DB->get_fieldset_sql($sqlT, $tparams2);
+
+            foreach ($teacherPlanifs as $pid) {
+                if (!in_array($pid, $idplanificactions)) {
+                    $idplanificactions[] = $pid;
+                }
+            }
+        }
+
+        // 4) Get full records from planificationclass for those ids.
+        $planificationrecords = [];
+        if (!empty($idplanificactions)) {
+            list($in2, $params2) = $DB->get_in_or_equal($idplanificactions, SQL_PARAMS_NAMED);
+
+            $sql2 = "SELECT *
+                       FROM {planificationclass}
+                      WHERE id $in2";
+
+            $planificationrecords = $DB->get_records_sql($sql2, $params2);
+        }
+
+        // 5) Build Peer Talk events only inside [$rangeStart, $rangeEnd].
+        foreach ($planificationrecords as $record) {
+            $recurrence = $DB->get_record('optionsrepeat', ['idplanificaction' => $record->id]);
+
+            $seriesId = (int)$record->id; // correct event id from DB
+            $seq      = 1;
+
+            // time-of-day parts
+            $startTimeStr  = date('H:i', $record->startdate);
+            $finishTimeStr = date('H:i', $record->finishdate);
+
+            if ($recurrence) {
+
+                // ---------- WEEKLY ----------
+                if ($recurrence->type == 'week') {
+                    $repeatevery = (int)($recurrence->repeatevery ?? 1);
+                    if ($repeatevery < 1) {
+                        $repeatevery = 1;
+                    }
+
+                    $repeatUntil = $recurrence->repeaton ? (int)$recurrence->repeaton : PHP_INT_MAX;
+                    $repeatUntil = min($repeatUntil, $rangeEnd);
+
+                    $weekdayMap = [
+                        'sunday' => 0, 'monday' => 1, 'tuesday' => 2,
+                        'wednesday' => 3, 'thursday' => 4,
+                        'friday' => 5, 'saturday' => 6
+                    ];
+
+                    $recurrenceDays = [];
+                    foreach ($weekdayMap as $day => $num) {
+                        if (!empty($recurrence->$day)) {
+                            $recurrenceDays[$num] = $day;
+                        }
+                    }
+                    if (empty($recurrenceDays)) {
+                        continue;
+                    }
+
+                    // Anchor: Sunday midnight of week containing first startdate
+                    $anchorDayTs  = strtotime(date('Y-m-d 00:00:00', $record->startdate));
+                    $anchorDow    = (int)date('w', $record->startdate);
+                    $anchorWeekTs = $anchorDayTs - ($anchorDow * 86400);
+
+                    $weekSpan = 7 * 86400 * $repeatevery;
+
+                    for ($weekStart = $anchorWeekTs; $weekStart <= $repeatUntil; $weekStart += $weekSpan) {
+                        foreach ($recurrenceDays as $weekday => $dayname) {
+                            $dayTs = $weekStart + ($weekday * 86400);
+
+                            if ($dayTs < $rangeStart || $dayTs > $repeatUntil) {
+                                continue;
+                            }
+
+                            // Do not create sessions before original schedule start
+                            if ($dayTs < $record->startdate) {
+                                continue;
+                            }
+
+                            $sessionStart = strtotime(date('Y-m-d', $dayTs) . ' ' . $startTimeStr);
+                            $sessionEnd   = strtotime(date('Y-m-d', $dayTs) . ' ' . $finishTimeStr);
+
+                            if ($sessionEnd < $rangeStart || $sessionStart > $rangeEnd) {
+                                continue;
+                            }
+
+                            $eventid = $seriesId;
+
+                            $peertalkEvents[] = [
+                                'id'            => 'peertalk-' . $eventid,
+                                'eventid'       => $eventid,
+                                'main_event_id' => $seriesId,
+                                'is_parent'     => ($seq === 1),
+                                'sequence'      => $seq++,
+
+                                'source'        => 'peertalk',
+                                'courseid'      => 0,
+                                'cmid'          => 0,
+                                'googlemeetid'  => 0,
+                                'title'         => 'Quick Talk',
+
+                                'start_ts'      => $sessionStart,
+                                'end_ts'        => $sessionEnd,
+                                'start'         => $fmt_iso($sessionStart),
+                                'end'           => $fmt_iso($sessionEnd),
+
+                                'teacherids'    => [$displayTeacherId],
+                                'teachernames'  => [$displayTeacherName],
+                                'studentids'    => [],
+                                'studentnames'  => [],
+                                'cohortids'     => $cohortids,
+
+                                'class_type'    => 'peertalk',
+                                'is_recurring'  => true,
+
+                                'meetingurl'    => 'https://courses.latingles.com/local/videocalling',
+                                'viewurl'       => 'https://courses.latingles.com/local/videocalling',
+                            ];
+                        }
+                    }
+                }
+
+                // ---------- DAILY ----------
+                if ($recurrence->type == 'day') {
+                    $repeatevery = (int)($recurrence->repeatevery ?? 1);
+                    if ($repeatevery < 1) {
+                        $repeatevery = 1;
+                    }
+
+                    $repeatUntil = $recurrence->repeaton ? (int)$recurrence->repeaton : PHP_INT_MAX;
+                    $repeatUntil = min($repeatUntil, $rangeEnd);
+
+                    $anchorDay = strtotime(date('Y-m-d 00:00:00', $record->startdate));
+
+                    $loopStart = max($anchorDay, strtotime(date('Y-m-d 00:00:00', $rangeStart)));
+
+                    $diffDays = (int)floor(($loopStart - $anchorDay) / 86400);
+                    $mod      = $diffDays % $repeatevery;
+                    if ($mod !== 0) {
+                        $loopStart += ($repeatevery - $mod) * 86400;
+                    }
+
+                    for ($dayTs = $loopStart; $dayTs <= $repeatUntil; $dayTs += $repeatevery * 86400) {
+                        $sessionStart = strtotime(date('Y-m-d', $dayTs) . ' ' . $startTimeStr);
+                        $sessionEnd   = strtotime(date('Y-m-d', $dayTs) . ' ' . $finishTimeStr);
+
+                        if ($sessionEnd < $rangeStart || $sessionStart > $rangeEnd) {
+                            continue;
+                        }
+
+                        $eventid = $seriesId;
+
+                        $peertalkEvents[] = [
+                            'id'            => 'peertalk-' . $eventid,
+                            'eventid'       => $eventid,
+                            'main_event_id' => $seriesId,
+                            'is_parent'     => ($seq === 1),
+                            'sequence'      => $seq++,
+
+                            'source'        => 'peertalk',
+                            'courseid'      => 0,
+                            'cmid'          => 0,
+                            'googlemeetid'  => 0,
+                            'title'         => 'Quick Talk',
+
+                            'start_ts'      => $sessionStart,
+                            'end_ts'        => $sessionEnd,
+                            'start'         => $fmt_iso($sessionStart),
+                            'end'           => $fmt_iso($sessionEnd),
+
+                            'teacherids'    => [$displayTeacherId],
+                            'teachernames'  => [$displayTeacherName],
+                            'studentids'    => [],
+                            'studentnames'  => [],
+                            'cohortids'     => $cohortids,
+
+                            'class_type'    => 'peertalk',
+                            'is_recurring'  => true,
+
+                            'meetingurl'    => 'https://courses.latingles.com/local/videocalling',
+                            'viewurl'       => 'https://courses.latingles.com/local/videocalling',
+                        ];
+                    }
+                }
+
+            } else {
+                // ---------- ONE-TIME ----------
+                $sessionStart = (int)$record->startdate;
+                $sessionEnd   = (int)$record->finishdate;
+
+                if ($sessionEnd < $rangeStart || $sessionStart > $rangeEnd) {
+                    continue;
+                }
+
+                $eventid = $seriesId;
+
+                $peertalkEvents[] = [
+                    'id'            => 'peertalk-' . $eventid,
+                    'eventid'       => $eventid,
+                    'main_event_id' => $seriesId,
+                    'is_parent'     => true,
+                    'sequence'      => $seq++,
+
+                    'source'        => 'peertalk',
+                    'courseid'      => 0,
+                    'cmid'          => 0,
+                    'googlemeetid'  => 0,
+                    'title'         => 'Quick Talk',
+
+                    'start_ts'      => $sessionStart,
+                    'end_ts'        => $sessionEnd,
+                    'start'         => $fmt_iso($sessionStart),
+                    'end'           => $fmt_iso($sessionEnd),
+
+                    'teacherids'    => [$displayTeacherId],
+                    'teachernames'  => [$displayTeacherName],
+                    'studentids'    => [],
+                    'studentnames'  => [],
+                    'cohortids'     => $cohortids,
+
+                    'class_type'    => 'peertalk',
+                    'is_recurring'  => false,
+
+                    'meetingurl'    => 'https://courses.latingles.com/local/videocalling',
+                    'viewurl'       => 'https://courses.latingles.com/local/videocalling',
+                ];
+            }
+        }
+
+        usort($peertalkEvents, function ($a, $b) {
+            return $a['start_ts'] <=> $b['start_ts'];
+        });
+
+        $peertalkEvents = array_slice($peertalkEvents, 0, 40);
+
+    } catch (\Throwable $ignored) {
+        $peertalkEvents = [];
+    }
+
+     // --- PATCH: shift Peer Talk events back by 1 day per series ---
+    if (!empty($peertalkEvents)) {
+        // Count how many entries per eventid (series).
+        $peertalkCounts = [];
+        foreach ($peertalkEvents as $ev) {
+            if (!empty($ev['eventid'])) {
+                $eid = (int)$ev['eventid'];
+                if (!isset($peertalkCounts[$eid])) {
+                    $peertalkCounts[$eid] = 0;
+                }
+                $peertalkCounts[$eid]++;
+            }
+        }
+
+        // For any series where eventid is repeated (same eventid for multiple rows),
+        // shift all its Peer Talk occurrences back by 1 day (86400 seconds).
+        foreach ($peertalkEvents as &$ev) {
+            if (!empty($ev['eventid'])) {
+                $eid = (int)$ev['eventid'];
+                if (!empty($peertalkCounts[$eid]) && $peertalkCounts[$eid] > 1) {
+                    $ev['start_ts'] -= 86400;
+                    $ev['end_ts']   -= 86400;
+
+                    // Rebuild ISO strings after shifting.
+                    $ev['start'] = $fmt_iso($ev['start_ts']);
+                    $ev['end']   = $fmt_iso($ev['end_ts']);
+                }
+            }
+        }
+        unset($ev);
+    }
+
+     // --- Ensure Peer Talk ISO start/end are always derived from start_ts/end_ts ---
+    // if (!empty($peertalkEvents)) {
+    //     foreach ($peertalkEvents as &$pev) {
+    //         if (isset($pev['start_ts'])) {
+    //             $pev['start'] = $fmt_iso($pev['start_ts']);
+    //         }
+    //         if (isset($pev['end_ts'])) {
+    //             $pev['end'] = $fmt_iso($pev['end_ts']);
+    //         }
+    //     }
+    //     unset($pev);
+    // }
+    // ----------------------------------------------------------
+    // END Peer Talk section
+    // ----------------------------------------------------------
 
     echo json_encode([
         'ok'      => true,
@@ -849,7 +1267,8 @@ try {
             'studentid'    => $studentid,
             'one2one_gmid' => $one2onegmid,
         ],
-        'events'  => array_values($filtered),
+        'events'   => array_values($filtered),
+        'peertalk' => array_values($peertalkEvents),
     ]);
 
 } catch (Exception $e) {

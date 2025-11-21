@@ -324,8 +324,10 @@ body {
   border-color: var(--event-border-color);
 }
 .e-purple {
-  --event-border-color: #a855f7;
-  border-color: var(--event-border-color);
+  --event-border-color: #b535ff;
+  border-color: rgba(181, 53, 255, 0.7) !important;
+  background: rgba(181, 53, 255, 0.05) !important;
+  border-bottom-color: rgba(181, 53, 255, 0.7) !important;
 }
 .e-gold {
   --event-border-color: #d4a017;

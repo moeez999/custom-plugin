@@ -1508,18 +1508,27 @@
         $(document).on('click', '.conference_modal_date_btn', function(e) {
             e.preventDefault();
             calendarDateTargetBtn = $(this);
-            if ($(this).parents('#peerTalkTabContent').length) {
-                calendarModalMonth = {
-                    year: 2025,
-                    month: 0
-                }; // Jan 2025
+            
+            // Get the current date from the button if available
+            const rawDate = $(this).data('raw-date');
+            let initialDate;
+            
+            if (rawDate) {
+                // Parse YYYY-MM-DD format
+                const parts = rawDate.split('-');
+                initialDate = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+            } else if ($(this).parents('#peerTalkTabContent').length) {
+                // For peertalk tab, use current date if no raw date is set
+                initialDate = new Date();
             } else {
-                let now = new Date();
-                calendarModalMonth = {
-                    year: now.getFullYear(),
-                    month: now.getMonth()
-                };
+                initialDate = new Date();
             }
+            
+            calendarModalMonth = {
+                year: initialDate.getFullYear(),
+                month: initialDate.getMonth()
+            };
+            
             selectedCalendarDate = null;
             renderCalendarModal();
             $('#calendarDateModalBackdrop').fadeIn();
@@ -1591,7 +1600,19 @@
                     month: 'short',
                     year: 'numeric'
                 });
+                
+                // Format date as YYYY-MM-DD for raw-date
+                const year = d.getFullYear();
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                const rawDate = `${year}-${month}-${day}`;
+                
                 calendarDateTargetBtn.text(nice);
+                calendarDateTargetBtn.data('raw-date', rawDate);
+                calendarDateTargetBtn.attr('data-raw-date', rawDate);
+                
+                console.log('Updated date button:', {displayDate: nice, rawDate: rawDate});
+                
                 $('#calendarDateModalBackdrop').fadeOut();
             }
         });

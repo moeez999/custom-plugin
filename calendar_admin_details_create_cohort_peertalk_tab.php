@@ -19,7 +19,7 @@
             <div
                 style="display:flex; gap:12px; align-items:center; margin-bottom:7px;width:100%;justify-content:space-around;">
                 <div class="conference_modal_label" style="font-weight:400;">Start On</div>
-                <button type="button" class="peertalk_modal_date_btn">Select Date</button>
+                <button type="button" class="conference_modal_date_btn peertalk_modal_date_btn">Select Date</button>
             </div>
         </div>
 
@@ -82,42 +82,132 @@
 
         <!-- Cohorts & Teachers -->
         <div class="conference_modal_fieldrow">
+            <?php
+require_once(__DIR__ . '/../../config.php');
+require_login();
+
+global $DB;
+
+/** Fetch cohorts with valid idnumber */
+$sql = "SELECT id, name, idnumber
+          FROM {cohort}
+         WHERE idnumber IS NOT NULL AND idnumber <> ''
+      ORDER BY timemodified DESC, id DESC";
+
+$cohorts = $DB->get_records_sql($sql);
+?>
+
             <div>
                 <span class="conference_modal_label">Attending Cohorts</span>
+
                 <div class="conference_modal_dropdown_btn" id="peertalkCohortsDropdown">
-                    XX#
+                    Select Cohort
                     <span style="float:right; font-size:1rem;">
                         <img src="./img/dropdown-arrow-down.svg" alt="">
                     </span>
                 </div>
+
                 <div class="conference_modal_dropdown_list" id="peertalkCohortsDropdownList">
                     <input type="text" id="searchCohorts_peertalk" class="dropdown-search"
                         placeholder="Search cohorts...">
-                    <ul>
-                        <li>FL1</li>
-                        <li>TX1</li>
-                        <li>NY2</li>
-                        <li>OHI2</li>
+
+                    <ul id="peertalkCohortsList">
+                        <?php
+            if ($cohorts) {
+                foreach ($cohorts as $c) {
+                    $shortname = format_string($c->name);   // SHOW THIS
+                    $idn       = trim((string)$c->idnumber); // Use for payload
+
+                    echo '<li class="peertalk_cohort_item" 
+                              data-id="'.(int)$c->id.'" 
+                              data-idnumber="'.s($idn).'" 
+                              data-name="'.s($shortname).'">'.
+                              $shortname.
+                         '</li>';
+                }
+            } else {
+                echo '<li style="pointer-events:none;opacity:.6;">No cohorts found</li>';
+            }
+            ?>
                     </ul>
                 </div>
             </div>
 
+            <?php
+require_once(__DIR__ . '/../../config.php');
+require_login();
+
+global $DB, $PAGE, $OUTPUT;
+
+/** Collect unique teacher user IDs from cohorts */
+$userIds = $DB->get_fieldset_sql("
+    SELECT DISTINCT uid
+      FROM (
+            SELECT cohortmainteacher AS uid FROM {cohort}
+             WHERE cohortmainteacher IS NOT NULL AND cohortmainteacher > 0
+            UNION
+            SELECT cohortguideteacher AS uid FROM {cohort}
+             WHERE cohortguideteacher IS NOT NULL AND cohortguideteacher > 0
+      ) t
+");
+
+/** Fetch user records (not deleted/suspended) */
+$teachers = [];
+if ($userIds) {
+    list($inSql, $params) = $DB->get_in_or_equal($userIds, SQL_PARAMS_NAMED);
+    $fields = "id, firstname, lastname, picture, imagealt,
+               firstnamephonetic, lastnamephonetic, middlename, alternatename";
+    $teachers = $DB->get_records_select(
+        'user',
+        "id $inSql AND deleted = 0 AND suspended = 0",
+        $params,
+        'firstname ASC, lastname ASC',
+        $fields
+    );
+}
+
+?>
+
             <div>
                 <span class="conference_modal_label">Teachers</span>
+
                 <div class="conference_modal_dropdown_btn" id="peertalkTeachersDropdown">
                     Select Teacher
                     <span style="float:right; font-size:1rem;">
                         <img src="./img/dropdown-arrow-down.svg" alt="">
                     </span>
                 </div>
+
                 <div class="conference_modal_dropdown_list" id="peertalkTeachersDropdownList">
                     <input type="text" id="searchTeachers_peertalk" class="dropdown-search"
                         placeholder="Search teachers...">
-                    <ul>
-                        <li><img src="https://randomuser.me/api/portraits/men/11.jpg"
-                                class="calendar_admin_details_create_cohort_teacher_avatar"> Edwards</li>
-                        <li><img src="https://randomuser.me/api/portraits/women/44.jpg"
-                                class="calendar_admin_details_create_cohort_teacher_avatar"> Daniela</li>
+
+                    <ul id="peertalkTeachersList">
+                        <?php
+            if (!empty($teachers)) {
+                foreach ($teachers as $teacher) {
+                    $picture = new user_picture($teacher);
+                    $picture->size = 40;
+                    $imageurl = $picture->get_url($PAGE)->out(false);
+                    $fullname = fullname($teacher, true);
+
+                    echo '<li class="peertalk_teacher_item" 
+                              data-userid="'.(int)$teacher->id.'" 
+                              data-name="'.s($fullname).'" 
+                              data-img="'.s($imageurl).'">';
+
+                    echo '<img src="'.s($imageurl).'" 
+                              class="calendar_admin_details_create_cohort_teacher_avatar" 
+                              alt="'.s($fullname).'" /> ';
+
+                    echo format_string($fullname);
+
+                    echo '</li>';
+                }
+            } else {
+                echo '<li aria-disabled="true">No teachers found</li>';
+            }
+            ?>
                     </ul>
                 </div>
             </div>
@@ -141,230 +231,308 @@
 $(document).ready(function() {
     const $parent = $('#peerTalkTabContent');
     const $form = $parent.find('#peerTalkForm');
+    const $tzWrapper = $parent.find('#eventTimezoneDropdown_peertalk_wrapper');
+    const $tzList = $parent.find('#eventTimezoneDropdown_peertalk_list');
+    const $tzSelected = $parent.find('#eventTimezoneDropdown_peertalk_selected');
+    const $colorToggle = $parent.find('#colorDropdownToggle_peertalk');
+    const $colorList = $parent.find('#colorDropdownList_peertalk');
 
-    // ✅ Extract and validate repeat buttons
-    function extractSchedules() {
+    // ✅ Extract and validate schedule info (days + times)
+    function extractPeerTalkSchedules() {
         const scheduleArray = [];
         $parent.find('.peertalk_repeat_btn').each(function() {
-                const $this = $(this);
-                const text = $this.text().trim();
+            const $this = $(this);
+            const text = $this.text().trim();
 
-                // Match time first: "09:00 AM - 10:00 AM"
-                const timeMatch = text.match(
-                    /(\d{1,2}:\d{2}\s?[APMapm]{2})\s*-\s*(\d{1,2}:\d{2}\s?[APMapm]{2})/);
+            // Match time first: "09:00 AM - 10:00 AM"
+            const timeMatch = text.match(
+                /(\d{1,2}:\d{2}\s?[APMapm]{2})\s*-\s*(\d{1,2}:\d{2}\s?[APMapm]{2})/);
 
-                if (!timeMatch) {
-                    // No time found, mark as error
-                    $this.addClass('field-error');
-                    return; // continue to next iteration
-                }
-
-                const startTime = timeMatch[1];
-                const endTime = timeMatch[2];
-
-                // Extract all days from text
-                // Match patterns like:
-                // "Weekly on Mon (09:00 AM - 10:00 AM)"
-                // "Weekly on Mon, Wed, Fri (09:00 AM - 10:00 AM)"
-                // "on Mon, Wed, Fri (09:00 AM - 10:00 AM)"
-                const dayPattern = /\b(Mon|Tue|Wed|Thu|Fri|Sat|Sun)\b/g;
-                const dayMatches = text.match(dayPattern);
-
-                $(document).ready(function() {
-                    const $parent = $('#peerTalkTabContent');
-                    const $form = $parent.find('#peerTalkForm');
-
-                    // Scope scroll-widget selection to Peer Talk tab only
-                    $parent.on('click', '.scroll-widget__button', function(e) {
-                        // Only handle clicks inside Peer Talk tab
-                        const $widget = $(this).closest('.scroll-widget');
-                        if ($widget.length && $parent.find($widget).length) {
-                            // Custom logic for Peer Talk scroll-widget
-                            // ...existing code for time selection...
-                        }
-                    });
-
-                    // ✅ Extract and validate repeat buttons
-                    function extractSchedules() {
-                        const scheduleArray = [];
-                        $parent.find('.peertalk_repeat_btn').each(function() {
-                            const $this = $(this);
-                            const text = $this.text().trim();
-
-                            // Match time first: "09:00 AM - 10:00 AM"
-                            const timeMatch = text.match(
-                                /(\d{1,2}:\d{2}\s?[APMapm]{2})\s*-\s*(\d{1,2}:\d{2}\s?[APMapm]{2})/
-                                );
-
-                            if (!timeMatch) {
-                                // No time found, mark as error
-                                $this.addClass('field-error');
-                                return; // continue to next iteration
-                            }
-
-                            const startTime = timeMatch[1];
-                            const endTime = timeMatch[2];
-
-                            // Extract all days from text
-                            // Match patterns like:
-                            // "Weekly on Mon (09:00 AM - 10:00 AM)"
-                            // "Weekly on Mon, Wed, Fri (09:00 AM - 10:00 AM)"
-                            // "on Mon, Wed, Fri (09:00 AM - 10:00 AM)"
-                            const dayPattern = /\b(Mon|Tue|Wed|Thu|Fri|Sat|Sun)\b/g;
-                            const dayMatches = text.match(dayPattern);
-
-                            if (dayMatches && dayMatches.length > 0) {
-                                // Found one or more days - create schedule entry for each
-                                dayMatches.forEach(function(day) {
-                                    scheduleArray.push({
-                                        day: day,
-                                        startTime: startTime,
-                                        endTime: endTime
-                                    });
-                                });
-                                $this.removeClass('field-error');
-                            } else {
-                                // No days found, mark as error
-                                $this.addClass('field-error');
-                            }
-                        });
-
-                        console.log('🗓️ Schedule Array:', scheduleArray);
-                        return scheduleArray;
-                    }
-
-                    // ...existing code for dropdowns, validation, etc. (unchanged)...
-                });
-                'fri': 5,
-                'sat': 6,
-                'sun': 0
-            };
-            const dayKey = dayMatch[1].toLowerCase();
-            if (dayMap.hasOwnProperty(dayKey)) {
-                weekDays = [dayMap[dayKey]];
+            if (!timeMatch) {
+                $this.addClass('field-error');
+                return;
             }
-        }
-    } else if (!repeatText.toLowerCase().includes('does not repeat')) {
-        repeatActive = true;
-        repeatType = 'day';
-        repeatEvery = 1;
+
+            const startTime = timeMatch[1];
+            const endTime = timeMatch[2];
+
+            const dayPattern = /\b(Mon|Tue|Wed|Thu|Fri|Sat|Sun)\b/g;
+            const dayMatches = text.match(dayPattern);
+
+            if (dayMatches && dayMatches.length > 0) {
+                dayMatches.forEach(function(day) {
+                    scheduleArray.push({
+                        day: day,
+                        startTime: startTime,
+                        endTime: endTime
+                    });
+                });
+                $this.removeClass('field-error');
+            } else {
+                $this.addClass('field-error');
+            }
+        });
+        console.log("🗓️ PeerTalk Schedule Array:", scheduleArray);
+        return scheduleArray;
     }
 
-    // ✅ Build cohorts array (convert cohort names to IDs if needed)
-    const cohortsArray = cohorts.map(function() {
-        const cohortName = $(this).data('cohort');
-        // TODO: Map cohort name to cohort ID from your data source
-        // For now, returning cohort name - you may need to fetch the actual ID
-        return cohortName;
-    }).get();
+    // Timezone Dropdown
+    $tzWrapper.on('click', function(e) {
+        e.stopPropagation();
+        $tzList.toggle();
+        $parent.find('.conference_modal_dropdown_list, .color-dropdown-list').hide();
+    });
+    $tzList.find('li').on('click', function(e) {
+        e.stopPropagation();
+        $tzSelected.text($(this).text());
+        $tzList.hide();
+        $tzWrapper.removeClass('field-error');
+    });
 
-    // ✅ Build teachers array with iduser and fullname
-    const teachersArray = teachers.map(function() {
-        const teacherText = $(this).text().trim();
-        const teacherImg = $(this).find('img');
-        // TODO: Extract actual teacher ID from data attribute
-        // For now, using placeholder structure
-        return {
-            iduser: 0, // TODO: Get actual teacher ID from data-teacher-id or similar
-            fullname: teacherText
-        };
-    }).get();
+    // Color Dropdown
+    $colorToggle.click(function(e) {
+        e.stopPropagation();
+        $colorList.toggle();
+        $parent.find(
+                '.conference_modal_dropdown_list, .calendar_admin_details_cohort_tab_timezone_list')
+            .hide();
+    });
+    $colorList.find('.color-dropdown-color').click(function(e) {
+        e.stopPropagation();
+        const color = $(this).data('color');
+        $colorToggle.find('.color-circle').css('background', color);
+        $colorList.hide();
+        $colorToggle.removeClass('field-error');
+    });
 
-    // ✅ Build confData object
-    const confData = {
-        title: 'Peer Talk', // TODO: Add title field to form if needed
-        description: '',
-        startTimeEvent: startISO,
-        finishTimeEvent: finishISO,
-        color: $colorToggle.find('.color-circle').css('background-color') || '#007bff',
-        typecall: 'videocalling',
-        maxstudents: 0,
-        cohorts: cohortsArray,
-        teachers: teachersArray,
-        repeat: {
-            active: repeatActive,
-            type: repeatType,
-            repeatEvery: repeatEvery,
-            weekDays: weekDays,
-            end: repeatEnd,
-            repeatOn: repeatOn
-        }
-    };
+    // Cohorts Dropdown
+    $parent.find('#peertalkCohortsDropdown').click(function(e) {
+        e.stopPropagation();
+        $parent.find('#peertalkCohortsDropdownList').toggle();
+        $parent.find(
+            '#peertalkTeachersDropdownList, #colorDropdownList_peertalk, #eventTimezoneDropdown_peertalk_list'
+        ).hide();
+    });
 
-    // ✅ Final payload matching the required structure
-    const payload = {
-        id: null,
-        idcurrentprofile: 0,
-        data: confData
-    };
+    $parent.find('#peertalkCohortsDropdownList').on('click', 'li.peertalk_cohort_item', function(e) {
+        e.stopPropagation();
+        const $item = $(this);
+        const cohortName = $item.data('name') || $item.text().trim();
+        const cohortId = $item.data('id');
+        const cohortIdnumber = $item.data('idnumber');
 
-    console.log('✅ Peer Talk payload:', payload);
-    console.log('📅 Start timestamp:', startTs, '→', startISO);
-    console.log('📅 End timestamp:', endTs, '→', finishISO);
-    console.log('🔁 Repeat config:', confData.repeat);
-
-    // ✅ Send to API
-    savePeerTalkToAPI(payload);
-});
-
-// ✅ Function to save Peer Talk via API
-async function savePeerTalkToAPI(payload) {
-    try {
-        showGlobalLoader();
-
-        const response = await fetch(M.cfg.wwwroot + '/local/videocalling/api/saveclass.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            credentials: 'same-origin',
-            body: JSON.stringify(payload)
+        console.log('Peertalk Cohort clicked:', {
+            cohortName,
+            cohortId,
+            cohortIdnumber
         });
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error('videocalling API error: ' + errorText);
+        const $dropdown = $parent.find('#peertalkCohortsDropdown');
+        const firstNode = $dropdown.contents().first()[0];
+        if (firstNode) {
+            firstNode.textContent = cohortName + " ";
+        }
+        $parent.find('#peertalkCohortsDropdownList').hide();
+
+        if ($parent.find('.conference_modal_cohort_list li[data-cohort-id="' + cohortId + '"]')
+            .length === 0) {
+            $parent.find('.conference_modal_cohort_list').append(`
+                <li data-cohort-id="${cohortId}" data-cohort-name="${cohortName}" data-cohort-idnumber="${cohortIdnumber}">
+                    <span class="conference_modal_attendee_name">
+                        <span class="conference_modal_cohort_chip">${cohortName}</span> ${cohortName}
+                    </span>
+                    <span class="conference_modal_remove"><img src="./img/delete.svg" alt=""></span>
+                </li>
+            `);
+        }
+        $parent.find('#peertalkCohortsDropdown').removeClass('field-error');
+    });
+
+    // Teachers Dropdown
+    $parent.find('#peertalkTeachersDropdown').click(function(e) {
+        e.stopPropagation();
+        $parent.find('#peertalkTeachersDropdownList').toggle();
+        $parent.find(
+            '#peertalkCohortsDropdownList, #colorDropdownList_peertalk, #eventTimezoneDropdown_peertalk_list'
+        ).hide();
+    });
+
+    $parent.find('#peertalkTeachersDropdownList').on('click', 'li.peertalk_teacher_item', function(e) {
+        e.stopPropagation();
+        const $item = $(this);
+        const teacherName = $item.data('name') || $item.text().trim();
+        const teacherId = $item.data('userid');
+        const teacherImg = $item.data('img') || $item.find('img').attr('src');
+
+        console.log('Peertalk Teacher clicked:', {
+            teacherName,
+            teacherId,
+            teacherImg
+        });
+
+        const $dropdown = $parent.find('#peertalkTeachersDropdown');
+        const firstNode = $dropdown.contents().first()[0];
+        if (firstNode) {
+            firstNode.textContent = teacherName + " ";
+        }
+        $parent.find('#peertalkTeachersDropdownList').hide();
+
+        if ($parent.find('.conference_modal_attendees_list li[data-teacher-id="' + teacherId + '"]')
+            .length === 0) {
+            $parent.find('.conference_modal_attendees_list').append(`
+                <li data-teacher-id="${teacherId}" data-teacher-name="${teacherName}">
+                    <span class="conference_modal_attendee_name">
+                        <img src="${teacherImg}" class="calendar_admin_details_create_cohort_teacher_avatar" alt="${teacherName}"> ${teacherName}
+                    </span>
+                    <span class="conference_modal_remove"><img src="./img/delete.svg" alt=""></span>
+                </li>
+            `);
+        }
+        $parent.find('#peertalkTeachersDropdown').removeClass('field-error');
+    });
+
+    // Remove items
+    $parent.on('click', '.conference_modal_remove', function() {
+        $(this).closest('li').fadeOut(200, function() {
+            $(this).remove();
+        });
+    });
+
+    // Search filters
+    $parent.find('#searchCohorts_peertalk').on('keyup', function() {
+        const filter = $(this).val().toLowerCase();
+        $parent.find('.peertalk_cohort_item').each(function() {
+            $(this).toggle($(this).text().toLowerCase().includes(filter));
+        });
+    });
+
+    $parent.find('#searchTeachers_peertalk').on('keyup', function() {
+        const filter = $(this).val().toLowerCase();
+        $parent.find('.peertalk_teacher_item').each(function() {
+            $(this).toggle($(this).text().toLowerCase().includes(filter));
+        });
+    });
+
+    // Outside click closes dropdowns
+    $(document).click(function(e) {
+        if (!$(e.target).closest('#peerTalkTabContent').length) {
+            $parent.find(
+                '.conference_modal_dropdown_list, .color-dropdown-list, .calendar_admin_details_cohort_tab_timezone_list'
+            ).hide();
+        }
+    });
+
+    // ✅ Validation & Submit
+    $form.on('submit', function(e) {
+        e.preventDefault();
+        $parent.find('.field-error').removeClass('field-error');
+        let isValid = true;
+
+        const startDateBtn = $parent.find('.peertalk_modal_date_btn');
+        const startDate = startDateBtn.text().trim();
+        const timezone = $tzSelected.text().trim();
+        const color = $colorToggle.find('.color-circle').css('background-color');
+        const cohorts = $parent.find('.conference_modal_cohort_list li');
+        const teachers = $parent.find('.conference_modal_attendees_list li');
+        const scheduleArray = extractPeerTalkSchedules();
+
+        if (scheduleArray.length === 0) isValid = false;
+
+        // Validate date using raw-date data attribute or text
+        const rawDate = startDateBtn.data('raw-date');
+        let dateText = startDateBtn.text().trim();
+
+        console.log('Date Validation:', {
+            rawDate,
+            dateText
+        });
+
+        if (!dateText || dateText === 'Select Date') {
+            console.log('Date validation failed: no date text');
+            startDateBtn.addClass('field-error');
+            isValid = false;
+        } else {
+            // Use raw date if available, otherwise parse text
+            let parsedDate;
+            if (rawDate) {
+                // Parse YYYY-MM-DD format to avoid timezone issues
+                const parts = rawDate.split('-');
+                parsedDate = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+            } else {
+                parsedDate = new Date(dateText);
+            }
+            
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            parsedDate.setHours(0, 0, 0, 0);
+
+            console.log('Parsed Date:', parsedDate, 'Raw Date:', rawDate, 'Today:', today, 'Valid:', !isNaN(parsedDate
+                .getTime()));
+
+            if (isNaN(parsedDate.getTime())) {
+                console.log('Date validation failed: invalid date format');
+                startDateBtn.addClass('field-error');
+                isValid = false;
+            } else if (parsedDate < today) {
+                console.log('Date validation failed: date is in the past');
+                startDateBtn.addClass('field-error');
+                isValid = false;
+            } else {
+                console.log('Date validation passed');
+                startDateBtn.removeClass('field-error');
+            }
         }
 
-        const result = await response.json();
-        console.log('✅ Peer Talk created successfully:', result);
-
-        hideGlobalLoader();
-
-        // Close modal and reload calendar
-        $('#calendar_admin_details_create_cohort_modal_backdrop').fadeOut();
-        if (typeof window.fetchCalendarEvents === 'function') {
-            window.fetchCalendarEvents();
+        if (!timezone || !timezone.includes('GMT')) {
+            $tzWrapper.addClass('field-error');
+            isValid = false;
+        }
+        if (!color) {
+            $colorToggle.addClass('field-error');
+            isValid = false;
+        }
+        if (cohorts.length === 0) {
+            $parent.find('#peertalkCohortsDropdown').addClass('field-error');
+            isValid = false;
+        }
+        if (teachers.length === 0) {
+            $parent.find('#peertalkTeachersDropdown').addClass('field-error');
+            isValid = false;
         }
 
-        // Reset form
-        $form[0].reset();
-        $parent.find('.conference_modal_cohort_list, .conference_modal_attendees_list').empty();
+        if (!isValid) {
+            return;
+        }
 
-    } catch (error) {
-        console.error('❌ Failed to create Peer Talk:', error);
-        hideGlobalLoader();
-        alert('Failed to create Peer Talk: ' + error.message);
-    }
-}
+        const payload = {
+            title: 'Peer Talk',
+            startDate,
+            timezone,
+            color,
+            scheduleArray,
+            cohorts: cohorts.map(function() {
+                return {
+                    id: $(this).data('cohort-id'),
+                    name: $(this).data('cohort-name'),
+                    idnumber: $(this).data('cohort-idnumber')
+                };
+            }).get(),
+            teachers: teachers.map(function() {
+                return {
+                    id: $(this).data('teacher-id'),
+                    name: $(this).data('teacher-name')
+                };
+            }).get(),
+            submittedAt: new Date().toISOString()
+        };
 
-// ✅ Loader helpers (if not already defined globally)
-function showGlobalLoader() {
-    if (typeof window.showGlobalLoader === 'function') {
-        window.showGlobalLoader();
-    } else if (window.$) {
-        window.$('#loader').css('display', 'flex');
-    }
-}
+        console.log('✅ PeerTalk Payload:', payload);
+    });
 
-function hideGlobalLoader() {
-    if (typeof window.hideGlobalLoader === 'function') {
-        window.hideGlobalLoader();
-    } else if (window.$) {
-        window.$('#loader').css('display', 'none');
-    }
-}
+    // Auto clear errors
+    $parent.on('click change', '.peertalk_modal_date_btn, .conference_modal_dropdown_btn', function() {
+        $(this).removeClass('field-error');
+    });
 });
 </script>
 

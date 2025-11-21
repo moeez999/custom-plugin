@@ -70,12 +70,12 @@
 .merge-calendar-modal-backdrop {
     display: none;
     position: fixed;
-    z-index: 9999;
-    top: 0;
+    z-index: 2000;
     left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.09);
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, .5);
 }
 
 .merge-calendar-modal {
@@ -84,11 +84,10 @@
     box-shadow: 0 8px 30px 0 rgba(0, 0, 0, .13);
     width: 340px;
     max-width: 96vw;
-    margin: 5vh auto;
     padding: 0 0 24px 0;
     position: absolute;
+    top: 50%;
     left: 50%;
-    top: 48%;
     transform: translate(-50%, -50%);
     animation: fadeIn .18s;
 }
@@ -222,6 +221,7 @@
 </div>
 
 <script>
+$(document).ready(function() {
 // Calendar logic
 let mergeDateTargetBtn = null;
 let mergeCalendarMonth = null;
@@ -230,10 +230,13 @@ let mergeSelectedCalendarDate = null;
 function mergeDaysInMonth(year, month) {
     return new Date(year, month + 1, 0).getDate();
 }
-// Show modal on button click
-$('#resched_date_label, #mergeMergingDateBtn').click(function(e) {
+
+// Show modal on button click - using event delegation for dynamically loaded content
+$(document).on('click', '#resched_date_label, #resched_date_field, #mergeMergingDateBtn', function(e) {
     e.preventDefault();
-    mergeDateTargetBtn = $(this);
+    e.stopPropagation();
+    // Get the label element for updating later
+    mergeDateTargetBtn = $(this).is('#resched_date_label') ? $(this) : $('#resched_date_label');
     // Show modal
     $('#mergeCalendarModalBackdrop').fadeIn(100);
     // Set calendar month to current or to the already selected date
@@ -273,7 +276,7 @@ $(document).on('click', '.merge-calendar-day', function() {
 });
 
 // Done button
-$('.merge-calendar-done-btn').click(function() {
+$(document).on('click', '.merge-calendar-done-btn', function() {
     if (mergeDateTargetBtn && mergeSelectedCalendarDate) {
         let d = mergeSelectedCalendarDate;
         let nice = d.toLocaleDateString('en-GB', {
@@ -288,10 +291,9 @@ $('.merge-calendar-done-btn').click(function() {
 });
 
 // Click outside modal closes it
-$('#mergeCalendarModalBackdrop').click(function(e) {
+$(document).on('click', '#mergeCalendarModalBackdrop', function(e) {
     if (e.target === this) $(this).fadeOut(120);
 });
-
 
 // Render function
 function mergeRenderCalendarModal() {
@@ -323,4 +325,6 @@ function mergeRenderCalendarModal() {
         for (let i = rem; i < 7; i++) html += `<div class="merge-calendar-day-inactive"></div>`;
     $('.merge-calendar-days').html(html);
 }
+
+}); // End document.ready
 </script>
