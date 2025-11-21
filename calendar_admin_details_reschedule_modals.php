@@ -45,25 +45,6 @@
                     </div>
                 </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="session-student">Student</label>
-                        <div id="session-student-dropdown" class="custom-dropdown">
-                            <button type="button" class="dropdown-btn" id="session-student-btn">Select Student</button>
-                            <ul class="dropdown-list" id="session-student-list"></ul>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="session-lesson-type">Lesson Type</label>
-                        <div id="session-lesson-type-dropdown" class="custom-dropdown">
-                            <button type="button" class="dropdown-btn" id="session-lesson-type-btn">Select Lesson Type</button>
-                            <ul class="dropdown-list" id="session-lesson-type-list">
-                                <li data-lesson-type="single">Single Lesson</li>
-                                <li data-lesson-type="weekly">Weekly Lesson</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
 
                 <div class="form-row">
                     <div class="form-group">

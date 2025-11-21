@@ -1315,6 +1315,7 @@
 
         // ===== UNIFIED TAB HANDLER =====
         function openTab(tabName) {
+
             // Remove all active classes
             $('.calendar_admin_details_create_cohort_tab').removeClass('active');
 

@@ -28,15 +28,28 @@
                 <label class="calendar_admin_details_cohort_tab_timezone_label">Event time zone</label>
                 <div class="calendar_admin_details_cohort_tab_timezone_dropdown"
                     id="eventTimezoneDropdown_conference_tab_wrapper">
-                    <span id="eventTimezoneDropdown_conference_tab_selected">(GMT-05:00) Eastern</span>
+                    <span id="eventTimezoneDropdown_conference_tab_selected">(GMT-05:00) Eastern Time (US & Canada)</span>
                     <img class="calendar_admin_details_cohort_tab_timezone_arrow" src="./img/dropdown-arrow-down.svg"
                         alt="">
                     <div class="calendar_admin_details_cohort_tab_timezone_list"
                         id="eventTimezoneDropdown_conference_tab_list">
                         <ul>
-                            <li>(GMT-05:00) Eastern</li>
+                            <li>(GMT-12:00) International Date Line West</li>
+                            <li>(GMT-11:00) Midway Island, Samoa</li>
+                            <li>(GMT-10:00) Hawaii</li>
+                            <li>(GMT-09:00) Alaska</li>
+                            <li>(GMT-08:00) Pacific Time (US & Canada)</li>
+                            <li>(GMT-07:00) Mountain Time (US & Canada)</li>
+                            <li>(GMT-06:00) Central Time (US & Canada)</li>
+                            <li>(GMT-05:00) Eastern Time (US & Canada)</li>
+                            <li>(GMT+00:00) London</li>
                             <li>(GMT+01:00) Berlin, Paris</li>
+                            <li>(GMT+03:00) Moscow, Nairobi</li>
+                            <li>(GMT+05:00) Pakistan</li>
                             <li>(GMT+05:30) India</li>
+                            <li>(GMT+08:00) Beijing, Singapore</li>
+                            <li>(GMT+09:00) Tokyo, Seoul</li>
+                            <li>(GMT+10:00) Sydney</li>
                         </ul>
                     </div>
                 </div>
@@ -46,16 +59,18 @@
                 <a class="conference_modal_findtime_link" href="#">Find a time</a>
                 <div class="color-dropdown-wrapper">
                     <button type="button" class="color-dropdown-toggle" id="colorDropdownToggle" style="width:75px;">
-                        <span class="color-circle" style="background:#1736e6"></span>
+                        <span class="color-circle" style="background:#1649c7"></span>
                         <span style="float:right; font-size:1rem;">
                             <img class="calendar_admin_details_cohort_tab_timezone_arrow"
                                 src="./img/dropdown-arrow-down.svg" alt="">
                         </span>
                     </button>
                     <div class="color-dropdown-list" id="colorDropdownList">
-                        <div class="color-dropdown-color" data-color="#1736e6" style="background:#1736e6"></div>
-                        <div class="color-dropdown-color" data-color="#22b07e" style="background:#22b07e"></div>
-                        <div class="color-dropdown-color" data-color="#ff2f1b" style="background:#ff2f1b"></div>
+                        <div class="color-dropdown-color" data-color="#1649c7" style="background:#1649c7"></div>
+                        <div class="color-dropdown-color" data-color="#20a88e" style="background:#20a88e"></div>
+                        <div class="color-dropdown-color" data-color="#3f3f48" style="background:#3f3f48"></div>
+                        <div class="color-dropdown-color" data-color="#fe2e0c" style="background:#fe2e0c"></div>
+                        <div class="color-dropdown-color" data-color="#daa520" style="background:#daa520"></div>
                     </div>
                 </div>
             </div>
@@ -128,18 +143,39 @@ $(document).ready(function() {
             const $this = $(this);
             const text = $this.text().trim();
 
-            const dayMatch = text.match(/on\s+([A-Za-z]{3})/);
+            // Match time first: "09:00 AM - 10:00 AM"
             const timeMatch = text.match(
                 /(\d{1,2}:\d{2}\s?[APMapm]{2})\s*-\s*(\d{1,2}:\d{2}\s?[APMapm]{2})/);
 
-            if (dayMatch && timeMatch) {
-                scheduleArray.push({
-                    day: dayMatch[1],
-                    startTime: timeMatch[1],
-                    endTime: timeMatch[2]
+            if (!timeMatch) {
+                // No time found, mark as error
+                $this.addClass('field-error');
+                return; // continue to next iteration
+            }
+
+            const startTime = timeMatch[1];
+            const endTime = timeMatch[2];
+
+            // Extract all days from text
+            // Match patterns like:
+            // "Weekly on Mon (09:00 AM - 10:00 AM)"
+            // "Weekly on Mon, Wed, Fri (09:00 AM - 10:00 AM)"
+            // "on Mon, Wed, Fri (09:00 AM - 10:00 AM)"
+            const dayPattern = /\b(Mon|Tue|Wed|Thu|Fri|Sat|Sun)\b/g;
+            const dayMatches = text.match(dayPattern);
+
+            if (dayMatches && dayMatches.length > 0) {
+                // Found one or more days - create schedule entry for each
+                dayMatches.forEach(function(day) {
+                    scheduleArray.push({
+                        day: day,
+                        startTime: startTime,
+                        endTime: endTime
+                    });
                 });
                 $this.removeClass('field-error');
             } else {
+                // No days found, mark as error
                 $this.addClass('field-error');
             }
         });
@@ -182,12 +218,16 @@ $(document).ready(function() {
         $parent.find('#conferenceCohortsDropdownList').toggle();
         $parent.find(
                 '#conferenceTeachersDropdownList, #colorDropdownList, #eventTimezoneDropdown_conference_tab_list'
-                )
+            )
             .hide();
     });
     $parent.find('#conferenceCohortsDropdownList li').click(function() {
         const cohort = $(this).text().trim();
-        $parent.find('#conferenceCohortsDropdown').contents().first()[0].textContent = cohort + " ";
+        const $dropdown = $parent.find('#conferenceCohortsDropdown');
+        const firstNode = $dropdown.contents().first()[0];
+        if (firstNode) {
+            firstNode.textContent = cohort + " ";
+        }
         $parent.find('#conferenceCohortsDropdownList').hide();
         if ($parent.find('.conference_modal_cohort_list li[data-cohort="' + cohort + '"]').length ===
             0) {
@@ -209,7 +249,7 @@ $(document).ready(function() {
         $parent.find('#conferenceTeachersDropdownList').toggle();
         $parent.find(
                 '#conferenceCohortsDropdownList, #colorDropdownList, #eventTimezoneDropdown_conference_tab_list'
-                )
+            )
             .hide();
     });
     $parent.find('#conferenceTeachersDropdownList li').click(function() {

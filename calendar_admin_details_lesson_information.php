@@ -1645,8 +1645,12 @@ require_once('calendar_admin_details_lesson_information_cancel_lesson.php'); */?
     // Openers
     //$('.calendar_admin_details_lesson_information_btn').on('click', openLessonInfo);
 
-    $(document).on('click', '.event.e-green', function() {
+    $(document).on('click', '.event.e-green', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
         const $event = $(this);
+        console.log('Event clicked:', $event);
 
         // Extract event data from data attributes
         const studentIds = $event.data('student-ids') ? String($event.data('student-ids')).split(',') : [];
@@ -1668,9 +1672,12 @@ require_once('calendar_admin_details_lesson_information_cancel_lesson.php'); */?
             avatar: avatar,
             eventid: $event.data('event-id') || '',
             cmid: $event.data('cm-id') || '',
+            googlemeetid: $event.data('googlemeet-id') || $event.data('cm-id') || '',
             classType: $event.data('class-type') || '',
             repeat: $event.data('repeat') || false
         };
+
+        console.log('Event data extracted:', eventData);
 
         // Convert minutes to HH:MM format
         function minutesToTime(mins) {
@@ -1774,13 +1781,218 @@ require_once('calendar_admin_details_lesson_information_cancel_lesson.php'); */?
             return;
         }
 
-        // Call the openManageSessionModal function with actual event data
-        if (typeof openManageSessionModal === 'function') {
-            openManageSessionModal(currentEventData);
-        } else {
-            console.error('openManageSessionModal function not found');
-        }
+        // Store event data globally so other scripts can access it
+        window.currentEventData = currentEventData;
+
+        // Open the Create Cohort modal
+        $('#calendar_admin_details_create_cohort_modal_backdrop').fadeIn();
+
+        // Switch to the Manage 1:1 Class tab (data-tab="manageclass")
+        const $backdrop = $('#calendar_admin_details_create_cohort_modal_backdrop');
+        $backdrop.find('.calendar_admin_details_create_cohort_tab').removeClass('active');
+        $backdrop.find('.calendar_admin_details_create_cohort_tab[data-tab="manage_class"]').addClass(
+            'active');
+
+        // Hide all tab contents
+        $('#calendar_admin_details_create_cohort_content').html('');
+        $('#mergeTabContent').css('display', 'none');
+        $('#conferenceTabContent').css('display', 'none');
+        $('#peerTalkTabContent').css('display', 'none');
+        $('#addTimeTabContent').css('display', 'none');
+        $('#addExtraSlotsTabContent').css('display', 'none');
+        $('#mainModalContent').css('display', 'none');
+
+
+        $('#manageclassTabContent').show();
+
+        console.log('Opening Manage 1:1 Class tab with event data:', currentEventData);
+
+        // Wait for tab to be visible, then populate with event data
+        setTimeout(function() {
+            scrollToActiveCohortTab();
+
+            populateManage1To1ClassTab(currentEventData);
+
+
+        }, 300);
     });
+
+    // Function to populate Manage 1:1 Class tab with event data
+    function populateManage1To1ClassTab(eventData) {
+        if (!eventData) return;
+
+        console.log('Populating Manage 1:1 Class tab with:', eventData);
+
+        // 1. Select Teacher
+        if (eventData.teacherId) {
+            const teacherItem = document.querySelector(
+                `#calendar_admin_details_create_cohort_manage_class_tab_list .calendar_admin_details_create_cohort_manage_class_tab_item[data-userid="${eventData.teacherId}"]`
+            );
+
+            if (teacherItem) {
+                const teacherName = teacherItem.dataset.name;
+                const teacherImg = teacherItem.dataset.img;
+                const teacherId = teacherItem.dataset.userid;
+
+                // Update the trigger button
+                const imgEl = document.getElementById(
+                    'calendar_admin_details_create_cohort_manage_class_tab_current_img');
+                const labelEl = document.getElementById(
+                    'calendar_admin_details_create_cohort_manage_class_tab_current_label');
+                const triggerBtn = document.getElementById(
+                    'calendar_admin_details_create_cohort_manage_class_tab_trigger');
+
+                if (imgEl) imgEl.src = teacherImg;
+                if (labelEl) labelEl.textContent = teacherName;
+
+                // Update trigger button data attributes
+                if (triggerBtn) {
+                    triggerBtn.dataset.userid = teacherId;
+                    triggerBtn.dataset.name = teacherName;
+                    triggerBtn.dataset.img = teacherImg;
+                }
+
+                // Remove previous selection
+                document.querySelectorAll(
+                        '#calendar_admin_details_create_cohort_manage_class_tab_list .calendar_admin_details_create_cohort_manage_class_tab_item[aria-selected="true"]'
+                    )
+                    .forEach(el => el.removeAttribute('aria-selected'));
+
+                // Mark as selected
+                teacherItem.setAttribute('aria-selected', 'true');
+
+                console.log('✅ Selected teacher:', teacherName, '(ID:', teacherId, ')');
+
+                // 2. Load students and select specific student
+                if (typeof window.loadStudentsForTeacher === 'function' && eventData.studentids && eventData
+                    .studentids.length > 0) {
+                    const targetStudentId = eventData.studentids[0];
+
+                    // Load students without auto-selecting the first one
+                    window.loadStudentsForTeacher(teacherId, false).then(() => {
+                        console.log('Students loaded, now selecting student ID:', targetStudentId);
+
+                        // Wait for DOM to update, then select the specific student
+                        setTimeout(() => {
+                            const studentItem = document.querySelector(
+                                `#one2oneStudentDropdownManage .one2one-student-list-item[data-userid="${targetStudentId}"]`
+                            );
+
+                            if (studentItem) {
+                                const addStudentBtn = document.getElementById(
+                                    'one2oneAddStudentBtnManage');
+
+                                // Remove previous selection
+                                document.querySelectorAll(
+                                        '#one2oneStudentDropdownManage .one2one-student-list-item')
+                                    .forEach(el => el.classList.remove('selected'));
+
+                                // Mark this student as selected
+                                studentItem.classList.add('selected');
+
+                                // Update the "Add student" button
+                                if (addStudentBtn) {
+                                    const avatar = studentItem.querySelector(
+                                        '.one2one-student-list-avatar')?.innerHTML || '';
+                                    const name = studentItem.dataset.name || studentItem
+                                        .querySelector('.one2one-student-list-name')?.textContent ||
+                                        'Student';
+                                    addStudentBtn.innerHTML = `
+                                        <span class="one2one-add-student-icon">${avatar}</span>
+                                        <span style="font-weight:600; color:#232323;">${name}</span>
+                                    `;
+                                    addStudentBtn.classList.add('active');
+                                }
+
+                                console.log('✅ Selected student ID:', targetStudentId);
+
+                                // 3. After student selection, proceed with lesson type and lesson selection
+                                selectLessonTypeAndLesson(eventData);
+                            } else {
+                                console.warn('Student item not found for ID:', targetStudentId);
+                            }
+                        }, 300);
+                    }).catch(error => {
+                        console.error('Error loading students:', error);
+                    });
+                } else if (typeof window.loadStudentsForTeacher === 'function') {
+                    // No specific student to select, just load students
+                    window.loadStudentsForTeacher(teacherId);
+                    console.log('Triggered loadStudentsForTeacher for teacherId:', teacherId);
+                }
+            }
+        }
+    }
+
+    // Helper function to select lesson type and specific lesson
+    function selectLessonTypeAndLesson(eventData) {
+        // Determine lesson type based on classType
+        let lessonType = 'single';
+        if (eventData.classType === 'one2one_weekly') {
+            lessonType = 'weekly';
+        } else if (eventData.classType === 'one2one_single') {
+            lessonType = 'single';
+        }
+
+        console.log('Lesson type determined:', lessonType, 'from classType:', eventData.classType);
+
+        // Wait a bit to ensure student selection is fully processed
+        setTimeout(() => {
+            // Click the appropriate lesson type button in manage tab
+            const lessonTypeBtn = document.querySelector(
+                `#manageclassTabContent .one2one-lesson-type-btn-manage[data-type="${lessonType}"]`);
+
+            if (lessonTypeBtn) {
+                lessonTypeBtn.click();
+                console.log('Clicked lesson type button:', lessonType);
+
+                // After clicking lesson type button, wait for lessons to populate, then select specific lesson
+                if (eventData.googlemeetid) {
+                    setTimeout(function() {
+                        if (lessonType === 'weekly') {
+                            // Select weekly lesson in manage tab by data-cmid
+                            const weeklyLessonItem = document.querySelector(
+                                `.weekly-single-lesson-container .weekly-single-lesson-item[data-cmid="${eventData.googlemeetid}"]`
+                            );
+
+                            if (weeklyLessonItem) {
+                                weeklyLessonItem.click();
+                                console.log('✅ Selected weekly lesson with googlemeetid:', eventData
+                                    .googlemeetid);
+                            } else {
+                                console.warn('Weekly lesson item not found for googlemeetid:',
+                                    eventData.googlemeetid);
+                                console.log('Available weekly lessons:', document.querySelectorAll(
+                                    '.weekly-single-lesson-container .weekly-single-lesson-item'
+                                ));
+                            }
+                        } else {
+                            // Select single lesson in manage tab by data-cmid
+                            const singleLessonItem = document.querySelector(
+                                `.single-lesson-dropdown-card .single-lesson-dropdown-item[data-cmid="${eventData.googlemeetid}"]`
+                            );
+
+                            if (singleLessonItem) {
+                                singleLessonItem.click();
+                                console.log('✅ Selected single lesson with googlemeetid:', eventData
+                                    .googlemeetid);
+                            } else {
+                                console.warn('Single lesson item not found for googlemeetid:',
+                                    eventData.googlemeetid);
+                                console.log('Available single lessons:', document.querySelectorAll(
+                                    '.single-lesson-dropdown-card .single-lesson-dropdown-item'
+                                ));
+                            }
+                        }
+                    }, 2000); // Wait 2 seconds for lessons to populate after clicking lesson type
+                } else {
+                    console.warn('No googlemeetid provided in event data');
+                }
+            } else {
+                console.warn('Lesson type button not found for type:', lessonType);
+            }
+        }, 500); // Wait 500ms after student selection before clicking lesson type button
+    }
 
     // ===== Cancel modal action (demo) =====
     $('#calendar_admin_cancel_confirm_btn').on('click', function() {

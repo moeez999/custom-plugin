@@ -30,15 +30,28 @@
                 <label class="calendar_admin_details_cohort_tab_timezone_label">Event time zone</label>
                 <div class="calendar_admin_details_cohort_tab_timezone_dropdown"
                     id="eventTimezoneDropdown_peertalk_wrapper">
-                    <span id="eventTimezoneDropdown_peertalk_selected">(GMT-05:00) Eastern</span>
+                    <span id="eventTimezoneDropdown_peertalk_selected">(GMT-05:00) Eastern Time (US & Canada)</span>
                     <img class="calendar_admin_details_cohort_tab_timezone_arrow" src="./img/dropdown-arrow-down.svg"
                         alt="">
                     <div class="calendar_admin_details_cohort_tab_timezone_list"
                         id="eventTimezoneDropdown_peertalk_list">
                         <ul>
-                            <li>(GMT-05:00) Eastern</li>
+                            <li>(GMT-12:00) International Date Line West</li>
+                            <li>(GMT-11:00) Midway Island, Samoa</li>
+                            <li>(GMT-10:00) Hawaii</li>
+                            <li>(GMT-09:00) Alaska</li>
+                            <li>(GMT-08:00) Pacific Time (US & Canada)</li>
+                            <li>(GMT-07:00) Mountain Time (US & Canada)</li>
+                            <li>(GMT-06:00) Central Time (US & Canada)</li>
+                            <li>(GMT-05:00) Eastern Time (US & Canada)</li>
+                            <li>(GMT+00:00) London</li>
                             <li>(GMT+01:00) Berlin, Paris</li>
+                            <li>(GMT+03:00) Moscow, Nairobi</li>
+                            <li>(GMT+05:00) Pakistan</li>
                             <li>(GMT+05:30) India</li>
+                            <li>(GMT+08:00) Beijing, Singapore</li>
+                            <li>(GMT+09:00) Tokyo, Seoul</li>
+                            <li>(GMT+10:00) Sydney</li>
                         </ul>
                     </div>
                 </div>
@@ -50,16 +63,18 @@
                 <div class="color-dropdown-wrapper">
                     <button type="button" class="color-dropdown-toggle" id="colorDropdownToggle_peertalk"
                         style="width:75px;">
-                        <span class="color-circle" style="background:#1736e6"></span>
+                        <span class="color-circle" style="background:#1649c7"></span>
                         <span style="float:right; font-size:1rem;">
                             <img class="calendar_admin_details_cohort_tab_timezone_arrow"
                                 src="./img/dropdown-arrow-down.svg" alt="">
                         </span>
                     </button>
                     <div class="color-dropdown-list" id="colorDropdownList_peertalk">
-                        <div class="color-dropdown-color" data-color="#1736e6" style="background:#1736e6"></div>
-                        <div class="color-dropdown-color" data-color="#22b07e" style="background:#22b07e"></div>
-                        <div class="color-dropdown-color" data-color="#ff2f1b" style="background:#ff2f1b"></div>
+                        <div class="color-dropdown-color" data-color="#1649c7" style="background:#1649c7"></div>
+                        <div class="color-dropdown-color" data-color="#20a88e" style="background:#20a88e"></div>
+                        <div class="color-dropdown-color" data-color="#3f3f48" style="background:#3f3f48"></div>
+                        <div class="color-dropdown-color" data-color="#fe2e0c" style="background:#fe2e0c"></div>
+                        <div class="color-dropdown-color" data-color="#daa520" style="background:#daa520"></div>
                     </div>
                 </div>
             </div>
