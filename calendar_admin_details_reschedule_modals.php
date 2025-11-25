@@ -18,7 +18,8 @@
                     <div class="form-group">
                         <label for="session-cohort">Cohort</label>
                         <div id="session-cohort-dropdown" class="custom-dropdown">
-                            <button type="button" class="dropdown-btn" id="session-cohort-btn">Select Cohort</button>
+                            <button type="button" class="dropdown-btn" id="session-cohort-btn" disabled
+                                style="background-color:#f5f5f5;cursor:not-allowed;">Select Cohort</button>
                             <ul class="dropdown-list" id="session-cohort-list"></ul>
                         </div>
                     </div>
@@ -39,7 +40,8 @@
                     <div class="form-group">
                         <label for="session-class-name">Class Name</label>
                         <div id="session-class-dropdown" class="custom-dropdown">
-                            <button type="button" class="dropdown-btn" id="session-class-btn">Select Class</button>
+                            <button type="button" class="dropdown-btn" id="session-class-btn" disabled
+                                style="background-color:#f5f5f5;cursor:not-allowed;">Select Class</button>
                             <ul class="dropdown-list" id="session-class-list"></ul>
                         </div>
                     </div>
@@ -490,7 +492,7 @@ input#class-name {
     box-sizing: border-box;
     border: 2px solid rgba(0, 0, 0, 0.12);
     border-radius: 10px;
-    padding: 12px;
+    padding: 10px;
     font-family: 'Poppins', sans-serif;
     font-size: 14px;
     background-color: #ffffff;

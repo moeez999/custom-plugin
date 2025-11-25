@@ -922,16 +922,21 @@ if ($userIds) {
         const offsetMinutes = parseOffsetMinutes(timezoneLabel);
         const timezoneId = TIMEZONE_MAP[timezoneLabel] || null;
 
-        // Cohort/teacher/student IDs as STRINGS
+        // Extract cohort IDs
         const cohortIds = [];
-        const studentIds = [];
+        $parent.find('.conference_modal_cohort_list li').each(function() {
+            const cohortId = $(this).data('cohort-id');
+            if (cohortId) {
+                cohortIds.push(String(cohortId));
+            }
+        });
 
-        cohorts.each(function() {
-            const $this = $(this);
-            if ($this.data('cohort-id')) {
-                cohortIds.push(String($this.data('cohort-id')));
-            } else if ($this.data('student-id')) {
-                studentIds.push(String($this.data('student-id')));
+        // Extract student IDs from the students list
+        const studentIds = [];
+        $parent.find('.conference_modal_students_list li').each(function() {
+            const studentId = $(this).data('student-id');
+            if (studentId) {
+                studentIds.push(String(studentId));
             }
         });
 
