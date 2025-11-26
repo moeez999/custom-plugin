@@ -31,24 +31,27 @@ function getTeacherColorIndex(teacherId) {
 // Helper function to generate unique vibrant color for any teacher ID
 function getTeacherColor(teacherId) {
   if (!teacherId) return "#FF1744"; // Default vibrant red
-  
+
   // === Step-by-step reveal for PeerTalk and Conference modals ===
   // Assumes: .cohort-column, .teacher-column, .student-column, .modal-next-btn selectors
   function setupStepReveal(modalSelector) {
     const $modal = $(modalSelector);
-    $modal.find('.student-column').hide();
-    $modal.find('.cohort-column, .teacher-column').show();
-    $modal.find('.modal-next-btn').off('click').on('click', function() {
-      $modal.find('.student-column').slideDown();
-      $(this).prop('disabled', true); // Optionally disable after click
-    });
+    $modal.find(".student-column").hide();
+    $modal.find(".cohort-column, .teacher-column").show();
+    $modal
+      .find(".modal-next-btn")
+      .off("click")
+      .on("click", function () {
+        $modal.find(".student-column").slideDown();
+        $(this).prop("disabled", true); // Optionally disable after click
+      });
   }
-  
+
   // Call this after modal is opened/populated
   // For PeerTalk modal:
-  setupStepReveal('#peerTalkModal');
+  setupStepReveal("#peerTalkModal");
   // For Conference modal:
-  setupStepReveal('#conferenceModal');
+  setupStepReveal("#conferenceModal");
   // ...existing code...
 
   // Generate unique hue based on teacher ID using golden angle for optimal color distribution
@@ -1960,21 +1963,27 @@ $(function () {
     const eventData = $(this).data("eventData");
     console.log("Updating session for event:", eventData);
 
-    // Get selected values from custom dropdowns
+    // ============================
+    // GET SELECTED COHORT
+    // ============================
     const selectedCohortId = $("#session-cohort-list li")
       .filter(function () {
         return $(this).text().trim() === $("#session-cohort-btn").text().trim();
       })
       .data("cohort-id");
 
-    const selectedTeacherId = $("#session-teacher-list li")
-      .filter(function () {
-        return (
-          $(this).text().trim() === $("#session-teacher-btn").text().trim()
-        );
-      })
-      .data("teacher-id");
+    // ============================
+    // GET SELECTED TEACHER
+    // ============================
+    const selectedTeacherLi = $("#session-teacher-list li").filter(function () {
+      return $(this).text().trim() === $("#session-teacher-btn").text().trim();
+    });
 
+    const selectedTeacherId = selectedTeacherLi.data("teacher-id");
+
+    // ============================
+    // GET OTHER FIELDS
+    // ============================
     const selectedClassValue = $("#session-class-list li")
       .filter(function () {
         return $(this).text().trim() === $("#session-class-btn").text().trim();
@@ -2004,12 +2013,50 @@ $(function () {
       date: selectedDate,
     });
 
-    // TODO: Implement session update logic
-    alert("Session update functionality will be implemented here.");
+    // ============================================================
+    // OLD SESSION DATA (CORRECTED FOR YOUR REAL eventData)
+    // ============================================================
+    const oldTeacherId = eventData.teacherId; // <-- FIXED
+    const oldDate = eventData.date;
+    const oldStart = eventData.start;
+    const oldEnd = eventData.end;
 
-    // Close modal after submission
+    // ============================================================
+    // BUILD PAYLOAD
+    // ============================================================
+    let payload = {
+      status: "reschedule",
+      cohortId: selectedCohortId,
+      classType: selectedClassValue,
+    };
+
+    // ============================================================
+    // TEACHER CHANGE CHECK (ONLY IDS)
+    // ============================================================
+    if (oldTeacherId && oldTeacherId !== selectedTeacherId) {
+      payload.previousTeacherId = oldTeacherId;
+      payload.newTeacherId = selectedTeacherId;
+    } else {
+      payload.teacherId = selectedTeacherId;
+    }
+
+    // ============================================================
+    // DATE / TIME CHANGE CHECK
+    // ============================================================
+    if (
+      oldDate !== selectedDate ||
+      oldStart !== selectedStartTime ||
+      oldEnd !== selectedEndTime
+    ) {
+      payload.date = selectedDate;
+      payload.startTime = selectedStartTime;
+      payload.endTime = selectedEndTime;
+    }
+
+    console.log("Final Reschedule Payload:", payload);
+
+    // Close modal
     $("#manage-session-modal").fadeOut(300);
-    // Close all dropdowns
     $(".custom-dropdown .dropdown-list").hide();
   });
 
@@ -2648,15 +2695,30 @@ document.addEventListener("DOMContentLoaded", () => {
         .querySelector(".pill-close-btn")
         .addEventListener("click", (e) => {
           e.stopPropagation();
+
+          // Remove from selected array
           selectedTeacherIds = selectedTeacherIds.filter((x) => x !== id);
-          const checkbox = opt.querySelector(".teacher-checkbox");
-          if (checkbox) checkbox.checked = false;
-          opt.classList.remove("selected");
-          // Hide the color dot when deselecting
-          const colorDot = opt.querySelector(".teacher-color-dot");
-          if (colorDot) colorDot.style.display = "none";
-          updateTeacherPills();
-          onTeacherFilterChange();
+
+          // Update the checkbox in the current list immediately
+          const currentOption = teacherFieldset.querySelector(
+            `.teacher-option[data-teacher-id="${id}"]`
+          );
+          if (currentOption) {
+            const checkbox = currentOption.querySelector(".teacher-checkbox");
+            const colorDot = currentOption.querySelector(".teacher-color-dot");
+            if (checkbox) checkbox.checked = false;
+            currentOption.classList.remove("selected");
+            if (colorDot) colorDot.style.display = "none";
+          }
+
+          // Reload teacher list (rebuilds with correct selection state)
+          loadTeachers().then(() => {
+            // Update pills (after list is rebuilt)
+            updateTeacherPills();
+
+            // Update calendar
+            onTeacherFilterChange();
+          });
         });
       selectedTeachersContainer.appendChild(dropdownPill);
     });
@@ -3225,29 +3287,37 @@ document.addEventListener("DOMContentLoaded", () => {
       ? s.cohortname.substring(0, 4)
       : "";
 
+    // Check if this is a 1:1 cohort student
+    const isOneOnOne = s.cohorttype === "one1one";
+
     wrap.innerHTML = `
-            <label class="student-label">
-                <div class="student-details">
-                    <div class="student-avatar-container">
-                        <img class="student-avatar" src="${
-                          s.avatar || ""
-                        }" alt="${s.name}">
-                    </div>
-                    <div class="student-name-wrapper">
-                        ${
-                          cohortShortName
-                            ? `<span class="student-cohort-badge">${cohortShortName}</span>`
-                            : ""
-                        }
-                        <span class="student-name">${s.name}</span>
-                    </div>
-                </div>
-                <div class="radio-custom">
-                    <div class="radio-custom-dot"></div>
-                </div>
-            </label>
-            <input type="checkbox" class="visually-hidden student-checkbox">
-        `;
+          <label class="student-label">
+              <div class="student-details">
+                  <div class="student-avatar-container">
+                      <img class="student-avatar" src="${
+                        s.avatar || ""
+                      }" alt="${s.name}">
+                  </div>
+                  <div class="student-name-wrapper">
+                      ${
+                        cohortShortName
+                          ? `<span class="student-cohort-badge">${cohortShortName}</span>`
+                          : ""
+                      }
+                      <span class="student-name">${s.name}</span>
+                      ${
+                        isOneOnOne
+                          ? '<span class="student-type-badge">1:1</span>'
+                          : ""
+                      }
+                  </div>
+              </div>
+              <div class="radio-custom">
+                  <div class="radio-custom-dot"></div>
+              </div>
+          </label>
+          <input type="checkbox" class="visually-hidden student-checkbox">
+      `;
 
     wrap.addEventListener("click", (e) => {
       if (e.target.tagName === "INPUT") return;

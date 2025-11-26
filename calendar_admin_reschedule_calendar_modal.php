@@ -25,8 +25,13 @@
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 .reschedule_calendar_header {
@@ -134,13 +139,15 @@
         <div class="reschedule_calendar_header">
             <button type="button" class="reschedule_calendar_prev">
                 <svg width="22" height="22" viewBox="0 0 24 24">
-                    <polyline points="9 19 16 12 9 5" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></polyline>
+                    <polyline points="9 19 16 12 9 5" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round"></polyline>
                 </svg>
             </button>
             <span id="rescheduleCalendarMonth"></span>
             <button type="button" class="reschedule_calendar_next">
                 <svg width="22" height="22" viewBox="0 0 24 24">
-                    <polyline points="15 19 8 12 15 5" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></polyline>
+                    <polyline points="15 19 8 12 15 5" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round"></polyline>
                 </svg>
             </button>
         </div>
@@ -164,13 +171,13 @@ $(document).ready(function() {
     $(document).on('click', '#resched_date_field, #resched_date_label', function(e) {
         e.preventDefault();
         e.stopPropagation();
-        
+
         console.log('=== CALENDAR CLICK DEBUG ===');
         console.log('Event triggered on:', e.target);
         console.log('This element:', this);
         console.log('jQuery version:', $.fn.jquery);
         console.log('Clicked element ID:', $(this).attr('id'));
-        
+
         // Check if backdrop exists
         const $backdrop = $('#rescheduleCalendarBackdrop');
         console.log('Backdrop found:', $backdrop.length);
@@ -178,11 +185,11 @@ $(document).ready(function() {
         console.log('Backdrop current display:', $backdrop.css('display'));
         console.log('Backdrop current visibility:', $backdrop.css('visibility'));
         console.log('Backdrop current opacity:', $backdrop.css('opacity'));
-        
+
         // Store reference to update label later
         rescheduleCalendarTargetBtn = $('#resched_date_label');
         console.log('Target button set:', rescheduleCalendarTargetBtn.length);
-        
+
         // Initialize calendar to current month
         let now = new Date();
         rescheduleCalendarMonth = {
@@ -190,25 +197,25 @@ $(document).ready(function() {
             month: now.getMonth()
         };
         rescheduleSelectedDate = null;
-        
+
         console.log('Calendar month initialized:', rescheduleCalendarMonth);
-        
+
         // Render and show
         console.log('Rendering calendar...');
         renderRescheduleCalendar();
         console.log('Calendar rendered');
-        
+
         console.log('Showing backdrop...');
         $backdrop.css('display', 'flex').hide().fadeIn(150);
         console.log('FadeIn called');
-        
+
         // Check again after 200ms
         setTimeout(function() {
             console.log('After fadeIn - display:', $backdrop.css('display'));
             console.log('After fadeIn - visibility:', $backdrop.css('visibility'));
             console.log('After fadeIn - is visible:', $backdrop.is(':visible'));
         }, 200);
-        
+
         console.log('=== END DEBUG ===');
     });
 
@@ -234,31 +241,33 @@ $(document).ready(function() {
 
     // Render calendar
     function renderRescheduleCalendar() {
-        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August",
+            "September", "October", "November", "December"
+        ];
         let y = rescheduleCalendarMonth.year;
         let m = rescheduleCalendarMonth.month;
-        
+
         $('#rescheduleCalendarMonth').text(`${monthNames[m]} ${y}`);
-        
+
         let html = '';
         let dayHeaders = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
-        
+
         // Day headers
         for (let d = 0; d < 7; d++) {
             html += `<div class="reschedule_calendar_day_header">${dayHeaders[d]}</div>`;
         }
-        
+
         // Get first day of month (0=Sunday, adjust to Monday=0)
         let firstDay = new Date(y, m, 1).getDay();
         firstDay = (firstDay + 6) % 7;
-        
+
         let totalDays = daysInMonth(y, m);
-        
+
         // Inactive days before month starts
         for (let i = 0; i < firstDay; i++) {
             html += `<div class="reschedule_calendar_day_inactive"></div>`;
         }
-        
+
         // Actual days
         for (let d = 1; d <= totalDays; d++) {
             let sel = rescheduleSelectedDate &&
@@ -267,7 +276,7 @@ $(document).ready(function() {
                 rescheduleSelectedDate.getDate() === d ? ' selected' : '';
             html += `<div class="reschedule_calendar_day${sel}" data-day="${d}">${d}</div>`;
         }
-        
+
         // Fill remaining cells
         let rem = (firstDay + totalDays) % 7;
         if (rem > 0) {
@@ -275,7 +284,7 @@ $(document).ready(function() {
                 html += `<div class="reschedule_calendar_day_inactive"></div>`;
             }
         }
-        
+
         $('.reschedule_calendar_days').html(html);
     }
 
@@ -284,28 +293,32 @@ $(document).ready(function() {
         $('.reschedule_calendar_day').removeClass('selected');
         $(this).addClass('selected');
         let day = parseInt($(this).attr('data-day'));
-        rescheduleSelectedDate = new Date(rescheduleCalendarMonth.year, rescheduleCalendarMonth.month, day);
+        rescheduleSelectedDate = new Date(rescheduleCalendarMonth.year, rescheduleCalendarMonth.month,
+            day);
     });
 
     // Done button - update the date field
     $(document).on('click', '.reschedule_calendar_done_btn', function() {
         if (rescheduleSelectedDate && rescheduleCalendarTargetBtn) {
             let d = rescheduleSelectedDate;
-            
+
             // Format: "Tue, Feb 11"
             const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-            let formatted = `${days[d.getDay()]}, ${months[d.getMonth()]} ${String(d.getDate()).padStart(2, '0')}`;
-            
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov',
+                'Dec'
+            ];
+            let formatted =
+                `${days[d.getDay()]}, ${months[d.getMonth()]} ${String(d.getDate()).padStart(2, '0')}`;
+
             // Update button label
             rescheduleCalendarTargetBtn.text(formatted);
-            
+
             // Update hidden input (used by existing code)
             $('#resched_date').val(formatted);
-            
+
             // Close modal
             $('#rescheduleCalendarBackdrop').fadeOut(150);
-            
+
             console.log('Date selected:', formatted);
         }
     });
