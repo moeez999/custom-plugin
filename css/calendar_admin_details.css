@@ -46,12 +46,12 @@ body {
   border-right: 2px solid var(--calendar-admin-border);
   display: flex;
   flex-direction: column;
-  padding: 15px 15px 15px 15px;
+  padding: 15px 15px 0 15px;
   box-sizing: border-box;
   z-index: 2;
   transition: 0.2s;
   font-size: 13px;
-  border-radius: 8px;
+  border-radius: 8px 8px 0 0;
   overflow-y: auto;
 }
 .calendar_admin_sidebar::-webkit-scrollbar {
@@ -160,6 +160,9 @@ body {
   margin-right: 6px;
   vertical-align: middle;
 }
+#page.drawers .main-inner {
+  background-color: #ffffff !important;
+}
 .calendar_admin_status_icon_confirmed {
   background: url("https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/2714.svg")
     no-repeat center/contain;
@@ -181,7 +184,8 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: var(--calendar-admin-calendar-bg);
+  background: #ffffff;
+  height: max-content;
   min-width: 0;
 }
 .calendar_admin_calendar_header {
@@ -685,7 +689,7 @@ body {
 
 #calendar_admin_calendar_flexrow {
   background-color: white;
-  margin: 0 !important;
+  margin: 0 0 5px 0 !important;
   max-width: 100% !important;
 }
 
@@ -696,7 +700,7 @@ body {
   overflow: auto; /* or scroll if needed */
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* Internet Explorer and Edge (legacy) */
-  max-height: 73vh !important;
+  max-height: 73.5vh !important;
   height: auto !important;
 }
 
@@ -1340,9 +1344,12 @@ body {
 .student-cohort-header:first-child {
   margin-top: 0;
 }
+.rui-topbar-wrapper {
+  border-bottom: none !important;
+}
 .wrapper-course {
   width: 100%;
-  padding: 24px 16px !important;
+  padding: 24px 16px 0 16px !important;
   background-color: #fff;
   border-radius: 7px;
   transition: all 0.2s ease-in-out;

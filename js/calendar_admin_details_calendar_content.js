@@ -3293,6 +3293,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  let role = localStorage.getItem("role");
+  let teacherId = localStorage.getItem("teacherId");
+
   async function loadTeachers() {
     clear(teacherFieldset);
     const data = await fetchJSON(`${API_BASE}?action=teachers`);
@@ -3626,7 +3629,18 @@ document.addEventListener("DOMContentLoaded", () => {
     cohortNoResults.style.display = "none";
     if (oneOnOneNoResults) oneOnOneNoResults.style.display = "none";
 
-    const data = await fetchJSON(`${API_BASE}?action=cohorts`);
+    let data;
+    if (role === "admin") {
+      data = await fetchJSON(`${API_BASE}?action=cohorts`);
+    } else if (role === "teacher") {
+      data = await fetchJSON(
+        `${API_BASE}?action=cohorts&teacherId${teacherId}`
+      );
+    } else if (role === "student") {
+      data = await fetchJSON(`${API_BASE}?action=cohorts`);
+    }
+
+    console.log("Cohort data fetched:", data);
     if (!data.ok) return [];
 
     const list = data.data || [];
@@ -4053,6 +4067,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function loadStudentsForCohorts(cohortIds, clearSelection = true) {
+    debugger;
     clear(studentFieldset);
 
     // Only clear selection if explicitly requested
@@ -4514,7 +4529,9 @@ document.addEventListener("DOMContentLoaded", () => {
   clear(studentFieldset);
 
   (async () => {
-    await loadTeachers(); // Load teachers list only
+    if (role === "admin") {
+      await loadTeachers();
+    } // Load teachers list only
     await loadAllCohorts(); // Show available cohorts (optional)
     await loadAllStudents(); // Show available students (optional)
 

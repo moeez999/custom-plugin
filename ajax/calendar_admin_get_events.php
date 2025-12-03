@@ -81,9 +81,9 @@ if (!$startts || !$endts || $endts <= $startts) {
 
 // Permission check (tune as needed)
 $syscontext = context_system::instance();
-if (!is_siteadmin($USER) && !has_capability('moodle/site:config', $syscontext)) {
-    require_capability('moodle/course:view', $syscontext);
-}
+// if (!is_siteadmin($USER) && !has_capability('moodle/site:config', $syscontext)) {
+//     require_capability('moodle/course:view', $syscontext);
+// }
 
 // ---- Helpers ----
 
@@ -770,37 +770,56 @@ $add_group_events = function() use (
                 $eventEnd   = $eventStart + max(60, (int)$e->duration * 60);
             }
 
-            $events[] = [
-                'id'            => 'group-' . $e->id,
-                'eventid'       => (int)$e->id,
-                'main_event_id' => (int)$mainEventId,
-                'is_parent'     => ((int)$e->id === $mainEventId),
-                'sequence'      => $seq++,
+           // Build student list for these cohorts
+$studentIdsFinal = [];
+if (!empty($cohortIds)) {
+    list($insqlC, $paramsC) = $DB->get_in_or_equal($cohortIds, SQL_PARAMS_NAMED);
+    $sqlStudents = "
+        SELECT DISTINCT userid
+        FROM {cohort_members}
+        WHERE cohortid $insqlC
+    ";
+    $studentRows = $DB->get_records_sql($sqlStudents, $paramsC);
 
-                'source'        => 'group',
-                'courseid'      => $courseid_group,
-                'cmid'          => (int)$cmid,
-                'googlemeetid'  => (int)$gm->id,
-                'title'         => (string)$gm->name,
+    foreach ($studentRows as $row) {
+        $studentIdsFinal[] = (int)$row->userid;
+    }
+}
 
-                'start_ts'      => $eventStart,
-                'end_ts'        => $eventEnd,
-                'start'         => $fmt_iso($eventStart),
-                'end'           => $fmt_iso($eventEnd),
+$events[] = [
+    'id'            => 'group-' . $e->id,
+    'eventid'       => (int)$e->id,
+    'main_event_id' => (int)$mainEventId,
+    'is_parent'     => ((int)$e->id === $mainEventId),
+    'sequence'      => $seq++,
 
-                // NOW: exactly one teacher (based on main/tutoring)
-                'teacherids'    => $teacherIdsSingle,
-                'teachernames'  => $teacherNames,
-                'studentids'    => [],            // implicit via cohort
-                'studentnames'  => [],            // no explicit list
-                'cohortids'     => $cohortIds,
+    'source'        => 'group',
+    'courseid'      => $courseid_group,
+    'cmid'          => (int)$cmid,
+    'googlemeetid'  => (int)$gm->id,
+    'title'         => (string)$gm->name,
 
-                'class_type'    => $classType,   // 'main' | 'tutoring'
-                'is_recurring'  => $isrecurring,
+    'start_ts'      => $eventStart,
+    'end_ts'        => $eventEnd,
+    'start'         => $fmt_iso($eventStart),
+    'end'           => $fmt_iso($eventEnd),
 
-                'meetingurl'    => $meetingurl,
-                'viewurl'       => $viewurl,
-            ];
+    'teacherids'    => $teacherIdsSingle,
+    'teachernames'  => $teacherNames,
+
+    // ✅ UPDATED — all students from matched cohorts
+    'studentids'    => $studentIdsFinal,
+    'studentnames'  => [],
+
+    'cohortids'     => $cohortIds,
+
+    'class_type'    => $classType,
+    'is_recurring'  => $isrecurring,
+
+    'meetingurl'    => $meetingurl,
+    'viewurl'       => $viewurl,
+];
+
         }
     }
 };

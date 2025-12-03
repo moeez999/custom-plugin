@@ -43,15 +43,18 @@ function is_only_student_role($userid) {
     return ($studentRoles > 0 && $totalRoles == $studentRoles);
 }
 
-function is_cohort_teacher_exist_oly($userid) {
+function is_cohort_teacher_exist_only($userid) {
     global $DB;
 
     $sql = "SELECT 1
             FROM {cohort}
-            WHERE cohortmainteacher = :uid
-               OR cohortguideteacher = :uid";
+            WHERE cohortmainteacher = :uid1
+               OR cohortguideteacher = :uid2";
 
-    return $DB->record_exists_sql($sql, ['uid' => (int)$userid]);
+    return $DB->record_exists_sql($sql, [
+        'uid1' => (int)$userid,
+        'uid2' => (int)$userid
+    ]);
 }
 
 // -----------------------------
@@ -77,6 +80,11 @@ if (is_siteadmin($USER)) {
 // Store in localStorage
 $PAGE->requires->js_init_code("
     localStorage.setItem('role', '{$role}');
+");
+
+// Store in localStorage
+$PAGE->requires->js_init_code("
+    localStorage.setItem('teacherId', '{$USER->id}');
 ");
 
 echo $OUTPUT->header();

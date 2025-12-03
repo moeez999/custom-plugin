@@ -12,11 +12,11 @@ global $DB, $USER, $PAGE, $CFG;
 
 // Security (adjust if you want more/less strict).
 $systemcontext = context_system::instance();
-if (!is_siteadmin($USER) && !has_capability('moodle/site:config', $systemcontext)) {
-    http_response_code(403);
-    echo json_encode(['ok' => false, 'error' => 'Access denied']);
-    exit;
-}
+// if (!is_siteadmin($USER) && !has_capability('moodle/site:config', $systemcontext)) {
+//     http_response_code(403);
+//     echo json_encode(['ok' => false, 'error' => 'Access denied']);
+//     exit;
+// }
 
 $action = required_param('action', PARAM_ALPHA); // teachers | cohorts | students | one1one
 
@@ -205,6 +205,42 @@ try {
     // -------------------------------------------------
     // 2) COHORTS  (+ 1:1 pseudo-cohorts)
     // -------------------------------------------------
+
+    // NEW: Logged-in teacher filtering using extra teacherId param
+$explicitTeacherId = optional_param('teacherId', 0, PARAM_INT);
+
+// Only apply if this param is passed AND logged-in user is not admin
+if ($explicitTeacherId > 0 && !is_siteadmin($USER)) {
+
+    // Return ONLY cohorts where this teacher is main OR guide teacher
+    $sql = "
+        SELECT id, name, idnumber, shortname,
+               cohortmainteacher, cohortguideteacher, visible
+          FROM {cohort}
+         WHERE visible = 1
+           AND (cohortmainteacher = :tid OR cohortguideteacher = :tid)
+         ORDER BY name ASC
+    ";
+
+    $cohorts = $DB->get_records_sql($sql, ['tid' => $explicitTeacherId]);
+
+    $data = [];
+    foreach ($cohorts as $c) {
+        $label = trim((string)$c->idnumber) !== '' ? $c->shortname : $c->name;
+
+        $data[] = [
+            'id'           => (int)$c->id,
+            'name'         => $label,
+            'mainteacher'  => (int)$c->cohortmainteacher,
+            'guideteacher' => (int)$c->cohortguideteacher,
+            'cohorttype'   => 'group',
+        ];
+    }
+
+    echo json_encode(['ok' => true, 'data' => $data]);
+    exit;
+}
+
     if ($action === 'cohorts') {
         $teacheridsraw = optional_param('teacherids', '', PARAM_RAW_TRIMMED);
         $teacherids    = caf_parse_ids($teacheridsraw);
@@ -431,82 +467,54 @@ try {
     }
 
     // -------------------------------------------------
-    // 3) STUDENTS
-    // -------------------------------------------------
-    // if ($action === 'students') {
-    //     $cohortid = optional_param('cohortid', 0, PARAM_INT);
-
-    //     if ($cohortid > 0) {
-    //         // Students in the selected cohort.
-    //         $sql = "
-    //             SELECT DISTINCT u.id, u.firstname, u.lastname, u.picture, u.imagealt,
-    //                             u.firstnamephonetic, u.lastnamephonetic,
-    //                             u.middlename, u.alternatename
-    //               FROM {cohort_members} cm
-    //               JOIN {user} u ON u.id = cm.userid
-    //              WHERE cm.cohortid = :cid
-    //                AND u.deleted = 0
-    //                AND u.suspended = 0
-    //              ORDER BY u.firstname ASC, u.lastname ASC
-    //         ";
-    //         $students = $DB->get_records_sql($sql, ['cid' => $cohortid]);
-    //     } else {
-    //         // All students across visible cohorts.
-    //         $sql = "
-    //             SELECT DISTINCT u.id, u.firstname, u.lastname, u.picture, u.imagealt,
-    //                             u.firstnamephonetic, u.lastnamephonetic,
-    //                             u.middlename, u.alternatename
-    //               FROM {cohort_members} cm
-    //               JOIN {cohort} c ON c.id = cm.cohortid
-    //               JOIN {user} u   ON u.id = cm.userid
-    //              WHERE c.visible = 1
-    //                AND u.deleted = 0
-    //                AND u.suspended = 0
-    //              ORDER BY u.firstname ASC, u.lastname ASC
-    //         ";
-    //         $students = $DB->get_records_sql($sql);
-    //     }
-
-    //     $data = [];
-    //     foreach ($students as $s) {
-    //         $data[] = [
-    //             'id'     => (int)$s->id,
-    //             'name'   => fullname($s, true),
-    //             'avatar' => caf_get_user_avatar_url($s),
-    //         ];
-    //     }
-
-    //     echo json_encode(['ok' => true, 'data' => $data]);
-    //     exit;
-    // }
-
-
-    // -------------------------------------------------
 // 3) STUDENTS
 // -------------------------------------------------
 if ($action === 'students') {
-    $cohortid = optional_param('cohortid', 0, PARAM_INT);
 
-    if ($cohortid > 0) {
-        // Students in the selected cohort.
-        $sql = "
-            SELECT DISTINCT u.id, u.firstname, u.lastname, u.picture, u.imagealt,
-                            u.firstnamephonetic, u.lastnamephonetic,
-                            u.middlename, u.alternatename, u.email
-              FROM {cohort_members} cm
-              JOIN {user} u ON u.id = cm.userid
-             WHERE cm.cohortid = :cid
-               AND u.deleted = 0
-               AND u.suspended = 0
-             ORDER BY u.firstname ASC, u.lastname ASC
-        ";
-        $students = $DB->get_records_sql($sql, ['cid' => $cohortid]);
+    // cohortid may be: single ID (int) OR array of IDs
+    $cohortids = optional_param_array('cohortid', [], PARAM_INT);
+
+    // If frontend sends single int via GET (not array)
+    if (empty($cohortids)) {
+        $single = optional_param('cohortid', 0, PARAM_INT);
+        if ($single > 0) {
+            $cohortids = [$single];
+        }
+    }
+
+    $students = [];
+
+    if (!empty($cohortids)) {
+
+        foreach ($cohortids as $cid) {
+            if ($cid <= 0) continue;
+
+            $sql = "
+                SELECT DISTINCT u.id, u.firstname, u.lastname, u.picture, u.imagealt,
+                                u.firstnamephonetic, u.lastnamephonetic,
+                                u.middlename, u.alternatename
+                  FROM {cohort_members} cm
+                  JOIN {user} u ON u.id = cm.userid
+                 WHERE cm.cohortid = :cid
+                   AND u.deleted = 0
+                   AND u.suspended = 0
+                 ORDER BY u.firstname ASC, u.lastname ASC
+            ";
+
+            $result = $DB->get_records_sql($sql, ['cid' => $cid]);
+
+            // Merge while avoiding duplicates
+            foreach ($result as $r) {
+                $students[$r->id] = $r;  // Uses user ID as key to dedupe
+            }
+        }
+
     } else {
         // All students across visible cohorts.
         $sql = "
             SELECT DISTINCT u.id, u.firstname, u.lastname, u.picture, u.imagealt,
                             u.firstnamephonetic, u.lastnamephonetic,
-                            u.middlename, u.alternatename, u.email
+                            u.middlename, u.alternatename
               FROM {cohort_members} cm
               JOIN {cohort} c ON c.id = cm.cohortid
               JOIN {user} u   ON u.id = cm.userid
@@ -518,106 +526,14 @@ if ($action === 'students') {
         $students = $DB->get_records_sql($sql);
     }
 
-    // Helper: extract emails from availability JSON
-    $availability_collect_emails = function (?string $json) {
-        if (empty($json)) return [];
-        $arr = json_decode($json, true);
-        if (!is_array($arr)) return [];
-
-        $out = [];
-        $walk = function($node) use (&$walk, &$out) {
-            if (is_object($node)) $node = (array)$node;
-            if (!is_array($node)) return;
-
-            if (($node['type'] ?? '') === 'profile') {
-                $field = strtolower((string)($node['sf'] ?? $node['field'] ?? ''));
-                if ($field === 'email') {
-                    $val = trim((string)($node['v'] ?? $node['value'] ?? ''));
-                    if ($val !== '') {
-                        $out[] = core_text::strtolower($val);
-                    }
-                }
-            }
-            foreach (['c','showc','children','conditions'] as $k) {
-                if (!empty($node[$k]) && is_array($node[$k])) {
-                    foreach ($node[$k] as $child) $walk($child);
-                }
-            }
-        };
-        $walk($arr);
-        return array_values(array_unique($out));
-    };
-
-    // Load googlemeet module for course 24 (1:1 course)
-    $courseid_one2one = 24;
-    $mod = $DB->get_record('modules', ['name' => 'googlemeet'], 'id', IGNORE_MISSING);
-
-    $cms_one2one = [];
-    if ($mod) {
-        $cms_one2one = $DB->get_records('course_modules', [
-            'course' => $courseid_one2one,
-            'module' => $mod->id,
-            'deletioninprogress' => 0
-        ]);
-    }
-
+    // Build response
     $data = [];
-
     foreach ($students as $s) {
-
-        $entry = [
+        $data[] = [
             'id'     => (int)$s->id,
             'name'   => fullname($s, true),
             'avatar' => caf_get_user_avatar_url($s),
         ];
-
-        // ---------------------------------------------------------
-        // Detect if the student belongs to ANY 1:1 Google Meet
-        // ---------------------------------------------------------
-        $studentEmail = core_text::strtolower(trim($s->email));
-
-        foreach ($cms_one2one as $cm) {
-
-            // student emails come from CM availability
-            $studEmails = $availability_collect_emails($cm->availability ?? null);
-            if (!in_array($studentEmail, $studEmails, true)) {
-                continue; // not part of this meet
-            }
-
-            // Load section availability → teacher email
-            $section = $DB->get_record(
-                'course_sections',
-                ['id' => $cm->section],
-                'id, availability',
-                IGNORE_MISSING
-            );
-
-            if ($section) {
-                $teacherEmails = $availability_collect_emails($section->availability ?? null);
-
-                if ($teacherEmails) {
-                    $teacherEmail = reset($teacherEmails);
-
-                    // Fetch teacher user record
-                    $teacher = $DB->get_record(
-                        'user',
-                        ['email' => $teacherEmail, 'deleted' => 0, 'suspended' => 0],
-                        '*',
-                        IGNORE_MISSING
-                    );
-
-                    if ($teacher) {
-                        $entry['title'] = '1:1';
-                        $entry['teacher_avatar'] =
-                            (new user_picture($teacher))->get_url($PAGE)->out(false);
-                    }
-                }
-            }
-
-            break; // stop after first matching 1:1 meet
-        }
-
-        $data[] = $entry;
     }
 
     echo json_encode(['ok' => true, 'data' => $data]);

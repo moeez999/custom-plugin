@@ -1393,9 +1393,13 @@ async function loadStudentsForTeacher(teacherId, selectFirst = true) {
     if (loaderOverlay) loaderOverlay.classList.add('active');
 
     try {
-        const response = await fetch('ajax/ajax_one2one_students.php?teacherid=' + encodeURIComponent(teacherId), {
-            credentials: 'same-origin'
-        });
+
+        const response =
+
+
+            await fetch('ajax/ajax_one2one_students.php?teacherid=' + encodeURIComponent(teacherId), {
+                credentials: 'same-origin'
+            });
         const data = await response.json();
 
         // if no students, reset dropdown
