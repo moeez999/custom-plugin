@@ -2,12 +2,9 @@
 // my_student_details_menu_give_feedback_details_step2.php
 ?>
 
-<!-- STEP 2: What should Latingles focus on in the next month? -->
 <section class="section" id="focusSection" style="display:none;">
   <header class="section-header">
-    <div class="section-title">What should Latingles focus on in the next month?</div>
   </header>
-
   <button class="choose-areas-btn" id="focusChooseBtn">
     <span class="choose-areas-btn-icon">＋</span>
     <span>Choose up to 3 areas</span>
@@ -17,7 +14,6 @@
 <!-- STEP 3: Latingles's next steps summary -->
 <section class="section" id="step2NextStepsSection" style="display:none;">
   <div class="progress-header">
-    <div class="progress-header-title">Latingles's next steps</div>
     <button type="button" class="progress-header-edit" id="step2EditAreasBtn">Edit</button>
   </div>
 
@@ -44,7 +40,6 @@
 <!-- STEP 3: Wrap up your feedback with a short note -->
 <section class="section" id="step2WrapSection" style="display:none;">
   <header class="section-header">
-    <div class="wrap-note-title">Wrap up your feedback with a short note</div>
     <div class="wrap-note-subtitle">
       A thoughtful note makes all the difference! Use the teaching assistant to create a draft based on the
       feedback you’ve shared, and edit to add your personal touch.

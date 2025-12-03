@@ -23,10 +23,10 @@
 
         /* ========== TOP PREVIEW BAR ========== */
         .my_students_details_menu_give_feedback_details_preview_feedback_details_php_preview_bar {
-            background: #f7d2ca;
+            background: #fff5c2;
             color: #000000ff;
-            padding: 10px 16px;
-            font-size: 13px;
+            padding: 15px 16px;
+            font-size: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -88,14 +88,14 @@
         }
 
         .my_students_details_menu_give_feedback_details_preview_feedback_details_php_subtitle {
-            font-size: 16px;
+            font-size: 18px;
             color: #000;
             margin-bottom: 8px;
             font-weight: 600;
         }
 
         .my_students_details_menu_give_feedback_details_preview_feedback_details_php_title {
-            font-size: 32px;
+            font-size: 40px;
             line-height: 1.2;
             font-weight: 700;
             margin: 0;
@@ -107,20 +107,20 @@
         }
 
         .my_students_details_menu_give_feedback_details_preview_feedback_details_php_section_title {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 600;
             margin-bottom: 4px;
         }
 
         .my_students_details_menu_give_feedback_details_preview_feedback_details_php_section_subtitle {
-            font-size: 13px;
+            font-size: 16px;
             color: #6b7280;
             margin-bottom: 16px;
         }
 
         /* Card wrapper */
         .my_students_details_menu_give_feedback_details_preview_feedback_details_php_card {
-            background: #ffffff;
+            background: #f6f6f6;
             border-radius: 10px;
             border: 1px solid #e5e7eb;
             padding: 16px 20px;
@@ -179,7 +179,7 @@
             margin-bottom: 12px;
             font-weight: 600;
         }
-        
+
         .my_students_details_menu_give_feedback_details_preview_feedback_details_php_note_avatar {
             width: 40px;
             height: 40px;
@@ -227,7 +227,7 @@
 
         .my_students_details_menu_give_feedback_details_preview_feedback_details_php_footer_inner {
             width: 100%;
-            max-width: 960px;
+            max-width: 1350px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -239,7 +239,7 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            padding: 10px 16px;
+            padding: 13px 16px;
             border-radius: 5px;
             border: 1px solid #d1d5db;
             background: #ffffff;
@@ -266,11 +266,11 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            padding: 10px 24px;
+            padding: 13px 24px;
             border-radius: 5px;
             border: 2px solid #000000;
-            background: #ff3b30;
-            color: #ffffff;
+            background: #ff7aac;
+            color: #000000;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;

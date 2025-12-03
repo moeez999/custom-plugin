@@ -786,7 +786,7 @@
           <button type="button" class="my_students_details_row_link"${linkId}>
             <div class="my_students_details_name" style='width:200px; margin-left:-15px;'>${my_students_details_makeAvatar(data)} <span>${data.name}</span></div>
             <div class="my_students_details_cell" style='margin-left:40px;'>${my_students_details_badge(data.type)}</div>
-            <div class="my_students_details_cell" style='margin-left:55px;'>${my_students_details_progress(data.lessonsDone,data.lessonsTotal)}</div>
+            <div class="my_students_details_cell" style='margin-left:62px;'>${my_students_details_progress(data.lessonsDone,data.lessonsTotal)}</div>
             <div class="my_students_details_cell" style="font-size:15px;color:#374151; margin-left:30px;">${data.nextLesson}</div>
             <div class="my_students_details_cell" style='margin-left:60px;'>${my_students_details_actionCell(data.action)}</div>
           </button>

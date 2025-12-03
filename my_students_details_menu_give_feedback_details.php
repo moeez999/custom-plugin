@@ -18,9 +18,9 @@
             /* pink primary like Preply Save/Send */
             --primary-dark: #e13f85;
             --blue: #2563eb;
-            --chip-green: #dcfce7;
-            --chip-green-text: #166534;
-            --next-chip-pink: #fee2f2;
+            --chip-green: #d8f8f2;
+            --chip-green-text: #000;
+            --next-chip-pink: #ffebf3;
             --next-chip-pink-text: #9d174d;
             --radius-md: 5px;
             --radius-lg: 5px;
@@ -70,8 +70,8 @@
         }
 
         .brand-logo {
-            width: 110px;
-            height: 28px;
+            width: 150px;
+            height: 50px;
             object-fit: contain;
         }
 
@@ -86,7 +86,7 @@
             align-items: center;
             gap: 6px;
             padding: 7px 14px;
-            border-radius: 999px;
+            border-radius: 5px;
             border: 1px solid var(--border);
             background: #ffffff;
             font-size: 13px;
@@ -131,14 +131,14 @@
         }
 
         .hero-eyebrow {
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--muted);
+            font-size: 20px;
+            font-weight: 700;
+            color: black;
             margin-bottom: 8px;
         }
 
         .hero-title {
-            font-size: 32px;
+            font-size: 45px;
             line-height: 1.25;
             margin: 0;
             font-weight: 700;
@@ -165,7 +165,7 @@
 
         .hero-banner {
             margin-top: 18px;
-            background: #f3f4ff;
+            background: #f3f4f6;
             border-radius: var(--radius-lg);
             padding: 14px 18px;
             display: flex;
@@ -175,10 +175,8 @@
         }
 
         .hero-banner-icon {
-            width: 28px;
-            height: 28px;
-            border-radius: 999px;
-            background: #d1fae5;
+            width: 80px;
+            height: 80px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -203,14 +201,15 @@
         }
 
         .section-title {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 600;
-            margin-bottom: 3px;
+            margin-bottom: 20px;
         }
 
         .section-subtitle {
             font-size: 13px;
             color: var(--muted);
+            margin-bottom: 20px;
         }
 
         .divider {
@@ -224,13 +223,13 @@
         .choose-areas-btn {
             width: 100%;
             border-radius: 5px;
-            border: 1px solid #111827;
+            border: 2px solid #111827;
             background: #ffffff;
-            padding: 14px 16px;
+            padding: 7px 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
             cursor: pointer;
             font-size: 15px;
             font-weight: 500;
@@ -238,8 +237,7 @@
         }
 
         .choose-areas-btn:hover {
-            background: #f9fafb;
-            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+            background: #f4f5f5;
         }
 
         .choose-areas-btn:active {
@@ -248,7 +246,8 @@
         }
 
         .choose-areas-btn-icon {
-            font-size: 18px;
+            font-size: 30px;
+            margin-bottom: 6px;
         }
 
         /* ---------- Cards & chips ---------- */
@@ -280,10 +279,15 @@
             cursor: pointer;
         }
 
+        /* UPDATED: flex layout instead of fixed 3-column grid */
         .progress-summary {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
+            display: flex;
             gap: 14px;
+        }
+
+        .progress-summary>div {
+            flex: 1;
+            min-width: 0;
         }
 
         .progress-label {
@@ -293,12 +297,25 @@
             margin-bottom: 6px;
         }
 
+        /* chips row per category */
+        #summarySpeaking,
+        #summaryEffort,
+        #summaryListening,
+        #step2SummaryEffort,
+        #step2SummarySpeaking,
+        #step2SummaryListening {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: flex-start;
+        }
+
         .progress-chip {
             display: inline-flex;
             align-items: center;
             gap: 8px;
             padding: 6px 10px;
-            border-radius: 999px;
+            border-radius: 5px;
             background: var(--chip-green);
             color: var(--chip-green-text);
             font-size: 13px;
@@ -325,9 +342,9 @@
             align-items: center;
             gap: 8px;
             padding: 6px 10px;
-            border-radius: 999px;
+            border-radius: 5px;
             background: var(--next-chip-pink);
-            color: var(--next-chip-pink-text);
+            color: #000;
             font-size: 13px;
             font-weight: 600;
         }
@@ -361,13 +378,18 @@
             display: flex;
         }
 
+        /* UPDATED: taller card, almost full screen height */
         .modal {
-            width: 100%;
-            max-width: 780px;
+            width: calc(100% - 48px);
+            max-width: 960px;
             background: #ffffff;
-            border-radius: 5px;
+            border-radius: 8px;
             box-shadow: var(--shadow-soft);
-            padding: 20px 24px 18px;
+            padding: 24px 32px 20px;
+            max-height: calc(100vh - 32px);
+            min-height: calc(100vh - 32px);
+            display: flex;
+            flex-direction: column;
         }
 
         .modal-header {
@@ -375,12 +397,13 @@
             align-items: flex-start;
             justify-content: space-between;
             gap: 10px;
-            margin-bottom: 10px;
+            margin-bottom: 16px;
         }
 
+        /* UPDATED: bolder & slightly larger title */
         .modal-title {
-            font-size: 20px;
-            font-weight: 600;
+            font-size: 24px;
+            font-weight: 700;
         }
 
         .modal-close {
@@ -400,48 +423,57 @@
             height: 18px;
         }
 
+        /* UPDATED: take remaining height */
         .modal-body {
-            max-height: 440px;
+            flex: 1;
             overflow-y: auto;
             padding-right: 4px;
         }
 
         .modal-group {
-            margin-bottom: 18px;
+            margin-bottom: 35px;
         }
 
         .modal-group-title {
             display: flex;
             align-items: center;
-            gap: 6px;
-            font-size: 14px;
+            gap: 8px;
+            font-size: 20px;
             font-weight: 600;
             margin-bottom: 10px;
         }
 
         .modal-group-title span.icon {
-            width: 20px;
-            height: 20px;
+            width: 22px;
+            height: 22px;
             border-radius: 999px;
             background: #f3f4f6;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 13px;
+        }
+
+        /* icon images inside the circle */
+        .modal-group-title span.icon img {
+            width: 14px;
+            height: 14px;
+            display: block;
         }
 
         .area-pill-row {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 20px;
         }
 
+        /* pills: same rounded style */
         .area-pill {
-            border-radius: 999px;
-            border: 1px solid var(--border);
-            padding: 9px 14px;
-            font-size: 13px;
+            border-radius: 5px;
+            border: 2px solid var(--border);
+            padding: 10px 18px;
+            font-size: 16px;
             background: #ffffff;
+            font-weight: 500;
             cursor: pointer;
             transition: background .15s ease, border-color .15s ease, color .15s ease;
         }
@@ -466,7 +498,7 @@
 
         .modal-footer {
             margin-top: 16px;
-            padding-top: 12px;
+            padding-top: 16px;
             border-top: 1px solid var(--border);
             display: flex;
             align-items: center;
@@ -487,10 +519,11 @@
 
         .btn {
             border-radius: 5px;
-            padding: 8px 16px;
-            border: 1px solid #111827;
+            /* 5px as you requested */
+            padding: 14px 24px;
+            border: 2px solid #111827 !important;
             background: #ffffff;
-            font-size: 14px;
+            font-size: 16px;
             font-weight: 500;
             cursor: pointer;
             display: inline-flex;
@@ -763,10 +796,7 @@
         .note-editor-ai-btn-main {
             background: #16a34a;
             border-color: #16a34a;
-        }
-
-        .note-editor-ai-btn-main img {
-            filter: brightness(20);
+            color: #ffffff;
         }
 
         .note-pro-tip {
@@ -866,7 +896,7 @@
 
         @media (max-width: 850px) {
             .progress-summary {
-                grid-template-columns: 1fr;
+                flex-direction: column;
             }
 
             .hero-title,
@@ -954,13 +984,12 @@
                 </div>
                 <h1 class="hero-title">
                     <span>Take 3 mins to celebrate Latingles’s</span>
-                    <span> progress with our <span class="hero-highlight">AI-powered</span></span>
+                    <span> progress with our <span class="hero-highlight">AI-powered feedback</span></span>
                 </h1>
-                <div class="hero-link">feedback</div>
 
                 <div class="hero-banner">
                     <div class="hero-banner-icon">
-                        <img src="img/my_students/feedback_progress.svg" alt="Progress" />
+                        <img src="img/my_students/making-progress.svg" alt="Progress" />
                     </div>
                     <div>
                         <span class="hero-banner-strong">Students who get regular feedback</span>
@@ -973,22 +1002,25 @@
 
             <!-- STEP 1: progress so far -->
             <section class="section">
-                <div id="progressInitial">
-                    <header class="section-header">
-                        <div class="section-title">What progress has Latingles made so far?</div>
-                        <div class="section-subtitle">You last sent feedback to Latingles about 15 hours ago</div>
-                    </header>
+                <!-- Heading is always visible on page load -->
+                <header class="section-header" id="progressHeader">
+                    <div class="section-title">What progress has Latingles made so far?</div>
+                    <div class="section-subtitle">You last sent feedback to Latingles about 15 hours ago</div>
+                </header>
 
+                <!-- Initial state: just the button -->
+                <div id="progressInitial">
                     <button class="choose-areas-btn" id="openAreasModal">
                         <span class="choose-areas-btn-icon">＋</span>
                         <span>Choose up to 3 areas</span>
                     </button>
                 </div>
 
+                <!-- Summary block (shown after Save) -->
                 <div id="progressSummaryBlock" style="display:none;">
                     <div class="progress-header">
                         <div class="progress-header-title">Latingles's progress</div>
-                        <button type="button" class="progress-header-edit" id="editAreasBtn">Edit</button>
+                        <a href="#" type="button" class="progress-header-edit" id="editAreasBtn" style="color:#000;text-decoration:underline;">Edit</a>
                     </div>
 
                     <div class="card">
@@ -1012,11 +1044,51 @@
 
             <div class="divider"></div>
 
-            <!-- STEP 2 (question, next steps, wrap options) -->
-            <?php require_once('my_student_details_menu_give_feedback_details_step2.php'); ?>
+            <!-- STEP 2 question -->
+            <section class="section">
+                <header class="section-header" id="focusHeader">
+                    <div class="section-title">What should Latingles focus on in the next month?</div>
+                </header>
+            </section>
 
-            <!-- STEP 3 (note editor) -->
-            <?php require_once('my_student_details_menu_give_feedback_details_step3.php'); ?>
+            <!-- STEP 2 next steps summary (hidden until Save in step 2) -->
+            <section class="section" id="step2NextStepsSection" style="display:none;">
+                <div class="progress-header">
+                    <div class="progress-header-title">Latingles's next steps</div>
+                    <a href="#" type="button" class="progress-header-edit" id="step2EditAreasBtn" style="color:#000;text-decoration:underline;">Edit</a>
+                </div>
+
+                <div class="card">
+                    <div class="progress-summary">
+                        <div>
+                            <div class="progress-label">Effort</div>
+                            <div id="step2SummaryEffort"></div>
+                        </div>
+                        <div>
+                            <div class="progress-label">Speaking</div>
+                            <div id="step2SummarySpeaking"></div>
+                        </div>
+                        <div>
+                            <div class="progress-label">Listening</div>
+                            <div id="step2SummaryListening"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <div class="divider"></div>
+
+            <!-- Divider under the next steps card (hidden until Save in step 2) -->
+            <div class="divider" id="step2NextStepsDivider" style="display:none;"></div>
+
+            <!-- STEP 3: static heading + dynamic content -->
+            <section class="section">
+                <header class="section-header">
+                    <div class="section-title">Wrap up your feedback with a short note</div>
+                </header>
+
+                <?php require_once('my_student_details_menu_give_feedback_details_step2.php'); ?>
+                <?php require_once('my_student_details_menu_give_feedback_details_step3.php'); ?>
+            </section>
 
         </main>
     </div>
@@ -1025,7 +1097,8 @@
     <div class="modal-backdrop" id="areasModal">
         <div class="modal" role="dialog" aria-modal="true" aria-labelledby="areasModalTitle">
             <div class="modal-header">
-                <h2 class="modal-title" id="areasModalTitle">Choose up to 3 areas where you’ve seen progress</h2>
+                <!-- title text -->
+                <h2 class="modal-title" id="areasModalTitle">Choose up to 3 areas for Latingles to focus on next</h2>
                 <button class="modal-close" id="areasModalClose" type="button">
                     <svg viewBox="0 0 20 20" fill="none">
                         <path d="M5 5l10 10M15 5 5 15" stroke="#111827" stroke-width="1.6" stroke-linecap="round" />
@@ -1037,7 +1110,10 @@
                 <!-- Effort -->
                 <div class="modal-group">
                     <div class="modal-group-title">
-                        <span class="icon">😊</span>
+                        <span class="icon">
+                            <!-- placeholder icon image for Effort -->
+                            <img src="img/my_students/effort_icon.svg" alt="Effort" />
+                        </span>
                         <span>Effort</span>
                     </div>
                     <div class="area-pill-row">
@@ -1054,7 +1130,10 @@
                 <!-- Speaking -->
                 <div class="modal-group">
                     <div class="modal-group-title">
-                        <span class="icon">💬</span>
+                        <span class="icon">
+                            <!-- placeholder icon image for Speaking -->
+                            <img src="img/my_students/speaking_icon.svg" alt="Speaking" />
+                        </span>
                         <span>Speaking</span>
                     </div>
                     <div class="area-pill-row">
@@ -1070,7 +1149,10 @@
                 <!-- Listening -->
                 <div class="modal-group">
                     <div class="modal-group-title">
-                        <span class="icon">🎧</span>
+                        <span class="icon">
+                            <!-- placeholder icon image for Listening -->
+                            <img src="img/my_students/listening_icon.svg" alt="Listening" />
+                        </span>
                         <span>Listening</span>
                     </div>
                     <div class="area-pill-row">
@@ -1107,6 +1189,7 @@
         const progressInitial = document.getElementById('progressInitial');
         const progressSummaryBlock = document.getElementById('progressSummaryBlock');
         const editAreasBtn = document.getElementById('editAreasBtn');
+        const progressHeader = document.getElementById('progressHeader');
 
         const toast = document.getElementById('areasToast');
         const toastClose = document.getElementById('areasToastClose');
@@ -1119,6 +1202,7 @@
         const step2NextStepsSection = document.getElementById('step2NextStepsSection');
         const step2NextStepsDivider = document.getElementById('step2NextStepsDivider');
         const step2WrapSection = document.getElementById('step2WrapSection');
+        const focusHeader = document.getElementById('focusHeader');
 
         const step2AreasModal = document.getElementById('step2AreasModal');
         const step2AreasModalClose = document.getElementById('step2AreasModalClose');
@@ -1130,7 +1214,7 @@
         const step2SummaryEffort = document.getElementById('step2SummaryEffort');
         const step2SummarySpeaking = document.getElementById('step2SummarySpeaking');
         const step2SummaryListening = document.getElementById('step2SummaryListening');
-        const step2EditAreasBtn = document.getElementById('step2EditAreasBtn');
+        let step2EditAreasBtn = document.getElementById('step2EditAreasBtn');
 
         const selectedAreasStep2 = [];
         let lastCountStep2 = 0;
@@ -1226,6 +1310,30 @@
         const summaryEffort = document.getElementById('summaryEffort');
         const summaryListening = document.getElementById('summaryListening');
 
+        // NEW: hide/show full category blocks based on chips (step 1)
+        function updateCategoryVisibilityStep1() {
+            const containers = [
+                summarySpeaking,
+                summaryEffort,
+                summaryListening
+            ];
+
+            containers.forEach(container => {
+                if (!container) return;
+                const wrapper = container.parentElement; // the <div> that also has the label
+                if (!wrapper) return;
+                const label = wrapper.querySelector('.progress-label');
+                const hasItems = container.children.length > 0;
+
+                if (hasItems) {
+                    wrapper.style.display = ''; // let flex layout work
+                    if (label) label.style.display = 'block';
+                } else {
+                    wrapper.style.display = 'none'; // remove empty category completely
+                }
+            });
+        }
+
         function renderSummaryStep1() {
             summarySpeaking.innerHTML = '';
             summaryEffort.innerHTML = '';
@@ -1256,6 +1364,9 @@
                     summaryListening.appendChild(chip);
                 }
             });
+
+            // ensure category widths/visibility are correct
+            updateCategoryVisibilityStep1();
         }
 
         areasSaveBtn.addEventListener('click', () => {
@@ -1265,8 +1376,12 @@
             }
 
             renderSummaryStep1();
+            // Hide button block and header; show summary
             progressInitial.style.display = 'none';
             progressSummaryBlock.style.display = 'block';
+            if (progressHeader) {
+                progressHeader.style.display = 'none';
+            }
 
             if (focusSection) {
                 focusSection.style.display = 'block';
@@ -1349,6 +1464,30 @@
             });
         });
 
+        // NEW: hide/show full category blocks based on chips (step 2)
+        function updateCategoryVisibilityStep2() {
+            const containers = [
+                step2SummaryEffort,
+                step2SummarySpeaking,
+                step2SummaryListening
+            ];
+
+            containers.forEach(container => {
+                if (!container) return;
+                const wrapper = container.parentElement;
+                if (!wrapper) return;
+                const label = wrapper.querySelector('.progress-label');
+                const hasItems = container.children.length > 0;
+
+                if (hasItems) {
+                    wrapper.style.display = '';
+                    if (label) label.style.display = 'block';
+                } else {
+                    wrapper.style.display = 'none';
+                }
+            });
+        }
+
         function renderSummaryStep2() {
             if (!step2SummaryEffort) return;
             step2SummaryEffort.innerHTML = '';
@@ -1362,7 +1501,7 @@
                 const iconSpan = document.createElement('span');
                 iconSpan.className = 'next-steps-chip-icon';
                 const img = document.createElement('img');
-                img.src = 'img/my_students/next_steps_icon.svg';
+                img.src = 'img/my_students/feedback_next_step.svg';
                 img.alt = 'Next step';
                 iconSpan.appendChild(img);
 
@@ -1380,6 +1519,9 @@
                     step2SummaryListening.appendChild(chip);
                 }
             });
+
+            // ensure category widths/visibility are correct
+            updateCategoryVisibilityStep2();
         }
 
         if (step2AreasSaveBtn) {
@@ -1396,10 +1538,17 @@
                 if (step2NextStepsDivider) step2NextStepsDivider.style.display = 'block';
                 if (step2WrapSection) step2WrapSection.style.display = 'block';
 
+                // hide the step-2 heading once “Latingles's next steps” is visible
+                if (focusHeader) {
+                    focusHeader.style.display = 'none';
+                }
+
                 closeModal2();
             });
         }
 
+        // wire up Edit button for next steps (in case it exists now)
+        step2EditAreasBtn = document.getElementById('step2EditAreasBtn');
         if (step2EditAreasBtn) {
             step2EditAreasBtn.addEventListener('click', openModal2);
         }
@@ -1432,7 +1581,52 @@
                 }
             });
         }
+
+        // ---------- Fix position of "Wrap up your feedback..." heading ----------
+        document.addEventListener('DOMContentLoaded', () => {
+            const WRAP_HEADING_TEXT = 'Wrap up your feedback with a short note';
+            const wrapBlock = document.getElementById('step2WrapSection');
+
+            // Only do this if the wrap buttons are on the page
+            if (!wrapBlock) return;
+            // 1) Hide/remove any existing headings with the same text
+            const allTitles = Array.from(document.querySelectorAll('.section-title'))
+                .filter(el => el.textContent.trim() === WRAP_HEADING_TEXT);
+
+            allTitles.forEach(el => {
+                const header = el.closest('.section-header');
+                if (header && header !== wrapBlock.previousElementSibling) {
+                    header.remove(); // remove full header wrapper if possible
+                } else if (!header) {
+                    el.remove(); // fallback: remove just the title element
+                }
+            });
+
+            // 2) Insert a fresh heading just ABOVE the buttons block
+            const header = document.createElement('header');
+            header.className = 'section-header';
+
+            const titleDiv = document.createElement('div');
+            titleDiv.className = 'section-title';
+            titleDiv.textContent = WRAP_HEADING_TEXT;
+
+            header.appendChild(titleDiv);
+
+            // Put the header right before the "Ask assistant / Type your note" area
+            wrapBlock.parentNode.insertBefore(header, wrapBlock);
+
+            // 3) Ensure there is a divider directly ABOVE this heading
+            const prev = header.previousElementSibling;
+            if (!prev || !prev.classList.contains('divider')) {
+                const divider = document.createElement('div');
+                divider.className = 'divider';
+                header.parentNode.insertBefore(divider, header);
+            }
+        });
     </script>
+
+<?php require_once('my_students_details_menu_give_feedback_details_create_draft.php');?>
+
 </body>
 
 </html>
