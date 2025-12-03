@@ -1,3 +1,119 @@
+/* ===== Time Off Modal Styles ===== */
+#timeoff-modal.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.25);
+  display: none;
+  z-index: 10000;
+}
+
+#timeoff-modal .modal-card {
+  width: 520px;
+  max-width: calc(100% - 32px);
+  margin: 64px auto;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  font-family: inherit;
+}
+
+#timeoff-modal .modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 0 20px;
+}
+
+#timeoff-modal .modal-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111;
+}
+
+#timeoff-modal .modal-close {
+  border: none;
+  background: transparent;
+  color: #999;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+#timeoff-modal .modal-body {
+  padding: 8px 20px 20px 20px;
+}
+
+#timeoff-modal .timeoff-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 0 14px 0;
+}
+
+#timeoff-modal .status-dot.busy {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid #e0b300; /* yellow ring */
+}
+
+#timeoff-modal .status-label {
+  color: #333;
+  font-weight: 600;
+}
+
+#timeoff-modal .timeoff-details {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid #eee;
+  padding-top: 14px;
+}
+
+#timeoff-modal .date-block {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#timeoff-modal .date-icon {
+  font-size: 18px;
+}
+
+#timeoff-modal .date-line {
+  font-weight: 600;
+  color: #111;
+}
+
+#timeoff-modal .date-subline,
+#timeoff-modal .time-subline {
+  font-size: 0.85rem;
+  color: #777;
+}
+
+#timeoff-modal .time-block {
+  text-align: right;
+}
+
+#timeoff-modal .modal-footer {
+  padding: 0 20px 20px 20px;
+}
+
+#timeoff-modal .danger-btn {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid #ff4d3a;
+  background: #fff5f4;
+  color: #ff4d3a;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#timeoff-modal .danger-btn:hover {
+  background: #ffe8e6;
+}
 .calendar_backdrop {
   width: 100%;
   height: 100%;

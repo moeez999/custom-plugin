@@ -433,91 +433,197 @@ try {
     // -------------------------------------------------
     // 3) STUDENTS
     // -------------------------------------------------
-    if ($action === 'students') {
-        $cohortid = optional_param('cohortid', 0, PARAM_INT);
-        $cohortidsraw = optional_param('cohortids', '', PARAM_RAW_TRIMMED);
-        $cohortids = caf_parse_ids($cohortidsraw);
+    // if ($action === 'students') {
+    //     $cohortid = optional_param('cohortid', 0, PARAM_INT);
 
-        // Prioritize cohortids (plural) over cohortid (singular)
-        if (!empty($cohortids)) {
-            // Students in the selected cohorts with cohort info
-            // Note: Students may belong to multiple cohorts, so we create one record per cohort membership
-            list($insql, $params) = $DB->get_in_or_equal($cohortids, SQL_PARAMS_NAMED, 'cid');
-            $sql = "
-                SELECT CONCAT(u.id, '_', cm.cohortid) as uniquekey,
-                       u.id, u.firstname, u.lastname, u.picture, u.imagealt,
-                       u.firstnamephonetic, u.lastnamephonetic,
-                       u.middlename, u.alternatename,
-                       cm.cohortid,
-                       c.name as cohortname,
-                       c.shortname as cohortsname,
-                       c.idnumber as cohortidnumber
-                  FROM {cohort_members} cm
-                  JOIN {cohort} c ON c.id = cm.cohortid
-                  JOIN {user} u ON u.id = cm.userid
-                 WHERE cm.cohortid $insql
-                   AND u.deleted = 0
-                   AND u.suspended = 0
-                 ORDER BY c.name ASC, u.firstname ASC, u.lastname ASC
-            ";
-            $students = $DB->get_records_sql($sql, $params);
-        } else if ($cohortid > 0) {
-            // Students in the selected cohort.
-            $sql = "
-                SELECT u.id, u.firstname, u.lastname, u.picture, u.imagealt,
-                       u.firstnamephonetic, u.lastnamephonetic,
-                       u.middlename, u.alternatename,
-                       cm.cohortid,
-                       c.name as cohortname,
-                       c.shortname as cohortsname,
-                       c.idnumber as cohortidnumber
-                  FROM {cohort_members} cm
-                  JOIN {cohort} c ON c.id = cm.cohortid
-                  JOIN {user} u ON u.id = cm.userid
-                 WHERE cm.cohortid = :cid
-                   AND u.deleted = 0
-                   AND u.suspended = 0
-                 ORDER BY u.firstname ASC, u.lastname ASC
-            ";
-            $students = $DB->get_records_sql($sql, ['cid' => $cohortid]);
-        } else {
-            // All students across visible cohorts.
-            $sql = "
-                SELECT CONCAT(u.id, '_', cm.cohortid) as uniquekey,
-                       u.id, u.firstname, u.lastname, u.picture, u.imagealt,
-                       u.firstnamephonetic, u.lastnamephonetic,
-                       u.middlename, u.alternatename,
-                       cm.cohortid,
-                       c.name as cohortname,
-                       c.shortname as cohortsname,
-                       c.idnumber as cohortidnumber
-                  FROM {cohort_members} cm
-                  JOIN {cohort} c ON c.id = cm.cohortid
-                  JOIN {user} u   ON u.id = cm.userid
-                 WHERE c.visible = 1
-                   AND u.deleted = 0
-                   AND u.suspended = 0
-                 ORDER BY u.firstname ASC, u.lastname ASC
-            ";
-            $students = $DB->get_records_sql($sql);
-        }
+    //     if ($cohortid > 0) {
+    //         // Students in the selected cohort.
+    //         $sql = "
+    //             SELECT DISTINCT u.id, u.firstname, u.lastname, u.picture, u.imagealt,
+    //                             u.firstnamephonetic, u.lastnamephonetic,
+    //                             u.middlename, u.alternatename
+    //               FROM {cohort_members} cm
+    //               JOIN {user} u ON u.id = cm.userid
+    //              WHERE cm.cohortid = :cid
+    //                AND u.deleted = 0
+    //                AND u.suspended = 0
+    //              ORDER BY u.firstname ASC, u.lastname ASC
+    //         ";
+    //         $students = $DB->get_records_sql($sql, ['cid' => $cohortid]);
+    //     } else {
+    //         // All students across visible cohorts.
+    //         $sql = "
+    //             SELECT DISTINCT u.id, u.firstname, u.lastname, u.picture, u.imagealt,
+    //                             u.firstnamephonetic, u.lastnamephonetic,
+    //                             u.middlename, u.alternatename
+    //               FROM {cohort_members} cm
+    //               JOIN {cohort} c ON c.id = cm.cohortid
+    //               JOIN {user} u   ON u.id = cm.userid
+    //              WHERE c.visible = 1
+    //                AND u.deleted = 0
+    //                AND u.suspended = 0
+    //              ORDER BY u.firstname ASC, u.lastname ASC
+    //         ";
+    //         $students = $DB->get_records_sql($sql);
+    //     }
 
-        $data = [];
-        foreach ($students as $s) {
-            $data[] = [
-                'id'             => (int)$s->id,
-                'name'           => fullname($s, true),
-                'avatar'         => caf_get_user_avatar_url($s),
-                'cohortid'       => isset($s->cohortid) ? (int)$s->cohortid : 0,
-                'cohortname'     => isset($s->cohortname) ? (string)$s->cohortname : '',
-                'cohortsname'    => isset($s->cohortsname) ? (string)$s->cohortsname : '',
-                'cohortidnumber' => isset($s->cohortidnumber) ? (string)$s->cohortidnumber : '',
-            ];
-        }
+    //     $data = [];
+    //     foreach ($students as $s) {
+    //         $data[] = [
+    //             'id'     => (int)$s->id,
+    //             'name'   => fullname($s, true),
+    //             'avatar' => caf_get_user_avatar_url($s),
+    //         ];
+    //     }
 
-        echo json_encode(['ok' => true, 'data' => $data]);
-        exit;
+    //     echo json_encode(['ok' => true, 'data' => $data]);
+    //     exit;
+    // }
+
+
+    // -------------------------------------------------
+// 3) STUDENTS
+// -------------------------------------------------
+if ($action === 'students') {
+    $cohortid = optional_param('cohortid', 0, PARAM_INT);
+
+    if ($cohortid > 0) {
+        // Students in the selected cohort.
+        $sql = "
+            SELECT DISTINCT u.id, u.firstname, u.lastname, u.picture, u.imagealt,
+                            u.firstnamephonetic, u.lastnamephonetic,
+                            u.middlename, u.alternatename, u.email
+              FROM {cohort_members} cm
+              JOIN {user} u ON u.id = cm.userid
+             WHERE cm.cohortid = :cid
+               AND u.deleted = 0
+               AND u.suspended = 0
+             ORDER BY u.firstname ASC, u.lastname ASC
+        ";
+        $students = $DB->get_records_sql($sql, ['cid' => $cohortid]);
+    } else {
+        // All students across visible cohorts.
+        $sql = "
+            SELECT DISTINCT u.id, u.firstname, u.lastname, u.picture, u.imagealt,
+                            u.firstnamephonetic, u.lastnamephonetic,
+                            u.middlename, u.alternatename, u.email
+              FROM {cohort_members} cm
+              JOIN {cohort} c ON c.id = cm.cohortid
+              JOIN {user} u   ON u.id = cm.userid
+             WHERE c.visible = 1
+               AND u.deleted = 0
+               AND u.suspended = 0
+             ORDER BY u.firstname ASC, u.lastname ASC
+        ";
+        $students = $DB->get_records_sql($sql);
     }
+
+    // Helper: extract emails from availability JSON
+    $availability_collect_emails = function (?string $json) {
+        if (empty($json)) return [];
+        $arr = json_decode($json, true);
+        if (!is_array($arr)) return [];
+
+        $out = [];
+        $walk = function($node) use (&$walk, &$out) {
+            if (is_object($node)) $node = (array)$node;
+            if (!is_array($node)) return;
+
+            if (($node['type'] ?? '') === 'profile') {
+                $field = strtolower((string)($node['sf'] ?? $node['field'] ?? ''));
+                if ($field === 'email') {
+                    $val = trim((string)($node['v'] ?? $node['value'] ?? ''));
+                    if ($val !== '') {
+                        $out[] = core_text::strtolower($val);
+                    }
+                }
+            }
+            foreach (['c','showc','children','conditions'] as $k) {
+                if (!empty($node[$k]) && is_array($node[$k])) {
+                    foreach ($node[$k] as $child) $walk($child);
+                }
+            }
+        };
+        $walk($arr);
+        return array_values(array_unique($out));
+    };
+
+    // Load googlemeet module for course 24 (1:1 course)
+    $courseid_one2one = 24;
+    $mod = $DB->get_record('modules', ['name' => 'googlemeet'], 'id', IGNORE_MISSING);
+
+    $cms_one2one = [];
+    if ($mod) {
+        $cms_one2one = $DB->get_records('course_modules', [
+            'course' => $courseid_one2one,
+            'module' => $mod->id,
+            'deletioninprogress' => 0
+        ]);
+    }
+
+    $data = [];
+
+    foreach ($students as $s) {
+
+        $entry = [
+            'id'     => (int)$s->id,
+            'name'   => fullname($s, true),
+            'avatar' => caf_get_user_avatar_url($s),
+        ];
+
+        // ---------------------------------------------------------
+        // Detect if the student belongs to ANY 1:1 Google Meet
+        // ---------------------------------------------------------
+        $studentEmail = core_text::strtolower(trim($s->email));
+
+        foreach ($cms_one2one as $cm) {
+
+            // student emails come from CM availability
+            $studEmails = $availability_collect_emails($cm->availability ?? null);
+            if (!in_array($studentEmail, $studEmails, true)) {
+                continue; // not part of this meet
+            }
+
+            // Load section availability → teacher email
+            $section = $DB->get_record(
+                'course_sections',
+                ['id' => $cm->section],
+                'id, availability',
+                IGNORE_MISSING
+            );
+
+            if ($section) {
+                $teacherEmails = $availability_collect_emails($section->availability ?? null);
+
+                if ($teacherEmails) {
+                    $teacherEmail = reset($teacherEmails);
+
+                    // Fetch teacher user record
+                    $teacher = $DB->get_record(
+                        'user',
+                        ['email' => $teacherEmail, 'deleted' => 0, 'suspended' => 0],
+                        '*',
+                        IGNORE_MISSING
+                    );
+
+                    if ($teacher) {
+                        $entry['title'] = '1:1';
+                        $entry['teacher_avatar'] =
+                            (new user_picture($teacher))->get_url($PAGE)->out(false);
+                    }
+                }
+            }
+
+            break; // stop after first matching 1:1 meet
+        }
+
+        $data[] = $entry;
+    }
+
+    echo json_encode(['ok' => true, 'data' => $data]);
+    exit;
+}
+
 
     // -------------------------------------------------
     // Invalid action

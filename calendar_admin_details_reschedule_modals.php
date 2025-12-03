@@ -729,6 +729,55 @@ input#class-name {
 }
 </style>
 
+<!-- Time Off Modal (Teacher Busy Time) -->
+<div id="timeoff-modal" class="modal-overlay" style="display:none;">
+    <div class="popup"
+        style="width:520px; background:#fff; border-radius:12px; padding:20px 24px; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+        <div class="header"
+            style="display:flex; justify-content:space-between; align-items:center; font-size:18px; font-weight:600; margin-bottom:12px;">
+            <span style="color:#ff3b2f; border-bottom:3px solid #ff3b2f; padding-bottom:4px;">Time off</span>
+            <button id="close-timeoff" class="close"
+                style="font-size:20px; cursor:pointer; background:none; border:none;">✕</button>
+        </div>
+
+        <div class="row" style="display:flex; align-items:center; gap:12px; margin:18px 0;">
+            <div class="dot" style="width:18px; height:18px; border-radius:50%; border:3px solid #dab100;"></div>
+            <div class="label" style="font-size:16px; font-weight:500;">Busy Time</div>
+        </div>
+
+        <div class="date-row" style="display:flex;  margin-top:10px; gap:20px;">
+            <div>
+                <div class="date-info" style="display:flex; align-items:center; gap:10px;">
+                    <div class="clock-icon" style="width:18px; height:18px; ">
+                        <img src="./img/busy-clock.svg" alt="">
+                    </div>
+                    <div id="timeoff-date-line" class="date-text" style="font-size:16px; font-weight:600;">September 26
+                    </div>
+                </div>
+                <div id="timeoff-day-line" class="sub-text" style="font-size:16px; color:gray; margin-top:4px;">
+                    Thursday</div>
+            </div>
+            <div>
+                <img src="./img/line.svg" alt="">
+            </div>
+
+            <div>
+                <div id="timeoff-time-range" class="times"
+                    style="font-size:16px; font-weight:600; display:flex; gap:6px; align-items:center;">06:00 → 07:00
+                </div>
+                <div id="timeoff-duration" class="duration"
+                    style="font-size:16px; color:gray; margin-top:4px; text-align:right;">1 hour</div>
+            </div>
+        </div>
+
+        <button id="timeoff-cancel-btn" class="btn"
+            style="width:100%; padding:12px 0; background:none; border:2px solid #ff3b2f; color:#ff3b2f; border-radius:8px; font-size:16px; margin-top:22px; cursor:pointer;">Cancel
+            time off</button>
+    </div>
+</div>
+
+</div>
+
 <!-- ========= CALENDAR MODAL FOR MANAGE SESSION ========= -->
 <div class="session_cal_modal_backdrop" id="session_cal_modal_backdrop">
     <div class="session_cal_modal">
@@ -2166,5 +2215,134 @@ $(document).ready(function() {
         // Show the modal
         $('#reason-of-cancellation-modal').fadeIn(300);
     };
+
+    // Ensure Time Off modal receives event data and labels are populated
+    (function() {
+        var prevOpen = window.openTimeOffModal;
+
+        function formatTime12h(t) {
+            if (!t) return '';
+            try {
+                var h, m;
+                if (typeof t === 'string' && t.indexOf(':') > -1) {
+                    var p = t.split(':');
+                    h = parseInt(p[0], 10);
+                    m = parseInt(p[1], 10) || 0;
+                } else if (t instanceof Date) {
+                    h = t.getHours();
+                    m = t.getMinutes();
+                } else {
+                    return '';
+                }
+                var ampm = h >= 12 ? 'PM' : 'AM';
+                var hh = h % 12;
+                if (hh === 0) hh = 12;
+                return hh + ':' + String(m).padStart(2, '0') + ' ' + ampm;
+            } catch (e) {
+                return String(t || '');
+            }
+        }
+
+        function formatDateParts(dateStr) {
+            if (!dateStr) return {
+                monthDay: '',
+                weekday: ''
+            };
+            try {
+                var d = new Date(dateStr);
+                var monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August',
+                    'September', 'October', 'November', 'December'
+                ];
+                var dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday',
+                    'Saturday'
+                ];
+                return {
+                    monthDay: monthNames[d.getMonth()] + ' ' + d.getDate(),
+                    weekday: dayNames[d.getDay()]
+                };
+            } catch (e) {
+                return {
+                    monthDay: String(dateStr),
+                    weekday: ''
+                };
+            }
+        }
+
+        window.openTimeOffModal = function(eventData) {
+            try {
+                // Persist raw event for cancel click
+                $('#timeoff-modal').data('eventData', eventData || {});
+
+                // Populate labels
+                var dateParts = formatDateParts(eventData && (eventData.date || eventData.startDate ||
+                    eventData.start));
+                if (dateParts.monthDay) $('#timeoff-date-line').text(dateParts.monthDay);
+                if (dateParts.weekday) $('#timeoff-day-line').text(dateParts.weekday);
+
+                var startLbl = formatTime12h(eventData && (eventData.start || eventData.startTime));
+                var endLbl = formatTime12h(eventData && (eventData.end || eventData.endTime));
+                if (startLbl || endLbl) {
+                    $('#timeoff-time-range').text((startLbl || '') + (startLbl && endLbl ? ' → ' : '') +
+                        (endLbl || ''));
+                }
+
+                // Duration from HH:mm
+                (function setDuration() {
+                    var s = eventData && (eventData.start || eventData.startTime);
+                    var e = eventData && (eventData.end || eventData.endTime);
+                    if (typeof s === 'string' && typeof e === 'string' && s.indexOf(':') > -1 && e
+                        .indexOf(':') > -1) {
+                        var sp = s.split(':'),
+                            ep = e.split(':');
+                        var sm = (+sp[0]) * 60 + (+sp[1]);
+                        var em = (+ep[0]) * 60 + (+ep[1]);
+                        var diff = Math.max(0, em - sm);
+                        var hrs = Math.floor(diff / 60),
+                            mins = diff % 60;
+                        var label = hrs > 0 ? (hrs + (hrs === 1 ? ' hour' : ' hours')) : '';
+                        if (mins > 0) label += (label ? ' ' : '') + mins + ' min';
+                        if (label) $('#timeoff-duration').text(label);
+                    }
+                })();
+
+                $('#timeoff-modal').fadeIn(200);
+            } catch (err) {
+                console.error('openTimeOffModal error:', err);
+            }
+
+            if (typeof prevOpen === 'function') {
+                try {
+                    return prevOpen(eventData);
+                } catch (e) {}
+            }
+        };
+    })();
+
+    // Time Off modal - log payload on cancel click
+    $('#timeoff-cancel-btn').on('click', function(e) {
+        e.preventDefault();
+        var $modal = $('#timeoff-modal');
+        var eventData = $modal.data('eventData') || {};
+
+        var payload = {
+            action: 'cancel_time_off',
+            classType: 'teacher_timeoff',
+            timeoffId: eventData.timeoffid || eventData.id || eventData.eventid || null,
+            eventid: eventData.eventid || null,
+            teacherId: eventData.teacherid || eventData.teacher_id || eventData.teacherId || null,
+            dateLabel: $('#timeoff-date-line').text().trim(),
+            dayLabel: $('#timeoff-day-line').text().trim(),
+            timeRangeLabel: $('#timeoff-time-range').text().replace(/\s+/g, ' ').trim(),
+            durationLabel: $('#timeoff-duration').text().trim(),
+            start: eventData.start || eventData.startTime || eventData.start_at || null,
+            end: eventData.end || eventData.endTime || eventData.end_at || null,
+            timezone: (Intl.DateTimeFormat && Intl.DateTimeFormat().resolvedOptions().timeZone) ||
+                null,
+            source: 'timeoff-modal',
+            rawEventData: eventData
+        };
+
+        console.log('Time Off Cancel Payload:', payload);
+    });
 });
 </script>

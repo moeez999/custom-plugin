@@ -26,6 +26,59 @@
 require_once("../../config.php");
 require_once($CFG->dirroot. '/course/lib.php');
 
+// -----------------------------
+// Helper Functions
+// -----------------------------
+
+function is_only_student_role($userid) {
+    global $DB;
+
+    $studentroleid = 5;
+    $totalRoles = $DB->count_records('role_assignments', ['userid' => $userid]);
+    $studentRoles = $DB->count_records('role_assignments', [
+        'userid' => $userid,
+        'roleid' => $studentroleid
+    ]);
+
+    return ($studentRoles > 0 && $totalRoles == $studentRoles);
+}
+
+function is_cohort_teacher_exist_oly($userid) {
+    global $DB;
+
+    $sql = "SELECT 1
+            FROM {cohort}
+            WHERE cohortmainteacher = :uid
+               OR cohortguideteacher = :uid";
+
+    return $DB->record_exists_sql($sql, ['uid' => (int)$userid]);
+}
+
+// -----------------------------
+// Detect USER Role
+// -----------------------------
+
+$role = 'student'; // default
+
+if (is_siteadmin($USER)) {
+    $role = 'admin';
+} else {
+    $context = context_system::instance();
+
+    if (user_has_role_assignment($USER->id, 1, $context->id)) {
+        $role = 'manager';
+    } else if (is_cohort_teacher_exist_only($USER->id)) {
+        $role = 'teacher';
+    } else if (is_only_student_only($USER->id)) {
+        $role = 'student';
+    }
+}
+
+// Store in localStorage
+$PAGE->requires->js_init_code("
+    localStorage.setItem('role', '{$role}');
+");
+
 echo $OUTPUT->header();
 ?>
 

@@ -480,6 +480,25 @@ $add_one2one_events = function() use (
                 $eventEnd   = $eventStart + max(60, (int)$e->duration * 60);
             }
 
+            // ---- Determine cohort group for 1:1 student ----
+            $groupName = null;
+            if (!empty($studentIds)) {
+                $sid = $studentIds[0];
+
+                $cohortRow = $DB->get_record_sql(
+                    "SELECT c.shortname
+                    FROM {cohort_members} cm
+                    JOIN {cohort} c ON c.id = cm.cohortid
+                    WHERE cm.userid = :uid
+                    LIMIT 1",
+                    ['uid' => $sid]
+                );
+
+                if ($cohortRow) {
+                    $groupName = $cohortRow->shortname;
+                }
+            }
+
             $events[] = [
                 'id'            => '1to1-' . $e->id,
                 'eventid'       => (int)$e->id,
@@ -504,12 +523,46 @@ $add_one2one_events = function() use (
                 'studentnames'  => $studentNames,
                 'cohortids'     => [],
 
-                'class_type'    => $classType,   // 'one2one_single' | 'one2one_weekly'
+                'group'         => $groupName,   // <-- NEW FIELD
+
+                'class_type'    => $classType,
                 'is_recurring'  => $isrecurring,
 
                 'meetingurl'    => $meetingurl,
                 'viewurl'       => $viewurl,
             ];
+
+
+            // $events[] = [
+            //     'id'            => '1to1-' . $e->id,
+            //     'eventid'       => (int)$e->id,
+            //     'main_event_id' => (int)$mainEventId,
+            //     'is_parent'     => ((int)$e->id === $mainEventId),
+            //     'sequence'      => $seq++,
+
+            //     'source'        => 'one2one',
+            //     'courseid'      => $courseid_one2one,
+            //     'cmid'          => (int)$cm->id,
+            //     'googlemeetid'  => (int)$gm->id,
+            //     'title'         => (string)$gm->name,
+
+            //     'start_ts'      => $eventStart,
+            //     'end_ts'        => $eventEnd,
+            //     'start'         => $fmt_iso($eventStart),
+            //     'end'           => $fmt_iso($eventEnd),
+
+            //     'teacherids'    => $teacherIdsForEvent,
+            //     'teachernames'  => $teacherNames,
+            //     'studentids'    => $studentIds,
+            //     'studentnames'  => $studentNames,
+            //     'cohortids'     => [],
+
+            //     'class_type'    => $classType,   // 'one2one_single' | 'one2one_weekly'
+            //     'is_recurring'  => $isrecurring,
+
+            //     'meetingurl'    => $meetingurl,
+            //     'viewurl'       => $viewurl,
+            // ];
         }
     }
 };
