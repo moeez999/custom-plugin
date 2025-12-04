@@ -2709,7 +2709,16 @@ $(function () {
 
         if (ev.teacherId) {
           const colorIndex = getTeacherColorIndex(ev.teacherId);
-          teacherColorClass = `teacher-${colorIndex} has-teacher-indicator`;
+
+          // Only show teacher indicator dot if more than 1 teacher is selected
+          const selectedTeachers = window.calendarFilterState
+            ? window.calendarFilterState.getSelectedTeachers()
+            : [];
+          const showTeacherDot = selectedTeachers.length > 1;
+
+          teacherColorClass = `teacher-${colorIndex}${
+            showTeacherDot ? " has-teacher-indicator" : ""
+          }`;
 
           // Generate dynamic color for the ::after pseudo-element (teacher dot indicator)
           const teacherColor = getTeacherColor(ev.teacherId);
@@ -2811,9 +2820,10 @@ $(function () {
             : ""
         }${ev.eventid ? ` data-event-id="${ev.eventid}"` : ""}${
           ev.cmid ? ` data-cm-id="${ev.cmid}"` : ""
-        }${ev.classType ? ` data-class-type="${ev.classType}"` : ""}${
-          ev.repeat !== undefined ? ` data-repeat="${ev.repeat}"` : ""
-        }${statusMeta ? ` data-status-code="${statusMeta.code}"` : ""}>
+        }${ev.classType ? ` data-class-type="${ev.classType}"` : ""}
+        ${ev.repeat !== undefined ? ` data-repeat="${ev.repeat}"` : ""}${
+          statusMeta ? ` data-status-code="${statusMeta.code}"` : ""
+        }>
             ${statusIconHtml}
             ${
               !isShortEvent
@@ -2828,7 +2838,7 @@ $(function () {
                   ? ""
                   : ev.isRescheduleCurrent
                   ? `<span class="ev-makeup" title="Make-up Class"><img src="./img/makeup.svg" alt=""></span>`
-                  : ev.repeat
+                  : ev.repeat || !ev.repeat
                   ? `<span class="ev-repeat" title="Repeats"><img src="./img/ev-repeat.svg" alt=""></span>`
                   : `<span class="ev-single" title="Single Session"><img src="./img/single-lesson.svg" alt=""></span>`
               }
@@ -3025,6 +3035,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let selectedTeacherIds = [];
   let selectedCohortIds = []; // Changed from single to array
   let selectedStudentIds = [];
+  let teacherStudentsCache = []; // Store students array for teachers
 
   // ---------- helpers ----------
 
@@ -3153,7 +3164,10 @@ document.addEventListener("DOMContentLoaded", () => {
       if (checkbox.checked) {
         if (!selectedTeacherIds.includes(id)) selectedTeacherIds.push(id);
         wrap.classList.add("selected");
-        if (colorDot) colorDot.style.display = "inline-block";
+        // Show dot only if more than 1 teacher will be selected
+        if (colorDot)
+          colorDot.style.display =
+            selectedTeacherIds.length > 1 ? "inline-block" : "none";
       } else {
         selectedTeacherIds = selectedTeacherIds.filter((x) => x !== id);
         wrap.classList.remove("selected");
@@ -3185,6 +3199,16 @@ document.addEventListener("DOMContentLoaded", () => {
       selectedTeachersContainer.style.display = "none";
       return;
     }
+
+    // Update color dot visibility for all teacher options based on selection count
+    const showDots = selectedTeacherIds.length > 1;
+    teacherFieldset.querySelectorAll(".teacher-option").forEach((opt) => {
+      const colorDot = opt.querySelector(".teacher-color-dot");
+      const checkbox = opt.querySelector(".teacher-checkbox");
+      if (colorDot && checkbox && checkbox.checked) {
+        colorDot.style.display = showDots ? "inline-block" : "none";
+      }
+    });
 
     teacherDisplayText.textContent = "";
     selectedTeachersContainer.style.display = "flex";
@@ -3328,7 +3352,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const colorDot = option.querySelector(".teacher-color-dot");
         if (checkbox) checkbox.checked = true;
         option.classList.add("selected");
-        if (colorDot) colorDot.style.display = "inline-block";
+        // Only show dot if more than 1 teacher is selected
+        if (colorDot)
+          colorDot.style.display =
+            selectedTeacherIds.length > 1 ? "inline-block" : "none";
       }
     });
 
@@ -3479,6 +3506,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Display student name for one1one cohorts, otherwise show cohort name
     const displayName =
       c.cohorttype === "one1one" && c.studentname ? c.studentname : c.name;
+    const cohortLabel = c.cohortshortname;
 
     // Log cohorts being added to dropdown
 
@@ -3488,6 +3516,9 @@ document.addEventListener("DOMContentLoaded", () => {
             <label class="cohort-label">
                 <div class="cohort-details">
                     <span class="cohort-name">${displayName}</span>
+                    <span class="cohort-shortname">${
+                      c.cohorttype === "one1one" ? cohortLabel : ""
+                    }</span>
                 </div>
                 <div class="radio-custom">
                     <div class="radio-custom-dot"></div>
@@ -3641,6 +3672,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     console.log("Cohort data fetched:", data);
     if (!data.ok) return [];
+
+    // Store students array if role is teacher
+    if (role === "teacher" && data.students) {
+      teacherStudentsCache = data.students;
+      console.log("Teacher students cached:", teacherStudentsCache);
+    }
 
     const list = data.data || [];
     if (!list.length) {
@@ -3853,7 +3890,7 @@ document.addEventListener("DOMContentLoaded", () => {
       : "";
 
     // Check if this is a 1:1 cohort student
-    const isOneOnOne = s.cohorttype === "one1one";
+    const isOneOnOne = s.group === "1:1";
 
     wrap.innerHTML = `
           <label class="student-label">
@@ -3872,7 +3909,7 @@ document.addEventListener("DOMContentLoaded", () => {
                       <span class="student-name">${s.name}</span>
                       ${
                         isOneOnOne
-                          ? '<span class="student-type-badge">1:1</span>'
+                          ? '<span class="student-type-badge">1:1</span><span class="student-type-badge"><img src=${}</span>'
                           : ""
                       }
                   </div>
@@ -4048,10 +4085,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function loadAllStudents() {
     clear(studentFieldset);
-    const data = await fetchJSON(`${API_BASE}?action=students`);
-    if (!data.ok) return;
 
-    const list = data.data || [];
+    let list = [];
+
+    // If role is teacher, use cached students from cohorts response
+    if (role === "teacher" && teacherStudentsCache.length > 0) {
+      list = teacherStudentsCache;
+      console.log("Using cached teacher students:", list);
+    } else {
+      // Otherwise fetch students separately
+      const data = await fetchJSON(`${API_BASE}?action=students`);
+      if (!data.ok) return;
+      list = data.data || [];
+    }
+
     if (!list.length) {
       const div = document.createElement("div");
       div.style.padding = "8px";
@@ -4069,6 +4116,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return 0;
     });
 
+    console.log("Students:", sortedList);
     sortedList.forEach((s) =>
       studentFieldset.appendChild(createStudentOption(s))
     );

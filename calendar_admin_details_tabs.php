@@ -29,8 +29,8 @@
     background: transparent;
     border: none;
     font-weight: 600;
-    padding: 6px 0;
-    margin: 0 12px;
+    padding: 6px 12px;
+
     color: #bbb;
     position: relative;
 }
