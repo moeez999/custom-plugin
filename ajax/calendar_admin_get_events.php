@@ -52,7 +52,8 @@ $endraw        = required_param('end', PARAM_RAW_TRIMMED);
 $teacherid     = optional_param('teacherid', 0, PARAM_INT);              // legacy
 $teacheridsraw = optional_param('teacherids', '', PARAM_RAW_TRIMMED);    // new: multi
 $cohortid      = optional_param('cohortid', 0, PARAM_INT);
-$studentid     = optional_param('studentid', 0, PARAM_INT);
+$studentid     = optional_param('studentid', 0, PARAM_INT);              // legacy
+$studentidsraw = optional_param('studentids', '', PARAM_RAW_TRIMMED);    // new: multi
 // specific googlemeet id filter for 1:1
 $one2onegmid   = optional_param('one2one_gmid', 0, PARAM_INT);
 
@@ -64,6 +65,16 @@ if ($teacheridsraw) {
 } elseif ($teacherid) {
     // Fallback to single teacherid for backward compatibility
     $teacherids = [$teacherid];
+}
+
+// Parse multiple student IDs if provided (comma-separated)
+$studentids = [];
+if ($studentidsraw) {
+    $ids = array_map('intval', explode(',', $studentidsraw));
+    $studentids = array_filter($ids);
+} elseif ($studentid) {
+    // Fallback to single studentid for backward compatibility
+    $studentids = [$studentid];
 }
 
 // Parse dates → timestamps
@@ -272,6 +283,7 @@ $add_one2one_events = function() use (
     $teacherids,
     $teacherEmails,
     $studentid,
+    $studentids,
     $one2onegmid,
     $cohortid,
     $teacherEmailLower,
@@ -370,8 +382,17 @@ $add_one2one_events = function() use (
         }
         $studentIds = array_values(array_unique($studentIds));
 
-        if ($studentid && !in_array($studentid, $studentIds, true)) {
-            continue;
+        // Student filter: support both new (studentids array) and legacy (single studentid)
+        if (!empty($studentids)) {
+            // New: multiple student filter - require at least one match
+            if (!array_intersect($studentids, $studentIds)) {
+                continue;
+            }
+        } elseif ($studentid) {
+            // Legacy: single student filter
+            if (!in_array($studentid, $studentIds, true)) {
+                continue;
+            }
         }
 
         // Load full student user records for names (for this CM)
@@ -578,6 +599,7 @@ $add_group_events = function() use (
     $teacherid,
     $cohortid,
     $studentid,
+    $studentids,
     $availability_collect_cohorts,
     $fmt_iso,
     $derive_times_from_gm,
@@ -591,11 +613,16 @@ $add_group_events = function() use (
     // All cohorts map
     $cohortById = $DB->get_records('cohort', null, '', 'id, cohortmainteacher, cohortguideteacher');
 
-    // Student cohorts (for filter)
+    // Student cohorts (for filter) - support both single and multiple students
     $studentCohorts = [];
-    if ($studentid) {
-        $rows = $DB->get_records('cohort_members', ['userid' => $studentid], '', 'id, cohortid');
-        $studentCohorts = array_map(fn($r) => (int)$r->cohortid, $rows);
+    $studentIdsToCheck = !empty($studentids) ? $studentids : ($studentid ? [$studentid] : []);
+    
+    if (!empty($studentIdsToCheck)) {
+        list($insqlStu, $paramsStu) = $DB->get_in_or_equal($studentIdsToCheck, SQL_PARAMS_NAMED);
+        $rows = $DB->get_records_select('cohort_members', "userid $insqlStu", $paramsStu, '', 'id, userid, cohortid');
+        foreach ($rows as $row) {
+            $studentCohorts[(int)$row->userid][] = (int)$row->cohortid;
+        }
     }
 
     $sections = $DB->get_records('course_sections', ['course' => $courseid_group], 'id ASC', 'id, availability, section');
@@ -662,9 +689,30 @@ $add_group_events = function() use (
             continue;
         }
 
-        // Student filter: require membership in at least one cohort
-        if ($studentid && $cohortIds) {
-            if (!array_intersect($cohortIds, $studentCohorts)) {
+        // Student filter: support both new (multiple students) and legacy (single student)
+        if (!empty($studentids) || $studentid) {
+            // If students are filtered, only show events for cohorts they're in
+            if ($cohortIds) {
+                $hasMatchingCohort = false;
+                
+                if (!empty($studentids)) {
+                    // Check if ANY selected student is in ANY of the event's cohorts
+                    foreach ($studentids as $sid) {
+                        if (isset($studentCohorts[$sid]) && array_intersect($cohortIds, $studentCohorts[$sid])) {
+                            $hasMatchingCohort = true;
+                            break;
+                        }
+                    }
+                } else if ($studentid && isset($studentCohorts[$studentid])) {
+                    // Legacy: check if the single student is in any of the event's cohorts
+                    $hasMatchingCohort = !empty(array_intersect($cohortIds, $studentCohorts[$studentid]));
+                }
+                
+                if (!$hasMatchingCohort) {
+                    continue;
+                }
+            } else {
+                // No cohorts for this event, skip if students are filtered
                 continue;
             }
         }
@@ -1068,7 +1116,7 @@ unset($ev);
             foreach ($guideCohorts as $c) {
                 $cohortids[] = (int)$c->id;
             }
-        } elseif (!$teacherids && !$studentid && !$cohortid) {
+        } elseif (!$teacherids && !$studentid && !$studentids && !$cohortid) {
             // No explicit filter → fallback: cohorts where current user is main/guide teacher.
             $cohorts = $DB->get_records_sql(
                 "SELECT id
@@ -1093,24 +1141,30 @@ unset($ev);
             }
         }
 
-        // c) Apply student filter: cohorts where this student is a member.
-        if ($studentid) {
+        // c) Apply student filter: cohorts where these students are members
+        // Support both new (multiple students) and legacy (single student)
+        $studentIdsToFilter = !empty($studentids) ? $studentids : ($studentid ? [$studentid] : []);
+        
+        if (!empty($studentIdsToFilter)) {
             if (!empty($cohortids)) {
                 list($insql, $params) = $DB->get_in_or_equal($cohortids, SQL_PARAMS_NAMED);
-                $params['uid'] = $studentid;
+                list($insqlStu, $paramsStu) = $DB->get_in_or_equal($studentIdsToFilter, SQL_PARAMS_NAMED);
+                $params = array_merge($params, $paramsStu);
                 $rows = $DB->get_records_sql(
                     "SELECT DISTINCT cohortid
-                       FROM {cohort_members}
-                      WHERE userid = :uid
-                        AND cohortid $insql",
+                     FROM {cohort_members}
+                    WHERE cohortid $insql
+                      AND userid $insqlStu",
                     $params
                 );
             } else {
-                $rows = $DB->get_records(
-                    'cohort_members',
-                    ['userid' => $studentid],
-                    '',
-                    'cohortid'
+                // If no cohorts from previous filters, get cohorts for these students
+                list($insqlStu, $paramsStu) = $DB->get_in_or_equal($studentIdsToFilter, SQL_PARAMS_NAMED);
+                $rows = $DB->get_records_sql(
+                    "SELECT DISTINCT cohortid
+                     FROM {cohort_members}
+                    WHERE userid $insqlStu",
+                    $paramsStu
                 );
             }
 

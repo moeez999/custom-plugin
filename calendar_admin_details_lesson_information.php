@@ -68,12 +68,8 @@
     <div class="calendar_admin_cancel_modal" role="dialog" aria-modal="true" aria-labelledby="cancel_title">
         <div class="calendar_admin_cancel_header">
             <button type="button" class="calendar_admin_cancel_back" aria-label="Back to lesson info">
-                <svg width="22" height="22" viewBox="0 0 24 24">
-                    <polyline points="15 19 8 12 15 5" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round" />
-                </svg>
+                <img src="./img/arrow-back.svg" alt="Back to lesson info">
             </button>
-            <h5 id="cancel_title" class="calendar_admin_cancel_title">Are You Sure You Want To Cancel?</h5>
             <button type="button" class="calendar_admin_cancel_close" aria-label="Close">
                 <svg width="22" height="22" viewBox="0 0 24 24">
                     <path d="M6 6l12 12M18 6L6 18" stroke="#111" stroke-width="2" stroke-linecap="round" />
@@ -82,6 +78,8 @@
         </div>
 
         <div class="calendar_admin_cancel_body">
+            <h5 id="cancel_title" class="calendar_admin_cancel_title">Are You Sure You Want To Cancel?</h5>
+
             <p class="calendar_admin_cancel_note">
                 Please note that the lesson <strong>Tuesday , Sep 03 7:00 – 7:25 with jonas</strong> will be canceled
                 and will not be rescheduled.
@@ -95,7 +93,10 @@
                 <button type="button" class="ca_dd_btn" aria-haspopup="listbox" aria-expanded="false">
                     <span class="ca_dd_placeholder">Select Reason</span>
                     <span class="ca_dd_value" style="display:none;"></span>
-                    <span class="ca_dd_caret" aria-hidden="true">▾</span>
+                    <span class="ca_dd_caret" aria-hidden="true">
+
+                        <img src="./img/dropdown-arrow-down.svg" alt="dropdown arrow">
+                    </span>
                 </button>
 
                 <div class="ca_dd_menu" role="listbox" tabindex="-1">
@@ -116,7 +117,7 @@
             <textarea id="calendar_admin_cancel_message" class="form-control calendar_admin_cancel_textarea mb-3"
                 rows="3" placeholder="Message for Daniela"></textarea>
 
-            <div class="form-check mb-3">
+            <div class="form-check mb-3 d-flex align-items-start calendar_admin_cancel_ack_wrap">
                 <input class="form-check-input" type="checkbox" id="calendar_admin_cancel_ack">
                 <label class="form-check-label" for="calendar_admin_cancel_ack">
                     I know my position will decrease and fewer students will see
@@ -192,7 +193,8 @@
                             <button type="button" class="ca_dd_btn" aria-haspopup="listbox" aria-expanded="false">
                                 <span class="ca_dd_placeholder">50 Minutes ( Standard time )</span>
                                 <span class="ca_dd_value" style="display:none;"></span>
-                                <span class="ca_dd_caret" aria-hidden="true">▾</span>
+                                <span class="ca_dd_caret" aria-hidden="true"> <img src="./img/dropdown-arrow-down.svg"
+                                        alt="dropdown arrow"></span>
                             </button>
 
                             <div class="ca_dd_menu" role="listbox" tabindex="-1">
@@ -214,7 +216,8 @@
                                     <button type="button" id="resched_date_field"
                                         class="form-select calendar_admin_details_lesson_info_calendar_modal_field">
                                         <span id="resched_date_label">Tue,Feb11</span>
-                                        <span class="ca_res_select_icon" aria-hidden="true">▾</span>
+                                        <span class="ca_res_select_icon" aria-hidden="true"> <img
+                                                src="./img/dropdown-arrow-down.svg" alt="dropdown arrow"></span>
                                     </button>
 
                                     <!-- Hidden value used by your existing code: $('#resched_date').val() -->
@@ -231,7 +234,9 @@
                                         <option>1:00 AM</option>
                                         <option>1:30 AM</option>
                                     </select>
-                                    <span class="ca_res_select_icon" aria-hidden="true">▾</span>
+                                    <span class="ca_res_select_icon" aria-hidden="true">
+                                        <img src="./img/dropdown-arrow-down.svg" alt="dropdown arrow">
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -261,12 +266,8 @@
         aria-labelledby="resched_confirm_title">
         <div class="calendar_admin_reschedule_header">
             <button type="button" class="calendar_admin_reschedule_confirm_back" aria-label="Back to step 2">
-                <svg width="22" height="22" viewBox="0 0 24 24">
-                    <polyline points="15 19 8 12 15 5" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round" />
-                </svg>
+                <img src="./img/arrow-back.svg" alt="back arrow">
             </button>
-            <h5 id="resched_confirm_title" class="calendar_admin_reschedule_title">Reschedule lesson</h5>
             <button type="button" class="calendar_admin_reschedule_close" aria-label="Close">
                 <svg width="22" height="22" viewBox="0 0 24 24">
                     <path d="M6 6l12 12M18 6L6 18" stroke="#111" stroke-width="2" stroke-linecap="round" />
@@ -274,7 +275,9 @@
             </button>
         </div>
 
-        <div class="calendar_admin_reschedule_body">
+        <div class="calendar_admin_reschedule_body_sub">
+            <h5 id="resched_confirm_title" class="calendar_admin_reschedule_title">Reschedule lesson</h5>
+
             <span class="ca_res_chip">Updated lesson</span>
 
             <div class="calendar_admin_lite_card mb-3">
@@ -316,7 +319,10 @@
                     <option>Technical issues</option>
                     <option>Other</option>
                 </select>
-                <span class="ca_res_select_icon" aria-hidden="true">▾</span>
+                <span class="ca_res_select_icon" aria-hidden="true">
+
+                    <img src="./img/dropdown-arrow-down.svg" alt="dropdown arrow">
+                </span>
             </div>
 
             <label for="resched_message_step3" class="form-label fw-semibold mb-2">Message for Daniela •
@@ -920,10 +926,10 @@ require_once('calendar_admin_details_lesson_information_cancel_lesson.php'); */?
 /* ===== Cancel Modal (snapshot-accurate overrides) ===== */
 .calendar_admin_cancel_modal {
     width: 100%;
-    max-width: 530px;
+    max-width: 480px;
     background: #fff;
     border: 1px solid #e9e9f0;
-    border-radius: 12px;
+    border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 20px 50px rgba(0, 0, 0, .12);
     display: none;
@@ -934,8 +940,8 @@ require_once('calendar_admin_details_lesson_information_cancel_lesson.php'); */?
     align-items: center;
     justify-content: space-between;
     gap: 8px;
-    padding: 14px 16px;
-    border-bottom: 1px solid #f0f0f4;
+    padding: 14px 10px;
+
 }
 
 .calendar_admin_cancel_back,
@@ -951,19 +957,17 @@ require_once('calendar_admin_details_lesson_information_cancel_lesson.php'); */?
 }
 
 .calendar_admin_cancel_title {
-    /* margin:0; */
-    font-weight: 600;
-    font-size: 1.9rem;
+    font-weight: 700;
+    font-size: 2rem;
     line-height: 1.15;
     color: #111;
     text-align: left;
     flex: 1;
-    margin-left: 6px;
-    margin-top: 50px;
+
 }
 
 .calendar_admin_cancel_body {
-    padding: 18px 20px 20px;
+    padding: 0px 24px 20px;
 }
 
 .calendar_admin_cancel_note {
@@ -974,9 +978,9 @@ require_once('calendar_admin_details_lesson_information_cancel_lesson.php'); */?
 }
 
 .calendar_admin_cancel_body .form-label {
-    font-weight: 700;
     color: #232323;
     margin-bottom: 8px;
+    font-size: 14px;
 }
 
 .calendar_admin_cancel_selectwrap {
@@ -1006,16 +1010,51 @@ require_once('calendar_admin_details_lesson_information_cancel_lesson.php'); */?
 
 .calendar_admin_cancel_textarea {
     min-height: 66px;
-    border-radius: 12px;
+    border-radius: 8px !important;
     border: 1.6px solid #e1e3eb;
     padding: 14px 16px;
     font-size: 1.02rem;
+    box-shadow: none !important;
+}
+
+.calendar_admin_cancel_textarea:hover {
+    border: 1.6px solid #232323;
 }
 
 .form-check .form-check-input {
     width: 22px;
     height: 22px;
     margin-top: 2px;
+
+    /* remove default browser styling */
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    /* custom look */
+    background-color: transparent;
+    border: 1px solid #232323;
+    /* choose a color */
+    border-radius: 6px;
+    /* adjust radius */
+    cursor: pointer;
+}
+
+/* checked state */
+.form-check-input:checked {
+    background-color: #232323;
+    /* fill color when checked */
+    border-color: #232323;
+}
+
+/* optional: checkmark */
+.form-check-input:checked::after {
+    content: "✔";
+    color: white;
+    font-size: 16px;
+    position: relative;
+    left: 2px;
+    top: -1px;
 }
 
 .form-check .form-check_input {
@@ -1028,16 +1067,20 @@ require_once('calendar_admin_details_lesson_information_cancel_lesson.php'); */?
 .form-check .form-check-label {
     margin-left: 6px;
     line-height: 1.45;
-    color: #1f232b;
-    font-weight: 600;
+    color: #232323;
+
+    font-size: 14px;
 }
 
 .calendar_admin_cancel_resched {
-    height: 58px;
-    border-radius: 12px;
+
+    border-radius: 8px;
     border: 1.8px solid #e7e7ef;
     font-weight: 800;
     font-size: 1.05rem;
+    background: #ffffff;
+    color: #121117;
+    padding: 12px 16px;
 }
 
 .calendar_admin_cancel_resched:hover {
@@ -1045,8 +1088,8 @@ require_once('calendar_admin_details_lesson_information_cancel_lesson.php'); */?
 }
 
 .calendar_admin_cancel_confirm {
-    height: 60px;
-    border-radius: 12px;
+    padding: 12px 16px;
+    border-radius: 8px;
     font-weight: 900;
     font-size: 1.08rem;
     letter-spacing: .2px;
@@ -1082,7 +1125,7 @@ require_once('calendar_admin_details_lesson_information_cancel_lesson.php'); */?
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 28px;
+
 }
 
 .calendar_admin_reschedule_title {
@@ -1102,10 +1145,24 @@ require_once('calendar_admin_details_lesson_information_cancel_lesson.php'); */?
     line-height: 0;
 }
 
+.calendar_admin_reschedule_confirm_back {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    line-height: 0;
+}
+
 .calendar_admin_reschedule_body {
     display: flex;
     flex-direction: column;
     gap: 18px;
+}
+
+.calendar_admin_reschedule_body_sub {
+    display: flex;
+    flex-direction: column;
+
 }
 
 .calendar_admin_reschedule_label {
@@ -1213,7 +1270,7 @@ require_once('calendar_admin_details_lesson_information_cancel_lesson.php'); */?
     font-weight: 500;
     font-size: 12px;
     line-height: 18px;
-    margin-bottom: -4px;
+
 }
 
 .calendar_admin_reschedule_select_control {
@@ -1291,8 +1348,8 @@ require_once('calendar_admin_details_lesson_information_cancel_lesson.php'); */?
 
 .ca_res_selectwrap:not(.calendar_admin_reschedule_select_control) .form-select {
     border: 2px solid rgba(0, 0, 0, 0.12);
-    border-radius: 8.93px;
-    padding: 0 12px;
+    border-radius: 8px;
+    padding: 14px 16px;
     height: 60px;
 }
 
@@ -1372,24 +1429,26 @@ require_once('calendar_admin_details_lesson_information_cancel_lesson.php'); */?
 
 /* ===== Reschedule Modal (STEP 3 — Confirm) ===== */
 .calendar_admin_reschedule_confirm_modal {
+    background-color: #ffffff;
+    border: 1px solid #f4f4f8;
+    border-radius: 8px;
+    box-shadow: 0px 8px 32px 0px rgba(18, 17, 23, 0.15), 0px 16px 48px 0px rgba(18, 17, 23, 0.15);
+    max-width: 500px;
     width: 100%;
-    max-width: 530px;
-    background: #fff;
-    border: 1px solid #e9e9f0;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, .12);
+    padding: 24px;
     display: none;
+    flex-direction: column;
 }
 
 .ca_res_chip {
     display: inline-block;
-    background: #eef1f6;
-    color: #2c313a;
+    background: #DCDCE5;
+    color: #232323;
     font-weight: 800;
     padding: 6px 12px;
-    border-radius: 9px;
+    border-radius: 8px;
     margin-bottom: 10px;
+    width: max-content;
 }
 
 .calendar_admin_lite_card {
@@ -1451,16 +1510,19 @@ require_once('calendar_admin_details_lesson_information_cancel_lesson.php'); */?
 }
 
 .ca_res_confirm {
-    height: 60px;
-    border-radius: 12px;
-    font-weight: 900;
-    font-size: 1.08rem;
-    letter-spacing: .2px;
-    background: #ef2d17;
-    color: #fff;
-    border: 0;
-    padding: 12px 16px;
-    box-shadow: 0 10px 26px rgba(239, 45, 23, .25);
+
+    width: 100%;
+    background-color: #ff2500;
+    border: 2px solid #121117;
+    border-radius: 8px;
+    padding: 11px 20px;
+    color: #ffffff;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 26px;
+    cursor: pointer;
+    text-align: center;
 }
 
 /* ===== States ===== */
@@ -1556,18 +1618,22 @@ require_once('calendar_admin_details_lesson_information_cancel_lesson.php'); */?
 
 .ca_dd_btn {
     width: 100%;
-    height: 58px;
+
     background: #fff;
     border: 1.6px solid #e1e3eb;
-    border-radius: 12px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 14px 16px;
+    padding: 14px 12px;
     font-size: 1.05rem;
     line-height: 1.2;
     font-weight: 600;
-    box-shadow: 0 2px 10px rgba(20, 20, 20, .03);
+
+}
+
+.ca_dd_btn:hover {
+    border: 1.6px solid #232323;
 }
 
 .ca_dd_btn:focus {

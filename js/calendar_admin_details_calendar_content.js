@@ -21,6 +21,8 @@ const REVEAL_MID =
     getComputedStyle(document.documentElement).getPropertyValue("--reveal-mid")
   ) || 8;
 
+let role = localStorage.getItem("role");
+let teacherId = localStorage.getItem("teacherId");
 // Helper function to get teacher color based on teacher ID (unlimited colors)
 function getTeacherColorIndex(teacherId) {
   if (!teacherId) return 1;
@@ -2752,7 +2754,7 @@ $(function () {
           ev.classType === "teacher_timeoff" ||
           ev.class_type === "teacher_timeoff" ||
           ev.source === "teacher_timeoff";
-        debugger;
+
         const statusMeta = getActiveStatusMeta(ev.statuses);
         const statusIconHtml = (() => {
           // Hide status icon for current reschedule events (makeup icon shows instead)
@@ -3293,9 +3295,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  let role = localStorage.getItem("role");
-  let teacherId = localStorage.getItem("teacherId");
-
   async function loadTeachers() {
     clear(teacherFieldset);
     const data = await fetchJSON(`${API_BASE}?action=teachers`);
@@ -3634,7 +3633,7 @@ document.addEventListener("DOMContentLoaded", () => {
       data = await fetchJSON(`${API_BASE}?action=cohorts`);
     } else if (role === "teacher") {
       data = await fetchJSON(
-        `${API_BASE}?action=cohorts&teacherId${teacherId}`
+        `${API_BASE}?action=cohorts&teacherId=${teacherId}`
       );
     } else if (role === "student") {
       data = await fetchJSON(`${API_BASE}?action=cohorts`);
@@ -3993,8 +3992,8 @@ document.addEventListener("DOMContentLoaded", () => {
       selectedStudentsContainer.appendChild(dropdownPill);
     });
 
-    // ---------- Compact top summary (trigger view) ----------
-    const maxAvatars = 2; // show first two avatars
+    // ---------- Compact top summary (trigger view) - Like Teachers ----------
+    const maxAvatars = 7; // show first 7 avatars
     const visibleStudents = selectedStudentIds.slice(0, maxAvatars);
 
     visibleStudents.forEach((id, idx) => {
@@ -4011,8 +4010,17 @@ document.addEventListener("DOMContentLoaded", () => {
       studentPillsContainer.appendChild(img);
     });
 
-    // Build initials for all selected students
+    // Show ellipsis if there are more students than visible
+    if (selectedStudentIds.length > maxAvatars) {
+      const ellipsis = document.createElement("span");
+      ellipsis.className = "student-summary-ellipsis";
+      ellipsis.textContent = "...";
+      studentPillsContainer.appendChild(ellipsis);
+    }
+
+    // Build initials string for **first 7 selected students only**
     const initialsList = selectedStudentIds
+      .slice(0, maxAvatars)
       .map((id) => {
         const opt = studentFieldset.querySelector(
           `.student-option[data-student-id="${id}"]`
@@ -4067,7 +4075,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function loadStudentsForCohorts(cohortIds, clearSelection = true) {
-    debugger;
     clear(studentFieldset);
 
     // Only clear selection if explicitly requested
@@ -4531,7 +4538,11 @@ document.addEventListener("DOMContentLoaded", () => {
   (async () => {
     if (role === "admin") {
       await loadTeachers();
-    } // Load teachers list only
+    } else {
+      document.querySelector(".teacher-search-dropdown").style.display = "none";
+    }
+
+    // Load teachers list only
     await loadAllCohorts(); // Show available cohorts (optional)
     await loadAllStudents(); // Show available students (optional)
 
