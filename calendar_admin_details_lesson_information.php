@@ -209,34 +209,73 @@
                         </div>
 
                         <div class="ca_res_row calendar_admin_reschedule_form_row">
-                            <!-- DATE FIELD (no dropdown) -->
+                            <!-- DATE FIELD (custom date picker that opens calendar) -->
                             <div class="ca_res_col">
-                                <div class="ca_res_selectwrap calendar_admin_reschedule_select_control">
-                                    <!-- Visible button that looks like your select -->
-                                    <button type="button" id="resched_date_field"
-                                        class="form-select calendar_admin_details_lesson_info_calendar_modal_field">
-                                        <span id="resched_date_label">Tue,Feb11</span>
-                                        <span class="ca_res_select_icon" aria-hidden="true"> <img
-                                                src="./img/dropdown-arrow-down.svg" alt="dropdown arrow"></span>
-                                    </button>
-
-                                    <!-- Hidden value used by your existing code: $('#resched_date').val() -->
-                                    <input type="hidden" id="resched_date" value="Tue, Feb11">
+                                <div class="resched-date-dropdown-display" id="reschedDateDropdownDisplay"
+                                    style="width:100%; padding:13px 14px; border-radius:10px; border:1.5px solid #dadada; background:#fff; font-size:1.05rem; color:#232323; margin-bottom:0px; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+                                    <span id="reschedDateText">Tue, Feb11</span>
                                 </div>
+
+                                <!-- Hidden value used by your existing code: $('#resched_date').val() -->
+                                <input type="hidden" id="resched_date" value="Tue, Feb11">
                             </div>
 
-                            <!-- TIME (unchanged, still a normal dropdown) -->
+                            <!-- TIME (custom time picker) -->
                             <div class="ca_res_col">
-                                <div class="ca_res_selectwrap calendar_admin_reschedule_select_control">
-                                    <select class="form-select" id="resched_time">
-                                        <option selected>12:00 AM</option>
-                                        <option>12:30 AM</option>
-                                        <option>1:00 AM</option>
-                                        <option>1:30 AM</option>
-                                    </select>
-                                    <span class="ca_res_select_icon" aria-hidden="true">
-                                        <img src="./img/dropdown-arrow-down.svg" alt="dropdown arrow">
-                                    </span>
+                                <div class="resched-custom-time-pill">
+                                    <input type="text" class="form-control resched-time-input" value="12:00 AM"
+                                        autocomplete="off" style="background-color:#ffffff; height: 50px;width:100%;"
+                                        id="resched_time_input" readonly="readonly">
+                                    <div class="resched-custom-time-dropdown" style="display: none;">
+                                        <div class="resched-dropdown-item">12:00 AM</div>
+                                        <div class="resched-dropdown-item">12:30 AM</div>
+                                        <div class="resched-dropdown-item">1:00 AM</div>
+                                        <div class="resched-dropdown-item">1:30 AM</div>
+                                        <div class="resched-dropdown-item">2:00 AM</div>
+                                        <div class="resched-dropdown-item">2:30 AM</div>
+                                        <div class="resched-dropdown-item">3:00 AM</div>
+                                        <div class="resched-dropdown-item">3:30 AM</div>
+                                        <div class="resched-dropdown-item">4:00 AM</div>
+                                        <div class="resched-dropdown-item">4:30 AM</div>
+                                        <div class="resched-dropdown-item">5:00 AM</div>
+                                        <div class="resched-dropdown-item">5:30 AM</div>
+                                        <div class="resched-dropdown-item">6:00 AM</div>
+                                        <div class="resched-dropdown-item">6:30 AM</div>
+                                        <div class="resched-dropdown-item">7:00 AM</div>
+                                        <div class="resched-dropdown-item">7:30 AM</div>
+                                        <div class="resched-dropdown-item">8:00 AM</div>
+                                        <div class="resched-dropdown-item">8:30 AM</div>
+                                        <div class="resched-dropdown-item">9:00 AM</div>
+                                        <div class="resched-dropdown-item">9:30 AM</div>
+                                        <div class="resched-dropdown-item">10:00 AM</div>
+                                        <div class="resched-dropdown-item">10:30 AM</div>
+                                        <div class="resched-dropdown-item">11:00 AM</div>
+                                        <div class="resched-dropdown-item">11:30 AM</div>
+                                        <div class="resched-dropdown-item">12:00 PM</div>
+                                        <div class="resched-dropdown-item">12:30 PM</div>
+                                        <div class="resched-dropdown-item">1:00 PM</div>
+                                        <div class="resched-dropdown-item">1:30 PM</div>
+                                        <div class="resched-dropdown-item">2:00 PM</div>
+                                        <div class="resched-dropdown-item">2:30 PM</div>
+                                        <div class="resched-dropdown-item">3:00 PM</div>
+                                        <div class="resched-dropdown-item">3:30 PM</div>
+                                        <div class="resched-dropdown-item">4:00 PM</div>
+                                        <div class="resched-dropdown-item">4:30 PM</div>
+                                        <div class="resched-dropdown-item">5:00 PM</div>
+                                        <div class="resched-dropdown-item">5:30 PM</div>
+                                        <div class="resched-dropdown-item">6:00 PM</div>
+                                        <div class="resched-dropdown-item">6:30 PM</div>
+                                        <div class="resched-dropdown-item">7:00 PM</div>
+                                        <div class="resched-dropdown-item">7:30 PM</div>
+                                        <div class="resched-dropdown-item">8:00 PM</div>
+                                        <div class="resched-dropdown-item">8:30 PM</div>
+                                        <div class="resched-dropdown-item">9:00 PM</div>
+                                        <div class="resched-dropdown-item">9:30 PM</div>
+                                        <div class="resched-dropdown-item">10:00 PM</div>
+                                        <div class="resched-dropdown-item">10:30 PM</div>
+                                        <div class="resched-dropdown-item">11:00 PM</div>
+                                        <div class="resched-dropdown-item">11:30 PM</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1379,6 +1418,79 @@ require_once('calendar_admin_details_lesson_information_cancel_lesson.php'); */?
     flex: 1 1 0;
 }
 
+/* Custom Time Picker Styles for Reschedule Modal */
+.resched-custom-time-pill {
+    position: relative;
+    width: 100%;
+}
+
+.resched-time-input {
+    width: 100%;
+    min-height: auto !important;
+    padding: 0 12px !important;
+    border: 1px solid #ddd;
+    border-radius: 10px !important;
+    font-size: 14px;
+    cursor: pointer;
+    background-color: #ffffff !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+
+}
+
+.resched-time-input:focus {
+    outline: none;
+    border-color: #666;
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+}
+
+.resched-custom-time-dropdown {
+    position: absolute;
+    top: 55px;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 10000;
+}
+
+.resched-dropdown-item {
+    padding: 10px 12px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+    transition: background-color 0.15s ease;
+}
+
+.resched-dropdown-item:hover {
+    background-color: #f5f5f5;
+}
+
+.resched-dropdown-item.active {
+    background-color: #e8f0fe;
+    color: #1f2937;
+    font-weight: 500;
+}
+
+/* Custom Date Display for Reschedule Modal */
+.resched-date-dropdown-display {
+    position: relative;
+    transition: all 0.15s ease;
+}
+
+.resched-date-dropdown-display:hover {
+    border-color: #999;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.resched-date-dropdown-display:active {
+    transform: scale(0.99);
+}
+
 .calendar_admin_reschedule_hint,
 .calendar_admin_reschedule_info_banner {
     display: flex;
@@ -1753,7 +1865,7 @@ require_once('calendar_admin_details_lesson_information_cancel_lesson.php'); */?
     padding: 7px 0 4px 0;
 }
 
-.calendar_admin_details_create_cohort_calendar_day,
+.calendar_admin_details_create_cohort_calendar_day_res,
 .calendar_admin_details_create_cohort_calendar_day_inactive {
     padding: 11px 0;
     border-radius: 8px;
@@ -1769,7 +1881,7 @@ require_once('calendar_admin_details_lesson_information_cancel_lesson.php'); */?
     cursor: not-allowed;
 }
 
-.calendar_admin_details_create_cohort_calendar_day.selected {
+.calendar_admin_details_create_cohort_calendar_day_res.selected {
     border: 2px solid #fe2e0c;
     color: #fe2e0c;
     background: #fff;
@@ -1881,7 +1993,8 @@ let closeAll;
     }
 
     function toMinutes(t) { // "1:30 AM" -> minutes from midnight
-        const m = t.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+        if (!t) return 0;
+        const m = String(t).match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
         if (!m) return 0;
         let h = parseInt(m[1], 10) % 12;
         const min = parseInt(m[2], 10);
@@ -1901,8 +2014,9 @@ let closeAll;
     }
 
     function to24(t) { // "1:30 PM" -> "01:30 PM" like your snapshot uses leading zero for hour <10?
-        const m = t.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
-        if (!m) return t;
+        if (!t) return '';
+        const m = String(t).match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+        if (!m) return String(t);
         let h = parseInt(m[1], 10);
         return (h < 10 ? ('0' + h) : h) + ':' + m[2] + ' ' + m[3].toUpperCase();
     }
@@ -2028,6 +2142,58 @@ let closeAll;
 
     // Openers
     //$('.calendar_admin_details_lesson_information_btn').on('click', openLessonInfo);
+
+    // ===== Custom Time Picker for Reschedule Modal =====
+    const $reschedTimeInput = $('.resched-time-input');
+    const $reschedTimeDropdown = $('.resched-custom-time-dropdown');
+    const $reschedDropdownItems = $('.resched-dropdown-item');
+
+    // Toggle dropdown on input click
+    $reschedTimeInput.on('click', function() {
+        $reschedTimeDropdown.toggle();
+
+        // Highlight current selection
+        const currentValue = $reschedTimeInput.val();
+        $reschedDropdownItems.removeClass('active').each(function() {
+            if ($(this).text() === currentValue) {
+                $(this).addClass('active');
+                // Scroll to active item
+                $reschedTimeDropdown.scrollTop($(this).offset().top - $reschedTimeDropdown.offset()
+                    .top - 100);
+            }
+        });
+    });
+
+    // Handle dropdown item click
+    $reschedDropdownItems.on('click', function() {
+        const selectedTime = $(this).text();
+        $reschedTimeInput.val(selectedTime);
+
+        // Update the hidden resched_time input for backward compatibility
+        $('#resched_time').val(selectedTime);
+
+        // Hide dropdown
+        $reschedTimeDropdown.hide();
+
+        // Update active state
+        $reschedDropdownItems.removeClass('active');
+        $(this).addClass('active');
+    });
+
+    // Close dropdown when clicking outside
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('.resched-custom-time-pill').length) {
+            $reschedTimeDropdown.hide();
+        }
+    });
+
+    // Update date display when date is selected in the calendar
+    $(document).on('change', '#resched_date', function() {
+        const selectedDate = $(this).val();
+        if (selectedDate) {
+            $('#reschedDateText').text(selectedDate);
+        }
+    });
 
     $(document).on('click', '.event.e-green', function(e) {
         e.preventDefault();
@@ -2558,19 +2724,13 @@ let closeAll;
     console.log('Calendar backdrop exists:', $('#rescheduleCalendarBackdrop').length);
     console.log('==========================================');
 
-    // Open calendar when clicking date button in reschedule modal
-    // Using wildcard selector to catch clicks on button AND all its children (spans)
-    $(document).on('click', '#resched_date_field, #resched_date_field *', function(e) {
+    // Open calendar when clicking date display in reschedule modal (custom date picker)
+    // This handler initializes and displays the calendar modal
+    $('#reschedDateDropdownDisplay').on('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
 
-        console.log('✓ Date button clicked!');
-        console.log('Clicked element:', this);
-        console.log('Element ID:', $(this).attr('id'));
-        console.log('Target type:', this.tagName);
-
-        rescheduleCalendarTargetBtn = $('#resched_date_label');
-        console.log('Target button found:', rescheduleCalendarTargetBtn.length);
+        rescheduleCalendarTargetBtn = $('#reschedDateText');
 
         let now = new Date();
         rescheduleCalendarMonth = {
@@ -2579,24 +2739,14 @@ let closeAll;
         };
         rescheduleSelectedDate = null;
 
-        console.log('Rendering calendar for:', rescheduleCalendarMonth);
-
+        // Render the calendar
         renderRescheduleCalendar();
 
-        const $backdrop = $('#rescheduleCalendarBackdrop');
-        console.log('Backdrop found:', $backdrop.length);
-        console.log('Backdrop display before:', $backdrop.css('display'));
-
-        $backdrop.fadeIn(150);
-
-        setTimeout(function() {
-            console.log('Backdrop display after:', $backdrop.css('display'));
-            console.log('Is visible:', $backdrop.is(':visible'));
-        }, 200);
-    });
-
-    // Previous month
+        // Show the backdrop
+        $('#rescheduleCalendarBackdrop').show();
+    }); // Previous month
     $(document).on('click', '.reschedule_calendar_prev', function() {
+        if (!rescheduleCalendarMonth) return;
         rescheduleCalendarMonth.month--;
         if (rescheduleCalendarMonth.month < 0) {
             rescheduleCalendarMonth.month = 11;
@@ -2607,6 +2757,7 @@ let closeAll;
 
     // Next month
     $(document).on('click', '.reschedule_calendar_next', function() {
+        if (!rescheduleCalendarMonth) return;
         rescheduleCalendarMonth.month++;
         if (rescheduleCalendarMonth.month > 11) {
             rescheduleCalendarMonth.month = 0;
@@ -2617,6 +2768,7 @@ let closeAll;
 
     // Render calendar
     function renderRescheduleCalendar() {
+        if (!rescheduleCalendarMonth) return;
         const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September",
             "October", "November", "December"
         ];
@@ -2647,7 +2799,7 @@ let closeAll;
                 rescheduleSelectedDate.getFullYear() === y &&
                 rescheduleSelectedDate.getMonth() === m &&
                 rescheduleSelectedDate.getDate() === d ? ' selected' : '';
-            html += '<div class="calendar_admin_details_create_cohort_calendar_day' + sel + '" data-day="' + d +
+            html += '<div class="calendar_admin_details_create_cohort_calendar_day_res' + sel + '" data-day="' + d +
                 '">' + d + '</div>';
         }
 
@@ -2662,9 +2814,15 @@ let closeAll;
     }
 
     // Select a day
-    $(document).on('click', '#rescheduleCalendarBackdrop .calendar_admin_details_create_cohort_calendar_day',
+    $(document).on('click', '#rescheduleCalendarBackdrop .calendar_admin_details_create_cohort_calendar_day_res',
         function() {
-            $('#rescheduleCalendarBackdrop .calendar_admin_details_create_cohort_calendar_day').removeClass(
+            // If the calendar has not been initialized, bail out to avoid null access
+            if (!rescheduleCalendarMonth) {
+                console.warn('Reschedule calendar month not initialized; ignoring day click');
+                return;
+            }
+
+            $('#rescheduleCalendarBackdrop .calendar_admin_details_create_cohort_calendar_day_res').removeClass(
                 'selected');
             $(this).addClass('selected');
             let day = parseInt($(this).attr('data-day'));
@@ -2685,14 +2843,14 @@ let closeAll;
                 rescheduleCalendarTargetBtn.text(nice);
                 $('#resched_date').val(nice);
 
-                $('#rescheduleCalendarBackdrop').fadeOut(150);
+                $('#rescheduleCalendarBackdrop').hide();
             }
         });
 
     // Click outside to close
     $(document).on('click', '#rescheduleCalendarBackdrop', function(e) {
         if (e.target === this) {
-            $(this).fadeOut(150);
+            $(this).hide();
         }
     });
 

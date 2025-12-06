@@ -1549,6 +1549,7 @@
         });
 
         $(document).on('click', '.calendar_prev_month', function() {
+            if (!calendarModalMonth) return; // safety guard
             calendarModalMonth.month--;
             if (calendarModalMonth.month < 0) {
                 calendarModalMonth.month = 11;
@@ -1558,6 +1559,7 @@
         });
 
         $(document).on('click', '.calendar_next_month', function() {
+            if (!calendarModalMonth) return; // safety guard
             calendarModalMonth.month++;
             if (calendarModalMonth.month > 11) {
                 calendarModalMonth.month = 0;
@@ -1567,6 +1569,7 @@
         });
 
         function renderCalendarModal() {
+            if (!calendarModalMonth) return; // safety guard
             const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August",
                 "September", "October", "November", "December"
             ];
@@ -1600,6 +1603,7 @@
         }
 
         $(document).on('click', '.calendar_admin_details_create_cohort_calendar_day', function() {
+            if (!calendarModalMonth) return; // safety guard
             $('.calendar_admin_details_create_cohort_calendar_day').removeClass('selected');
             $(this).addClass('selected');
             let day = parseInt($(this).attr('data-day'));
