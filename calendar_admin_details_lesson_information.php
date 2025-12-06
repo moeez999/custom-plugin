@@ -1799,6 +1799,11 @@ require_once('calendar_admin_details_lesson_information_cancel_lesson.php'); */?
 </style>
 
 <script>
+// Pre-declare the functions to make them available globally
+let openLessonInfo;
+let populateModalWithEventData;
+let closeAll;
+
 (function($) {
     const $backdrop = $('#calendar_admin_details_lesson_information_backdrop');
     const $modal = $backdrop.find('.calendar_admin_details_lesson_information_modal');
@@ -2692,6 +2697,7 @@ require_once('calendar_admin_details_lesson_information_cancel_lesson.php'); */?
     });
 
     // Expose functions globally for agenda tab and other components
+    // Assign to the pre-declared variables so they're available immediately
     window.populateModalWithEventData = populateModalWithEventData;
     window.openLessonInfo = openLessonInfo;
     window.closeAll = closeAll;
