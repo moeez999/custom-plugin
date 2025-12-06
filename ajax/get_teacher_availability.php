@@ -44,7 +44,7 @@ try {
     foreach ($records as $r) {
 
         // Convert weekday to string
-        $dayName = date('l', strtotime("Sunday +{$r->weekday} days"));
+        $dayName = date('l', strtotime("Monday +{$r->weekday} days"));
 
         // Convert start date
         $startDate = $r->startdate ? date("Y-m-d", (int)$r->startdate) : null;

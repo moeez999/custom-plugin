@@ -1788,6 +1788,32 @@ try {
 
 
 
+// -------------------------------------------------------------
+// ADD +1 DAY TO start AND end INSIDE $teacherTimeoff
+// -------------------------------------------------------------
+foreach ($teacherTimeoff as $tid => $items) {
+    foreach ($items as $idx => $it) {
+
+        // Add +1 day to start
+        if (!empty($it['start'])) {
+            $dt = new DateTime($it['start']);
+            $dt->modify('+1 day');
+            $teacherTimeoff[$tid][$idx]['start'] = $dt->format('Y-m-d');
+        }
+
+        // Add +1 day to end
+        if (!empty($it['end'])) {
+            $dt2 = new DateTime($it['end']);
+            $dt2->modify('+1 day');
+            $teacherTimeoff[$tid][$idx]['end'] = $dt2->format('Y-m-d');
+        }
+    }
+}
+
+
+
+
+
 
 
 

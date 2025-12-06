@@ -125,6 +125,7 @@ function fmt12(min) {
     m = min % 60;
   // Wrap hours beyond 24
   if (h >= 24) h -= 24;
+  // When h >= 12: PM, when h < 12: AM
   const ap = h >= 12 ? "PM" : "AM";
   const dispH = h % 12 || 12;
   return `${dispH}:${pad2(m)} ${ap}`;
@@ -492,7 +493,33 @@ $(function () {
       if ($repeatBtn.length > 0) {
         // Convert 24h time to 12h format with AM/PM
         function formatTime12h(time24) {
-          const [hours, minutes] = time24.split(":").map(Number);
+          let timeStr = String(time24).trim();
+          let hours, minutes;
+
+          // Check if already in 12-hour format (contains AM/PM)
+          if (timeStr.match(/\s*(am|pm)\s*$/i)) {
+            // Already 12-hour format, extract hours and period
+            const match = timeStr.match(/^(\d+):?(\d{2})\s*(am|pm)$/i);
+            if (match) {
+              hours = parseInt(match[1], 10);
+              minutes = parseInt(match[2], 10);
+              const inputPeriod = match[3].toUpperCase();
+              // Convert to 24-hour internally, then back
+              if (inputPeriod === "PM" && hours !== 12) {
+                hours = hours + 12;
+              } else if (inputPeriod === "AM" && hours === 12) {
+                hours = 0;
+              }
+            } else {
+              return time24; // Return as-is if can't parse
+            }
+          } else {
+            // 24-hour format
+            const parts = timeStr.split(":").map(Number);
+            hours = parts[0];
+            minutes = parts[1];
+          }
+
           const period = hours >= 12 ? "PM" : "AM";
           const hours12 = hours % 12 || 12;
           return `${String(hours12).padStart(2, "0")}:${String(
@@ -638,11 +665,40 @@ $(function () {
 
     // Helper function to format time to 12h with AM/PM
     function formatTime12h(time24) {
-      const [hours, minutes] = time24.split(":");
-      let h = parseInt(hours, 10);
-      const ampm = h >= 12 ? "PM" : "AM";
-      h = h % 12 || 12;
-      const formattedTime = (h < 10 ? "0" + h : h) + ":" + minutes;
+      let timeStr = String(time24).trim();
+      let hours, minutes, hourStr, minStr;
+
+      // Check if already in 12-hour format (contains AM/PM)
+      if (timeStr.match(/\s*(am|pm)\s*$/i)) {
+        // Already 12-hour format, extract components
+        const match = timeStr.match(/^(\d+):?(\d{2})\s*(am|pm)$/i);
+        if (match) {
+          hours = parseInt(match[1], 10);
+          minutes = parseInt(match[2], 10);
+          const inputPeriod = match[3].toUpperCase();
+          // Convert to 24-hour internally for proper AM/PM logic
+          if (inputPeriod === "PM" && hours !== 12) {
+            hours = hours + 12;
+          } else if (inputPeriod === "AM" && hours === 12) {
+            hours = 0;
+          }
+        } else {
+          // Can't parse, return as-is
+          return { time: timeStr, period: "AM" };
+        }
+      } else {
+        // 24-hour format
+        const parts = timeStr.split(":");
+        hourStr = parts[0];
+        minStr = parts[1];
+        hours = parseInt(hourStr, 10);
+        minutes = parseInt(minStr, 10);
+      }
+
+      const ampm = hours >= 12 ? "PM" : "AM";
+      let h = hours % 12 || 12;
+      const formattedTime =
+        (h < 10 ? "0" + h : h) + ":" + (minutes < 10 ? "0" + minutes : minutes);
       console.log(`formatTime12h: ${time24} -> ${formattedTime} ${ampm}`);
       return { time: formattedTime, period: ampm };
     }
@@ -994,11 +1050,38 @@ $(function () {
       const $repeatBtn = $(".conference_repeat_btn");
       if ($repeatBtn.length > 0) {
         function formatTime12h(time24) {
-          const [hours, minutes] = time24.split(":");
-          let h = parseInt(hours, 10);
-          const ampm = h >= 12 ? "PM" : "AM";
-          h = h % 12 || 12;
-          return `${h < 10 ? "0" + h : h}:${minutes} ${ampm}`;
+          let timeStr = String(time24).trim();
+          let hours, minutes;
+
+          // Check if already in 12-hour format (contains AM/PM)
+          if (timeStr.match(/\s*(am|pm)\s*$/i)) {
+            // Already 12-hour format, extract components
+            const match = timeStr.match(/^(\d+):?(\d{2})\s*(am|pm)$/i);
+            if (match) {
+              hours = parseInt(match[1], 10);
+              minutes = parseInt(match[2], 10);
+              const inputPeriod = match[3].toUpperCase();
+              // Convert to 24-hour internally for proper AM/PM logic
+              if (inputPeriod === "PM" && hours !== 12) {
+                hours = hours + 12;
+              } else if (inputPeriod === "AM" && hours === 12) {
+                hours = 0;
+              }
+            } else {
+              return timeStr; // Return as-is if can't parse
+            }
+          } else {
+            // 24-hour format
+            const parts = timeStr.split(":");
+            hours = parseInt(parts[0], 10);
+            minutes = parseInt(parts[1], 10);
+          }
+
+          const ampm = hours >= 12 ? "PM" : "AM";
+          let h = hours % 12 || 12;
+          return `${h < 10 ? "0" + h : h}:${
+            minutes < 10 ? "0" + minutes : minutes
+          } ${ampm}`;
         }
 
         const shortDays = {
@@ -1838,8 +1921,9 @@ $(function () {
     const $startBtn = $("#session-start-btn");
     $startList.empty();
 
+    // Generate standardized times from 12:00 AM to 11:30 PM with 30-minute intervals
     for (let h = 0; h < 24; h++) {
-      for (let m = 0; m < 60; m += 5) {
+      for (let m = 0; m < 60; m += 30) {
         const min = h * 60 + m;
         const label = fmt12(min);
         const $li = $(`<li data-time-value="${min}">${label}</li>`);
@@ -1865,8 +1949,9 @@ $(function () {
     const $endBtn = $("#session-end-btn");
     $endList.empty();
 
+    // Generate standardized times from 12:00 AM to 11:30 PM with 30-minute intervals
     for (let h = 0; h < 24; h++) {
-      for (let m = 0; m < 60; m += 5) {
+      for (let m = 0; m < 60; m += 30) {
         const min = h * 60 + m;
         const label = fmt12(min);
         const $li = $(`<li data-time-value="${min}">${label}</li>`);
@@ -2428,8 +2513,83 @@ $(function () {
     .off("mousedown.emptySlot", ".day-inner")
     .on("mousedown.emptySlot", ".day-inner", function (e) {
       if ($(e.target).closest(".event").length) return;
+
+      // Get the clicked day and time slot
+      const $dayInner = $(this);
+      const dateStr = $dayInner.data("date");
+      // Find the slot index from mouse position
+      let slotIndex = 0;
+      const $slots = $dayInner.find(".slots > div");
+      const offsetY = e.pageY - $dayInner.offset().top;
+      for (let i = 0; i < $slots.length; i++) {
+        const slotTop = $($slots[i]).position().top;
+        const slotHeight = $($slots[i]).outerHeight();
+        if (offsetY >= slotTop && offsetY < slotTop + slotHeight) {
+          slotIndex = i;
+          break;
+        }
+      }
+
+      // Highlight the clicked slot
+      $slots.removeClass("cohort-slot-highlight");
+      $($slots[slotIndex]).addClass("cohort-slot-highlight");
+      window._lastCohortSlot = $($slots[slotIndex]);
+
+      // Calculate start and end time in minutes
+      const startMin =
+        (typeof START_H !== "undefined" ? START_H : 6) * 60 +
+        slotIndex * (typeof SLOT_MIN !== "undefined" ? SLOT_MIN : 30);
+      const endMin =
+        startMin + (typeof SLOT_MIN !== "undefined" ? SLOT_MIN : 30);
+
+      // Format time as 12h
+      function pad2(n) {
+        return String(n).padStart(2, "0");
+      }
+      function fmt12(min) {
+        let h = Math.floor(min / 60),
+          m = min % 60;
+        if (h >= 24) h -= 24;
+        const ap = h >= 12 ? "PM" : "AM";
+        const dispH = h % 12 || 12;
+        return `${dispH}:${pad2(m)} ${ap}`;
+      }
+
+      // Get day name
+      const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      const d = new Date(dateStr);
+      const dayName = dayNames[d.getDay()];
+
+      // Build label
+      const timeLabel = `${fmt12(startMin)} - ${fmt12(endMin)}`;
+      const scheduleLabel = `Weekly on ${dayName}(<span class="time-range">${timeLabel}</span>) <span class="cohort_schedule_arrow">&#9660;</span>`;
+
+      // Open modal and set label after modal is visible
       openCreateCohortModal();
+      setTimeout(function () {
+        $(".cohort_schedule_btn").html(scheduleLabel);
+      }, 300);
     });
+
+  // Add CSS for slot highlight
+  if (!document.getElementById("cohortSlotStyle")) {
+    const cohortSlotStyle = document.createElement("style");
+    cohortSlotStyle.id = "cohortSlotStyle";
+    cohortSlotStyle.innerHTML = `.cohort-slot-highlight { background: rgba(230,57,70,0.10) !important; }`;
+    document.head.appendChild(cohortSlotStyle);
+  }
+
+  // Remove highlight when modal closes
+  $(document).on(
+    "click",
+    "#calendar_admin_details_create_cohort_modal_backdrop .modal-close, #calendar_admin_details_create_cohort_modal_backdrop",
+    function (e) {
+      if (window._lastCohortSlot) {
+        window._lastCohortSlot.removeClass("cohort-slot-highlight");
+        window._lastCohortSlot = null;
+      }
+    }
+  );
 
   // First render
   renderWeek(true);
@@ -3510,15 +3670,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Log cohorts being added to dropdown
 
-    console.log("Dropdown Cohort:", c);
-
     wrap.innerHTML = `
             <label class="cohort-label">
                 <div class="cohort-details">
                     <span class="cohort-name">${displayName}</span>
-                    <span class="cohort-shortname">${
-                      c.cohorttype === "one1one" ? cohortLabel : ""
-                    }</span>
+                    ${
+                      c.cohorttype === "one1one"
+                        ? `<span class="cohort-shortname">${cohortLabel}</span>`
+                        : ""
+                    }
                 </div>
                 <div class="radio-custom">
                     <div class="radio-custom-dot"></div>
@@ -3714,10 +3874,6 @@ document.addEventListener("DOMContentLoaded", () => {
           if (checkbox) checkbox.checked = true;
           option.classList.add("selected");
         }
-        // Log group cohorts appended
-        try {
-          console.log("Appended Group Cohort:", { id: c.id, name: c.name });
-        } catch (e) {}
       });
     } else {
       cohortNoResults.style.display = "block";
@@ -3812,13 +3968,6 @@ document.addEventListener("DOMContentLoaded", () => {
           if (checkbox) checkbox.checked = true;
           option.classList.add("selected");
         }
-        // Log group cohorts appended (teacher-filtered)
-        try {
-          console.log("Appended Group Cohort (by teacher):", {
-            id: c.id,
-            name: c.name,
-          });
-        } catch (e) {}
       });
     } else {
       cohortNoResults.style.display = "block";
@@ -3845,13 +3994,6 @@ document.addEventListener("DOMContentLoaded", () => {
           if (checkbox) checkbox.checked = true;
           option.classList.add("selected");
         }
-        // Log 1:1 cohorts appended (teacher-filtered)
-        try {
-          console.log("Appended 1:1 Cohort (by teacher):", {
-            id: c.id,
-            name: c.studentname || c.name,
-          });
-        } catch (e) {}
       });
     } else if (oneOnOneNoResults) {
       oneOnOneNoResults.style.display = "block";
@@ -3875,7 +4017,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // ---------- Students ----------
 
   function createStudentOption(s) {
-    console.log("Creating student option:", s);
     const wrap = document.createElement("div");
     wrap.className = "student-option";
     wrap.dataset.studentId = s.id;
@@ -3909,7 +4050,7 @@ document.addEventListener("DOMContentLoaded", () => {
                       <span class="student-name">${s.name}</span>
                       ${
                         isOneOnOne
-                          ? '<span class="student-type-badge">1:1</span><span class="student-type-badge"><img src=${}</span>'
+                          ? `<div class="cohort_label_teacher_avatar"><span class="student-type-badge">1:1</span><span class="student-type-badge"><img src="${s.teacheravatar}" alt="Teacher Avatar"></span></div>`
                           : ""
                       }
                   </div>
@@ -4091,7 +4232,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // If role is teacher, use cached students from cohorts response
     if (role === "teacher" && teacherStudentsCache.length > 0) {
       list = teacherStudentsCache;
-      console.log("Using cached teacher students:", list);
     } else {
       // Otherwise fetch students separately
       const data = await fetchJSON(`${API_BASE}?action=students`);
@@ -5092,6 +5232,8 @@ document.addEventListener("DOMContentLoaded", () => {
             allEvents.push({
               start: item.start,
               end: item.end,
+              start_ts: item.start_ts,
+              end_ts: item.end_ts,
               title: item.title || "Busy",
               classType: "teacher_timeoff",
               class_type: "teacher_timeoff",
@@ -5158,11 +5300,31 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // Main event object
+        // For time-off events, extract time from timestamps; for others use date times
+        let eventStart, eventEnd;
+        if (
+          ev.source === "teacher_timeoff" ||
+          ev.classType === "teacher_timeoff"
+        ) {
+          // Convert Unix timestamps to HH:MM format
+          if (ev.start_ts && ev.end_ts) {
+            const startDate_ts = new Date(ev.start_ts * 1000);
+            const endDate_ts = new Date(ev.end_ts * 1000);
+            eventStart = startDate_ts.toTimeString().slice(0, 5);
+            eventEnd = endDate_ts.toTimeString().slice(0, 5);
+          } else {
+            eventStart = "00:00";
+            eventEnd = "23:59";
+          }
+        } else {
+          eventStart = startDate.toTimeString().slice(0, 5);
+          eventEnd = endDate.toTimeString().slice(0, 5);
+        }
         const eventObj = {
           date: startDate.toISOString().split("T")[0],
           title: ev.title || "",
-          start: startDate.toTimeString().slice(0, 5),
-          end: endDate.toTimeString().slice(0, 5),
+          start: eventStart,
+          end: eventEnd,
           color: eventColor,
           repeat:
             typeof ev.is_recurring !== "undefined"

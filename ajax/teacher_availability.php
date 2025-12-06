@@ -54,6 +54,15 @@ try {
         'Sunday'    => 6
     ];
 
+    // If UI accidentally sends more than 1 slot → return error
+if (count($slots) !== 1) {
+    echo json_encode([
+        'ok'    => false,
+        'error' => 'Only one slot allowed for this operation'
+    ]);
+    exit;
+}
+
     // Single-slot operations (UI sends only 1)
     $slot = $slots[0];
 
@@ -104,7 +113,7 @@ try {
     // =====================
     // 2. RESIZE EXISTING
     // =====================
-    if ($action === 'resize') {
+    if ($action === 'update') {
 
         // find existing slot based on teacher + weekday + startMin
         $row = $DB->get_record('local_teacher_availability', [
@@ -175,6 +184,41 @@ try {
         ]);
         die();
     }
+
+        // =====================
+    // 2b. DRAG (FULL UPDATE BY ID)
+    // =====================
+    if ($action === 'drag') {
+
+        $slotid = isset($slot['id']) ? (int)$slot['id'] : 0;
+        if ($slotid <= 0) {
+            throw new moodle_exception('invaliddata', 'error', '', 'Missing slot ID for drag update');
+        }
+
+        // Fetch record by ID
+        $row = $DB->get_record('local_teacher_availability', ['id' => $slotid], '*', IGNORE_MISSING);
+
+        if (!$row) {
+            throw new moodle_exception('notfound', 'error', '', 'Slot not found for drag update');
+        }
+
+        // Update everything
+        $row->weekday      = $weekday;
+        $row->starttime    = $startMin;
+        $row->endtime      = $endMin;
+        $row->startdate    = $startDateTS;
+        $row->timemodified = time();
+
+        $DB->update_record('local_teacher_availability', $row);
+
+        echo json_encode([
+            'status'  => 'success',
+            'action'  => 'drag',
+            'message' => 'Availability updated via drag successfully'
+        ]);
+        die();
+    }
+
 
     // Unknown action
     throw new moodle_exception('invaliddata', 'error', '', 'Unknown action: '.$action);

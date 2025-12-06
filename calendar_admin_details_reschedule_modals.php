@@ -2343,6 +2343,52 @@ $(document).ready(function() {
         };
 
         console.log('Time Off Cancel Payload:', payload);
+
+        // Show loader
+        showGlobalLoader();
+
+        fetch(M.cfg.wwwroot + "/local/customplugin/ajax/delete_teacher_timeoff.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    action: "cancel_time_off",
+                    classType: "teacher_timeoff",
+                    timeoffId: payload.timeoffId, // use your variable
+                    teacherId: payload.teacherId // use your variable
+                })
+            })
+            .then(r => r.json())
+            .then(resp => {
+                // Hide loader
+                hideGlobalLoader();
+
+                if (resp.status === "success") {
+                    console.log("Deleted:", resp);
+                    // Show toast instead of alert for better UX
+                    if (typeof showToast === 'function') {
+                        showToast('Time off deleted successfully!', 'success');
+                    } else {
+                        alert("Time off deleted successfully.");
+                    }
+                    loadCalendarEvents(); // your refresh function
+
+                    // Close the modal
+                    $('#timeoff-modal').fadeOut(200);
+                } else {
+                    // Show toast instead of alert for better UX
+                    if (typeof showToast === 'function') {
+                        showToast('Error: ' + resp.error, 'error');
+                    } else {
+                        alert("Error: " + resp.error);
+                    }
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Network error.");
+            });
     });
 });
 </script>

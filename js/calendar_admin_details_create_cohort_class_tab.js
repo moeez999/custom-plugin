@@ -394,25 +394,23 @@ $("#calendarModalBackdropManage").on("mousedown", function (e) {
 });
 
 // --- Custom Time Dropdown ---
-function buildTimeOptions(start, end, step) {
+function buildTimeOptions() {
   let html = "",
     sel = "selected";
-  let time = new Date(2000, 1, 1, start, 0, 0, 0);
-  let stop = new Date(2000, 1, 1, end, 0, 0, 0);
-  while (time <= stop) {
-    let h = time.getHours(),
-      m = time.getMinutes();
-    let period = h >= 12 ? "PM" : "AM";
-    let dispH = h % 12 === 0 ? 12 : h % 12;
-    let mm = m < 10 ? "0" + m : m;
-    let tstr = `${dispH}:${mm} ${period}`;
-    html += `<div class="one2one-time-option ${sel}">${tstr}</div>`;
-    sel = "";
-    time.setMinutes(time.getMinutes() + step);
+  // Generate standardized times from 12:00 AM to 11:30 PM with 30-minute intervals
+  for (let h = 0; h < 24; h++) {
+    for (let m = 0; m < 60; m += 30) {
+      let hour12 = h % 12 === 0 ? 12 : h % 12;
+      let period = h >= 12 ? "PM" : "AM";
+      let mm = m < 10 ? "0" + m : m;
+      let tstr = `${hour12}:${mm} ${period}`;
+      html += `<div class="one2one-time-option ${sel}">${tstr}</div>`;
+      sel = "";
+    }
   }
   return html;
 }
-$("#customTimeDropdownList").html(buildTimeOptions(0, 23, 30)); // Every 30min from 12:00 AM to 11:30 PM
+$("#customTimeDropdownList").html(buildTimeOptions()); // Every 30min from 12:00 AM to 11:30 PM
 
 $("#customTimeDropdownDisplay").on("click", function () {
   $("#customTimeDropdownList").toggle();

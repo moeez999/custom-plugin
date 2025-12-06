@@ -942,7 +942,9 @@ h2 {
   margin-left: 9px;
   transition: transform 0.19s;
 }
-
+.cohort-slot-highlight {
+  background-color: rgba(254, 46, 12, 0.1);
+}
 .calendar_admin_details_create_cohort_dropdown_btn.active svg,
 .calendar_admin_details_create_cohort_shortname_btn.active svg {
   transform: rotate(180deg);

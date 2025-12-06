@@ -527,10 +527,39 @@
         font-size: 14px;
         border-radius: 8px;
     }
+
+    @keyframes spin {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .spin-logo {
+        animation: spin 2s linear infinite;
+    }
     </style>
 </head>
 
 <body>
+    <!-- Loader -->
+    <div id="loader"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.6); z-index:9999; align-items:center; justify-content:center;">
+        <img src="../../img/loader.png" alt="Loading..." class="spin-logo" style="width:100px;height:100px;">
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toastNotificationForAvailability" style="display:none; position:fixed; top:30px; right:30px; 
+         background:#000; color:#fff; padding:16px 24px; 
+         border-radius:8px; font-size:1rem; 
+         box-shadow:0 4px 12px rgba(0,0,0,0.3);
+         z-index:99999; opacity:0; transition:opacity .3s, transform .3s;
+         transform:translateY(20px);">
+        Availability updated successfully!
+    </div>
 
     <div class="calendar_admin_details_setup_availablity_wrap">
         <div class="calendar_admin_details_setup_availablity_layout">
@@ -676,6 +705,51 @@
     </div>
 
     <script>
+    // ===== TOAST NOTIFICATION FUNCTION =====
+    function showToast(message, type = 'success', duration = 5000) {
+        const toast = document.getElementById('toastNotificationForAvailability');
+        if (!toast) {
+            console.warn('Toast element not found');
+            return;
+        }
+
+        // Set message and styling
+        toast.textContent = message;
+        toast.style.background = type === 'error' ? '#dc3545' :
+            type === 'warning' ? '#ffc107' :
+            type === 'info' ? '#17a2b8' : '#28a745';
+        toast.style.color = type === 'warning' ? '#212529' : '#fff';
+        toast.style.display = 'block';
+        toast.style.zIndex = '999999';
+
+        // Animate in
+        setTimeout(() => {
+            toast.style.opacity = '1';
+            toast.style.transform = 'translateY(0)';
+        }, 10);
+
+        // Auto hide
+        const toastTimeout = setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 300);
+        }, duration);
+
+        // Return dismiss function for manual control
+        return {
+            dismiss: () => {
+                clearTimeout(toastTimeout);
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    toast.style.display = 'none';
+                }, 300);
+            }
+        };
+    }
+
     // ===== CORE UTILITY FUNCTIONS =====
     function getDayName(dayIndex) {
         const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
@@ -709,10 +783,14 @@
             const timeParts = label.split('–').map(t => t.trim());
             const startTime = timeParts[0] || '';
             const endTime = timeParts[1] || '';
+            const slotId = $block.attr('data-id');
             slots.push({
                 day: getDayName(dayIndex),
                 startTime: startTime,
-                endTime: endTime
+                endTime: endTime,
+                ...(slotId ? {
+                    id: slotId
+                } : {})
             });
         } else {
             $('.calendar_admin_details_setup_availablity_day .calendar_admin_details_setup_availablity_block').each(
@@ -741,6 +819,11 @@
         // =============================
         // AJAX CALL TO BACKEND
         // =============================
+
+        // Show loader
+        const loader = document.getElementById('loader');
+        if (loader) loader.style.display = 'flex';
+
         $.ajax({
             url: M.cfg.wwwroot + "/local/customplugin/ajax/teacher_availability.php",
             type: "POST",
@@ -755,21 +838,40 @@
                 console.log("Availability Response:", response);
 
                 if (response.status === "success") {
-                    alert("Availability saved successfully (" + response.action + ")");
-                    
-                    // Refresh calendar
+                    // Show toast instead of alert
+                    if (typeof showToast === 'function') {
+                        showToast('Availability saved successfully (' + response.action + ')', 'success');
+                    } else {
+                        console.log("Availability saved successfully (" + response.action + ")");
+                    }
+
+                    // Refresh calendar to show updated availability
                     if (window.refetchCustomPluginData) {
                         window.refetchCustomPluginData('teacher-availability');
                     } else if (window.fetchCalendarEvents) {
                         window.fetchCalendarEvents();
                     }
                 } else {
-                    alert("Error: " + response.error);
+                    // Show error toast instead of alert
+                    if (typeof showToast === 'function') {
+                        showToast('Error: ' + response.error, 'error');
+                    } else {
+                        console.error("Error: " + response.error);
+                    }
                 }
             },
             error: function(xhr) {
                 console.error("Availability Error:", xhr.responseText);
-                alert("Something went wrong while saving availability.");
+                // Show error toast instead of alert
+                if (typeof showToast === 'function') {
+                    showToast('Something went wrong while saving availability.', 'error');
+                } else {
+                    console.error("Something went wrong while saving availability.");
+                }
+            },
+            complete: function() {
+                // Hide loader always
+                if (loader) loader.style.display = 'none';
             }
         });
     }
@@ -872,11 +974,17 @@
                     type: "POST",
                     data: JSON.stringify(payload),
                     contentType: "application/json",
-                    success: function (res) {
+                    success: function(res) {
                         console.log("Teacher availability response:", res);
 
                         if (!res || res.ok === false) {
-                            alert("Failed to load availability: " + (res && res.error ? res.error : "Unknown error"));
+                            if (typeof showToast === 'function') {
+                                showToast("Failed to load availability: " + (res && res.error ? res
+                                    .error : "Unknown error"), 'error');
+                            } else {
+                                console.error("Failed to load availability: " + (res && res.error ? res
+                                    .error : "Unknown error"));
+                            }
                             return;
                         }
 
@@ -887,9 +995,13 @@
                             console.warn("renderAvailability not ready; availability data skipped");
                         }
                     },
-                    error: function (xhr) {
+                    error: function(xhr) {
                         console.error("Load teacher availability error:", xhr.responseText);
-                        alert("Something went wrong while loading availability.");
+                        if (typeof showToast === 'function') {
+                            showToast('Something went wrong while loading availability.', 'error');
+                        } else {
+                            console.error("Something went wrong while loading availability.");
+                        }
                     }
                 });
             }
@@ -1077,7 +1189,8 @@
         }
 
         function renderAvailability(slots = []) {
-            $('.calendar_admin_details_setup_availablity_day .calendar_admin_details_setup_availablity_block').remove();
+            $('.calendar_admin_details_setup_availablity_day .calendar_admin_details_setup_availablity_block')
+                .remove();
             $('#calendar_admin_details_setup_availablity_blocks').empty();
 
             if (!Array.isArray(slots)) return;
@@ -1103,6 +1216,8 @@
                         <div class="calendar_admin_details_setup_availablity_resize">v</div>
                     </div>
                 `);
+                // Attach slot id if present
+                if (slot.id) $block.attr('data-id', slot.id);
 
                 $day.append($block);
                 updateLabel($block, startMin, endMin);
@@ -1170,7 +1285,7 @@
 
                 $day.append($block);
                 updateLabel($block, startMin, endMin);
-                setTimeout(() => logAvailabilityPayload('create'), 10);
+                setTimeout(() => logAvailabilityPayload('create', $block[0]), 10);
             });
 
         // Initialize labels for existing blocks
@@ -1204,6 +1319,12 @@
             return rects;
         }
 
+        function getActionForBlock($block, isDrag = false) {
+            if (isDrag) return 'drag';
+            return $block.attr('data-id') ? 'update' : 'create';
+        }
+
+
         function columnAt(pageX) {
             const rs = dayRects();
             for (let r of rs) {
@@ -1234,7 +1355,6 @@
                 dragging.y0 = pageY;
             }
             updateLabel($el);
-            logAvailabilityPayload('drag');
         }
 
         // Event handlers for drag and resize
@@ -1308,11 +1428,14 @@
         });
 
         $(document).on('mouseup touchend', function() {
-            if ((dragging && Math.abs(dragging.moved || 0) > 5)) {
-                logAvailabilityPayload('drag');
-            } else if ((resizing && Math.abs(resizing.moved || 0) > 5)) {
-                logAvailabilityPayload('resize');
+            if (dragging && Math.abs(dragging.moved || 0) > 5) {
+                const $el = dragging.$el;
+                logAvailabilityPayload(getActionForBlock($el, true), $el[0]);
+            } else if (resizing && Math.abs(resizing.moved || 0) > 5) {
+                const $el = resizing.$el;
+                logAvailabilityPayload(getActionForBlock($el), $el[0]);
             }
+
             dragging = null;
             resizing = null;
             $('body').removeClass('user-select-none');

@@ -634,15 +634,15 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // time dropdowns
+        // time dropdowns - Generate standardized times from 12:00 AM to 11:30 PM with 30-minute intervals
         function buildTimes() {
             const out = [];
-            const pad = n => (n < 10 ? '0' : '') + n;
             for (let h = 0; h < 24; h++) {
                 for (let m = 0; m < 60; m += 30) {
-                    const h12 = ((h + 11) % 12) + 1,
-                        ampm = h < 12 ? 'am' : 'pm';
-                    out.push(`${h12}:${pad(m)} ${ampm}`.replace(':00', ''));
+                    let hour12 = h % 12 === 0 ? 12 : h % 12;
+                    let period = h < 12 ? 'AM' : 'PM';
+                    let mm = m < 10 ? '0' + m : m;
+                    out.push(`${hour12}:${mm} ${period}`);
                 }
             }
             return out;

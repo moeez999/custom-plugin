@@ -372,6 +372,13 @@
     font-weight: 500;
     font-size: 11px;
     line-height: 14px;
+    cursor: pointer;
+    user-select: none;
+    transition: opacity 0.2s ease;
+}
+
+.scroll-widget__period:hover {
+    opacity: 0.7;
 }
 
 .scroll-widget__dash {
@@ -905,10 +912,13 @@ $(function() {
             const year = calSelectedDate.getFullYear();
             const month = calSelectedDate.getMonth();
             const day = calSelectedDate.getDate();
-            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct',
+                'Nov', 'Dec'
+            ];
             const formattedDate = monthNames[month] + ' ' + day + ', ' + year;
-            const rawDate = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
-            
+            const rawDate = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(day)
+                .padStart(2, '0');
+
             $dateBtn.text(formattedDate);
             $dateBtn.data('raw-date', rawDate);
         } else if (calendarTarget === 'peertalk' && window.peertalkDateButton) {
@@ -916,10 +926,13 @@ $(function() {
             const year = calSelectedDate.getFullYear();
             const month = calSelectedDate.getMonth();
             const day = calSelectedDate.getDate();
-            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct',
+                'Nov', 'Dec'
+            ];
             const formattedDate = monthNames[month] + ' ' + day + ', ' + year;
-            const rawDate = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
-            
+            const rawDate = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(day)
+                .padStart(2, '0');
+
             window.peertalkDateButton.text(formattedDate);
             window.peertalkDateButton.data('raw-date', rawDate);
             window.peertalkDateButton.removeClass('field-error');
@@ -1145,6 +1158,59 @@ $(function() {
 
         setTimeout(updateRepeatButtonLabel, 0);
     });
+
+    // Handle period (AM/PM) toggle on click
+    $(document).on('click', '.scroll-widget__period', function(e) {
+        e.stopPropagation();
+        const $period = $(this);
+        const $widget = $period.closest('.scroll-widget');
+        const key = parseInt($widget.attr('data-key'), 10);
+
+        if (dayTimes[key]) {
+            const current = $period.text().trim();
+            const newPeriod = current === 'AM' ? 'PM' : 'AM';
+
+            // Determine if this is start period (sp) or end period (ep)
+            const isStartPeriod = $period.hasClass('sp');
+
+            // Get current time in 24h format
+            const timeStr = isStartPeriod ? dayTimes[key].start : dayTimes[key].end;
+            const [h, m] = timeStr.split(':').map(Number);
+
+            // Convert current 24h time to 12h to get current period
+            const currentPeriodFromTime = h >= 12 ? 'PM' : 'AM';
+
+            // Calculate the offset to apply
+            let newH = h;
+            if (newPeriod === 'PM' && currentPeriodFromTime === 'AM') {
+                // Converting from AM to PM: add 12 hours (unless it's 12:xx AM which becomes 12:xx PM)
+                if (h !== 0) newH = h + 12;
+                // 0:xx AM (midnight) becomes 12:xx PM = hour 12
+                else newH = 12;
+            } else if (newPeriod === 'AM' && currentPeriodFromTime === 'PM') {
+                // Converting from PM to AM: subtract 12 hours
+                if (h !== 12) newH = h - 12;
+                // 12:xx PM becomes 12:xx AM = hour 0 (midnight)
+                else newH = 0;
+            }
+
+            // Update the 24h time
+            const new24hTime = `${String(newH).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+
+            if (isStartPeriod) {
+                dayTimes[key].start = new24hTime;
+            } else {
+                dayTimes[key].end = new24hTime;
+            }
+
+            // Update the display
+            renderWidgetTime(key, dayTimes[key].start, dayTimes[key].end);
+
+            // Update the repeat button label
+            setTimeout(updateRepeatButtonLabel, 0);
+        }
+    });
+
     $('#timePickerModalBackdrop .monthly_cal_modal').on('click', function(e) {
         e.stopPropagation();
     });
@@ -1175,12 +1241,45 @@ $(function() {
     $('#tp_done').on('click', function() {
         if (currentDayKey == null) return;
 
-        const start = ($('#tp_start').val() || '09:00').slice(0, 5);
-        let end = ($('#tp_end').val() || '10:00').slice(0, 5);
-        if (end <= start) {
-            const [h, m] = start.split(':').map(Number);
-            const h2 = (h + 1) % 24;
-            end = `${String(h2).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+        // Get the time values from inputs (may be in 12h format with AM/PM)
+        const startInput = ($('#tp_start').val() || '09:00 AM').trim();
+        const endInput = ($('#tp_end').val() || '10:00 AM').trim();
+
+        // Convert 12h format to 24h format
+        function convert12to24(timeStr) {
+            const match = timeStr.match(/^(\d{1,2}):(\d{2})(?:\s*(AM|PM))?$/i);
+            if (!match) return '09:00'; // fallback
+            let h = parseInt(match[1], 10);
+            const m = match[2];
+            const period = (match[3] || 'AM').toUpperCase();
+
+            if (period === 'PM' && h !== 12) h += 12;
+            if (period === 'AM' && h === 12) h = 0;
+
+            return `${String(h).padStart(2, '0')}:${m}`;
+        }
+
+        let start = convert12to24(startInput);
+        let end = convert12to24(endInput);
+
+        // Allow times crossing midnight (e.g., 5:00 PM to 2:00 AM next day)
+        // Only auto-increment if end < start AND they're in the same period
+        if (end < start) {
+            // Check if this is likely a midnight crossing (PM to AM) vs user error
+            const startHour = parseInt(start.split(':')[0], 10);
+            const endHour = parseInt(end.split(':')[0], 10);
+            const startIsPM = startHour >= 12;
+            const endIsAM = endHour < 12;
+
+            // If start is PM and end is AM, it's intentional midnight crossing - allow it
+            if (startIsPM && endIsAM) {
+                // Keep as-is, this is valid (e.g., 5:00 PM to 2:00 AM)
+            } else {
+                // Otherwise, auto-increment end to next hour (user likely made a mistake)
+                const [h, m] = start.split(':').map(Number);
+                const h2 = (h + 1) % 24;
+                end = `${String(h2).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+            }
         }
 
         dayTimes[currentDayKey] = {

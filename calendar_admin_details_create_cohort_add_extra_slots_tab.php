@@ -527,10 +527,16 @@ document.addEventListener('DOMContentLoaded', function() {
             if (e.target === backdrop) backdrop.style.display = 'none';
         });
 
+        // Generate standardized times from 12:00 AM to 11:30 PM with 30-minute intervals
         const times = [];
-        for (let h = 0; h < 24; h++)
-            for (let m = 0; m < 60; m += 30)
-                times.push(`${((h + 11) % 12) + 1}${m === 0 ? '' : ':30'} ${h < 12 ? 'am' : 'pm'}`);
+        for (let h = 0; h < 24; h++) {
+            for (let m = 0; m < 60; m += 30) {
+                let hour12 = h % 12 === 0 ? 12 : h % 12;
+                let period = h < 12 ? 'AM' : 'PM';
+                let mm = m < 10 ? '0' + m : m;
+                times.push(`${hour12}:${mm} ${period}`);
+            }
+        }
 
         parent.querySelectorAll('.custom-time-pill').forEach(pill => {
             const input = pill.querySelector('.time-input');

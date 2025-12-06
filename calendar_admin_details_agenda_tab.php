@@ -48,6 +48,60 @@
     margin-top: 10px;
 }
 
+/* Event color classes - match main calendar */
+.calendar_admin_agenda_event_card.e-blue {
+  --event-border-color: #7c96ff;
+  border-color: var(--event-border-color);
+  background: color-mix(in srgb, #7c96ff 10%, #ffffff);
+}
+
+.calendar_admin_agenda_event_card.e-green {
+  --event-border-color: #2faa7f;
+  border-color: var(--event-border-color);
+  background: color-mix(in srgb, #2faa7f 10%, #ffffff);
+}
+
+.calendar_admin_agenda_event_card.e-purple {
+  --event-border-color: #b535ff;
+  border-color: rgba(181, 53, 255, 0.7) !important;
+  background: color-mix(in srgb, #b535ff 10%, #ffffff) !important;
+  border-bottom-color: rgba(181, 53, 255, 0.7) !important;
+}
+
+.calendar_admin_agenda_event_card.e-orange {
+  --event-border-color: #ff8a06;
+  border-color: rgba(255, 138, 6, 0.7) !important;
+  background: color-mix(in srgb, #ff8a06 10%, #ffffff) !important;
+  border-bottom-color: rgba(255, 138, 6, 0.7) !important;
+}
+
+.calendar_admin_agenda_event_card.e-timeoff {
+  --event-border-color: rgba(253, 216, 48, 0.7);
+  border-color: rgba(253, 216, 48, 0.7);
+  background: color-mix(in srgb, #fdd830 10%, #ffffff);
+}
+
+/* Hover effect: slightly darken the background for each color class */
+.calendar_admin_agenda_event_card:hover {
+    filter: brightness(0.96);
+    transition: filter 0.18s;
+}
+.calendar_admin_agenda_event_card.e-blue:hover {
+    background: color-mix(in srgb, #7c96ff 18%, #ffffff);
+}
+.calendar_admin_agenda_event_card.e-green:hover {
+    background: color-mix(in srgb, #2faa7f 18%, #ffffff);
+}
+.calendar_admin_agenda_event_card.e-purple:hover {
+    background: color-mix(in srgb, #b535ff 18%, #ffffff) !important;
+}
+.calendar_admin_agenda_event_card.e-orange:hover {
+    background: color-mix(in srgb, #ff8a06 18%, #ffffff) !important;
+}
+.calendar_admin_agenda_event_card.e-timeoff:hover {
+    background: color-mix(in srgb, #fdd830 18%, #ffffff);
+}
+
 .calendar_admin_agenda_title {
     font-weight: 600 !important;
     /* lighter bold */
@@ -280,9 +334,9 @@ function renderAgendaView() {
                 eventTitle = event.studentnames.join(', ');
             }
 
-            // Create event card
+            // Create event card with color class
             const $eventCard = $(`
-                <div class="calendar_admin_agenda_event_card " 
+                <div class="calendar_admin_agenda_event_card ${colorClass}" 
                      style="${teacherColorStyle} cursor: pointer;"
                      data-event-id="${event.eventid || ''}"
                      data-cmid="${event.cmid || ''}"

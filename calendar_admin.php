@@ -57,6 +57,21 @@ function is_cohort_teacher_exist_only($userid) {
     ]);
 }
 
+function is_only_student_only($userid) {
+    global $DB;
+
+    $studentroleid = 5;
+
+    // Count total number of roles assigned to the user
+    $totalRoles = $DB->count_records('role_assignments', ['userid' => $userid]);
+
+    // Count number of student role assignments
+    $studentRoles = $DB->count_records('role_assignments', ['userid' => $userid, 'roleid' => $studentroleid]);
+
+    // User has only student role if total == student role count and there’s at least one
+    return ($studentRoles > 0 && $totalRoles == $studentRoles);
+}
+
 // -----------------------------
 // Detect USER Role
 // -----------------------------
