@@ -762,6 +762,13 @@ body {
   align-items: center;
   gap: 6px;
   flex-wrap: wrap;
+  max-width: 120px;
+  overflow: visible;
+}
+
+.cohort-pill-container::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
 }
 
 .cohort-summary-pill {
@@ -844,8 +851,16 @@ body {
   display: flex;
   align-items: center;
   position: relative;
+  max-width: 120px;
+  overflow-y: auto;
+  height: 22px;
 }
-
+.teacher-pill-container::-webkit-scrollbar,
+.student-pill-container::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+  display: none;
+}
 .teacher-summary-avatar,
 .student-summary-avatar {
   width: 22px;
@@ -912,13 +927,17 @@ body {
   font-weight: 600;
   font-size: 13px;
   color: #111;
-  max-width: 200px;
-  overflow: hidden;
+  max-width: 120px;
+  overflow-x: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   display: inline-block;
   vertical-align: middle;
   cursor: help;
+}
+.cohort-summary-names::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
 }
 .legends-container {
   overflow-y: auto;
@@ -1299,13 +1318,6 @@ body {
   justify-content: space-between;
 }
 
-/* mini pills in trigger */
-.student-pill-container {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  flex-wrap: wrap;
-}
 .mini-student-pill {
   display: flex;
   align-items: center;

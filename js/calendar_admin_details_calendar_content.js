@@ -3614,6 +3614,10 @@ document.addEventListener("DOMContentLoaded", () => {
               ) {
                 window.fetchCalendarEvents();
               }
+              // Also refresh agenda view
+              if (typeof window.refreshAgendaView === "function") {
+                window.refreshAgendaView();
+              }
             }, 100);
           });
         targetContainer.appendChild(dropdownPill);
@@ -3643,7 +3647,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (namesList.length) {
         const fullText = namesList.join(", ");
-        const text = document.createElement("span");
+        const text = document.createElement("div");
         text.className = "cohort-summary-names";
         text.textContent = fullText;
         text.title = fullText; // Show full text on hover
@@ -3731,6 +3735,10 @@ document.addEventListener("DOMContentLoaded", () => {
         ) {
           window.fetchCalendarEvents();
         }
+        // Also refresh agenda view
+        if (typeof window.refreshAgendaView === "function") {
+          window.refreshAgendaView();
+        }
       }, 100);
     });
 
@@ -3772,6 +3780,10 @@ document.addEventListener("DOMContentLoaded", () => {
           typeof window.fetchCalendarEvents === "function"
         ) {
           window.fetchCalendarEvents();
+        }
+        // Also refresh agenda view
+        if (typeof window.refreshAgendaView === "function") {
+          window.refreshAgendaView();
         }
       }, 100);
     });
@@ -4093,6 +4105,10 @@ document.addEventListener("DOMContentLoaded", () => {
         ) {
           window.fetchCalendarEvents();
         }
+        // Also refresh agenda view
+        if (typeof window.refreshAgendaView === "function") {
+          window.refreshAgendaView();
+        }
       }, 100);
     });
 
@@ -4163,6 +4179,10 @@ document.addEventListener("DOMContentLoaded", () => {
               typeof window.fetchCalendarEvents === "function"
             ) {
               window.fetchCalendarEvents();
+            }
+            // Also refresh agenda view
+            if (typeof window.refreshAgendaView === "function") {
+              window.refreshAgendaView();
             }
           }, 100);
         });
@@ -4513,6 +4533,10 @@ document.addEventListener("DOMContentLoaded", () => {
         ) {
           window.fetchCalendarEvents();
         }
+        // Also refresh agenda view
+        if (typeof window.refreshAgendaView === "function") {
+          window.refreshAgendaView();
+        }
       }, 100);
     } else {
       // No cohorts for that teacher -> keep students empty and show message
@@ -4533,6 +4557,10 @@ document.addEventListener("DOMContentLoaded", () => {
           typeof window.fetchCalendarEvents === "function"
         ) {
           window.fetchCalendarEvents();
+        }
+        // Also refresh agenda view
+        if (typeof window.refreshAgendaView === "function") {
+          window.refreshAgendaView();
         }
       }, 100);
     }
@@ -4929,6 +4957,10 @@ document.addEventListener("DOMContentLoaded", () => {
             typeof window.fetchCalendarEvents === "function"
           ) {
             window.fetchCalendarEvents();
+          }
+          // Also refresh agenda view
+          if (typeof window.refreshAgendaView === "function") {
+            window.refreshAgendaView();
           }
         }, 100);
       } catch (err) {
@@ -5405,6 +5437,10 @@ document.addEventListener("DOMContentLoaded", () => {
       // Re-render your week view
       if (typeof renderWeek === "function") {
         renderWeek(false);
+      }
+      // ✅ NEW: Refresh agenda view after events are populated
+      if (typeof window.refreshAgendaView === "function") {
+        window.refreshAgendaView();
       }
     } catch (err) {
       console.error("Failed to load calendar events:", err);
