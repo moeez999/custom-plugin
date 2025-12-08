@@ -968,6 +968,32 @@
 
             $('body').append($menu);
 
+            // Auto-select teacher from session storage when page loads
+            const savedTeacherId = sessionStorage.getItem('selectedTeacherId');
+            if (savedTeacherId) {
+                const teacherIdInt = parseInt(savedTeacherId);
+                const savedTeacher = teachers.find(t => t.id === teacherIdInt);
+                if (savedTeacher) {
+                    setTimeout(function() {
+                        const payload = {
+                            name: savedTeacher.name,
+                            id: savedTeacher.id,
+                            img: savedTeacher.img
+                        };
+                        fetchTeacherAvailability(payload);
+                        $('#calendar_admin_details_setup_availablity_username').text(payload.name);
+                        $('#calendar_admin_details_setup_availablity_avatar').attr('src', payload.img);
+                        const $userBtn = $('#calendar_admin_details_setup_availablity_userbtn');
+                        $userBtn.data('teacher-id', payload.id)
+                            .data('teacher-name', payload.name)
+                            .data('teacher-img', payload.img);
+                    }, 500);
+                }
+            }
+
+
+
+
             function fetchTeacherAvailability(payload) {
                 $.ajax({
                     url: M.cfg.wwwroot + "/local/customplugin/ajax/get_teacher_availability.php",
@@ -1039,6 +1065,8 @@
                 $menu.show();
                 $btn.addClass('open').attr('aria-expanded', 'true');
                 $(document).on('click._m', dcl).on('keydown._m', k);
+
+
             }
 
             function close() {
@@ -1105,6 +1133,15 @@
             $('.calendar-content').hide();
             const target = map[this.id];
             if (target) $(target).show();
+        });
+
+        // Handle back button click - select teacher from calendar admin dropdown
+        $('.calendar_admin_details_setup_availablity_back').on('click', function(e) {
+            const savedTeacherId = sessionStorage.getItem('selectedTeacherId');
+            if (savedTeacherId) {
+                const teacherIdInt = parseInt(savedTeacherId);
+                sessionStorage.setItem('autoSelectTeacher', teacherIdInt);
+            }
         });
     })();
 
@@ -1462,7 +1499,22 @@
         });
 
         $('<style>.user-select-none{user-select:none;-webkit-user-select:none}</style>').appendTo(document.head);
+
+        const savedTeacherId = sessionStorage.getItem('selectedTeacherId');
+        if (savedTeacherId) {
+            const teacherIdInt = parseInt(savedTeacherId);
+            setTimeout(function() {
+                const $teacherItem = $menu.find(
+                    `.calendar_admin_details_setup_availablity_menu_item[data-userid="${teacherIdInt}"]`
+                );
+                if ($teacherItem.length > 0) {
+                    $teacherItem.trigger('click');
+                }
+            }, 300);
+        }
     })();
+
+    // Auto-select teacher from session storage if available
     </script>
 
 </body>

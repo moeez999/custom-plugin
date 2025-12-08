@@ -281,6 +281,23 @@ $(function () {
     }
   );
 
+  // Check if coming back from setup availability page and auto-select teacher
+  $(document).ready(function () {
+    const autoSelectTeacherId = sessionStorage.getItem("autoSelectTeacher");
+    if (autoSelectTeacherId) {
+      sessionStorage.removeItem("autoSelectTeacher");
+      // Trigger auto-select for the teacher dropdown
+      const $teacherOption = $(
+        `#teacher1DropdownList li.teacher-option[data-userid="${autoSelectTeacherId}"]`
+      );
+      if ($teacherOption.length) {
+        setTimeout(() => {
+          $teacherOption.trigger("click");
+        }, 500);
+      }
+    }
+  });
+
   /* ========= Open PeerTalk Modal With Event Data ========= */
   function openPeerTalkModalWithData(eventData) {
     console.log("Opening PeerTalk modal with data:", eventData);

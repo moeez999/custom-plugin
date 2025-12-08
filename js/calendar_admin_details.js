@@ -185,6 +185,13 @@ $(function () {
       });
     }
 
+    // Save to session storage only if exactly 1 teacher is selected
+    if (selectedTeachers.length === 1) {
+      sessionStorage.setItem("selectedTeacherId", selectedTeachers[0].id);
+    } else {
+      sessionStorage.removeItem("selectedTeacherId");
+    }
+
     updateSelectedTeachers();
     updateTriggerDisplay();
   });
@@ -311,8 +318,31 @@ $(function () {
     });
   });
 
+  // Auto-select teacher from session storage when page loads or returning from setup availability
+  function autoSelectTeacherFromStorage() {
+    const savedTeacherId = sessionStorage.getItem("selectedTeacherId");
+    const autoSelectTeacherId = sessionStorage.getItem("autoSelectTeacher");
+    const teacherIdToSelect = autoSelectTeacherId || savedTeacherId;
+
+    if (teacherIdToSelect) {
+      if (autoSelectTeacherId) {
+        sessionStorage.removeItem("autoSelectTeacher");
+      }
+
+      setTimeout(() => {
+        const $teacherOption = $(
+          `.teacher-option[data-teacher-id="${teacherIdToSelect}"]`
+        );
+        if ($teacherOption.length && !$teacherOption.hasClass("selected")) {
+          $teacherOption.trigger("click");
+        }
+      }, 300);
+    }
+  }
+
   // Initialize
   updateSelectedTeachers();
+  autoSelectTeacherFromStorage();
 });
 
 $(function () {
