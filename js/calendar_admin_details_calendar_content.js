@@ -2038,6 +2038,12 @@ $(function () {
       </div>
     `);
     $("#session-teacher-list").hide();
+    debugger;
+    // Save teacher ID in session storage only if only one teacher is selected
+    if (teacherId) {
+      sessionStorage.setItem("selectedTeacherId", teacherId);
+      console.log("Teacher ID saved to session storage:", teacherId);
+    }
   });
 
   // Class dropdown item click
@@ -3335,6 +3341,20 @@ document.addEventListener("DOMContentLoaded", () => {
         selectedTeacherIds = selectedTeacherIds.filter((x) => x !== id);
         wrap.classList.remove("selected");
         if (colorDot) colorDot.style.display = "none";
+      }
+
+      // Save teacher ID to session storage only if exactly 1 teacher is selected
+      if (selectedTeacherIds.length === 1) {
+        sessionStorage.setItem("selectedTeacherId", selectedTeacherIds[0]);
+        console.log(
+          "Single teacher selected. Saved to session storage:",
+          selectedTeacherIds[0]
+        );
+      } else {
+        sessionStorage.removeItem("selectedTeacherId");
+        console.log(
+          "Multiple or no teachers selected. Cleared session storage."
+        );
       }
 
       updateTeacherPills();
