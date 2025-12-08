@@ -2146,12 +2146,6 @@ $(function () {
       </div>
     `);
     $("#session-teacher-list").hide();
-    debugger;
-    // Save teacher ID in session storage only if only one teacher is selected
-    if (teacherId) {
-      sessionStorage.setItem("selectedTeacherId", teacherId);
-      console.log("Teacher ID saved to session storage:", teacherId);
-    }
   });
 
   // Class dropdown item click
@@ -2630,6 +2624,36 @@ $(function () {
     .off("mousedown.emptySlot", ".day-inner")
     .on("mousedown.emptySlot", ".day-inner", function (e) {
       if ($(e.target).closest(".event").length) return;
+
+      // If dropdowns or event menu are open, close them and do not open the cohort modal
+      const isMenuOptionsOpen =
+        $("#menu-options").is(":visible") ||
+        $("#menu-options").css("display") === "block";
+
+      const isAnyDropdownOpen =
+        $(".custom-dropdown .dropdown-list").filter(function () {
+          const $el = $(this);
+          return $el.is(":visible") || $el.css("display") !== "none";
+        }).length > 0;
+
+      const isSearchDropdownOpen = [
+        ".search-teacher-section",
+        ".cohort-search-widget-container",
+        ".search-student-section",
+      ].some((sel) => {
+        const $el = $(sel);
+        return (
+          $el.length && ($el.is(":visible") || $el.css("display") !== "none")
+        );
+      });
+
+      if (isMenuOptionsOpen || isAnyDropdownOpen || isSearchDropdownOpen) {
+        if (window.closeMenuOptionsDropdown) window.closeMenuOptionsDropdown();
+        if (isAnyDropdownOpen) $(".custom-dropdown .dropdown-list").hide();
+        if (isSearchDropdownOpen) e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
 
       // Get the clicked day and time slot
       const $dayInner = $(this);
