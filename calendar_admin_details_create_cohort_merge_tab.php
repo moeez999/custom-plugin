@@ -72,13 +72,11 @@
     <div class="merge-calendar-modal" id="mergeCalendarModal">
         <div class="merge-calendar-header">
             <button type="button" class="merge-calendar-prev"><svg width="22" height="22" viewBox="0 0 24 24">
-                    <polyline points="15 19 8 12 15 5" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round"></polyline>
+                    <polyline points="15 19 8 12 15 5" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></polyline>
                 </svg></button>
             <span id="mergeCalendarMonth"></span>
             <button type="button" class="merge-calendar-next"><svg width="22" height="22" viewBox="0 0 24 24">
-                    <polyline points="9 19 16 12 9 5" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round"></polyline>
+                    <polyline points="9 19 16 12 9 5" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></polyline>
                 </svg></button>
         </div>
         <div class="merge-calendar-days"></div>

@@ -1089,9 +1089,17 @@ echo $studentsItemsHtml;
 <div class="calendar-modal-backdrop" id="calendarModalBackdropManage">
     <div class="calendar-modal" id="calendarModal">
         <div class="calendar-modal-header">
-            <div class="calendar-modal-arrow" id="calendarPrevMonthManage">&#8592;</div>
+            <button type="button" class="calendar-modal-arrow" id="calendarPrevMonthManage"><svg width="22" height="22"
+                    viewBox="0 0 24 24">
+                    <polyline points="15 19 8 12 15 5" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round"></polyline>
+                </svg></button>
             <span id="calendarMonthYearManage">January 2025</span>
-            <div class="calendar-modal-arrow" id="calendarNextMonthManage">&#8594;</div>
+            <button type="button" class="calendar-modal-arrow" id="calendarNextMonthManage"><svg width="22" height="22"
+                    viewBox="0 0 24 24">
+                    <polyline points="9 19 16 12 9 5" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round"></polyline>
+                </svg></button>
         </div>
         <div class="calendar-modal-grid">
             <div class="calendar-modal-weekdays">

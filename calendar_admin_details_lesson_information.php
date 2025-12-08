@@ -497,9 +497,15 @@
     style="display:none;">
     <div class="calendar_admin_details_create_cohort_calendar_modal" id="rescheduleCalendarModal">
         <div class="calendar_admin_details_create_cohort_calendar_nav">
-            <button class="reschedule_calendar_prev">&lt;</button>
+            <button type="button" class="reschedule_calendar_prev"><svg width="22" height="22" viewBox="0 0 24 24">
+                    <polyline points="15 19 8 12 15 5" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round"></polyline>
+                </svg></button>
             <span id="rescheduleCalendarMonth"></span>
-            <button class="reschedule_calendar_next">&gt;</button>
+            <button type="button" class="reschedule_calendar_next"><svg width="22" height="22" viewBox="0 0 24 24">
+                    <polyline points="9 19 16 12 9 5" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round"></polyline>
+                </svg></button>
         </div>
         <div class="calendar_admin_details_create_cohort_calendar_days"></div>
         <button class="calendar_admin_details_create_cohort_calendar_done_btn">Done</button>
@@ -1810,20 +1816,19 @@ require_once('calendar_admin_details_lesson_information_cancel_lesson.php'); */?
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.14);
 }
 
 .calendar_admin_details_create_cohort_calendar_modal {
     background: #fff;
-    border-radius: 13px;
+    border-radius: 15px;
     box-shadow: 0 10px 36px 0 rgba(0, 0, 0, .16);
-    width: 340px;
-    padding: 20px 18px 18px 18px;
+    max-width: 300px;
+    padding: 26px 24px 24px 24px;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    max-width: 96vw;
 }
 
 .calendar_admin_details_create_cohort_calendar_nav {
@@ -1836,55 +1841,66 @@ require_once('calendar_admin_details_lesson_information_cancel_lesson.php'); */?
 }
 
 .calendar_admin_details_create_cohort_calendar_nav button {
-    background: #fafafa;
+    background: none;
     border: none;
-    font-size: 1.45rem;
-    border-radius: 7px;
-    padding: 2px 13px;
+    font-size: 1.4rem;
     cursor: pointer;
-    color: #222;
-    transition: background .15s;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .calendar_admin_details_create_cohort_calendar_nav button:hover {
-    background: #ececec;
+    opacity: 0.7;
 }
 
 .calendar_admin_details_create_cohort_calendar_days {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 3px;
+    gap: 6px;
     text-align: center;
     font-size: 1.07rem;
     margin-bottom: 10px;
+    justify-items: center;
 }
 
 .calendar_admin_details_create_cohort_calendar_day_header {
     color: #b2b2b2;
     font-weight: 600;
     padding: 7px 0 4px 0;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .calendar_admin_details_create_cohort_calendar_day_res,
 .calendar_admin_details_create_cohort_calendar_day_inactive {
-    padding: 11px 0;
-    border-radius: 8px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
     cursor: pointer;
     font-size: 1.11rem;
     font-weight: 500;
-    transition: background .15s, color .15s, border .17s;
+    transition: background .15s, color .15s;
+    background: #fff;
 }
 
 .calendar_admin_details_create_cohort_calendar_day_inactive {
     color: #bdbdbd;
-    background: #fafafa;
+    background: #fff;
     cursor: not-allowed;
 }
 
-.calendar_admin_details_create_cohort_calendar_day_res.selected {
-    border: 2px solid #fe2e0c;
-    color: #fe2e0c;
-    background: #fff;
+.calendar_admin_details_create_cohort_calendar_day_res.selected,
+.calendar_admin_details_create_cohort_calendar_day_res:hover {
+    background: #fe2e0c;
+    color: #fff;
     font-weight: 700;
 }
 
@@ -1896,7 +1912,7 @@ require_once('calendar_admin_details_lesson_information_cancel_lesson.php'); */?
     border: none;
     border-radius: 8px;
     padding: 12px 0;
-    margin-top: 14px;
+    margin-top: 19px;
     font-size: 1.12rem;
     cursor: pointer;
     box-shadow: 0 3px 11px 0 rgba(254, 46, 12, .07);

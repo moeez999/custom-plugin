@@ -1,51 +1,57 @@
 <style>/* Backdrop */
 .calendar_admin_details_lesson_info_date_time_calendar_backdrop{
-  position:fixed; inset:0; display:none; align-items:center; justify-content:center;
-  background:rgba(0,0,0,.25); z-index:5000; padding:20px;
+  display:none; position:fixed; z-index:5000; top:0; left:0; right:0; bottom:0;
+  background:rgba(0,0,0,0.14);
 }
 
 /* Dialog */
 .calendar_admin_details_lesson_info_date_time_calendar_dialog{
-  width:360px; max-width:95vw; background:#fff; border-radius:18px;
-  box-shadow:0 18px 50px rgba(0,0,0,.22); padding:14px 14px 18px;
+  background:#fff; border-radius:15px; box-shadow:0 10px 36px 0 rgba(0,0,0,.16);
+  max-width:300px; max-width:97vw; padding:26px 24px 24px 24px;
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-family:inherit;
 }
 
 /* Header */
 .calendar_admin_details_lesson_info_date_time_calendar_header{
-  display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;
+  display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;
 }
 .calendar_admin_details_lesson_info_date_time_calendar_month{
-  margin:0; font-weight:800; font-size:1.25rem; color:#111;
+  margin:0; font-size:1.18rem; font-weight:600;
 }
 .calendar_admin_details_lesson_info_date_time_calendar_nav{
-  width:42px; height:42px; border-radius:12px; background:#f5f6fb; border:1px solid #ececf3;
-  display:grid; place-items:center; cursor:pointer;
+  background:none; border:none; font-size:1.4rem; cursor:pointer;
 }
 
 /* Weekdays + grid */
 .calendar_admin_details_lesson_info_date_time_calendar_weekdays{
-  display:grid; grid-template-columns:repeat(7,1fr); gap:6px;
-  color:#8b8b95; font-weight:800; font-size:12px; margin:8px 4px 6px;
+  display:grid; grid-template-columns:repeat(7,36px); grid-gap:6px; justify-content:center;
+  font-weight:bold; color:#888; margin-bottom:6px; text-align:center; font-size:1.01rem;
+}
+.calendar_admin_details_lesson_info_date_time_calendar_weekdays > div{
+  width:36px; height:36px; display:flex; align-items:center; justify-content:center;
 }
 .calendar_admin_details_lesson_info_date_time_calendar_grid{
-  display:grid; grid-template-columns:repeat(7,1fr); gap:6px; padding:0 4px;
+  display:grid; grid-template-columns:repeat(7,36px); grid-gap:6px; justify-content:center;
 }
 .calendar_admin_details_lesson_info_date_time_calendar_day{
-  height:44px; border-radius:12px; border:1px solid transparent; background:#fff;
-  display:flex; align-items:center; justify-content:center; cursor:pointer; font-weight:700; color:#20242c;
+  width:36px; height:36px; display:flex; align-items:center; justify-content:center;
+  font-size:1.01rem; border-radius:50%; cursor:pointer; transition:background 0.13s;
 }
+.calendar_admin_details_lesson_info_date_time_calendar_day.inactive{
+  color:#c2c2c2; background:#fff; pointer-events:none; cursor:default;
+}
+.calendar_admin_details_lesson_info_date_time_calendar_day--selected,
 .calendar_admin_details_lesson_info_date_time_calendar_day:hover{
-  background:#f7f8fb;
-}
-.calendar_admin_details_lesson_info_date_time_calendar_day--selected{
-  border-color:#ff3b00; color:#ff3b00; background:#fff;
+  background:#fe2e0c; color:#fff;
 }
 
 /* Done button */
 .calendar_admin_details_lesson_info_date_time_calendar_done{
-  margin-top:14px; width:100%; height:52px;
-  background:#ff3b00; color:#fff; border:0; border-radius:16px;
-  font-weight:900; letter-spacing:.2px; cursor:pointer;
+  width:100%; background:#fe2e0c; color:#fff; border:none; border-radius:8px;
+  font-size:1.1rem; font-weight:600; padding:12px 0; margin-top:19px; cursor:pointer; transition:background 0.13s;
+}
+.calendar_admin_details_lesson_info_date_time_calendar_done:active{
+  background:#e52b10;
 }
 </style>
 
@@ -58,7 +64,7 @@
     <div class="calendar_admin_details_lesson_info_date_time_calendar_header">
       <button type="button" class="calendar_admin_details_lesson_info_date_time_calendar_nav"
               id="calendar_admin_details_lesson_info_date_time_calendar_prev" aria-label="Previous month">
-        <svg width="20" height="20" viewBox="0 0 24 24"><polyline points="15 19 8 12 15 5" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg width="22" height="22" viewBox="0 0 24 24"><polyline points="15 19 8 12 15 5" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
 
       <h5 id="calendar_admin_details_lesson_info_date_time_calendar_title"
@@ -66,7 +72,7 @@
 
       <button type="button" class="calendar_admin_details_lesson_info_date_time_calendar_nav"
               id="calendar_admin_details_lesson_info_date_time_calendar_next" aria-label="Next month">
-        <svg width="20" height="20" viewBox="0 0 24 24"><polyline points="9 19 16 12 9 5" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg width="22" height="22" viewBox="0 0 24 24"><polyline points="9 19 16 12 9 5" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
     </div>
 

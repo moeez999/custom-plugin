@@ -150,93 +150,127 @@
         }
 
         .calendar_admin_details_create_cohort_add_time_tab_backdrop {
-            position: fixed;
-            inset: 0;
             display: none;
-            align-items: center;
-            justify-content: center;
-            background: rgba(0, 0, 0, .25);
+            position: fixed;
             z-index: 3002;
-            padding: 20px;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.14);
         }
 
         .calendar_admin_details_create_cohort_add_time_tab_modal {
             background: #fff;
-            border-radius: 8px;
-            width: 320px;
-            max-width: 95vw;
-            box-shadow: 0 12px 36px rgba(0, 0, 0, .2);
-            padding: 16px 16px 18px;
+            border-radius: 15px;
+            box-shadow: 0 10px 36px 0 rgba(0, 0, 0, .16);
+            max-width: 300px;
+            max-width: 97vw;
+            padding: 26px 24px 24px 24px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: inherit;
         }
 
         .calendar_admin_details_create_cohort_add_time_tab_header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 10px;
+            margin-bottom: 16px;
         }
 
         .calendar_admin_details_create_cohort_add_time_tab_navbtn {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            background: #ffffff;
-            border: 1px solid #eee;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: none;
+            border: none;
+            font-size: 1.4rem;
             cursor: pointer;
         }
 
         .calendar_admin_details_create_cohort_add_time_tab_month_label {
-            font-weight: 700;
-            font-size: 16px;
+            font-size: 1.18rem;
+            font-weight: 600;
         }
 
         .calendar_admin_details_create_cohort_add_time_tab_weekdays {
             display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 6px;
-            margin: 10px 0 6px;
-            color: #8b8b95;
-            font-weight: 700;
-            font-size: 12px;
+            grid-template-columns: repeat(7, 36px);
+            grid-gap: 6px;
+            justify-content: center;
+            font-weight: bold;
+            color: #888;
+            margin-bottom: 6px;
+            text-align: center;
+            font-size: 1.01rem;
+        }
+
+        .calendar_admin_details_create_cohort_add_time_tab_weekdays > div {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .calendar_admin_details_create_cohort_add_time_tab_grid {
             display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 6px;
+            grid-template-columns: repeat(7, 36px);
+            grid-gap: 6px;
+            justify-content: center;
+        }
+
+        .calendar_admin_details_create_cohort_add_time_tab_grid > * {
+            width: 36px;
+            height: 36px;
+            background: #fff;
         }
 
         .calendar_admin_details_create_cohort_add_time_tab_day {
-            height: 38px;
-            border-radius: 10px;
-            border: 1px solid transparent;
-            background: #fff;
+            width: 36px;
+            height: 36px;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 1.01rem;
+            border-radius: 50%;
             cursor: pointer;
-            color: #131313;
+            transition: background 0.13s;
+            background: #fff;
+            border: none;
+            padding: 0;
+            color: #222;
         }
 
-        .calendar_admin_details_create_cohort_add_time_tab_day--selected {
-            border-color: #ff3b00;
-            color: #ff3b00;
-            font-weight: 700;
+        .calendar_admin_details_create_cohort_add_time_tab_day.inactive {
+            color: #c2c2c2;
+            background: #fff;
+            pointer-events: none;
+            cursor: default;
+        }
+
+        .calendar_admin_details_create_cohort_add_time_tab_day--selected,
+        .calendar_admin_details_create_cohort_add_time_tab_day:hover {
+            background: #fe2e0c;
+            color: #fff;
         }
 
         .calendar_admin_details_create_cohort_add_time_tab_done {
-            margin-top: 14px;
             width: 100%;
-            background: #ff3b00;
+            background: #fe2e0c;
             color: #fff;
-            border: 0;
-            border-radius: 12px;
-            padding: 12px;
-            font-weight: 700;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            padding: 12px 0;
+            margin-top: 19px;
             cursor: pointer;
+            transition: background 0.13s;
+        }
+
+        .calendar_admin_details_create_cohort_add_time_tab_done:active {
+            background: #e52b10;
         }
 
         #addTimeAllDay {
@@ -347,21 +381,15 @@ transform: translateY(-50%);" src="./img/dropdown-arrow-down.svg" alt="dropdown"
             <div class="calendar_admin_details_create_cohort_add_time_tab_modal" role="dialog" aria-modal="true">
                 <div class="calendar_admin_details_create_cohort_add_time_tab_header">
                     <button type="button" class="calendar_admin_details_create_cohort_add_time_tab_navbtn"
-                        id="calendar_admin_details_create_cohort_add_time_tab_prev">
-                        <svg width="22" height="22" viewBox="0 0 24 24">
-                            <polyline points="15 19 8 12 15 5" fill="none" stroke="#111" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                    </button>
+                        id="calendar_admin_details_create_cohort_add_time_tab_prev"><svg width="22" height="22" viewBox="0 0 24 24">
+                    <polyline points="15 19 8 12 15 5" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></polyline>
+                </svg></button>
                     <div class="calendar_admin_details_create_cohort_add_time_tab_month_label"
                         id="calendar_admin_details_create_cohort_add_time_tab_month_label"></div>
                     <button type="button" class="calendar_admin_details_create_cohort_add_time_tab_navbtn"
-                        id="calendar_admin_details_create_cohort_add_time_tab_next">
-                        <svg width="22" height="22" viewBox="0 0 24 24">
-                            <polyline points="9 19 16 12 9 5" fill="none" stroke="#111" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                    </button>
+                        id="calendar_admin_details_create_cohort_add_time_tab_next"><svg width="22" height="22" viewBox="0 0 24 24">
+                    <polyline points="9 19 16 12 9 5" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></polyline>
+                </svg></button>
                 </div>
                 <div class="calendar_admin_details_create_cohort_add_time_tab_weekdays">
                     <div>Mo</div>

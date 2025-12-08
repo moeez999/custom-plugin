@@ -71,133 +71,131 @@
     display: none;
     position: fixed;
     z-index: 2000;
-    left: 0;
     top: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, .5);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.14);
 }
 
 .merge-calendar-modal {
     background: #fff;
-    border-radius: 17px;
-    box-shadow: 0 8px 30px 0 rgba(0, 0, 0, .13);
-    width: 340px;
-    max-width: 96vw;
-    padding: 0 0 24px 0;
+    border-radius: 15px;
+    box-shadow: 0 10px 36px 0 rgba(0, 0, 0, .16);
+    max-width: 300px;
+    max-width: 97vw;
+    padding: 26px 24px 24px 24px;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    animation: fadeIn .18s;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
+    font-family: inherit;
 }
 
 .merge-calendar-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    font-size: 1.21rem;
-    font-weight: bold;
-    padding: 24px 24px 6px 24px;
+    margin-bottom: 16px;
+}
+
+.merge-calendar-header span {
+    font-size: 1.18rem;
+    font-weight: 600;
 }
 
 .merge-calendar-header button {
-    background: #fff;
-    border: 2px solid #ececec;
-    border-radius: 9px;
+    background: none;
+    border: none;
     font-size: 1.4rem;
-    color: #232323;
     cursor: pointer;
-    font-weight: 600;
-    transition: border .15s, background .13s;
-}
-
-.merge-calendar-header button:hover {
-    border: 2px solid #fe2e0c;
-    background: #fff7f4;
 }
 
 #mergeCalendarMonth {
-    font-size: 1.19rem;
+    font-size: 1.18rem;
     font-weight: 600;
-    color: #232323;
-    letter-spacing: .5px;
-    flex: 1;
+}
+
+.merge-calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 36px);
+    grid-gap: 6px;
+    justify-content: center;
+    font-weight: bold;
+    color: #888;
+    margin-bottom: 6px;
     text-align: center;
+    font-size: 1.01rem;
+}
+
+.merge-calendar-weekdays > div {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .merge-calendar-days {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 2px;
-    padding: 0 22px 0 22px;
-    margin: 6px 0 7px 0;
-    font-size: 1.08rem;
+    grid-template-columns: repeat(7, 36px);
+    grid-gap: 6px;
+    justify-content: center;
 }
 
 .merge-calendar-day-header {
-    color: #b2b2b2;
-    font-weight: 600;
-    padding: 8px 0 5px 0;
-    background: none;
-    text-align: center;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #888;
+    font-size: 1.01rem;
 }
 
 .merge-calendar-day,
 .merge-calendar-day-inactive {
-    padding: 12px 0;
-    border-radius: 7px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.01rem;
+    border-radius: 50%;
     cursor: pointer;
-    font-size: 1.09rem;
-    font-weight: 500;
-    text-align: center;
-    background: #fff;
-    transition: background .13s, color .12s, border .15s;
+    transition: background 0.13s;
 }
 
 .merge-calendar-day-inactive {
-    color: #cccccc;
+    color: #c2c2c2;
     background: #fff;
-    cursor: not-allowed;
-    font-weight: 400;
+    pointer-events: none;
+    cursor: default;
 }
 
-.merge-calendar-day.selected {
-    border: 2px solid #fe2e0c;
-    color: #fe2e0c;
-    background: #fff;
-    font-weight: 700;
+.merge-calendar-day.selected,
+.merge-calendar-day:hover:not(.merge-calendar-day-inactive) {
+    background: #fe2e0c;
+    color: #fff;
 }
 
 .merge-calendar-done-btn {
-    width: 92%;
-    margin: 16px 4% 0 4%;
-    background: linear-gradient(90deg, #fe2e0c 40%, #ff3e10 100%);
+    width: 100%;
+    background: #fe2e0c;
     color: #fff;
-    font-size: 1.13rem;
-    font-weight: bold;
-    border-radius: 10px;
-    border: 2px solid #232323;
-    padding: 13px 0;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding: 12px 0;
+    margin-top: 19px;
     cursor: pointer;
-    transition: background .12s, border .11s;
-    box-shadow: 0 2px 10px #2323231a;
-    display: block;
+    transition: background 0.13s;
 }
 
-.merge-calendar-done-btn:hover {
-    background: #ff3e10;
-    border: 2px solid #fe2e0c;
+.merge-calendar-done-btn:active {
+    background: #e52b10;
 }
 </style>
 
@@ -208,11 +206,11 @@
     <div class="merge-calendar-modal" id="mergeCalendarModal">
         <div class="merge-calendar-header">
             <button type="button" class="merge-calendar-prev"><svg width="22" height="22" viewBox="0 0 24 24">
-                    <polyline points="9 19 16 12 9 5" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></polyline>
+                    <polyline points="15 19 8 12 15 5" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></polyline>
                 </svg></button>
             <span id="mergeCalendarMonth"></span>
             <button type="button" class="merge-calendar-next"><svg width="22" height="22" viewBox="0 0 24 24">
-                    <polyline points="15 19 8 12 15 5" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></polyline>
+                    <polyline points="9 19 16 12 9 5" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></polyline>
                 </svg></button>
         </div>
         <div class="merge-calendar-days"></div>
