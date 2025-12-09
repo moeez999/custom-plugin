@@ -70,6 +70,7 @@ const DOW = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 // White slot windows derived from teacher availability payloads
 let whiteSlotRules = [];
+window.teacherExtraSlots = window.teacherExtraSlots || {};
 
 // Map event status codes to icons/labels
 const STATUS_ICON_MAP = {
@@ -5397,6 +5398,16 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         whiteSlotRules = [];
       }
+
+      window.teacherExtraSlots =
+        data && data.ok && data.teacher_extra_slots
+          ? data.teacher_extra_slots
+          : {};
+      document.dispatchEvent(
+        new CustomEvent("extraSlotsUpdated", {
+          detail: { map: window.teacherExtraSlots },
+        })
+      );
 
       // Merge regular events, peertalk events, conference events, and teacher time off
       let allEvents = [];

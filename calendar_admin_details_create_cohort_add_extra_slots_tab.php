@@ -58,6 +58,44 @@
             margin-bottom: 14px;
         }
 
+        #calendar_admin_details_create_cohort_add_time_tab_previous_times {
+            list-style: none;
+            padding: 0;
+            margin: 12px 0 0 0;
+        }
+
+        .delete-extra-slot-btn {
+            background: transparent;
+            border: none;
+            padding: 0;
+        }
+
+        .previous-extra-slot {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: transparent;
+            color: #898989;
+            border-radius: 8px;
+            padding: 14px 12px;
+            margin-bottom: 8px;
+            font-size: 0.96rem;
+            letter-spacing: 0.2px;
+            border: 1px solid #dcdcdc;
+            font-size: 14px;
+        }
+
+        .previous-extra-slot .range {
+            color: #898989;
+            font-weight: 600;
+        }
+
+        .previous-extra-slot-empty {
+            color: #898989;
+            font-size: 0.95rem;
+            margin-top: 6px;
+        }
+
         #addtimeTeacherList::-webkit-scrollbar {
             width: 0.5rem;
         }
@@ -212,7 +250,7 @@
             font-size: 1.01rem;
         }
 
-        .calendar_admin_details_create_cohort_add_time_tab_weekdays > div {
+        .calendar_admin_details_create_cohort_add_time_tab_weekdays>div {
             width: 36px;
             height: 36px;
             display: flex;
@@ -227,7 +265,7 @@
             justify-content: center;
         }
 
-        .calendar_admin_details_create_cohort_add_time_tab_grid > * {
+        .calendar_admin_details_create_cohort_add_time_tab_grid>* {
             width: 36px;
             height: 36px;
             background: #fff;
@@ -328,15 +366,19 @@ transform: translateY(-50%);" src="./img/dropdown-arrow-down.svg" alt="dropdown"
             <div class="calendar_admin_details_create_cohort_add_time_tab_modal" role="dialog" aria-modal="true">
                 <div class="calendar_admin_details_create_cohort_add_time_tab_header">
                     <button type="button" class="calendar_admin_details_create_cohort_add_time_tab_navbtn"
-                        id="calendar_admin_details_create_cohort_add_time_tab_prev"><svg width="22" height="22" viewBox="0 0 24 24">
-                    <polyline points="15 19 8 12 15 5" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></polyline>
-                </svg></button>
+                        id="calendar_admin_details_create_cohort_add_time_tab_prev"><svg width="22" height="22"
+                            viewBox="0 0 24 24">
+                            <polyline points="15 19 8 12 15 5" fill="none" stroke="#111" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round"></polyline>
+                        </svg></button>
                     <div class="calendar_admin_details_create_cohort_add_time_tab_month_label"
                         id="calendar_admin_details_create_cohort_add_time_tab_month_label">August 2025</div>
                     <button type="button" class="calendar_admin_details_create_cohort_add_time_tab_navbtn"
-                        id="calendar_admin_details_create_cohort_add_time_tab_next"><svg width="22" height="22" viewBox="0 0 24 24">
-                    <polyline points="9 19 16 12 9 5" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></polyline>
-                </svg></button>
+                        id="calendar_admin_details_create_cohort_add_time_tab_next"><svg width="22" height="22"
+                            viewBox="0 0 24 24">
+                            <polyline points="9 19 16 12 9 5" fill="none" stroke="#111" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round"></polyline>
+                        </svg></button>
                 </div>
                 <div class="calendar_admin_details_create_cohort_add_time_tab_weekdays">
                     <div>Mo</div>
@@ -384,6 +426,65 @@ document.addEventListener('DOMContentLoaded', function() {
     const teacherMenu = parent.querySelector('#addtimeTeacherMenu');
     const teacherListBox = parent.querySelector('#addtimeTeacherList');
     const teacherSearch = parent.querySelector('#addtimeTeacherSearch');
+    const previousList = parent.querySelector(
+        '#calendar_admin_details_create_cohort_add_time_tab_previous_times');
+
+    const getCurrentTeacherId = () => teacherTrigger.dataset.userid || '';
+
+    const formatSlotTime = (dateObj) => {
+        const h = String(dateObj.getHours()).padStart(2, '0');
+        const m = String(dateObj.getMinutes()).padStart(2, '0');
+        return `${h}:${m}`;
+    };
+
+    const formatSlotDateLabel = (dateObj) => {
+        const weekday = dateObj.toLocaleDateString(undefined, {
+            weekday: 'short'
+        });
+        const month = dateObj.toLocaleDateString(undefined, {
+            month: 'short'
+        }).replace('.', '');
+        const day = dateObj.getDate();
+        return `${weekday}, ${month}${day}`;
+    };
+
+    function renderPreviousExtraSlots(map, teacherId) {
+        if (!previousList) return;
+        previousList.innerHTML = '';
+
+        if (!teacherId) {
+            previousList.innerHTML =
+                '<li class="previous-extra-slot-empty">Select a teacher to view extra slots.</li>';
+            return;
+        }
+
+        const slots = (map && (map[teacherId] || map[String(teacherId)] || map[Number(teacherId)])) || [];
+        if (!slots || slots.length === 0) {
+            previousList.innerHTML =
+                '<li class="previous-extra-slot-empty">No extra slots for this teacher yet.</li>';
+            return;
+        }
+
+        slots.forEach(slot => {
+            const startDate = slot.start ? new Date(slot.start) : (slot.start_ts ? new Date(slot
+                .start_ts * 1000) : null);
+            const endDate = slot.end ? new Date(slot.end) : (slot.end_ts ? new Date(slot.end_ts *
+                1000) : null);
+            if (!startDate || Number.isNaN(startDate.getTime())) return;
+
+            const dateLabel = formatSlotDateLabel(startDate);
+            const rangeLabel = endDate && !Number.isNaN(endDate.getTime()) ?
+                `${formatSlotTime(startDate)}-${formatSlotTime(endDate)}` :
+                formatSlotTime(startDate);
+
+            const li = document.createElement('li');
+            li.className = 'previous-extra-slot';
+            const slotId = slot.id || slot.slotid || slot.extra_slot_id || '';
+            li.innerHTML =
+                `<div><span>${dateLabel}</span>, <span class="range">${rangeLabel}</span> </div><button type="button" class="delete-extra-slot-btn" data-slot-id="${slotId}"><img src="./img/delete.svg" alt="Delete slot"></button>`;
+            previousList.appendChild(li);
+        });
+    }
 
     // populate teacher list if available
     // 🧩 Populate teacher list & setup dropdown
@@ -411,6 +512,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 teacherTrigger.dataset.userid = this.dataset.userid;
                 teacherTrigger.dataset.name = this.dataset.name;
                 teacherTrigger.dataset.img = this.dataset.img;
+                renderPreviousExtraSlots(window.teacherExtraSlots || {}, this.dataset.userid);
                 teacherMenu.style.display = 'none';
             });
             teacherListBox.appendChild(div);
@@ -424,6 +526,7 @@ document.addEventListener('DOMContentLoaded', function() {
             teacherTrigger.dataset.userid = first.dataset.userid || '';
             teacherTrigger.dataset.name = first.dataset.name || '';
             teacherTrigger.dataset.img = first.dataset.img || '';
+            renderPreviousExtraSlots(window.teacherExtraSlots || {}, teacherTrigger.dataset.userid);
         }
     }
 
@@ -449,6 +552,25 @@ document.addEventListener('DOMContentLoaded', function() {
             i.style.display = nm.includes(f) ? 'flex' : 'none';
         });
     });
+
+    document.addEventListener('extraSlotsUpdated', e => {
+        const map = (e.detail && e.detail.map) || window.teacherExtraSlots || {};
+        renderPreviousExtraSlots(map, getCurrentTeacherId());
+    });
+
+    // Log payload when a delete extra slot button is clicked
+    previousList.addEventListener('click', e => {
+        const btn = e.target.closest('.delete-extra-slot-btn');
+        if (!btn) return;
+        const slotId = btn.dataset.slotId || '';
+        const payload = {
+            teacherId: getCurrentTeacherId(),
+            slotId
+        };
+        console.log('🗑️ Delete extra slot payload:', payload);
+    });
+
+    renderPreviousExtraSlots(window.teacherExtraSlots || {}, getCurrentTeacherId());
 
     // timepicker + calendar setup
     (function() {
@@ -602,14 +724,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 img: teacherTrigger.dataset.img || teacherAvatar?.src || ''
             },
             from: {
-                iso: parent.querySelector('#calendar_admin_details_create_cohort_add_time_tab_from_btn')?.getAttribute('data-iso') || '',
-                label: parent.querySelector('#calendar_admin_details_create_cohort_add_time_tab_from_text')?.textContent?.trim() || '',
-                time: parent.querySelector('#calendar_admin_details_create_cohort_add_time_tab_from_row .time-input')?.value || ''
+                iso: parent.querySelector('#calendar_admin_details_create_cohort_add_time_tab_from_btn')
+                    ?.getAttribute('data-iso') || '',
+                label: parent.querySelector('#calendar_admin_details_create_cohort_add_time_tab_from_text')
+                    ?.textContent?.trim() || '',
+                time: parent.querySelector(
+                        '#calendar_admin_details_create_cohort_add_time_tab_from_row .time-input')?.value ||
+                    ''
             },
             until: {
-                iso: parent.querySelector('#calendar_admin_details_create_cohort_add_time_tab_until_btn')?.getAttribute('data-iso') || '',
-                label: parent.querySelector('#calendar_admin_details_create_cohort_add_time_tab_until_text')?.textContent?.trim() || '',
-                time: parent.querySelector('#calendar_admin_details_create_cohort_add_time_tab_until_row .time-input')?.value || ''
+                iso: parent.querySelector('#calendar_admin_details_create_cohort_add_time_tab_until_btn')
+                    ?.getAttribute('data-iso') || '',
+                label: parent.querySelector('#calendar_admin_details_create_cohort_add_time_tab_until_text')
+                    ?.textContent?.trim() || '',
+                time: parent.querySelector(
+                        '#calendar_admin_details_create_cohort_add_time_tab_until_row .time-input')
+                    ?.value || ''
             }
         };
 
@@ -756,7 +886,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.error("Extra Slot Error:", xhr.responseText);
                     notify("Something went wrong while adding extra slot.", "error");
                 },
-                complete: function () {
+                complete: function() {
                     toggleLoader(false);
                     if (submitBtn) submitBtn.disabled = false;
                 }

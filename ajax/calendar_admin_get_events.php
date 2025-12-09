@@ -1832,22 +1832,20 @@ $teacherFilter = (int)$teacheridsraw;
 $refiltered = [];
 
 // -------------------------------------------------------------
-// 1) LOAD ALL ACTIVE STATUS RECORDS (for scanning whole table)
+// 1) LOAD ALL ACTIVE STATUS RECORDS
 // -------------------------------------------------------------
 $allStatuses = $DB->get_records('local_gm_event_status', ['isactive' => 1]);
 
-// Index statuses by eventid for quick lookup
 $statusByEvent = [];
 foreach ($allStatuses as $s) {
     $statusByEvent[(int)$s->eventid][] = $s;
 }
 
-// Used to avoid duplicates when adding extra events
 $addedEventIds = [];
 
 
 // -------------------------------------------------------------
-// 2) PROCESS EXISTING $filtered EVENTS (UPDATE + FILTER)
+// 2) PROCESS EXISTING $filtered EVENTS
 // -------------------------------------------------------------
 foreach ($filtered as $ev) {
 
@@ -1858,7 +1856,6 @@ foreach ($filtered as $ev) {
 
     $statuses = $statusByEvent[$eid] ?? [];
     if (!$statuses) {
-        // No status → keep as is
         $refiltered[] = $ev;
         continue;
     }
@@ -1873,7 +1870,8 @@ foreach ($filtered as $ev) {
             continue;
         }
 
-        $cur = $details['current'];
+        $cur  = $details['current'];
+        $prev = $details['previous'] ?? null;
 
         $newTeacher = (int)($cur['teacher'] ?? 0);
         $newDate    = $cur['date']  ?? null;
@@ -1881,7 +1879,7 @@ foreach ($filtered as $ev) {
         $newEnd     = $cur['end']   ?? null;
 
         // -----------------------------------------------
-        // A) ALWAYS UPDATE TIME/DATE IF AVAILABLE
+        // A) Update time/date always
         // -----------------------------------------------
         if ($newDate && $newStart && $newEnd) {
             $tsStart = strtotime("$newDate $newStart");
@@ -1896,12 +1894,26 @@ foreach ($filtered as $ev) {
         }
 
         // -----------------------------------------------
-        // B) TEACHER FILTER
+        // B) TEACHER FILTER (UPDATED EXACTLY AS YOU ASKED)
         // -----------------------------------------------
         if ($teacherFilter > 0 && $newTeacher > 0) {
+
+            // If CURRENT teacher differs
             if ($newTeacher !== $teacherFilter) {
-                $remove = true;
-                break;
+
+                // ❗ Check PREVIOUS teacher
+                if (
+                    is_array($prev) &&
+                    isset($prev['teacher']) &&
+                    (int)$prev['teacher'] === $teacherFilter
+                ) {
+                    // KEEP & mark rescheduled
+                    $updated['rescheduled'] = "yes";
+                } else {
+                    // Remove event (old behaviour)
+                    $remove = true;
+                    break;
+                }
             }
         }
     }
@@ -1914,7 +1926,7 @@ foreach ($filtered as $ev) {
 
 
 // -------------------------------------------------------------
-// 3) ADD EVENTS NOT PRESENT IN $filtered BUT WITH STATUS MATCH
+// 3) ADD EVENTS NOT PRESENT BUT MATCH STATUS
 // -------------------------------------------------------------
 foreach ($allStatuses as $s) {
 
@@ -1930,54 +1942,38 @@ foreach ($allStatuses as $s) {
     $newStart   = $cur['start'] ?? null;
     $newEnd     = $cur['end']   ?? null;
 
-    // Must match selected teacher
     if ($teacherFilter > 0 && $newTeacher !== $teacherFilter) {
         continue;
     }
 
-    // Must have all timing fields
     if (!$newDate || !$newStart || !$newEnd) {
         continue;
     }
 
-
-
-$tsStart = strtotime("$newDate $newStart");
-$tsEnd   = strtotime("$newDate $newEnd");
-
-
-
-
-
-
-
-
+    $tsStart = strtotime("$newDate $newStart");
+    $tsEnd   = strtotime("$newDate $newEnd");
 
     if (!$tsStart || !$tsEnd) {
         continue;
     }
 
-    // Must be inside requested calendar range
     if ($tsEnd < $startts || $tsStart > $endts) {
         continue;
     }
 
     $eid = (int)$s->eventid;
     if (isset($addedEventIds[$eid])) {
-        continue; // Already added
+        continue;
     }
 
-    // Base googlemeet_events record
     $base = $DB->get_record('googlemeet_events', ['id' => $eid], '*', IGNORE_MISSING);
     if (!$base) {
         continue;
     }
 
-    // Load googlemeet instance → ensures correct title
     $gm = $DB->get_record('googlemeet', ['id' => $base->googlemeetid], '*', IGNORE_MISSING);
     $title = $gm ? $gm->name : 'Class';
 
-    // Build the fully updated event entry
     $refiltered[] = [
         'id'            => 'status-' . $eid,
         'eventid'       => $eid,
@@ -1989,7 +1985,7 @@ $tsEnd   = strtotime("$newDate $newEnd");
         'courseid'      => (int)($gm->course ?? 0),
         'cmid'          => 0,
         'googlemeetid'  => (int)$base->googlemeetid,
-        'title'         => $title,        // ⭐ KEEP ORIGINAL TITLE
+        'title'         => $title,
 
         'start_ts'      => $tsStart,
         'end_ts'        => $tsEnd,
@@ -2013,13 +2009,12 @@ $tsEnd   = strtotime("$newDate $newEnd");
     $addedEventIds[$eid] = true;
 }
 
-
-
 $filtered = $refiltered;
 
 // ======================================================================
 // END PATCH
 // ======================================================================
+
 
 
 
