@@ -3234,7 +3234,7 @@ $(function () {
           if (ev.isTeacherChanged) {
             return `
              <span class="ev-status-icon" style="position:absolute; top:6px; right:26px; display:inline-flex; align-items:center; justify-content:center; pointer-events:none; z-index:2;">
-                <img style="border-radius:50%;" src=${ev.rescheduled.current.teacher_pic} alt="Teacher Changed" title="Teacher Changed" style="width:16px; height:16px;">
+                <img src=${ev.rescheduled.current.teacher_pic} alt="Teacher Changed" title="Teacher Changed" style="width:16px; height:16px; border-radius:50%;">
               </span>
             <span class="ev-status-icon" style="position:absolute; top:6px; right:6px; display:inline-flex; align-items:center; justify-content:center; pointer-events:none; z-index:2;">
                 <img src="./img/covered.svg" alt="Teacher Changed" title="Teacher Changed" style="width:16px; height:16px;">
