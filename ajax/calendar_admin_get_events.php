@@ -1653,6 +1653,14 @@ $teacherTimeoff = [];
 try {
     // 1) Collect all teacher IDs from filtered events
     $allTeacherIds = [];
+
+
+      // First, add explicitly selected teachers
+    if (!empty($teacherids)) {
+        foreach ($teacherids as $tid) {
+            $allTeacherIds[] = (int)$tid;
+        }
+    }
     foreach ($filtered as $ev) {
         if (!empty($ev['teacherids']) && is_array($ev['teacherids'])) {
             foreach ($ev['teacherids'] as $tid) {
@@ -2006,6 +2014,31 @@ if ($prevTid > 0) {
 $details['current']['teacher_pic'] = $currentTeacherPic;
 $details['previous']['teacher_pic'] = $previousTeacherPic;
 
+
+// $details['current']['teacher_pic'] = $currentTeacherPic;
+// $details['previous']['teacher_pic'] = $previousTeacherPic;
+
+// add full name for current
+if (!empty($details['current']['teacher'])) {
+    $cid = (int)$details['current']['teacher'];
+    if ($u = $DB->get_record('user', ['id' => $cid], 'id, firstname, lastname, firstnamephonetic, lastnamephonetic, middlename, alternatename')) {
+        $details['current']['teacher_name'] = fullname($u, true);
+    }
+}
+
+// add full name for previous
+if (!empty($details['previous']['teacher'])) {
+    $pid = (int)$details['previous']['teacher'];
+    if ($u2 = $DB->get_record('user', ['id' => $pid], 'id, firstname, lastname, firstnamephonetic, lastnamephonetic, middlename, alternatename')) {
+        $details['previous']['teacher_name'] = fullname($u2, true);
+    }
+}
+
+
+
+
+
+
         // -----------------------------------------------
         // B) TEACHER FILTER (your modified logic)
         // -----------------------------------------------
@@ -2262,6 +2295,26 @@ if ($prevTid > 0) {
 // Attach pics back to $details (so you can use it later)
 $details['current']['teacher_pic'] = $currentTeacherPic;
 $details['previous']['teacher_pic'] = $previousTeacherPic;
+
+// $details['current']['teacher_pic'] = $currentTeacherPic;
+// $details['previous']['teacher_pic'] = $previousTeacherPic;
+
+// add full name for current
+if (!empty($details['current']['teacher'])) {
+    $cid = (int)$details['current']['teacher'];
+    if ($u = $DB->get_record('user', ['id' => $cid], 'id, firstname, lastname, firstnamephonetic, lastnamephonetic, middlename, alternatename')) {
+        $details['current']['teacher_name'] = fullname($u, true);
+    }
+}
+
+// add full name for previous
+if (!empty($details['previous']['teacher'])) {
+    $pid = (int)$details['previous']['teacher'];
+    if ($u2 = $DB->get_record('user', ['id' => $pid], 'id, firstname, lastname, firstnamephonetic, lastnamephonetic, middlename, alternatename')) {
+        $details['previous']['teacher_name'] = fullname($u2, true);
+    }
+}
+
 
 
 

@@ -3166,10 +3166,12 @@ $(function () {
           const colorIndex = getTeacherColorIndex(ev.teacherId);
 
           // Only show teacher indicator dot if more than 1 teacher is selected
+          // AND the event is not an availability event (availability uses background color instead)
           const selectedTeachers = window.calendarFilterState
             ? window.calendarFilterState.getSelectedTeachers()
             : [];
-          const showTeacherDot = selectedTeachers.length > 1;
+          const showTeacherDot =
+            selectedTeachers.length > 1 && ev.classType !== "availability";
 
           teacherColorClass = `teacher-${colorIndex}${
             showTeacherDot ? " has-teacher-indicator" : ""
@@ -3205,7 +3207,29 @@ $(function () {
           borderColorStyle = "border-color: rgba(253,216,48,0.7) !important;";
         } else if (ev.classType === "availability") {
           classTypeClass = "class-type-availability";
-          borderColorStyle = "border: 1px dashed #9aa7b8 !important;";
+          borderColorStyle = "border: 2px dashed #9aa7b8 !important;";
+          // Add background color based on teacher color for availability events
+          if (ev.teacherId) {
+            const teacherColor = getTeacherColor(ev.teacherId);
+            // Convert HSL to RGB for proper transparency (extract RGB from HSL)
+            // Create a temporary element to compute the color
+            const tempDiv = document.createElement("div");
+            tempDiv.style.color = teacherColor;
+            document.body.appendChild(tempDiv);
+            const computedColor = window.getComputedStyle(tempDiv).color;
+            document.body.removeChild(tempDiv);
+
+            // Extract RGB values from "rgb(r, g, b)" format
+            const rgbMatch = computedColor.match(
+              /rgb\((\d+),\s*(\d+),\s*(\d+)\)/
+            );
+            if (rgbMatch) {
+              const r = rgbMatch[1];
+              const g = rgbMatch[2];
+              const b = rgbMatch[3];
+              borderColorStyle += `background-color: rgba(${r}, ${g}, ${b}, 0.15) !important;`;
+            }
+          }
         } else if (ev.classType === "extra_slot") {
           classTypeClass = "class-type-extra-slot";
           borderColorStyle = "border: 1px solid #7088ff !important;";
@@ -3299,7 +3323,7 @@ $(function () {
         }>
             ${statusIconHtml}
             ${
-              !isShortEvent
+              !isShortEvent && ev.classType !== "availability"
                 ? `<div class="ev-top">
               <div class="ev-left">${
                 ev.avatar
@@ -3323,9 +3347,15 @@ $(function () {
             </div>`
                 : ""
             }
-            <div class="ev-when">${fmt12(ev.start)} – ${fmt12(ev.end)}</div>
             ${
-              !isShortEvent
+              ev.classType !== "availability"
+                ? `<div class="ev-when">${fmt12(ev.start)} – ${fmt12(
+                    ev.end
+                  )}</div>`
+                : ""
+            }
+            ${
+              !isShortEvent && ev.classType !== "availability"
                 ? `<div class="ev-title">${
                     (ev.classType === "one2one_weekly" ||
                       ev.classType === "one2one_single") &&
@@ -3343,8 +3373,8 @@ $(function () {
         const baseZ = 1000 + (ev.stackIndex || 0);
         $ev.css("z-index", baseZ);
 
-        // Add hover tooltip for short events (less than 1 hour)
-        if (isShortEvent) {
+        // Add hover tooltip for short events (less than 1 hour) - exclude availability events
+        if (isShortEvent && ev.classType !== "availability") {
           // Create tooltip element
           const $tooltip = $(`
             <div class="event-tooltip">
