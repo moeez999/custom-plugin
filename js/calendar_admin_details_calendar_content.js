@@ -3283,9 +3283,7 @@ $(function () {
 
         // Add faded styling for previous reschedule events
         const fadedClass = ev.isFadedReschedule ? " faded-reschedule" : "";
-        const fadedStyle = ev.isFadedReschedule
-          ? "opacity: 0.4; filter: grayscale(0.5);"
-          : "";
+        const fadedStyle = ev.isFadedReschedule ? "filter: grayscale(1);" : "";
 
         // Build event HTML - hide details for short events
         const $ev = $(`
