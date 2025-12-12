@@ -559,15 +559,58 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Log payload when a delete extra slot button is clicked
-    previousList.addEventListener('click', e => {
+    previousList.addEventListener('click', async e => {
         const btn = e.target.closest('.delete-extra-slot-btn');
         if (!btn) return;
         const slotId = btn.dataset.slotId || '';
-        const payload = {
-            teacherId: getCurrentTeacherId(),
-            slotId
-        };
-        console.log('🗑️ Delete extra slot payload:', payload);
+        if (!slotId) return;
+
+        // Loader on
+        if (window.showGlobalLoader) window.showGlobalLoader();
+        else {
+            const el = document.getElementById('loader');
+            if (el) el.style.display = 'flex';
+        }
+
+        try {
+            const res = await fetch(M.cfg.wwwroot +
+                '/local/customplugin/ajax/delete_extra_slot.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        slotid: slotId
+                    })
+                });
+            const data = await res.json();
+            if (data.ok) {
+                if (typeof showToast === 'function') showToast('Extra slot deleted!', 'success');
+                else alert('Extra slot deleted!');
+                // Refresh calendar/slots
+                if (window.refetchCustomPluginData) {
+                    window.refetchCustomPluginData('delete-extra-slot');
+                } else if (window.fetchCalendarEvents) {
+                    window.fetchCalendarEvents();
+                } else if (typeof loadAdminCalendarEvents === "function") {
+                    loadAdminCalendarEvents();
+                }
+            } else {
+                if (typeof showToast === 'function') showToast(data.error ||
+                    'Failed to delete slot', 'error');
+                else alert(data.error || 'Failed to delete slot');
+            }
+        } catch (err) {
+            if (typeof showToast === 'function') showToast('Error deleting slot', 'error');
+            else alert('Error deleting slot');
+        } finally {
+            // Loader off
+            if (window.hideGlobalLoader) window.hideGlobalLoader();
+            else {
+                const el = document.getElementById('loader');
+                if (el) el.style.display = 'none';
+            }
+        }
     });
 
     renderPreviousExtraSlots(window.teacherExtraSlots || {}, getCurrentTeacherId());

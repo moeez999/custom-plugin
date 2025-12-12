@@ -3319,50 +3319,93 @@ $(function () {
         ${ev.repeat !== undefined ? ` data-repeat="${ev.repeat}"` : ""}${
           statusMeta ? ` data-status-code="${statusMeta.code}"` : ""
         }>
-            ${statusIconHtml}
             ${
-              !isShortEvent && ev.classType !== "availability"
-                ? `<div class="ev-top">
-              <div class="ev-left">${
-                ev.avatar
-                  ? `<img class="ev-avatar" src="${ev.avatar}" alt="">`
-                  : ""
-              }</div>
-              ${
-                isTimeOffEvent
-                  ? ""
-                  : ev.isRescheduleCurrent && !ev.isTeacherChanged
-                  ? `<span class="ev-makeup" title="Make-up Class"><img src="./img/makeup.svg" alt=""></span>`
-                  : ev.repeat || !ev.repeat
-                  ? `<span class="ev-repeat" title="Repeats"><img src="./img/ev-repeat.svg" alt=""></span>`
-                  : `<span class="ev-single" title="Single Session"><img src="./img/single-lesson.svg" alt=""></span>`
-              }
-              ${
-                ev.isMidnightCrossing
-                  ? `<span class="ev-midnight-icon" title="Continues to next day">↪</span>`
-                  : ""
-              }
-            </div>`
-                : ""
-            }
-            ${
-              ev.classType !== "availability"
-                ? `<div class="ev-when">${fmt12(ev.start)} – ${fmt12(
-                    ev.end
-                  )}</div>`
-                : ""
-            }
-            ${
-              !isShortEvent && ev.classType !== "availability"
-                ? `<div class="ev-title">${
-                    (ev.classType === "one2one_weekly" ||
-                      ev.classType === "one2one_single") &&
-                    ev.studentnames &&
-                    ev.studentnames.length > 0
-                      ? ev.studentnames.join(", ")
-                      : ev.title || ""
-                  }</div>`
-                : ""
+              isShortEvent && ev.classType !== "availability"
+                ? `
+                <div class=\"ev-when\" style=\"display:flex;align-items:center;gap:4px;\">
+                  ${
+                    ev.classType === "one2one_weekly" ||
+                    ev.classType === "one2one_single"
+                      ? `<span class=\"ev-single\" title=\"Single Session\"><img src=\"./img/single-lesson.svg\" alt=\"\"></span>`
+                      : isTimeOffEvent
+                      ? ""
+                      : ev.isRescheduleCurrent && !ev.isTeacherChanged
+                      ? `<span class=\"ev-makeup\" title=\"Make-up Class\"><img src=\"./img/makeup.svg\" alt=\"\"></span>`
+                      : ev.repeat
+                      ? `<span class=\"ev-repeat\" title=\"Repeats\"><img src=\"./img/ev-repeat.svg\" alt=\"\"></span>`
+                      : `<span class=\"ev-single\" title=\"Single Session\"><img src=\"./img/single-lesson.svg\" alt=\"\"></span>`
+                  }
+                  <span>${fmt12(ev.start)} – ${fmt12(ev.end)}</span>
+                  ${statusIconHtml}
+                  ${
+                    ev.isMidnightCrossing
+                      ? `<span class=\"ev-midnight-icon\" title=\"Continues to next day\">↪</span>`
+                      : ""
+                  }
+                </div>
+                <div class=\"ev-title\">${
+                  (ev.classType === "one2one_weekly" ||
+                    ev.classType === "one2one_single") &&
+                  ev.studentnames &&
+                  ev.studentnames.length > 0
+                    ? ev.studentnames.join(", ")
+                    : ev.title || ""
+                }</div>
+                `
+                : `
+                  ${statusIconHtml}
+                  ${
+                    !isShortEvent && ev.classType !== "availability"
+                      ? `<div class=\"ev-top\">
+                          <div class=\"ev-left\">${
+                            ev.avatar
+                              ? `<img class=\"ev-avatar\" src=\"${ev.avatar}\" alt=\"\">`
+                              : ""
+                          }</div>
+                          ${
+                            isTimeOffEvent
+                              ? ""
+                              : ev.isRescheduleCurrent &&
+                                !ev.isTeacherChanged &&
+                                ev.repeat
+                              ? `<span class=\"ev-repeat\" title=\"Repeats\"><img src=\"./img/ev-repeat.svg\" alt=\"\"></span><span class=\"ev-makeup\" title=\"Make-up Class\"><img src=\"./img/makeup.svg\" alt=\"\"></span>`
+                              : ev.isRescheduleCurrent && !ev.isTeacherChanged
+                              ? `<span class=\"ev-makeup\" title=\"Make-up Class\"><img src=\"./img/makeup.svg\" alt=\"\"></span>`
+                              : ev.classType === "one2one_weekly" ||
+                                ev.classType === "one2one_single"
+                              ? `<span class=\"ev-single\" title=\"Single Session\"><img src=\"./img/single-lesson.svg\" alt=\"\"></span>`
+                              : ev.repeat
+                              ? `<span class=\"ev-repeat\" title=\"Repeats\"><img src=\"./img/ev-repeat.svg\" alt=\"\"></span>`
+                              : `<span class=\"ev-single\" title=\"Single Session\"><img src=\"./img/single-lesson.svg\" alt=\"\"></span>`
+                          }
+                          ${
+                            ev.isMidnightCrossing
+                              ? `<span class=\"ev-midnight-icon\" title=\"Continues to next day\">↪</span>`
+                              : ""
+                          }
+                        </div>`
+                      : ""
+                  }
+                  ${
+                    ev.classType !== "availability"
+                      ? `<div class=\"ev-when\">${fmt12(ev.start)} – ${fmt12(
+                          ev.end
+                        )}</div>`
+                      : ""
+                  }
+                  ${
+                    !isShortEvent && ev.classType !== "availability"
+                      ? `<div class=\"ev-title\">${
+                          (ev.classType === "one2one_weekly" ||
+                            ev.classType === "one2one_single") &&
+                          ev.studentnames &&
+                          ev.studentnames.length > 0
+                            ? ev.studentnames.join(", ")
+                            : ev.title || ""
+                        }</div>`
+                      : ""
+                  }
+                `
             }
           </div>
         `).css({ top: top + "px", height: h + "px", ...cssPos });
@@ -6071,25 +6114,32 @@ document.addEventListener("DOMContentLoaded", () => {
         allEvents = [...allEvents, ...availabilityEvents, ...extraSlotEvents];
       }
 
+      // Optimization: Use a map for teacher ID lookups
+      const teacherIdSet = teacherids ? new Set(teacherids) : null;
       window.events = [];
-      allEvents.forEach((ev) => {
+      for (let i = 0; i < allEvents.length; i++) {
+        const ev = allEvents[i];
+        // Only parse dates once
         const startDate = new Date(ev.start);
         const endDate = new Date(ev.end);
-
-        // Match event teacher with selected teachers for proper color assignment
+        // Fast teacherId lookup
         let teacherId = null;
-        if (teacherids && teacherids.length > 0) {
-          const eventTeacherIds = Array.isArray(ev.teacherids)
+        if (teacherIdSet) {
+          let eventTeacherIds = Array.isArray(ev.teacherids)
             ? ev.teacherids
             : ev.teacher_id
             ? [ev.teacher_id]
             : ev.teacherid
             ? [ev.teacherid]
             : [];
-          teacherId =
-            teacherids.find((selectedId) =>
-              eventTeacherIds.includes(selectedId)
-            ) || eventTeacherIds[0];
+          for (let tid of eventTeacherIds) {
+            if (teacherIdSet.has(tid)) {
+              teacherId = tid;
+              break;
+            }
+          }
+          if (!teacherId && eventTeacherIds.length > 0)
+            teacherId = eventTeacherIds[0];
         } else if (Array.isArray(ev.teacherids) && ev.teacherids.length > 0) {
           teacherId = ev.teacherids[0];
         } else if (ev.teacher_id) {
@@ -6099,7 +6149,6 @@ document.addEventListener("DOMContentLoaded", () => {
         } else if (ev.teacher) {
           teacherId = ev.teacher;
         }
-
         let eventColor = "e-blue";
         if (
           ev.class_type === "one2one_weekly" ||
@@ -6120,15 +6169,12 @@ document.addEventListener("DOMContentLoaded", () => {
         ) {
           eventColor = "e-timeoff";
         }
-
         // Main event object
-        // For time-off events, extract time from timestamps; for others use date times
         let eventStart, eventEnd;
         if (
           ev.source === "teacher_timeoff" ||
           ev.classType === "teacher_timeoff"
         ) {
-          // Convert Unix timestamps to HH:MM format
           if (ev.start_ts && ev.end_ts) {
             const startDate_ts = new Date(ev.start_ts * 1000);
             const endDate_ts = new Date(ev.end_ts * 1000);
@@ -6139,13 +6185,11 @@ document.addEventListener("DOMContentLoaded", () => {
             eventEnd = "23:59";
           }
         } else {
-          // Extract time from ISO string to avoid timezone conversion issues
           if (ev.start && ev.start.includes("T")) {
             eventStart = ev.start.split("T")[1].slice(0, 5);
           } else {
             eventStart = startDate.toTimeString().slice(0, 5);
           }
-
           if (ev.end && ev.end.includes("T")) {
             eventEnd = ev.end.split("T")[1].slice(0, 5);
           } else {
@@ -6199,30 +6243,23 @@ document.addEventListener("DOMContentLoaded", () => {
           rescheduled:
             typeof ev.rescheduled !== "undefined" ? ev.rescheduled : null,
           faded: false,
-          availabilityId: ev.availabilityId || null, // Add availability ID to event data
+          availabilityId: ev.availabilityId || null,
         };
         window.events.push(eventObj);
-
         // If event is reschedule_instant, add previous event as faded
         if (
           Array.isArray(ev.statuses) &&
           ev.statuses.some((s) => s.code === "reschedule_instant" && s.previous)
         ) {
-          // Find the status with previous
           const statusObj = ev.statuses.find(
             (s) => s.code === "reschedule_instant" && (s.previous || null)
           );
           if (statusObj && statusObj.previous) {
-            // Parse previous event date and times
-            const prevDate = statusObj.previous.date;
-            const prevStart = statusObj.previous.start;
-            const prevEnd = statusObj.previous.end;
-            // Use previous teacher/avatar if available
             window.events.push({
               ...eventObj,
-              date: prevDate,
-              start: prevStart,
-              end: prevEnd,
+              date: statusObj.previous.date,
+              start: statusObj.previous.start,
+              end: statusObj.previous.end,
               faded: true,
               title: eventObj.title
                 ? eventObj.title + " (Previous)"
@@ -6233,7 +6270,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
           }
         }
-      });
+      }
 
       // Re-render your week view
       if (typeof renderWeek === "function") {

@@ -216,8 +216,9 @@ body {
 .event.short-event {
   padding: 4px 8px;
   display: flex;
-  align-items: center;
+
   justify-content: center;
+  flex-direction: column;
 }
 
 .event.short-event .ev-when {
@@ -226,12 +227,6 @@ body {
   margin: 0;
   text-align: center;
   white-space: nowrap;
-}
-
-/* Hide avatar and icons in short events */
-.event.short-event .ev-top,
-.event.short-event .ev-title {
-  display: none;
 }
 
 /* Class type styles: Main vs Tutoring */
