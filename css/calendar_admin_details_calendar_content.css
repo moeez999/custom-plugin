@@ -3,8 +3,8 @@
   --end-hour: 24;
 
   /* 30-minute grid */
-  --slot-h: 56px;
-  --rows: 34;
+  --slot-h: 50px;
+  --rows: 30;
 
   /* colors */
   --page-bg: #f5f6fb;
@@ -219,6 +219,9 @@ body {
 
   justify-content: center;
   flex-direction: column;
+}
+.short-event .ev-single {
+  width: inherit;
 }
 
 .event.short-event .ev-when {

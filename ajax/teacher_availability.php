@@ -100,14 +100,15 @@ if (count($slots) !== 1) {
         $rec->timecreated  = time();
         $rec->timemodified = time();
 
-        $DB->insert_record('local_teacher_availability', $rec);
+        $id = $DB->insert_record('local_teacher_availability', $rec);
 
         echo json_encode([
             'status'  => 'success',
             'action'  => 'create',
+            'slotId'  => (int)$id,
             'message' => 'Availability created successfully'
         ]);
-        die();
+        exit;
     }
 
     // =====================

@@ -738,11 +738,96 @@ if ((int)$explicitTeacherId > 0 && !is_siteadmin($USER)) {
             }
         }
 
-        echo json_encode(['ok' => true, 'data' => $data]);
-        exit;
+
+        // ------------------------------------------------------------
+// ADMIN: BUILD STUDENTS LIST (same logic as teacher block)
+// ------------------------------------------------------------
+
+// 1) Collect cohort students
+$cohortStudentGroup = [];
+$cohortStudentIds   = [];
+
+if (!empty($cohorts)) {
+    $cohortIds = array_keys($cohorts);
+    list($inC, $pC) = $DB->get_in_or_equal($cohortIds, SQL_PARAMS_NAMED, 'cs');
+
+    $rows = $DB->get_records_sql("
+        SELECT cm.userid, c.shortname
+          FROM {cohort_members} cm
+          JOIN {cohort} c ON c.id = cm.cohortid
+         WHERE cm.cohortid $inC
+    ", $pC);
+
+    foreach ($rows as $r) {
+        $uid = (int)$r->userid;
+        $cohortStudentIds[] = $uid;
+        $cohortStudentGroup[$uid] = $r->shortname;
+    }
+}
+
+// 2) Collect 1:1 students
+$one2oneStudentIds = [];
+$one2oneOnlyGroup  = [];
+
+foreach ($data as $d) {
+    if (($d['cohorttype'] ?? '') === 'one1one' && !empty($d['studentname'])) {
+
+        // Find student by name/email already resolved earlier
+        if (!empty($d['cohortshortname'])) {
+            // student already belongs to a cohort
+            continue;
+        }
+
+        // Try resolve student again via availability emails (safe fallback)
+        // NOTE: student user id already resolved earlier in admin 1:1 logic
+        if (!empty($d['studentuserid'])) {
+            $one2oneStudentIds[] = (int)$d['studentuserid'];
+            $one2oneOnlyGroup[(int)$d['studentuserid']] = '1:1';
+        }
+    }
+}
+
+// 3) Merge student IDs
+$finalStudentIds = array_values(array_unique(
+    array_merge($cohortStudentIds, $one2oneStudentIds)
+));
+
+// 4) Build student response
+$students = [];
+
+if (!empty($finalStudentIds)) {
+    list($inU, $pU) = $DB->get_in_or_equal($finalStudentIds, SQL_PARAMS_NAMED, 'u');
+
+    $userRecords = $DB->get_records_select(
+        'user',
+        "id $inU AND deleted = 0 AND suspended = 0",
+        $pU
+    );
+
+    foreach ($userRecords as $u) {
+        $uid = (int)$u->id;
+
+        // cohort wins over 1:1
+        $groupName = $cohortStudentGroup[$uid] ?? ($one2oneOnlyGroup[$uid] ?? '1:1');
+
+        $students[] = [
+            'id'     => $uid,
+            'name'   => fullname($u, true),
+            'avatar' => (new user_picture($u))->get_url($PAGE)->out(false),
+            'group'  => $groupName
+        ];
+    }
+}
+
+        echo json_encode([
+    'ok'       => true,
+    'data'     => $data,
+    'students' => $students
+]);
+exit;
     }
 
-    // -------------------------------------------------
+// -------------------------------------------------
 // 3) STUDENTS
 // -------------------------------------------------
 if ($action === 'students') {
@@ -766,7 +851,7 @@ if ($action === 'students') {
             if ($cid <= 0) continue;
 
             $sql = "
-                SELECT DISTINCT u.id, u.firstname, u.lastname, u.picture, u.imagealt,
+                SELECT DISTINCT u.id, u.firstname, u.lastname, u.email, u.picture, u.imagealt,
                                 u.firstnamephonetic, u.lastnamephonetic,
                                 u.middlename, u.alternatename
                   FROM {cohort_members} cm
@@ -788,7 +873,7 @@ if ($action === 'students') {
     } else {
         // All students across visible cohorts.
         $sql = "
-            SELECT DISTINCT u.id, u.firstname, u.lastname, u.picture, u.imagealt,
+            SELECT DISTINCT u.id, u.firstname, u.lastname, u.email, u.picture, u.imagealt,
                             u.firstnamephonetic, u.lastnamephonetic,
                             u.middlename, u.alternatename
               FROM {cohort_members} cm
@@ -802,19 +887,178 @@ if ($action === 'students') {
         $students = $DB->get_records_sql($sql);
     }
 
+    // ------------------------------------------------------------
+    // NEW: detect 1:1 students from Course 24 (same approach as teacher block)
+    // ------------------------------------------------------------
+    $one2oneUserIds = [];
+    $one2oneTeacherAvatar = []; // NEW: [studentid => teacheravatar]
+
+    if (!empty($students)) {
+
+        // Build email -> userid map for the currently returned students
+        $emailToUid = [];
+        foreach ($students as $s) {
+            if (!empty($s->email)) {
+                $emailToUid[core_text::strtolower(trim($s->email))] = (int)$s->id;
+            }
+        }
+
+        // Helper for extracting email from availability JSON (same as teacher block)
+        $collectEmails = function($json) {
+            if (empty($json)) return [];
+            $tree = json_decode($json, true);
+            if (!is_array($tree)) return [];
+
+            $out = [];
+            $walk = function($node) use (&$walk,&$out) {
+                if (is_object($node)) $node = (array)$node;
+                if (!is_array($node)) return;
+
+                if (($node['type'] ?? '') === 'profile') {
+                    $field = strtolower($node['sf'] ?? $node['field'] ?? '');
+                    if ($field === 'email') {
+                        $val = trim($node['v'] ?? $node['value'] ?? '');
+                        if ($val !== '') $out[] = core_text::strtolower($val);
+                    }
+                }
+
+                foreach (['c','showc','children','conditions'] as $k) {
+                    if (!empty($node[$k]) && is_array($node[$k])) {
+                        foreach ($node[$k] as $child) $walk($child);
+                    }
+                }
+            };
+
+            $walk($tree);
+            return array_values(array_unique($out));
+        };
+
+        $gmModule = $DB->get_record('modules', ['name' => 'googlemeet'], 'id', IGNORE_MISSING);
+        if ($gmModule) {
+
+            // Step 1: All sections in course 24
+            $sections = $DB->get_records(
+                'course_sections',
+                ['course' => $courseid_one2one],
+                'id ASC',
+                'id, availability'
+            );
+
+            if ($sections) {
+
+                // Mark sections where any of our student emails appear
+                $sectionsForStudents = [];
+                foreach ($sections as $sec) {
+                    $emails = $collectEmails($sec->availability ?? null);
+                    if (!$emails) continue;
+
+                    foreach ($emails as $em) {
+                        if (isset($emailToUid[$em])) {
+                            $sectionsForStudents[] = (int)$sec->id;
+                            break;
+                        }
+                    }
+                }
+
+                $sectionsForStudents = array_values(array_unique($sectionsForStudents));
+
+                if (!empty($sectionsForStudents)) {
+
+                    // Step 2: Get googlemeet CMs in those sections (course 24)
+                    list($insSec, $paramsSec) = $DB->get_in_or_equal($sectionsForStudents, SQL_PARAMS_NAMED, 'sec');
+                    $paramsSec['cid'] = $courseid_one2one;
+                    $paramsSec['modid'] = $gmModule->id;
+
+                    $cms = $DB->get_records_sql("
+                        SELECT id, availability, section
+                          FROM {course_modules}
+                         WHERE course = :cid
+                           AND module = :modid
+                           AND deletioninprogress = 0
+                           AND section $insSec
+                    ", $paramsSec);
+
+                    if ($cms) {
+
+                        global $PAGE; // NEW: REQUIRED for user_picture()
+
+                        foreach ($cms as $cm) {
+                            // Student emails are typically on CM availability in 1:1
+                            $stuEmails = $collectEmails($cm->availability ?? null);
+                            if (!$stuEmails) continue;
+
+                            // NEW: teacher email from the section availability (same as teacher block idea)
+                            $teacherEmail = '';
+                            $secid = (int)$cm->section;
+                            if (isset($sections[$secid])) {
+                                $secEmails = $collectEmails($sections[$secid]->availability ?? null);
+                                if (!empty($secEmails)) {
+                                    $teacherEmail = $secEmails[0]; // take first email in section (teacher)
+                                }
+                            }
+
+                            $teacherAvatarUrl = '';
+                            if (!empty($teacherEmail)) {
+                                $tuser = $DB->get_record_sql("
+                                    SELECT *
+                                      FROM {user}
+                                     WHERE LOWER(email) = :em
+                                       AND deleted = 0
+                                       AND suspended = 0
+                                     LIMIT 1
+                                ", ['em' => $teacherEmail], IGNORE_MISSING);
+
+                                if ($tuser) {
+                                    $teacherAvatarUrl = (new user_picture($tuser))->get_url($PAGE)->out(false);
+                                }
+                            }
+
+                            foreach ($stuEmails as $em) {
+                                if (isset($emailToUid[$em])) {
+                                    $sid = (int)$emailToUid[$em];
+
+                                    $one2oneUserIds[$sid] = true;
+
+                                    // NEW: store teacher avatar for this student if found
+                                    if (!empty($teacherAvatarUrl) && empty($one2oneTeacherAvatar[$sid])) {
+                                        $one2oneTeacherAvatar[$sid] = $teacherAvatarUrl;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     // Build response
     $data = [];
     foreach ($students as $s) {
-        $data[] = [
+        $row = [
             'id'     => (int)$s->id,
             'name'   => fullname($s, true),
             'avatar' => caf_get_user_avatar_url($s),
         ];
+
+        // NEW: add label if this student has 1:1 in course 24
+        if (!empty($one2oneUserIds[(int)$s->id])) {
+            $row['group'] = '1:1';
+
+            // NEW: attach teacher avatar (from 1:1)
+            if (!empty($one2oneTeacherAvatar[(int)$s->id])) {
+                $row['teacheravatar'] = $one2oneTeacherAvatar[(int)$s->id];
+            }
+        }
+
+        $data[] = $row;
     }
 
     echo json_encode(['ok' => true, 'data' => $data]);
     exit;
 }
+
+
 
 
     // -------------------------------------------------

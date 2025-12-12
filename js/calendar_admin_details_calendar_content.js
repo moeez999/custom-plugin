@@ -3242,7 +3242,7 @@ $(function () {
 
         // Check if event is short (less than 1 hour)
         const eventDuration = ev.end - ev.start;
-        const isShortEvent = eventDuration < 60;
+        const isShortEvent = eventDuration < 31;
 
         const isTimeOffEvent =
           ev.classType === "teacher_timeoff" ||

@@ -775,9 +775,11 @@
         };
 
         const slots = [];
+        let $blockElement = null;
 
         if (specificBlock) {
-            const $block = $(specificBlock);
+            $blockElement = $(specificBlock);
+            const $block = $blockElement;
             const dayIndex = $block.attr('data-day');
             const label = $block.find('.calendar_admin_details_setup_availablity_timelabel').text();
             const timeParts = label.split('–').map(t => t.trim());
@@ -838,6 +840,12 @@
                 console.log("Availability Response:", response);
 
                 if (response.status === "success") {
+                    // If this was a create action and we got an ID back, attach it to the block
+                    if (action === 'create' && $blockElement && response.slotId) {
+                        $blockElement.attr('data-id', response.slotId);
+                        console.log('Slot created with ID:', response.slotId);
+                    }
+
                     // Show toast instead of alert
                     if (typeof showToast === 'function') {
                         showToast('Availability saved successfully (' + response.action + ')', 'success');
