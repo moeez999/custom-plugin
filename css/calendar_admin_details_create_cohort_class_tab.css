@@ -1,3 +1,4 @@
+    
 /* ===== 1:1 Class Tab Styles ===== */
 .one2one-section-label {
   font-size: 1.05rem;
@@ -6,7 +7,7 @@
   margin-top: 16px;
   margin-bottom: 7px;
   display: block;
-  letter-spacing: -0.1px;
+  letter-spacing: -.1px;
 }
 .one2one-teacher-card {
   display: flex;
@@ -19,140 +20,87 @@
   gap: 13px;
 }
 .one2one-teacher-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  object-fit: cover;
+  width: 36px; height: 36px;
+  border-radius: 50%; object-fit: cover;
   border: 1.4px solid #ececec;
   background: #eaeaea;
 }
 .one2one-teacher-name {
-  font-weight: 600;
-  color: #232323;
+  font-weight: 600; color: #232323;
   font-size: 1.04rem;
 }
 .one2one-add-student-card {
-  display: flex;
-  align-items: center;
-  gap: 13px;
+  display: flex; align-items: center; gap: 13px;
   padding: 13px 14px;
   background: #fff;
   border: 2px solid #ececec;
   border-radius: 12px;
   margin-bottom: 12px;
-  color: #232323;
-  font-size: 1.01rem;
+  color: #232323; font-size: 1.01rem;
   cursor: pointer;
-  transition: border 0.13s;
+  transition: border .13s;
 }
 .one2one-add-student-card:hover {
-  border: 2px solid #232323;
-}
-.one2one-date-dropdown-display:hover {
-  border: 2px solid #232323;
+  border: 2px solid #1736e6;
 }
 .one2one-add-student-icon {
-  width: 25px;
-  height: 25px;
-  border-radius: 50%;
-  background: #e6e7ed;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.18rem;
-  color: #232323;
+  width: 25px; height: 25px;
+  border-radius: 50%; background: #e6e7ed;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.18rem; color: #232323;
 }
 .one2one-lesson-type-row {
-  display: flex;
-  gap: 17px;
-  margin: 10px 0 16px 0;
+  display: flex; gap: 17px; margin: 10px 0 16px 0;
 }
-.one2one-lesson-type-btn,
-.one2one-lesson-type-btn-manage {
+.one2one-lesson-type-btn {
   flex: 1 1 0;
   background: #fff;
   border: 2px solid #ececec;
   border-radius: 10px;
-  padding: 5px 12px 4px 12px !important;
-  justify-content: space-around;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 1.04rem;
-  font-weight: 500;
-  color: #232323;
+  padding: 12px 0 12px 16px;
+  display: flex; align-items: center; gap: 12px;
+  font-size: 1.04rem; font-weight: 500; color: #232323;
   cursor: pointer;
-  transition: border 0.13s, color 0.13s;
+  transition: border .13s, color .13s;
   position: relative;
 }
 .one2one-lesson-type-btn.selected,
 .one2one-lesson-type-btn:active {
-  border: 2px solid #111;
-  color: #111;
-}
-.one2one-lesson-type-btn-manage.selected,
-.one2one-lesson-type-btn-manage:active {
-  border: 2px solid #111;
-  color: #111;
+  border: 2px solid #1736e6; color: #1736e6;
 }
 .one2one-lesson-type-icon {
-  font-size: 1.1rem;
-}
-.one2one-lesson-type-icon img {
-  margin-right: 5px;
+  font-size: 1.24rem;
 }
 .one2one-radio {
   margin-left: auto;
-  width: 22px;
-  height: 22px;
-  appearance: none;
-  cursor: pointer;
-  border: 2.5px solid #232323;
-  border-radius: 100%;
-  background-color: white;
-  position: relative;
-}
-
-.one2one-radio:checked {
-  background-color: white !important;
-  border-color: #232323 !important;
-}
-
-.one2one-radio:checked::after {
-  content: "" !important;
-  position: absolute !important;
-  width: 10px !important;
-  height: 10px !important;
-  background-color: #232323 !important;
-  border-radius: 100% !important;
-  top: 50% !important;
-  left: 50% !important;
-  transform: translate(-50%, -50%);
+  width: 22px; height: 22px;
+  accent-color: #1736e6;
 }
 .one2one-datetime-group {
   margin: 10px 0 14px 0;
 }
 .one2one-datetime-dropdown,
 .one2one-datetime-dropdown-row select {
-  width: 100%;
-  padding: 13px 14px;
-  border-radius: 10px;
-  border: 1.5px solid #dadada;
-  background: #fff;
-  font-size: 1.05rem;
-  margin-bottom: 12px;
-  color: #232323;
+  width: 100%; padding: 13px 14px;
+  border-radius: 10px; border: 1.5px solid #dadada;
+  background: #fff; font-size: 1.05rem;
+  margin-bottom: 12px; color: #232323;
   cursor: pointer;
-  transition: border 0.13s;
+  transition: border .13s;
 }
 .one2one-datetime-dropdown-row {
-  display: flex;
-  gap: 10px;
+  display: flex; gap: 10px;
 }
 .one2one-datetime-dropdown-row select {
-  flex: 1 1 0;
-  min-width: 80px;
+  flex: 1 1 0; min-width: 80px;
 }
+
+
+
+
+
+
+
 
 /* === Student Dropdown Styles === */
 .one2one-student-dropdown-wrapper {
@@ -171,32 +119,25 @@
   color: #232323;
   font-size: 1.01rem;
   cursor: pointer;
-  transition: border 0.13s;
+  transition: border .13s;
   width: 100%;
   box-sizing: border-box;
 }
 .one2one-add-student-card.active,
 .one2one-add-student-card:focus {
-  border: 2px solid #232323;
+  border: 2px solid #1736e6;
   background: #fff;
 }
 .one2one-add-student-card .one2one-add-student-icon {
-  width: 25px;
-  height: 25px;
-  border-radius: 50%;
-  background: transparent;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.15rem;
-  color: #fff;
+  width: 25px; height: 25px;
+  border-radius: 50%; background: #000;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.15rem; color: #fff;
 }
 
 .one2one-student-dropdown-list {
   position: absolute;
-  left: 0;
-  right: 0;
-  top: 105%;
+  left: 0; right: 0; top: 105%;
   background: #fff;
   box-shadow: 0 4px 18px #0001;
   border-radius: 13px;
@@ -209,8 +150,7 @@
   overflow-y: auto;
 }
 
-.one2one-student-list-item,
-.one2one-student-list-item-class {
+.one2one-student-list-item {
   display: flex;
   align-items: center;
   gap: 14px;
@@ -218,22 +158,15 @@
   border-bottom: 1px solid #f2f2f3;
   cursor: pointer;
   background: #fff;
-  transition: background 0.12s;
+  transition: background .12s;
 }
-.one2one-student-list-item:last-child,
-.one2one-student-list-item-class:last-child {
+.one2one-student-list-item:last-child {
   border-bottom: none;
 }
 .one2one-student-list-avatar {
-  width: 39px;
-  height: 39px;
-  border-radius: 10px;
-  background: #f2f2f4;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.55rem;
-  color: #232323;
+  width: 39px; height: 39px; border-radius: 10px;
+  background: #f2f2f4; display: flex; align-items: center; justify-content: center;
+  font-size: 1.55rem; color: #232323;
 }
 .one2one-student-list-meta {
   flex: 1 1 0;
@@ -243,40 +176,25 @@
   font-size: 1.03rem;
 }
 .one2one-student-list-lessons {
-  font-size: 0.98rem;
-  color: #9a9a9a;
+  font-size: .98rem; color: #9a9a9a;
 }
 .one2one-student-list-status {
-  font-size: 0.99rem;
-  color: #adadad;
-  font-weight: 500;
-  min-width: 92px;
-  text-align: right;
+  font-size: .99rem; color: #adadad; font-weight: 500; min-width: 92px; text-align: right;
 }
-.one2one-student-list-status.subscription {
-  color: #2cb653;
-}
-.one2one-student-list-status.trial {
-  color: #e48a22;
-}
-.one2one-student-list-status.cancelled {
-  color: #eb2626;
-}
+.one2one-student-list-status.subscription { color: #2cb653; }
+.one2one-student-list-status.trial { color: #e48a22; }
+.one2one-student-list-status.cancelled { color: #eb2626; }
 
 @media (max-width: 600px) {
   .one2one-student-dropdown-list {
     min-width: 90vw;
     left: 50%;
     transform: translateX(-50%);
-    padding-left: 0;
-    padding-right: 0;
+    padding-left: 0; padding-right: 0;
   }
-  .one2one-student-list-item,
-  ,
-  .one2one-student-list-item-class {
-    padding: 12px 5vw;
-  }
+  .one2one-student-list-item { padding: 12px 5vw; }
 }
+
 
 /* --- Custom Duration Dropdown Styles (arrows removed) --- */
 .one2one-duration-dropdown-wrapper {
@@ -286,7 +204,7 @@
 }
 .one2one-duration-dropdown-display {
   padding: 14px 18px;
-  border: 2px solid #ececec;
+  border: 2px solid #232323;
   border-radius: 12px;
   background: #fff;
   font-size: 1.08rem;
@@ -300,14 +218,19 @@
   box-sizing: border-box;
   transition: border 0.15s;
 }
-.one2one-duration-dropdown-display:hover {
-  border: 2px solid #232323;
+.one2one-duration-dropdown-display:after {
+  content: "";
+  border: solid #232323;
+  border-width: 0 2px 2px 0;
+  display: inline-block;
+  padding: 5px;
+  transform: rotate(45deg);
+  margin-left: 10px;
+  margin-bottom: 2px;
 }
 .one2one-duration-dropdown-list {
   position: absolute;
-  left: 0;
-  right: 0;
-  top: 105%;
+  left: 0; right: 0; top: 105%;
   background: #fff;
   box-shadow: 0 4px 22px #0002;
   border-radius: 13px;
@@ -317,24 +240,18 @@
   min-width: 210px;
   max-height: 250px;
   overflow-y: auto;
-  animation: fadeIn 0.16s;
+  animation: fadeIn .16s;
 }
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(8px);}
+  to   { opacity: 1; transform: translateY(0);}
 }
 .one2one-duration-option {
   font-size: 1.08rem;
   padding: 13px 22px;
   cursor: pointer;
   background: #fff;
-  transition: background 0.13s;
+  transition: background .13s;
 }
 .one2one-duration-option.selected,
 .one2one-duration-option:hover {
@@ -347,19 +264,15 @@
     left: 50%;
     transform: translateX(-50%);
   }
-  .one2one-duration-option {
-    padding: 13px 6vw;
-  }
+  .one2one-duration-option { padding: 13px 6vw; }
 }
+
 
 /* --- Custom Calendar Modal Styles --- */
 .calendar-modal-backdrop {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.12);
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.12);
   display: none;
   z-index: 5000;
 }
@@ -371,12 +284,8 @@
   margin: 60px auto 0 auto;
   box-shadow: 0 8px 38px #0002;
   padding: 18px 0 18px 0;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  animation: fadeIn 0.15s;
-  height: max-content;
+  position: relative;
+  animation: fadeIn .15s;
 }
 .calendar-modal-header {
   display: flex;
@@ -392,15 +301,13 @@
   border: 2px solid #d3d4d7;
   background: #fff;
   border-radius: 10px;
-  width: 34px;
-  height: 34px;
+  width: 34px; height: 34px;
   font-size: 1.35rem;
   color: #424242;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: center; justify-content: center;
   cursor: pointer;
-  transition: background 0.11s;
+  transition: background .11s;
 }
 .calendar-modal-arrow:hover {
   background: #f5f5f5;
@@ -410,7 +317,7 @@
 }
 .calendar-modal-weekdays {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7,1fr);
   font-size: 1.04rem;
   color: #8c8d8e;
   margin-bottom: 8px;
@@ -419,19 +326,18 @@
 }
 .calendar-modal-days {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7,1fr);
   font-size: 1.08rem;
   gap: 4px;
 }
 .calendar-modal-day {
-  width: 36px;
-  height: 36px;
+  width: 36px; height: 36px;
   border-radius: 50%;
   text-align: center;
   line-height: 36px;
   margin: 2px auto;
   cursor: pointer;
-  transition: background 0.1s, color 0.1s, border 0.13s;
+  transition: background .1s, color .1s, border .13s;
   color: #232323;
 }
 .calendar-modal-day.disabled {
@@ -461,11 +367,14 @@
   padding: 10px 28px;
   margin-top: 12px;
   cursor: pointer;
-  transition: background 0.13s;
+  transition: background .13s;
 }
 .calendar-modal-done:hover {
   background: #ea2000;
 }
+
+
+
 
 /* Custom Time Dropdown */
 .one2one-time-dropdown-wrapper {
@@ -499,9 +408,7 @@
 }
 .one2one-time-dropdown-list {
   position: absolute;
-  left: 0;
-  right: 0;
-  top: 105%;
+  left: 0; right: 0; top: 105%;
   background: #fff;
   box-shadow: 0 4px 22px #0002;
   border-radius: 13px;
@@ -510,7 +417,7 @@
   min-width: 170px;
   max-height: 340px;
   overflow-y: auto;
-  animation: fadeIn 0.16s;
+  animation: fadeIn .16s;
   padding: 6px 0;
 }
 .one2one-time-option {
@@ -518,7 +425,7 @@
   padding: 12px 20px;
   cursor: pointer;
   background: #fff;
-  transition: background 0.13s;
+  transition: background .13s;
 }
 .one2one-time-option.selected,
 .one2one-time-option:hover {
@@ -526,158 +433,99 @@
   font-weight: 500;
 }
 
+
+
+
+
+
 /*=======================Teacher Dropdown list START=========================================*/
 
-/* .calendar_admin_details_create_cohort_class_tab_label{
+  /* .calendar_admin_details_create_cohort_class_tab_label{
     font-weight: 600; color:#111; margin: 0 0 8px 2px; font-size: 15px;
   } */
 
-/* ===== Trigger (selected) ===== */
-.calendar_admin_details_create_cohort_class_tab_trigger,
-.calendar_admin_details_create_cohort_manage_class_tab_trigger {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between; /* left group & arrow */
-  background: #fff;
-  border: 1.5px solid #e7e7ef;
-  border-radius: 12px;
-  padding: 12px 14px;
-  cursor: pointer;
-  position: relative;
-  box-shadow: var(--cohort-soft);
-  transition: box-shadow 0.15s ease, border-color 0.15s ease;
-}
-
-.calendar_admin_details_create_cohort_class_tab_trigger:hover,
-.calendar_admin_details_create_cohort_manage_class_tab_trigger:hover {
-  border: 2px solid #232323;
-}
-
-.calendar_admin_details_create_cohort_class_tab_trigger,
-.calendar_admin_details_create_cohort_manage_class_tab_trigger:hover {
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.06);
-}
-
-/* Left group (avatar + name) */
-.calendar_admin_details_create_cohort_class_tab_left,
-.calendar_admin_details_create_cohort_manage_class_tab_left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.calendar_admin_details_create_cohort_class_tab_avatar,
-.calendar_admin_details_create_cohort_manage_class_tab_avatar {
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
-  object-fit: cover;
-  flex: 0 0 auto;
-}
-.calendar_admin_details_create_cohort_class_tab_name,
-.calendar_admin_details_create_cohort_manage_class_tab_name {
-  font-weight: 600;
-  color: #111;
-  letter-spacing: 0.1px;
-}
-
-/* Chevron */
-.calendar_admin_details_create_cohort_class_tab_chev,
-.calendar_admin_details_create_cohort_manage_class_tab_chev {
-  flex: 0 0 auto;
-  transition: transform 0.15s ease;
-}
-.calendar_admin_details_create_cohort_class_tab_open
-  .calendar_admin_details_create_cohort_class_tab_chev {
-  transform: rotate(180deg);
-}
-.calendar_admin_details_create_cohort_manage_class_tab_open
-  .calendar_admin_details_create_cohort_manage_class_tab_chev {
-  transform: rotate(180deg);
-}
-
-/* ===== Dropdown ===== */
-.calendar_admin_details_create_cohort_class_tab_menu,
-.calendar_admin_details_create_cohort_manage_class_tab_menu {
-  display: none;
-  position: relative;
-}
-.calendar_admin_details_create_cohort_class_tab_panel,
-.calendar_admin_details_create_cohort_manage_class_tab_panel {
-  position: absolute;
-  inset: 8px 0 auto 0;
-  background: #fff;
-  border: 1px solid #efeff6;
-  border-radius: 14px;
-  box-shadow: var(--cohort-shadow);
-  max-height: 380px;
-  overflow: auto;
-  padding: 6px 0;
-  z-index: 30;
-}
-.calendar_admin_details_create_cohort_class_tab_item,
-.calendar_admin_details_create_cohort_manage_class_tab_item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  cursor: pointer;
-  user-select: none;
-}
-.calendar_admin_details_create_cohort_class_tab_item:hover,
-.calendar_admin_details_create_cohort_manage_class_tab_item:hover,
-.calendar_admin_details_create_cohort_class_tab_item[aria-selected="true"],
-.calendar_admin_details_create_cohort_manage_class_tab_item[aria-selected="true"] {
-  background: #f7f7fb;
-}
-.calendar_admin_details_create_cohort_class_tab_item,
-.calendar_admin_details_create_cohort_manage_class_tab_item
-  .calendar_admin_details_create_cohort_class_tab_avatar,
-.calendar_admin_details_create_cohort_manage_class_tab_avatar {
-  /* width: 40px; */
-  height: 40px;
-  border-radius: 12px;
-}
-
-/* ===== Responsive tweaks ===== */
-@media (max-width: 520px) {
-  .calendar_admin_details_create_cohort_class_tab_panel,
-  .calendar_admin_details_create_cohort_manage_class_tab_panel {
-    max-height: 60vh;
+  /* ===== Trigger (selected) ===== */
+  .calendar_admin_details_create_cohort_class_tab_trigger{
+    width: 100%; 
+    display:flex; 
+    align-items:center; 
+    justify-content:space-between;   /* left group & arrow */
+    background:#fff; 
+    border:1.5px solid #e7e7ef; 
+    border-radius:12px;
+    padding:12px 14px; 
+    cursor:pointer; 
+    position:relative;
+    box-shadow: var(--cohort-soft);
+    transition: box-shadow .15s ease, border-color .15s ease;
   }
-  .calendar_admin_details_create_cohort_class_tab_item,
-  .calendar_admin_details_create_cohort_manage_class_tab_item {
-    padding: 14px 16px;
+  .calendar_admin_details_create_cohort_class_tab_trigger:hover{
+    box-shadow:0 10px 26px rgba(0,0,0,.06);
   }
-  .calendar_admin_details_create_cohort_class_tab_item,
-  .calendar_admin_details_create_cohort_manage_class_tab_item
-    .calendar_admin_details_create_cohort_class_tab_avatar,
-  .calendar_admin_details_create_cohort_manage_class_tab_item {
-    width: 44px;
-    height: 44px;
-  }
-  .calendar_admin_details_create_cohort_class_tab_trigger,
-  .calendar_admin_details_create_cohort_manage_class_tab_trigger {
-    padding: 14px 14px;
-  }
-}
 
-/* Optional subtle scrollbar styling */
-.calendar_admin_details_create_cohort_class_tab_panel::-webkit-scrollbar,
-.calendar_admin_details_create_cohort_manage_class_tab_panel::-webkit-scrollbar {
-  width: 5px;
-}
-.calendar_admin_details_create_cohort_class_tab_panel::-webkit-scrollbar-thumb,
-.calendar_admin_details_create_cohort_manage_class_tab_panel::-webkit-scrollbar-thumb {
-  background: #e6e6f0;
-  border-radius: 10px;
-}
-.one2one-student-dropdown-list::-webkit-scrollbar {
-  width: 5px;
-}
-.one2one-student-dropdown-list::-webkit-scrollbar-track {
-  background: #e6e6f0;
-  border-radius: 10px;
-}
+  /* Left group (avatar + name) */
+  .calendar_admin_details_create_cohort_class_tab_left{
+    display:flex; 
+    align-items:center; 
+    gap:10px;
+  }
+  .calendar_admin_details_create_cohort_class_tab_avatar{
+    width:34px; height:34px; border-radius:10px; object-fit:cover; flex:0 0 auto;
+  }
+  .calendar_admin_details_create_cohort_class_tab_name{
+    font-weight: 600; 
+    color:#111; 
+    letter-spacing:.1px;
+  }
 
+  /* Chevron */
+  .calendar_admin_details_create_cohort_class_tab_chev{
+    width:20px; height:20px; flex:0 0 auto; 
+    transition: transform .15s ease;
+  }
+  .calendar_admin_details_create_cohort_class_tab_open 
+  .calendar_admin_details_create_cohort_class_tab_chev{
+    transform: rotate(180deg);
+  }
+
+  /* ===== Dropdown ===== */
+  .calendar_admin_details_create_cohort_class_tab_menu{
+    display:none; position:relative;
+  }
+  .calendar_admin_details_create_cohort_class_tab_panel{
+    position:absolute; inset:8px 0 auto 0;
+    background:#fff; border:1px solid #efeff6; border-radius:14px;
+    box-shadow: var(--cohort-shadow);
+    max-height: 380px; overflow:auto; padding: 6px 0;
+    z-index: 30;
+  }
+  .calendar_admin_details_create_cohort_class_tab_item{
+    display:flex; align-items:center; gap:12px;
+    padding:12px 16px; cursor:pointer; user-select:none;
+  }
+  .calendar_admin_details_create_cohort_class_tab_item:hover,
+  .calendar_admin_details_create_cohort_class_tab_item[aria-selected="true"]{
+    background:#f7f7fb;
+  }
+  .calendar_admin_details_create_cohort_class_tab_item .calendar_admin_details_create_cohort_class_tab_avatar{
+    width:40px; height:40px; border-radius:12px;
+  }
+  .calendar_admin_details_create_cohort_class_tab_item_name{
+    font-weight: 700; color:#111;
+  }
+
+  /* ===== Responsive tweaks ===== */
+  @media (max-width: 520px){
+    .calendar_admin_details_create_cohort_class_tab_panel{ max-height: 60vh; }
+    .calendar_admin_details_create_cohort_class_tab_item{ padding:14px 16px; }
+    .calendar_admin_details_create_cohort_class_tab_item .calendar_admin_details_create_cohort_class_tab_avatar{ width:44px; height:44px; }
+    .calendar_admin_details_create_cohort_class_tab_trigger{ padding:14px 14px; }
+  }
+
+  /* Optional subtle scrollbar styling */
+  .calendar_admin_details_create_cohort_class_tab_panel::-webkit-scrollbar{ width:10px; }
+  .calendar_admin_details_create_cohort_class_tab_panel::-webkit-scrollbar-thumb{
+    background:#e6e6f0; border-radius:10px;
+  }
+  
 /*=======================Teacher Dropdown list END=========================================*/
