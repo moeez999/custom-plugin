@@ -307,6 +307,48 @@
                     </div>
                 </div>
 
+                <!-- Filter Trigger (right side of student dropdown) -->
+                <button type="button" id="extra-search-trigger" class="filter-btn" aria-haspopup="true"
+                    aria-expanded="false" style="margin-left:12px;">
+                    <span class="filter-text">Filter</span>
+                    <span class="filter-icon" aria-hidden="true">
+                        <!-- simple filter SVG icon -->
+                        <img src="./img/filter-icon.svg" alt="">
+                    </span>
+                </button>
+
+                <style>
+                /* Compact filter button to match snapshot */
+                .filter-btn {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 8px;
+                    padding: 12px 16px;
+                    border-radius: 8px;
+                    border: 1px solid #e6e8ef;
+                    background: #fff;
+                    cursor: pointer;
+                    font-weight: 600;
+                    color: #111;
+                    font-size: 13px;
+                    line-height: 1;
+                }
+
+                .filter-btn:active {
+                    transform: translateY(1px);
+                }
+
+                .filter-btn .filter-icon {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                .filter-btn svg {
+                    display: block;
+                }
+                </style>
+
                 <!-- Student Widget -->
                 <section id="search-student" class="search-student-section" style="display:none">
                     <div class="search-widget-container" id="student-search-widget">
@@ -333,6 +375,152 @@
                                     </fieldset>
                                 </form>
                             </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Extra Widget (right side dropdown content) - Events Filter (snapshot) -->
+                <style>
+                /* Events Filter popover snapshot styles */
+                .events-filter-popover {
+                    width: 220px;
+                    background: #fff;
+                    border-radius: 8px;
+                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+                    border: 1px solid #ececf3;
+                    padding: 10px 12px;
+                    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+                    font-size: 14px;
+                    color: #232323;
+                }
+
+                .events-filter-popover .ef-header {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 6px 2px 8px 2px;
+                }
+
+                .events-filter-popover .ef-title {
+                    font-weight: 700;
+                    font-size: 15px;
+                    color: #111
+                }
+
+                .events-filter-popover .ef-reset {
+                    color: #ef2d17;
+                    font-weight: 700;
+                    cursor: pointer;
+                    font-size: 13px
+                }
+
+                .events-filter-popover .ef-list {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 8px;
+                    padding-top: 6px
+                }
+
+                .ef-item {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px
+                }
+
+                .ef-label {
+                    flex: 1
+                }
+
+                /* custom checkbox box */
+                .ef-box {
+                    width: 24px;
+                    height: 24px;
+                    border-radius: 6px;
+                    border: 1.6px solid #e1e3eb;
+                    display: inline-grid;
+                    place-items: center;
+                    cursor: pointer;
+                    background: #fff;
+                    color: #fff;
+                    font-weight: 800
+                }
+
+                input.ef-input {
+                    display: none
+                }
+
+                input.ef-input:checked+.ef-box {
+                    background: #ef2d17;
+                    border-color: #ef2d17
+                }
+
+                input.ef-input:checked+.ef-box::after {
+                    content: '✔';
+                    font-size: 13px
+                }
+
+                .ef-selectall {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px
+                }
+                </style>
+
+                <section id="search-extra" class="search-extra-section" style="display:none">
+                    <div class="events-filter-popover" id="extra-search-widget">
+                        <div class="ef-header">
+                            <div class="ef-title">Events Filter</div>
+                            <div class="ef-reset" id="ef-reset">Reset</div>
+                        </div>
+
+                        <div class="ef-list">
+                            <label class="ef-item ef-selectall">
+                                <input class="ef-input" type="checkbox" id="ef_select_all" data-value="select-all">
+                                <span class="ef-box" aria-hidden="true"></span>
+                                <span class="ef-label">Select All</span>
+                            </label>
+
+                            <label class="ef-item">
+                                <input class="ef-input" type="checkbox" data-value="cohorts" id="ef_cohorts">
+                                <span class="ef-box" aria-hidden="true"></span>
+                                <span class="ef-label">Cohorts</span>
+                            </label>
+
+                            <label class="ef-item">
+                                <input class="ef-input" type="checkbox" data-value="one1" id="ef_one1">
+                                <span class="ef-box" aria-hidden="true"></span>
+                                <span class="ef-label">1:1</span>
+                            </label>
+
+                            <label class="ef-item">
+                                <input class="ef-input" type="checkbox" data-value="peertalk" id="ef_peertalk">
+                                <span class="ef-box" aria-hidden="true"></span>
+                                <span class="ef-label">Peer Talk</span>
+                            </label>
+
+                            <label class="ef-item">
+                                <input class="ef-input" type="checkbox" data-value="conference" id="ef_conference">
+                                <span class="ef-box" aria-hidden="true"></span>
+                                <span class="ef-label">Conference</span>
+                            </label>
+
+                            <label class="ef-item">
+                                <input class="ef-input" type="checkbox" data-value="timeoff" id="ef_timeoff">
+                                <span class="ef-box" aria-hidden="true"></span>
+                                <span class="ef-label">Time off</span>
+                            </label>
+
+                            <label class="ef-item">
+                                <input class="ef-input" type="checkbox" data-value="extraslots" id="ef_extraslots">
+                                <span class="ef-box" aria-hidden="true"></span>
+                                <span class="ef-label">Extra Slots</span>
+                            </label>
+
+                            <label class="ef-item">
+                                <input class="ef-input" type="checkbox" data-value="availability" id="ef_availability">
+                                <span class="ef-box" aria-hidden="true"></span>
+                                <span class="ef-label">Availability</span>
+                            </label>
                         </div>
                     </div>
                 </section>
@@ -569,6 +757,75 @@ $(function() {
     cleanUpPillContainers();
     // If you have custom events that update pills, hook here:
     $(document).on('teacherPillsUpdated studentPillsUpdated', cleanUpPillContainers);
+});
+</script>
+<script>
+// Position and behaviour for the Events Filter popover
+$(function() {
+    $('#extra-search-trigger').on('click', function(e) {
+        e.stopPropagation();
+
+        const $btn = $(this);
+        const $popover = $('#search-extra .events-filter-popover');
+
+        // If visible, hide it
+        if ($popover.is(':visible')) {
+            $popover.hide();
+            return;
+        }
+
+        // Append to body and position absolutely under the button
+        const off = $btn.offset();
+        const top = off.top + $btn.outerHeight() + 8;
+        const left = off.left; // align left edge of popover with button
+
+        $popover.appendTo('body').css({
+            position: 'absolute',
+            top: top + 'px',
+            left: left + 'px',
+            zIndex: 9999,
+            display: 'block'
+        });
+    });
+
+    // Close when clicking outside
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('.events-filter-popover, #extra-search-trigger').length) {
+            $('.events-filter-popover').hide();
+        }
+    });
+
+    // Events Filter behaviours
+    // Reset link
+    $(document).on('click', '#ef-reset', function() {
+        $('.events-filter-popover').find('input.ef-input').prop('checked', false);
+        $('#ef_select_all').prop('checked', false);
+        $('#extra-search-trigger .filter-text').text('Filter');
+    });
+
+    // Select All behaviour
+    $(document).on('change', '#ef_select_all', function() {
+        const checked = $(this).is(':checked');
+        $('.events-filter-popover').find('input.ef-input').not(this).prop('checked', checked);
+        $('.events-filter-popover input.ef-input').trigger('change');
+    });
+
+    // If any individual checkbox is unchecked, update Select All and label
+    $(document).on('change', '.events-filter-popover input.ef-input', function() {
+        const all = $('.events-filter-popover input.ef-input').not('#ef_select_all');
+        const checkedCount = all.filter(':checked').length;
+        const total = all.length;
+        $('#ef_select_all').prop('checked', checkedCount === total);
+
+        // Update display text to show how many selected (if any)
+        if (checkedCount === 0) {
+            $('#extra-search-trigger .filter-text').text('Filter');
+        } else if (checkedCount === total) {
+            $('#extra-search-trigger .filter-text').text(total + ' selected');
+        } else {
+            $('#extra-search-trigger .filter-text').text(checkedCount + ' selected');
+        }
+    });
 });
 </script>
 <?php require_once('calendar_admin_details_create_cohort.php'); ?>

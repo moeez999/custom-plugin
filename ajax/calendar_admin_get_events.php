@@ -562,7 +562,7 @@ $add_one2one_events = function() use (
                 }
             }
 
-            $events[] = [
+                       $events[] = [
                 'id'            => '1to1-' . $e->id,
                 'eventid'       => (int)$e->id,
                 'main_event_id' => (int)$mainEventId,
@@ -586,15 +586,59 @@ $add_one2one_events = function() use (
                 'studentnames'  => $studentNames,
                 'cohortids'     => [],
 
-                'group'         => $groupName,   // <-- NEW FIELD
-
+                'group'         => $groupName,
                 'class_type'    => $classType,
                 'is_recurring'  => $isrecurring,
 
                 'meetingurl'    => $meetingurl,
                 'viewurl'       => $viewurl,
-                'studentavatar' => $studentAvatars, // ⭐ ADDED
+                'studentavatar' => $studentAvatars,
             ];
+
+            // =====================================================
+            // PATCH: Attach 1:1 cancel / reschedule status
+            // =====================================================
+
+            $lastIndex = count($events) - 1;
+            $currentEventId = (int)$e->id;
+
+            $statusRows = $DB->get_records_select(
+                'local_gm_event_status',
+                'eventid = :eid AND isactive = 1',
+                ['eid' => $currentEventId],
+                'timecreated ASC'
+            );
+
+            $events[$lastIndex]['statuses'] = [];
+
+            foreach ($statusRows as $sr) {
+                $details = $sr->detailsjson ? json_decode($sr->detailsjson, true) : null;
+
+                $events[$lastIndex]['statuses'][] = [
+                    'statuscode' => $sr->statuscode,
+                    'details'    => $details,
+                    'time'       => (int)$sr->timecreated,
+                ];
+
+                // Cancel support
+                if (($details['action'] ?? '') === 'cancelled') {
+                    $events[$lastIndex]['is_cancelled'] = true;
+                    $events[$lastIndex]['cancel_reason'] = $details['reason'] ?? '';
+                }
+
+                // Reschedule support
+                if (!empty($details['current'])) {
+                    $events[$lastIndex]['rescheduled'] = [
+                        'previous' => $details['previous'] ?? null,
+                        'current'  => $details['current'],
+                    ];
+                }
+            }
+
+            // =====================================================
+            // END 1:1 PATCH
+            // =====================================================
+
 
 
             // $events[] = [
@@ -2167,15 +2211,13 @@ foreach ($allStatuses as $s) {
 
     $details = json_decode($s->detailsjson ?? '', true);
 
-    if($s->eventid === "32201"){
-        $a=1;
-    }
+   
 
 
 // ------------------------------------------------------------
 // RESOLVE COHORT IDS FROM THE *SECTION* WHERE GOOGLE MEET EXISTS
 // ------------------------------------------------------------
-$cohortids = [1221];
+$cohortids = [];
 $classType = 'group'; // default class type
 
 $gm = $DB->get_record('googlemeet', ['id' => $s->googlemeetid], '*', IGNORE_MISSING);

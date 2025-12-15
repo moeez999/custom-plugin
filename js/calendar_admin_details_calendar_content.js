@@ -6012,6 +6012,17 @@ document.addEventListener("DOMContentLoaded", () => {
       window.events = [];
       for (let i = 0; i < allEvents.length; i++) {
         const ev = allEvents[i];
+
+        // Extract date directly from the string to avoid timezone conversion issues
+        let eventDateStr = null;
+        if (
+          ev.start &&
+          typeof ev.start === "string" &&
+          ev.start.includes("T")
+        ) {
+          eventDateStr = ev.start.split("T")[0]; // Get YYYY-MM-DD directly from string
+        }
+
         // Only parse dates once
         const startDate = new Date(ev.start);
         const endDate = new Date(ev.end);
@@ -6089,8 +6100,18 @@ document.addEventListener("DOMContentLoaded", () => {
             eventEnd = endDate.toTimeString().slice(0, 5);
           }
         }
+        // Use the date extracted directly from the string (no timezone conversion)
+        // If we couldn't extract it, fall back to local date components
+        const localYMD =
+          eventDateStr ||
+          startDate.getFullYear() +
+            "-" +
+            String(startDate.getMonth() + 1).padStart(2, "0") +
+            "-" +
+            String(startDate.getDate()).padStart(2, "0");
+
         const eventObj = {
-          date: startDate.toISOString().split("T")[0],
+          date: localYMD,
           title: ev.title || "",
           start: eventStart,
           end: eventEnd,

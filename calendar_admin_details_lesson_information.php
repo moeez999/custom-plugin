@@ -2568,6 +2568,7 @@ let closeAll;
             acknowledged: $('#calendar_admin_cancel_ack').is(':checked'),
             selectedDate: $('#resched_date').val() || '',
             eventId: currentEventData ? currentEventData.eventid : '',
+            teacherId: currentEventData ? currentEventData.teacherId : '',
             status: 'cancelled'
         };
 

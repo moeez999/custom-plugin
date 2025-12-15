@@ -864,9 +864,14 @@
                         return rgbToHex(rgb);
                     })();
 
-                    const dateLabel = root.querySelector('.conference_modal_date_btn')?.textContent.trim() ||
-                        '';
+                    const dateLabel = root.querySelector(
+                            '.teacher-block[data-teacher="1"] .conference_modal_date_btn')?.textContent
+                        .trim() || '';
+                    const endDateLabel = root.querySelector(
+                            '.teacher-block[data-teacher="2"] .conference_modal_date_btn')?.textContent
+                        .trim() || '';
                     const startDateUnix = parseDateLabelToUnix(dateLabel);
+                    const endDateUnix = parseDateLabelToUnix(endDateLabel);
 
                     let st = stateByTeacher.get(teacherIdx);
                     if (!st || (st.days && st.days.length === 0)) {
@@ -960,7 +965,9 @@
                             label: scheduleLabel
                         },
                         startDateLabel: dateLabel,
-                        startDateUnix
+                        startDateUnix,
+                        endDateLabel,
+                        endDateUnix
                     };
                 };
 
@@ -1033,9 +1040,19 @@
                             node: idx === 1 ? $('#eventTimezoneDropdown') : $(
                                 '#eventTimezoneDropdownRight')
                         });
-                        if (!t.startDateUnix) errors.push({
-                            msg: `Select ${idx===1?'Start':'End'} Date for Teacher ${idx}`,
-                            node: root.querySelector('.conference_modal_date_btn')
+
+                        // Check appropriate date field based on teacher index
+                        const dateField = idx === 1 ? t.startDateUnix : t.endDateUnix;
+                        const dateLabel = idx === 1 ? 'Start' : 'End';
+                        const dateBtn = idx === 1 ?
+                            root.querySelector(
+                                '.teacher-block[data-teacher="1"] .conference_modal_date_btn') :
+                            root.querySelector(
+                                '.teacher-block[data-teacher="2"] .conference_modal_date_btn');
+
+                        if (!dateField) errors.push({
+                            msg: `Select ${dateLabel} Date for Teacher ${idx}`,
+                            node: dateBtn
                         });
                     };
 
@@ -1177,6 +1194,7 @@
                     const shortname = (document.querySelector('#cohortShortInput')?.value || '').trim();
                     const name = shortname || idnumber || 'New Cohort';
                     const startdate = main.startDateUnix || tutor.startDateUnix || null;
+                    const enddate = main.endDateUnix || tutor.endDateUnix || null;
 
                     const mainHM = earliestStartHM(main.schedule);
                     const tutorHM = earliestStartHM(tutor.schedule);
@@ -1199,7 +1217,7 @@
                         descriptionformat: 1,
                         cohortcolor: main.colorHex || tutor.colorHex || null,
                         startdate,
-                        enddate: null,
+                        enddate,
                         cohorthours: mainHM.hours,
                         cohortminutes: mainHM.minutes,
                         cohorttutorhours: tutorHM.hours,

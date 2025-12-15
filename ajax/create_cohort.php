@@ -138,6 +138,59 @@ try {
         throw new moodle_exception('invaliddata', 'error', '', 'enddate cannot be earlier than startdate');
     }
 
+
+
+    //
+    // --------------------------------------------------
+    // 1️⃣ Split prefix and number
+    // --------------------------------------------------
+    if (!preg_match('/^([A-Za-z]+)(\d+)$/', $cohort->shortname, $matches)) {
+        throw new moodle_exception('Invalid cohort shortname format');
+    }
+
+    $prefix = $matches[1];     // AK
+    $currentNumber = (int)$matches[2]; // 4
+
+    if ($currentNumber <= 1) {
+        throw new moodle_exception('Cannot reduce cohort number below 1');
+    }
+
+    // --------------------------------------------------
+    // 2️⃣ Reduce number by 1 → AK3
+    // --------------------------------------------------
+    $previousNumber = $currentNumber - 1;
+    $previousShortname = $prefix . $previousNumber; // AK3
+
+    // --------------------------------------------------
+    // 3️⃣ Fetch cohort with shortname AK3
+    // --------------------------------------------------
+    $previousCohort = $DB->get_record('cohort', [
+        'shortname' => $previousShortname
+    ], '*', IGNORE_MISSING);
+
+    if (!$previousCohort) {
+        throw new moodle_exception('Previous cohort not found: ' . $previousShortname);
+    }
+
+    // --------------------------------------------------
+    // 4️⃣ Generate NEW name for AK4 (same name, increment number)
+    // --------------------------------------------------
+    // Example:
+    // AK3 → name = "Academic Batch 3"
+    // AK4 → name = "Academic Batch 4"
+
+    $baseName = $previousCohort->name;
+
+    // Replace trailing number in name (if exists)
+    if (preg_match('/^(.*?)(\d+)$/', $baseName, $nameMatch)) {
+        $newName = trim($nameMatch[1]) . ' ' . $currentNumber;
+    } else {
+        // If name does not contain number, append it
+        $newName = $baseName . ' ' . $currentNumber;
+    }
+
+    $cohort->name = $newName;
+    //
     // Create
     require_once($CFG->dirroot . '/cohort/lib.php');
     $cohortid = cohort_add_cohort($cohort);
