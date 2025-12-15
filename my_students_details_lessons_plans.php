@@ -36,10 +36,10 @@
         </div>
 
         <!-- Skip button -->
-        <button
+        <a href="my_students_details_lessons_plans_teacher_profiles_list.php"><button
             class="px-5 py-2 text-sm md:text-base border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">
             Skip
-        </button>
+        </button></a>
     </header>
 
     <!-- Main content -->

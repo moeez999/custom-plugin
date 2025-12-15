@@ -184,7 +184,7 @@
         border: 2px solid #e5e7eb;
         border-radius: 5px;
         background: #ffffff;
-        padding: 10px 12px;
+        padding: 10px 4px;
         display: flex;
         align-items: center;
         gap: 10px;

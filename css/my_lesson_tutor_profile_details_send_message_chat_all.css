@@ -10,8 +10,8 @@
   /* make room for top site header (approx 80px); adjust if needed */
   height: calc(93vh - 80px);
   min-width: 1100px;
-  width: 95vw;
-  max-width: 1440px;
+  width: 100vw;
+  max-width: 1500px;
   margin: 0 auto;
   overflow: hidden !important;
   box-sizing: border-box;
@@ -19,7 +19,9 @@
   font-family: "Nunito Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 14px;
   border-top: 1px solid #e4e4ea;
-  margin-top: -40px;   /* under site header */
+  margin-top: -42px;   /* under site header */
+  margin-left:-50px;
+
 }
 
 /* ===========================
@@ -27,7 +29,7 @@
    =========================== */
 
 #message_all_sidebar {
-  width: 360px;
+  width: 380px;
   border-right: 1px solid #e4e4ea;
   background: #ffffff;
   display: flex;
@@ -40,7 +42,7 @@
 #message_all_tabs {
   display: flex;
   border-bottom: 1px solid #ececf2;
-  height: 54px;
+  height: 61px;
   align-items: flex-end;
   padding-left: 18px;
   margin: 0;
@@ -72,11 +74,11 @@
   content: "";
   display: block;
   height: 3px;
-  width: 60%;
+  width: 100%;
   border-radius: 999px;
   background: #ff3b30;
   position: absolute;
-  left: 0;
+  left: -20px;
   right: 0;
   bottom: -1px;
   margin: 0 auto;
@@ -99,7 +101,7 @@
   max-height: 100%;
   overflow-y: auto;
   background: #ffffff;
-  padding: 6px 0 0 0;
+  padding: 0 8px 0 0;
   margin: 0;
 }
 
@@ -117,7 +119,7 @@
   gap: 12px;
   position: relative;
   box-sizing: border-box;
-  margin: 1px 1px 1px 1px;
+  margin: -1px 1px 1px 1px;
   padding: 14px 12px;
   border-radius: 4px;
   background: #ffffff;
@@ -301,9 +303,10 @@
   gap: 10px;
   margin-bottom: 6px;
   width: 100%;
-  max-width: 700px;
+  max-width: 735px;
   padding: 10px 10px;
   position: relative;
+  margin-left:12px;
 }
 
 /* ===========================
@@ -529,8 +532,8 @@
   display: flex;
   flex-direction: column;
   margin: 20px 0 20px 10px;
-  max-width: 700px;
-  width: calc(100% - 72px);
+  max-width: 740px;
+  /* width: calc(100% - 72px); */
   box-sizing: border-box;
   flex-shrink: 0;
   transition: border-color .15s, box-shadow .15s;
@@ -696,7 +699,7 @@
    =========================== */
 
 #message_all_details_wrap {
-  width: 330px;
+  width: 360px;
   border-left: 1px solid #ededed;
   background: #fff;
   min-width: 230px;
@@ -711,7 +714,7 @@
 }
 
 #message_all_details_header {
-  padding: 14px 18px 10px 18px;
+  padding: 28px 18px 10px 18px;
   font-size: 15px;
   font-weight: 600;
   border-bottom: 1px solid #ededed;
