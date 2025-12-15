@@ -325,7 +325,8 @@
                     gap: 8px;
                     padding: 12px 16px;
                     border-radius: 8px;
-                    border: 1px solid #e6e8ef;
+                    border-radius: 8px;
+                    border: 2px solid #edecec;
                     background: #fff;
                     cursor: pointer;
                     font-weight: 600;
