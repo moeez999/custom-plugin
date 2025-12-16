@@ -893,6 +893,92 @@ echo $studentsItemsHtml;
         </div>
     </div>
 
+    <!-- Change Teacher Checkbox -->
+    <div class="one2one-change-teacher-section" style="margin-top: 15px;">
+        <label class="one2one-checkbox-label" style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="checkbox" id="changeTeacherCheckbox" style="width: 18px; height: 18px; cursor: pointer;">
+            <span style="font-size: 14px; font-weight: 500;">Change Teacher</span>
+        </label>
+    </div>
+
+    <!-- New Teacher Dropdown (hidden by default) -->
+    <div id="newTeacherDropdownSection" style="display: none; margin-top: 15px;">
+        <div class="calendar_admin_details_create_cohort_manage_class_tab_wrap">
+            <div class="calendar_admin_details_create_cohort_manage_class_tab_label">New Teacher</div>
+
+            <!-- Trigger -->
+            <button type="button" class="calendar_admin_details_create_cohort_manage_class_tab_trigger"
+                aria-haspopup="listbox" aria-expanded="false" id="newTeacherDropdownTrigger">
+                <div class="calendar_admin_details_create_cohort_manage_class_tab_left">
+                    <img class="calendar_admin_details_create_cohort_manage_class_tab_avatar" id="newTeacherCurrentImg"
+                        src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&auto=format&fit=crop"
+                        alt="Selected teacher">
+                    <span class="calendar_admin_details_create_cohort_manage_class_tab_name"
+                        id="newTeacherCurrentLabel">Select new teacher</span>
+                </div>
+
+                <img class="calendar_admin_details_create_cohort_manage_class_tab_chev"
+                    src="./img/dropdown-arrow-down.svg" alt="">
+            </button>
+
+            <!-- Dropdown -->
+            <div class="calendar_admin_details_create_cohort_manage_class_tab_menu" id="newTeacherDropdownMenu">
+                <div class="calendar_admin_details_create_cohort_manage_class_tab_panel" role="listbox"
+                    aria-labelledby="newTeacherDropdownTrigger" id="newTeacherDropdownList">
+                    <input type="text" id="newTeacherSearchInput" class="dropdown-search"
+                        placeholder="Enter Teacher Name...">
+                    <!-- Items (dynamic) -->
+                    <?php
+                    /** Collect unique teacher user IDs from cohorts */
+                    $userIds = $DB->get_fieldset_sql("
+                        SELECT DISTINCT uid
+                          FROM (
+                                SELECT cohortmainteacher AS uid FROM {cohort}
+                                 WHERE cohortmainteacher IS NOT NULL AND cohortmainteacher > 0
+                                UNION
+                                SELECT cohortguideteacher AS uid FROM {cohort}
+                                 WHERE cohortguideteacher IS NOT NULL AND cohortguideteacher > 0
+                          ) t
+                    ");
+
+                    /** Fetch user records (not deleted/suspended) */
+                    $teachersNew = [];
+                    if ($userIds) {
+                        list($inSql, $params) = $DB->get_in_or_equal($userIds, SQL_PARAMS_NAMED);
+                        $fields = "id, firstname, lastname, picture, imagealt, firstnamephonetic, lastnamephonetic, middlename, alternatename";
+                        $teachersNew = $DB->get_records_select('user', "id $inSql AND deleted = 0 AND suspended = 0", $params, 'firstname ASC, lastname ASC', $fields);
+                    }
+                    $teachersNewHtml = '';
+
+                    if (!empty($teachersNew)) {
+                        foreach ($teachersNew as $teacher) {
+                            $picture = new user_picture($teacher);
+                            $picture->size = 50;
+                            $imageUrl = $picture->get_url($PAGE)->out(false);
+                            $name   = fullname($teacher, true);
+
+                            $teachersNewHtml .=
+                                '<div class="calendar_admin_details_create_cohort_manage_class_tab_item new-teacher-item" role="option" '.
+                                    'data-userid="'.(int)$teacher->id.'" '.
+                                    'data-name="'.s($name).'" '.
+                                    'data-img="'.s($imageUrl).'">'.
+                                    '<img class="calendar_admin_details_create_cohort_manage_class_tab_avatar" src="'.s($imageUrl).'" alt="'.s($name).'" />'.
+                                    '<span class="calendar_admin_details_create_cohort_manage_class_tab_item_name">'.format_string($name).'</span>'.
+                                '</div>';
+                        }
+                    } else {
+                        $teachersNewHtml =
+                            '<div class="calendar_admin_details_create_cohort_manage_class_tab_item" role="option" aria-disabled="true">'.
+                                '<span class="calendar_admin_details_create_cohort_manage_class_tab_item_name">No teachers found</span>'.
+                            '</div>';
+                    }
+                    echo $teachersNewHtml;
+                    ?>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <label class="one2one-section-label">Lesson type</label>
     <div class="one2one-lesson-type-row">
         <div class="one2one-lesson-type-btn-manage " data-type="single">
@@ -1045,7 +1131,8 @@ echo $studentsItemsHtml;
                                 <button class="weekly_lesson_stepper_manage" id="weeklyLessonOccurrenceMinusManage"
                                     disabled>−</button>
                                 <span id="weeklyLessonOccurrenceDisplayManage"
-                                    style="font-size:1.11rem;font-weight:600;">13 occurrences</span>
+                                    style="font-size:1.11rem;font-weight:600;">13
+                                    occurrences</span>
                                 <button class="weekly_lesson_stepper_manage" id="weeklyLessonOccurrencePlusManage"
                                     disabled>+</button>
                             </div>
@@ -2977,11 +3064,18 @@ document.addEventListener('DOMContentLoaded', function() {
             studentId: student.id || null,
             lessonType,
             cmid: cmid,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
+            // Add change teacher info if checkbox is checked
+            changeTeacher: window.isChangeTeacherChecked ? window.isChangeTeacherChecked() :
+                false,
+            newTeacherId: window.isChangeTeacherChecked && window.isChangeTeacherChecked() ?
+                (window.getSelectedNewTeacher ? window.getSelectedNewTeacher() : null) : null
         };
 
         console.log(
-            `Teacher ID: ${formData.teacherId ?? 'N/A'} | Student ID: ${formData.studentId ?? 'N/A'} | CMID: ${cmid ?? 'N/A'}`
+            `Teacher ID: ${formData.teacherId ?? 'N/A'} | Student ID: ${formData.studentId ?? 'N/A'} | CMID: ${cmid ?? 'N/A'}`,
+            formData.changeTeacher ?
+            ` | Change Teacher: YES | New Teacher ID: ${formData.newTeacherId ?? 'N/A'}` : ''
         );
 
         if (lessonType === 'single') {
@@ -3328,5 +3422,105 @@ document.addEventListener('DOMContentLoaded', function() {
 
         console.log('Form reset successfully');
     }
+});
+
+// ========== CHANGE TEACHER FUNCTIONALITY ==========
+$(document).ready(function() {
+    let selectedNewTeacherId = null;
+
+    // Toggle new teacher dropdown section when checkbox is checked
+    $('#changeTeacherCheckbox').on('change', function() {
+        if ($(this).is(':checked')) {
+            $('#newTeacherDropdownSection').slideDown(200);
+        } else {
+            $('#newTeacherDropdownSection').slideUp(200);
+            selectedNewTeacherId = null;
+            // Reset new teacher selection
+            $('#newTeacherCurrentLabel').text('Select new teacher');
+            $('#newTeacherCurrentImg').attr('src',
+                'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&auto=format&fit=crop'
+            );
+            $('#newTeacherDropdownTrigger').removeAttr('data-userid');
+            $('.new-teacher-item').removeClass('selected');
+        }
+    });
+
+    // Toggle new teacher dropdown list
+    $('#newTeacherDropdownTrigger').on('click', function(e) {
+        e.stopPropagation();
+        const $menu = $('#newTeacherDropdownMenu');
+        const isOpen = $menu.is(':visible');
+
+        // Close all other dropdowns first
+        $('.calendar_admin_details_create_cohort_manage_class_tab_menu').not($menu).hide();
+
+        if (isOpen) {
+            $menu.hide();
+            $(this).attr('aria-expanded', 'false');
+        } else {
+            $menu.show();
+            $(this).attr('aria-expanded', 'true');
+        }
+    });
+
+    // Close dropdown when clicking outside
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('#newTeacherDropdownTrigger, #newTeacherDropdownMenu').length) {
+            $('#newTeacherDropdownMenu').hide();
+            $('#newTeacherDropdownTrigger').attr('aria-expanded', 'false');
+        }
+    });
+
+    // Search functionality for new teacher dropdown
+    $('#newTeacherSearchInput').on('input', function() {
+        const searchTerm = $(this).val().toLowerCase();
+        $('.new-teacher-item').each(function() {
+            const teacherName = $(this).data('name').toLowerCase();
+            if (teacherName.includes(searchTerm)) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    });
+
+    // Prevent dropdown from closing when clicking search input
+    $('#newTeacherSearchInput').on('click', function(e) {
+        e.stopPropagation();
+    });
+
+    // Select new teacher
+    $(document).on('click', '.new-teacher-item', function() {
+        if ($(this).attr('aria-disabled') === 'true') return;
+
+        const teacherId = $(this).data('userid');
+        const teacherName = $(this).data('name');
+        const teacherImg = $(this).data('img');
+
+        // Update selection
+        selectedNewTeacherId = teacherId;
+        $('.new-teacher-item').removeClass('selected');
+        $(this).addClass('selected');
+
+        // Update trigger button display
+        $('#newTeacherCurrentLabel').text(teacherName);
+        $('#newTeacherCurrentImg').attr('src', teacherImg);
+        $('#newTeacherDropdownTrigger').attr('data-userid', teacherId);
+
+        // Close dropdown
+        $('#newTeacherDropdownMenu').hide();
+        $('#newTeacherDropdownTrigger').attr('aria-expanded', 'false');
+
+        console.log('New teacher selected:', teacherId, teacherName);
+    });
+
+    // Expose getter for selected new teacher
+    window.getSelectedNewTeacher = function() {
+        return selectedNewTeacherId;
+    };
+
+    window.isChangeTeacherChecked = function() {
+        return $('#changeTeacherCheckbox').is(':checked');
+    };
 });
 </script>
