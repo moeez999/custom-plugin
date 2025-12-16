@@ -1626,14 +1626,17 @@ body {
   box-sizing: border-box;
 }
 
+#grid .day .day-inner .slots > div.slot-white.slot-extra {
+  border: 1px dotted #9aa7b8 !important;
+}
+
 #grid .day .day-inner .slots > div.slot-white.slot-white-multi {
   background: transparent !important;
   border-style: dashed;
 }
 
 .event.class-type-availability {
-  background: color-mix(in srgb, #9aa7b8 18%, #fff);
-  border: 2px dashed #9aa7b8 !important;
+  /* Background and border set inline by JS with teacher color */
   color: #1f2a3a;
   opacity: 0.85;
 }
@@ -1644,8 +1647,7 @@ body {
 }
 
 .event.class-type-extra-slot {
-  background: color-mix(in srgb, #7088ff 14%, #fff);
-  border: 1px solid #7088ff;
+  /* Background and border set inline by JS with teacher color */
   color: #1f2a3a;
 }
 

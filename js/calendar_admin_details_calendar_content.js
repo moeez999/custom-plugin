@@ -2866,6 +2866,10 @@ $(function () {
         const $slot = $("<div>").toggleClass("slot-white", makeWhite);
         if (slotSource) {
           $slot.attr("data-source", slotSource);
+          // Add dotted border class for extra slots
+          if (slotSource === "extra_slot") {
+            $slot.addClass("slot-extra");
+          }
           if (r === 0 || minuteOfDay % 120 === 0) {
             // Log occasionally to avoid spam
             console.log("White slot created:", {
@@ -3168,32 +3172,24 @@ $(function () {
           borderColorStyle = "border-color: rgba(253,216,48,0.7) !important;";
         } else if (ev.classType === "availability") {
           classTypeClass = "class-type-availability";
-          borderColorStyle = "border: 2px dashed #9aa7b8 !important;";
-          // Add background color based on teacher color for availability events
+          // Use teacher color for both background and border
           if (ev.teacherId) {
             const teacherColor = getTeacherColor(ev.teacherId);
-            // Convert HSL to RGB for proper transparency (extract RGB from HSL)
-            // Create a temporary element to compute the color
-            const tempDiv = document.createElement("div");
-            tempDiv.style.color = teacherColor;
-            document.body.appendChild(tempDiv);
-            const computedColor = window.getComputedStyle(tempDiv).color;
-            document.body.removeChild(tempDiv);
-
-            // Extract RGB values from "rgb(r, g, b)" format
-            const rgbMatch = computedColor.match(
-              /rgb\((\d+),\s*(\d+),\s*(\d+)\)/
-            );
-            if (rgbMatch) {
-              const r = rgbMatch[1];
-              const g = rgbMatch[2];
-              const b = rgbMatch[3];
-              borderColorStyle += `background-color: rgba(${r}, ${g}, ${b}, 0.15) !important;`;
-            }
+            borderColorStyle = `border: 2px solid ${teacherColor} !important; background: color-mix(in srgb, ${teacherColor} 15%, #fff) !important;`;
+          } else {
+            borderColorStyle =
+              "border: 2px solid #9aa7b8 !important; background: color-mix(in srgb, #9aa7b8 15%, #fff) !important;";
           }
         } else if (ev.classType === "extra_slot") {
           classTypeClass = "class-type-extra-slot";
-          borderColorStyle = "border: 1px solid #7088ff !important;";
+          // Use teacher color for both background and dotted border
+          if (ev.teacherId) {
+            const teacherColor = getTeacherColor(ev.teacherId);
+            borderColorStyle = `border: 2px dotted ${teacherColor} !important; background: color-mix(in srgb, ${teacherColor} 15%, #fff) !important;`;
+          } else {
+            borderColorStyle =
+              "border: 2px dotted #7088ff !important; background: color-mix(in srgb, #7088ff 15%, #fff) !important;";
+          }
         }
 
         // Combine styles (include any custom inline style from the event object)
@@ -3283,7 +3279,9 @@ $(function () {
           statusMeta ? ` data-status-code="${statusMeta.code}"` : ""
         }>
             ${
-              isShortEvent && ev.classType !== "availability"
+              isShortEvent &&
+              ev.classType !== "availability" &&
+              ev.classType !== "extra_slot"
                 ? `
                 <div class=\"ev-when\" style=\"display:flex;align-items:center;gap:4px;\">
                   ${
@@ -3318,7 +3316,9 @@ $(function () {
                 : `
                   ${statusIconHtml}
                   ${
-                    !isShortEvent && ev.classType !== "availability"
+                    !isShortEvent &&
+                    ev.classType !== "availability" &&
+                    ev.classType !== "extra_slot"
                       ? `<div class=\"ev-top\">
                           <div class=\"ev-left\">${
                             ev.avatar
@@ -3350,14 +3350,17 @@ $(function () {
                       : ""
                   }
                   ${
-                    ev.classType !== "availability"
+                    ev.classType !== "availability" &&
+                    ev.classType !== "extra_slot"
                       ? `<div class=\"ev-when\">${fmt12(ev.start)} – ${fmt12(
                           ev.end
                         )}</div>`
                       : ""
                   }
                   ${
-                    !isShortEvent && ev.classType !== "availability"
+                    !isShortEvent &&
+                    ev.classType !== "availability" &&
+                    ev.classType !== "extra_slot"
                       ? `<div class=\"ev-title\">${
                           (ev.classType === "one2one_weekly" ||
                             ev.classType === "one2one_single") &&
@@ -3377,8 +3380,12 @@ $(function () {
         const baseZ = 1000 + (ev.stackIndex || 0);
         $ev.css("z-index", baseZ);
 
-        // Add hover tooltip for short events (less than 1 hour) - exclude availability events
-        if (isShortEvent && ev.classType !== "availability") {
+        // Add hover tooltip for short events (less than 1 hour) - exclude availability and extra_slot events
+        if (
+          isShortEvent &&
+          ev.classType !== "availability" &&
+          ev.classType !== "extra_slot"
+        ) {
           // Create tooltip element
           const $tooltip = $(`
             <div class="event-tooltip">
