@@ -1708,6 +1708,9 @@ $(function () {
       return;
     }
 
+    // Store event data globally so other scripts can access it
+    window.currentEventData = eventData;
+
     // Populate the modal with event data
     populateManageSessionModal(eventData);
 
@@ -3816,7 +3819,8 @@ document.addEventListener("DOMContentLoaded", () => {
     while (el.firstChild) el.removeChild(el.firstChild);
   }
 
-  // Small global loader helpers (ensure loader shows for at least 3 seconds)
+  // Small global loader helpers with reference counting to prevent flickering
+  let __loaderRefCount = 0; // Track number of active API calls
   let __loaderShownAt = 0;
   let __loaderHideTimer = null;
   const __LOADER_MIN_MS = 3000; // 3 seconds
@@ -3835,15 +3839,28 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function showGlobalLoader() {
+    __loaderRefCount++;
+    console.log("Loader ref count increased:", __loaderRefCount);
+
     if (__loaderHideTimer) {
       clearTimeout(__loaderHideTimer);
       __loaderHideTimer = null;
     }
-    __setLoaderDisplay("flex");
-    __loaderShownAt = Date.now();
+
+    // Only show loader on first call
+    if (__loaderRefCount === 1) {
+      __setLoaderDisplay("flex");
+      __loaderShownAt = Date.now();
+    }
   }
 
   function hideGlobalLoader() {
+    __loaderRefCount = Math.max(0, __loaderRefCount - 1);
+    console.log("Loader ref count decreased:", __loaderRefCount);
+
+    // Only hide when all API calls are complete
+    if (__loaderRefCount > 0) return;
+
     const elapsed = __loaderShownAt
       ? Date.now() - __loaderShownAt
       : __LOADER_MIN_MS;
@@ -3858,6 +3875,10 @@ document.addEventListener("DOMContentLoaded", () => {
       __loaderHideTimer = setTimeout(doHide, __LOADER_MIN_MS - elapsed);
     }
   }
+
+  // Expose loader functions globally so API calls can use them
+  window.showGlobalLoader = showGlobalLoader;
+  window.hideGlobalLoader = hideGlobalLoader;
 
   // Function to trigger calendar reload
   function triggerCalendarReload() {
@@ -3943,10 +3964,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       updateTeacherPills();
 
-      // Reload teachers list to re-sort (selected items to top)
-      loadTeachers().then(() => {
-        onTeacherFilterChange();
-      });
+      // Re-sort existing teachers list (selected items to top) without refetching
+      resortTeacherList();
+      onTeacherFilterChange();
     });
 
     return wrap;
@@ -4026,14 +4046,14 @@ document.addEventListener("DOMContentLoaded", () => {
             if (colorDot) colorDot.style.display = "none";
           }
 
-          // Reload teacher list (rebuilds with correct selection state)
-          loadTeachers().then(() => {
-            // Update pills (after list is rebuilt)
-            updateTeacherPills();
+          // Re-sort teacher list without refetching
+          resortTeacherList();
 
-            // Update calendar
-            onTeacherFilterChange();
-          });
+          // Update pills
+          updateTeacherPills();
+
+          // Update calendar
+          onTeacherFilterChange();
         });
       selectedTeachersContainer.appendChild(dropdownPill);
     });
@@ -4067,9 +4087,38 @@ document.addEventListener("DOMContentLoaded", () => {
     // Do NOT append initials or any text
   }
 
+  function resortTeacherList() {
+    // Re-sort existing teacher options: selected first, then unselected
+    const allOptions = Array.from(
+      teacherFieldset.querySelectorAll(".teacher-option")
+    );
+
+    allOptions.sort((a, b) => {
+      const aId = a.dataset.teacherId;
+      const bId = b.dataset.teacherId;
+      const aSelected = selectedTeacherIds.includes(aId);
+      const bSelected = selectedTeacherIds.includes(bId);
+
+      if (aSelected && !bSelected) return -1;
+      if (!aSelected && bSelected) return 1;
+      return 0;
+    });
+
+    // Clear and re-append in sorted order
+    clear(teacherFieldset);
+    allOptions.forEach((option) => teacherFieldset.appendChild(option));
+  }
+
   async function loadTeachers() {
+    // Show loader
+    if (window.showGlobalLoader) window.showGlobalLoader();
+
     clear(teacherFieldset);
     const data = await fetchJSON(`${API_BASE}?action=teachers`);
+
+    // Hide loader
+    if (window.hideGlobalLoader) window.hideGlobalLoader();
+
     if (!data.ok) return [];
 
     const list = data.data || [];
@@ -4414,6 +4463,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function loadAllCohorts() {
+    // Show loader
+    if (window.showGlobalLoader) window.showGlobalLoader();
+
     clear(cohortFieldset);
     clear(oneOnOneFieldset);
     cohortNoResults.style.display = "none";
@@ -4429,6 +4481,9 @@ document.addEventListener("DOMContentLoaded", () => {
     } else if (role === "student") {
       data = await fetchJSON(`${API_BASE}?action=cohorts`);
     }
+
+    // Hide loader
+    if (window.hideGlobalLoader) window.hideGlobalLoader();
 
     console.log("Cohort data fetched:", data);
     if (!data.ok) return [];
@@ -4507,12 +4562,16 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function loadCohortsForTeachers(teacherIds, returnList = false) {
+    // Show loader
+    if (window.showGlobalLoader) window.showGlobalLoader();
+
     clear(cohortFieldset);
     clear(oneOnOneFieldset);
     cohortNoResults.style.display = "none";
     if (oneOnOneNoResults) oneOnOneNoResults.style.display = "none";
 
     if (!teacherIds || !teacherIds.length) {
+      if (window.hideGlobalLoader) window.hideGlobalLoader();
       return loadAllCohorts();
     }
 
@@ -4520,6 +4579,9 @@ document.addEventListener("DOMContentLoaded", () => {
       teacherIds.join(",")
     )}`;
     const data = await fetchJSON(url);
+
+    // Hide loader
+    if (window.hideGlobalLoader) window.hideGlobalLoader();
 
     if (!data.ok) return [];
 
@@ -4841,6 +4903,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function loadStudentsForCohorts(cohortIds, clearSelection = true) {
+    // Show loader
+    if (window.showGlobalLoader) window.showGlobalLoader();
+
     clear(studentFieldset);
 
     // Only clear selection if explicitly requested
@@ -4853,6 +4918,7 @@ document.addEventListener("DOMContentLoaded", () => {
       div.style.padding = "8px";
       div.textContent = "Select cohorts to see students";
       studentFieldset.appendChild(div);
+      if (window.hideGlobalLoader) window.hideGlobalLoader();
       return;
     }
 
@@ -4860,6 +4926,9 @@ document.addEventListener("DOMContentLoaded", () => {
       cohortIds.join(",")
     )}`;
     const data = await fetchJSON(url);
+
+    // Hide loader
+    if (window.hideGlobalLoader) window.hideGlobalLoader();
     if (!data.ok) {
       return;
     }
@@ -5647,13 +5716,13 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   const DAY_NAME_TO_INDEX = {
-    monday: 0,
-    tuesday: 1,
-    wednesday: 2,
-    thursday: 3,
-    friday: 4,
-    saturday: 5,
-    sunday: 6,
+    monday: 1,
+    tuesday: 2,
+    wednesday: 3,
+    thursday: 4,
+    friday: 5,
+    saturday: 6,
+    sunday: 7,
   };
 
   function normalizeMinutes(val) {
@@ -5688,7 +5757,17 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!teachers || teachers.length === 0) return;
 
     const baseDate = currentStart || new Date();
-    const baseMs = baseDate.getTime();
+    // Ensure baseDate is at midnight to avoid timezone issues
+    const base = new Date(
+      baseDate.getFullYear(),
+      baseDate.getMonth(),
+      baseDate.getDate(),
+      0,
+      0,
+      0,
+      0
+    );
+    const baseMs = base.getTime();
     const weekEndMs =
       currentEnd && currentEnd.getTime
         ? currentEnd.getTime()
@@ -5704,8 +5783,16 @@ document.addEventListener("DOMContentLoaded", () => {
           DAY_NAME_TO_INDEX[String(slot.day || "").toLowerCase()];
         if (typeof dayIndex !== "number") return;
 
-        const dayDate = new Date(baseDate);
-        dayDate.setDate(baseDate.getDate() + dayIndex);
+        // Create a new date at midnight by adding days to base date
+        const dayDate = new Date(
+          base.getFullYear(),
+          base.getMonth(),
+          base.getDate() + dayIndex,
+          0,
+          0,
+          0,
+          0
+        );
 
         const startMin = normalizeMinutes(slot.startTime);
         const endMin = normalizeMinutes(slot.endTime);
@@ -5796,15 +5883,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Determine the event date using the declared day; respect startDate as the earliest allowed occurrence.
         const dateStr = (() => {
-          const startDateObj = slot.startDate
-            ? new Date(`${slot.startDate}T00:00:00`)
-            : null;
+          let startDateObj = null;
+          if (slot.startDate) {
+            const [y, m, d] = slot.startDate.split("-").map(Number);
+            startDateObj = new Date(y, m - 1, d, 0, 0, 0, 0);
+          }
 
           const dayIndex =
             DAY_NAME_TO_INDEX[String(slot.day || "").toLowerCase()];
           if (typeof dayIndex === "number") {
-            const candidate = new Date(baseDate);
-            candidate.setDate(baseDate.getDate() + dayIndex);
+            // Create candidate date at midnight by adding days to baseDate
+            const candidate = new Date(
+              baseDate.getFullYear(),
+              baseDate.getMonth(),
+              baseDate.getDate() + dayIndex,
+              0,
+              0,
+              0,
+              0
+            );
 
             // If this candidate week is before the startDate, skip this week
             if (startDateObj && candidate < startDateObj) return null;
@@ -5815,8 +5912,16 @@ document.addEventListener("DOMContentLoaded", () => {
           // Fallback to startDate weekday if day is missing
           if (startDateObj && !Number.isNaN(startDateObj.getTime())) {
             const startDayIdx = (startDateObj.getDay() + 6) % 7;
-            const candidate = new Date(baseDate);
-            candidate.setDate(baseDate.getDate() + startDayIdx);
+            // Create candidate date at midnight by adding days to baseDate
+            const candidate = new Date(
+              baseDate.getFullYear(),
+              baseDate.getMonth(),
+              baseDate.getDate() + startDayIdx,
+              0,
+              0,
+              0,
+              0
+            );
             if (candidate < startDateObj) return null;
             return ymd(candidate);
           }

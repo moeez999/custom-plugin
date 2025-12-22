@@ -10,8 +10,9 @@
 </head>
 
 <body>
+    <!-- Global Loader -->
     <div id="loader"
-        style=" display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.6); z-index:9999; align-items:center; justify-content:center; ">
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.6); z-index:99999; align-items:center; justify-content:center;">
         <img src="../../img/loader.png" alt="Loading..." class="spin-logo" style="width:100px;height:100px;">
     </div>
     <!-- Toast Notification -->
@@ -1105,7 +1106,7 @@
                 createBtn?.addEventListener('click', (e) => {
                     e.preventDefault();
                     const loader = document.getElementById('loader');
-                    loader.style.display = 'flex'; // show loader
+                    if (loader) loader.style.display = 'flex';
 
                     const t1 = readTeacher(1);
                     const t2 = readTeacher(2);
@@ -1115,7 +1116,7 @@
                     });
 
                     if (!check.ok) {
-                        loader.style.display = 'none';
+                        if (loader) loader.style.display = 'none';
                         return;
                     }
 
@@ -1275,7 +1276,7 @@
                             console.error(err);
                             alert('Unexpected error creating cohort.');
                         } finally {
-                            loader.style.display = 'none'; // hide loader always
+                            if (loader) loader.style.display = 'none';
                         }
                     })();
 

@@ -2124,10 +2124,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             const cmid = window.selectedCmidManage ?? selectedElement?.dataset?.cmid ?? null;
+            const originalEventData = window.currentEventData || null;
             const payload = {
                 lessonType,
                 cmid,
-                activityIndex: selectedElement?.dataset?.activityIndex ?? null
+                activityIndex: selectedElement?.dataset?.activityIndex ?? null,
+                eventId: originalEventData ? originalEventData.id : null
             };
 
             // log the payload so you can see the cmid that will be sent/updated
@@ -3057,6 +3059,31 @@ document.addEventListener('DOMContentLoaded', function() {
                 ?.dataset?.cmid ?? null;
         }
 
+        // Get the original event data from global variable
+        const originalEventData = window.currentEventData || null;
+
+        // Extract event ID from multiple possible sources
+        let eventId = null;
+        if (originalEventData && originalEventData.eventid) {
+            eventId = originalEventData.eventid;
+        } else if (originalEventData && originalEventData.id) {
+            eventId = originalEventData.id;
+        } else if (window.eventId) {
+            eventId = window.eventId;
+        } else {
+            // Try to get from URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            eventId = urlParams.get('eventid') || urlParams.get('id') || null;
+        }
+
+        console.log('🔍 Event ID Detection:', {
+            fromEventid: originalEventData?.eventid || 'not found',
+            fromId: originalEventData?.id || 'not found',
+            fromWindowEventId: window.eventId || 'not found',
+            fromURL: eventId,
+            finalEventId: eventId
+        });
+
         const formData = {
             teacher,
             student,
@@ -3065,6 +3092,23 @@ document.addEventListener('DOMContentLoaded', function() {
             lessonType,
             cmid: cmid,
             timestamp: new Date().toISOString(),
+            // Add event ID
+            eventId: eventId,
+            // Add current data (original/old data)
+            currentData: originalEventData ? {
+                eventId: eventId,
+                title: originalEventData.title,
+                teacherId: originalEventData.teacherId,
+                studentids: originalEventData.studentids,
+                cohortids: originalEventData.cohortids,
+                start: originalEventData.start,
+                end: originalEventData.end,
+                date: originalEventData.date,
+                classType: originalEventData.classType,
+                duration: originalEventData.duration
+            } : null,
+            // Add new data will be populated below after getting all form values
+            newData: {},
             // Add change teacher info if checkbox is checked
             changeTeacher: window.isChangeTeacherChecked ? window.isChangeTeacherChecked() :
                 false,
@@ -3073,9 +3117,10 @@ document.addEventListener('DOMContentLoaded', function() {
         };
 
         console.log(
-            `Teacher ID: ${formData.teacherId ?? 'N/A'} | Student ID: ${formData.studentId ?? 'N/A'} | CMID: ${cmid ?? 'N/A'}`,
+            `Event ID: ${formData.eventId ?? 'N/A'} | Teacher ID: ${formData.teacherId ?? 'N/A'} | Student ID: ${formData.studentId ?? 'N/A'} | CMID: ${cmid ?? 'N/A'}`,
             formData.changeTeacher ?
-            ` | Change Teacher: YES | New Teacher ID: ${formData.newTeacherId ?? 'N/A'}` : ''
+            ` | Change Teacher: YES | New Teacher ID: ${formData.newTeacherId ?? 'N/A'}` : '',
+            '\nCurrent Data:', formData.currentData
         );
 
         if (lessonType === 'single') {
@@ -3220,11 +3265,27 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log(`  - CMID: ${cmid}`);
         }
 
+        // Populate newData with all the collected form values
+        formData.newData = {
+            eventId: formData.eventId,
+            teacherId: formData.changeTeacher ? formData.newTeacherId : formData.teacherId,
+            studentId: formData.studentId,
+            lessonType: formData.lessonType,
+            cmid: formData.cmid,
+            singleLesson: formData.singleLesson || null,
+            weeklyLesson: formData.weeklyLesson || null
+        };
+
         console.log('📤 Final Form Data:', formData);
+        console.log('📋 New Data:', formData.newData);
 
         const payload = {
-            data: formData
+            data: formData,
+            eventId: formData.eventId
         };
+
+        console.log('📦 Sending Payload with Event ID:', payload.eventId, '| Full Payload:',
+            payload);
 
         try {
             const response = await fetch('ajax/update_one2one.php', {
