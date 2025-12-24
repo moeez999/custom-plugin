@@ -315,7 +315,8 @@
   z-index: 99;
   border: 1.5px solid #eee;
   min-width: 210px;
-  max-height: 250px;
+  max-height: 152px;
+  overflow: auto;
   overflow-y: auto;
   animation: fadeIn 0.16s;
 }

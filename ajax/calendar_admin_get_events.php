@@ -1900,7 +1900,7 @@ try {
 
             // Convert weekday → day name
             $dayName = date('l', strtotime("Sunday +{$r->weekday} days"));
-
+            
             // Convert unix startdate → Y-m-d
             $startDateStr = $r->startdate ? date("Y-m-d", (int)$r->startdate) : null;
 

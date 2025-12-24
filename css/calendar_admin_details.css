@@ -1638,6 +1638,7 @@ body {
 .event.class-type-availability {
   /* Background and border set inline by JS with teacher color */
   color: #1f2a3a;
+  opacity: 0.85;
 }
 
 .event.class-type-availability .ev-title {

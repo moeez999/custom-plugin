@@ -545,6 +545,12 @@
 </head>
 
 <body>
+    <!-- Loader -->
+    <div id="loader"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.6); z-index:9999; align-items:center; justify-content:center;">
+        <img src="../../img/loader.png" alt="Loading..." class="spin-logo" style="width:100px;height:100px;">
+    </div>
+
     <!-- Toast Notification -->
     <div id="toastNotificationForAvailability" style="display:none; position:fixed; top:30px; right:30px; 
          background:#000; color:#fff; padding:16px 24px; 
@@ -750,12 +756,31 @@
         return days[parseInt(dayIndex)] || 'Unknown';
     }
 
-    function getStartDate() {
-        const d = new Date();
-        const day = (d.getDay() + 6) % 7;
-        d.setDate(d.getDate() - day);
-        return d.toISOString().split("T")[0];
+   function getStartDate() {
+    const d = new Date();
+
+    // normalize to local midnight
+    d.setHours(0, 0, 0, 0);
+
+    // Monday-based week
+    const day = (d.getDay() + 6) % 7;
+    d.setDate(d.getDate() - day);
+
+    return d.getFullYear() + '-' +
+        String(d.getMonth() + 1).padStart(2, '0') + '-' +
+        String(d.getDate()).padStart(2, '0');
+}
+
+
+    function getDateFromWeekAndDay(dayIndex) {
+        const weekStart = new Date(getStartDate());
+        weekStart.setDate(weekStart.getDate() + parseInt(dayIndex, 10));
+
+        return weekStart.getFullYear() + '-' +
+            String(weekStart.getMonth() + 1).padStart(2, '0') + '-' +
+            String(weekStart.getDate()).padStart(2, '0');
     }
+
 
     // Improved payload builder and logger
     function logAvailabilityPayload(action, specificBlock = null) {
@@ -770,11 +795,14 @@
 
         const slots = [];
         let $blockElement = null;
+        let payloadDate = getStartDate();
+
 
         if (specificBlock) {
             $blockElement = $(specificBlock);
             const $block = $blockElement;
             const dayIndex = $block.attr('data-day');
+            payloadDate = getDateFromWeekAndDay(dayIndex);
             const label = $block.find('.calendar_admin_details_setup_availablity_timelabel').text();
             const timeParts = label.split('–').map(t => t.trim());
             const startTime = timeParts[0] || '';
@@ -809,7 +837,7 @@
             teacher: teacherPayload,
             slots: slots,
             action: action,
-            startDate: getStartDate()
+            startDate: payloadDate
         });
 
         // =============================
@@ -817,7 +845,8 @@
         // =============================
 
         // Show loader
-        if (window.showGlobalLoader) window.showGlobalLoader();
+        const loader = document.getElementById('loader');
+        if (loader) loader.style.display = 'flex';
 
         $.ajax({
             url: M.cfg.wwwroot + "/local/customplugin/ajax/teacher_availability.php",
@@ -826,7 +855,7 @@
                 teacher: teacherPayload,
                 slots: slots,
                 action: action,
-                startDate: getStartDate()
+                startDate: payloadDate
             }),
             contentType: "application/json",
             success: function(response) {
@@ -872,7 +901,7 @@
             },
             complete: function() {
                 // Hide loader always
-                if (window.hideGlobalLoader) window.hideGlobalLoader();
+                if (loader) loader.style.display = 'none';
             }
         });
     }
