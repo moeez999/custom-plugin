@@ -1630,10 +1630,7 @@ echo $studentsItemsHtml;
     <div class="reschedule-lesson-modal">
         <div class="reschedule-lesson-header">
             <button class="reschedule-lesson-back-btn" id="rescheduleLessonBackBtn">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path d="M15 18l-6-6 6-6" stroke="#232323" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round" />
-                </svg>
+                <img src="./img/arrow-back.svg" alt="arrow-left">
             </button>
             <button class="reschedule-lesson-close-btn" id="rescheduleLessonCloseBtn">&times;</button>
         </div>
@@ -2693,7 +2690,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         const timeEl = $('#rescheduleLessonTime');
                         if (timeEl && originalEventData.start && originalEventData.end) {
                             timeEl.textContent =
-                            `${originalEventData.start} - ${originalEventData.end}`;
+                                `${originalEventData.start} - ${originalEventData.end}`;
                         }
 
                         // Set student name

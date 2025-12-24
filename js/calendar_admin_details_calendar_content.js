@@ -541,8 +541,10 @@ $(function () {
         let startTime, endTime;
 
         console.log(
-          `Event data - start: ${ev.start} (type: ${typeof ev.start}), end: ${ev.end
-          } (type: ${typeof ev.end}), start_ts: ${ev.start_ts}, end_ts: ${ev.end_ts
+          `Event data - start: ${ev.start} (type: ${typeof ev.start}), end: ${
+            ev.end
+          } (type: ${typeof ev.end}), start_ts: ${ev.start_ts}, end_ts: ${
+            ev.end_ts
           }`
         );
 
@@ -1174,9 +1176,7 @@ $(function () {
       //   return; // Do nothing for availability/extra slot events
       // }
 
-      if (
-        clickedClassType === "extra_slot"
-      ) {
+      if (clickedClassType === "extra_slot") {
         return; // Do nothing for availability/extra slot events
       }
 
@@ -1606,8 +1606,9 @@ $(function () {
           "Friday",
           "Saturday",
         ];
-        dateStr = `${dayNames[dateObj.getDay()]}, ${monthNames[month - 1]
-          } ${day}`;
+        dateStr = `${dayNames[dateObj.getDay()]}, ${
+          monthNames[month - 1]
+        } ${day}`;
       }
     }
 
@@ -1671,8 +1672,9 @@ $(function () {
           "Friday",
           "Saturday",
         ];
-        dateStr = `${dayNames[dateObj.getDay()]}, ${monthNames[month - 1]
-          } ${day}`;
+        dateStr = `${dayNames[dateObj.getDay()]}, ${
+          monthNames[month - 1]
+        } ${day}`;
       }
     }
 
@@ -2288,7 +2290,7 @@ $(function () {
     // Persist event data for downstream handlers (e.g., cancel click)
     try {
       $("#timeoff-modal").data("eventData", eventData || {});
-    } catch (e) { }
+    } catch (e) {}
     // Format date
     let dateStr = "";
     let dayStr = "";
@@ -2337,8 +2339,9 @@ $(function () {
       startMin != null && endMin != null ? Math.max(0, endMin - startMin) : 0;
     const durationStr =
       durationMin >= 60
-        ? `${Math.floor(durationMin / 60)} hour${Math.floor(durationMin / 60) > 1 ? "s" : ""
-        }`
+        ? `${Math.floor(durationMin / 60)} hour${
+            Math.floor(durationMin / 60) > 1 ? "s" : ""
+          }`
         : `${durationMin} min`;
 
     // Populate
@@ -2814,7 +2817,6 @@ $(function () {
       }));
       eventsToRender = [...eventsToRender, ...availabilityEvents];
     }
-    
 
     // Temporarily replace window.events with modified list
     const originalEvents = window.events;
@@ -2892,32 +2894,32 @@ $(function () {
     const perDay = Array.from({ length: 7 }, () => []);
     console.log("Events to render:", events);
 
-function timeToMinutes(time) {
-  if (typeof time === "number") return time;
-  const [h, m] = time.split(":").map(Number);
-  return h * 60 + m;
-}
+    function timeToMinutes(time) {
+      if (typeof time === "number") return time;
+      const [h, m] = time.split(":").map(Number);
+      return h * 60 + m;
+    }
 
-const eventMap = new Map();
+    const eventMap = new Map();
 
-events.forEach((event) => {
-  const startMinutes = timeToMinutes(event.start);
-  const endMinutes = timeToMinutes(event.end);
-  const key = `${event.teacherId}-${event.date}-${startMinutes}-${endMinutes}`;
+    events.forEach((event) => {
+      const startMinutes = timeToMinutes(event.start);
+      const endMinutes = timeToMinutes(event.end);
+      const key = `${event.teacherId}-${event.date}-${startMinutes}-${endMinutes}`;
 
-  if (!eventMap.has(key)) {
-    eventMap.set(key, event);
-  } else {
-    const existing = eventMap.get(key);
-    // Prefer e-blue over other colors
-    if (event.color === "e-blue") {
-      eventMap.set(key, event);
-    } 
-    // else keep existing
-  }
-});
+      if (!eventMap.has(key)) {
+        eventMap.set(key, event);
+      } else {
+        const existing = eventMap.get(key);
+        // Prefer e-blue over other colors
+        if (event.color === "e-blue") {
+          eventMap.set(key, event);
+        }
+        // else keep existing
+      }
+    });
 
-const uniqueEvents = Array.from(eventMap.values());
+    const uniqueEvents = Array.from(eventMap.values());
 
     // Remove duplicate availability events by availabilityId
     // const seenAvailabilityIds = new Set();
@@ -2931,7 +2933,6 @@ const uniqueEvents = Array.from(eventMap.values());
     //   return true;
     // });
 
-    
     console.log("Unique events to render:", uniqueEvents);
     uniqueEvents.forEach((raw) => {
       // Check if event has reschedule_instant status with previous/current data
@@ -3138,28 +3139,29 @@ const uniqueEvents = Array.from(eventMap.values());
 
         const isSingleton = (ev._max || 1) === 1;
         const cssPos = (() => {
-        if (isSingleton) return { left: "0px", width: "100%" };
+          if (isSingleton) return { left: "0px", width: "90%" };
 
-        const overlapping = perDay[di].filter(
-          other => !(other.end <= ev.start || other.start >= ev.end)
-        ).sort((a, b) => a.start - b.start || a.end - b.end);
+          const overlapping = perDay[di]
+            .filter(
+              (other) => !(other.end <= ev.start || other.start >= ev.end)
+            )
+            .sort((a, b) => a.start - b.start || a.end - b.end);
 
-        const total = overlapping.length;
-        const position = overlapping.indexOf(ev);
+          const total = overlapping.length;
+          const position = overlapping.indexOf(ev);
 
-        const overlapPercent = 70; // % of slot width for horizontal overlap per event
-        const widthPercent = 100 / (total - (total - 1) * (overlapPercent / 100));
-        const leftPercent = position * (widthPercent - (widthPercent * (overlapPercent / 100)));
+          const overlapPercent = 70; // % of slot width for horizontal overlap per event
+          const widthPercent =
+            100 / (total - (total - 1) * (overlapPercent / 100));
+          const leftPercent =
+            position * (widthPercent - widthPercent * (overlapPercent / 100));
 
-        return {
-          left: `${leftPercent}%`,
-          width: `${widthPercent}%`,
-          opacity: `1`
-        };
-      })();
-
-
-
+          return {
+            left: `${leftPercent}%`,
+            width: `${widthPercent}%`,
+            opacity: `1`,
+          };
+        })();
 
         // Get teacher color class and inline style for unlimited colors
         let teacherColorClass = "";
@@ -3176,8 +3178,9 @@ const uniqueEvents = Array.from(eventMap.values());
           const showTeacherDot =
             selectedTeachers.length > 1 && ev.classType !== "availability";
 
-          teacherColorClass = `teacher-${colorIndex}${showTeacherDot ? " has-teacher-indicator" : ""
-            }`;
+          teacherColorClass = `teacher-${colorIndex}${
+            showTeacherDot ? " has-teacher-indicator" : ""
+          }`;
 
           // Generate dynamic color for the ::after pseudo-element (teacher dot indicator)
           const teacherColor = getTeacherColor(ev.teacherId);
@@ -3230,8 +3233,9 @@ const uniqueEvents = Array.from(eventMap.values());
         }
 
         // Combine styles (include any custom inline style from the event object)
-        const combinedStyle = `${teacherColorStyle}${borderColorStyle}${ev.style || ""
-          }`.trim();
+        const combinedStyle = `${teacherColorStyle}${borderColorStyle}${
+          ev.style || ""
+        }`.trim();
 
         // Check if event is short (less than 1 hour)
         const eventDuration = ev.end - ev.start;
@@ -3280,111 +3284,135 @@ const uniqueEvents = Array.from(eventMap.values());
 
         // Build event HTML - hide details for short events
         const $ev = $(`
-          <div class="event ${ev.color || "e-blue"
-          } ${teacherColorClass} ${classTypeClass}${ev.isMidnightCrossing ? " midnight-crossing" : ""
-          }${isShortEvent ? " short-event" : ""
-          }${fadedClass}" style="${combinedStyle}${fadedStyle}" data-start="${ev.start
-          }" data-end="${ev.end}" data-date="${ev.date || ""}" data-event-date="${ev.date || ""
-          }" data-title="${(ev.title || "").replace(/"/g, "&quot;")}" ${ev.teacherId ? `data-teacher-id="${ev.teacherId}"` : ""
-          }${ev.pairedId ? ` data-paired-id="${ev.pairedId}"` : ""}${ev.part ? ` data-part="${ev.part}"` : ""
-          }${ev.studentids && ev.studentids.length > 0
+          <div class="event ${
+            ev.color || "e-blue"
+          } ${teacherColorClass} ${classTypeClass}${
+          ev.isMidnightCrossing ? " midnight-crossing" : ""
+        }${
+          isShortEvent ? " short-event" : ""
+        }${fadedClass}" style="${combinedStyle}${fadedStyle}" data-start="${
+          ev.start
+        }" data-end="${ev.end}" data-date="${ev.date || ""}" data-event-date="${
+          ev.date || ""
+        }" data-title="${(ev.title || "").replace(/"/g, "&quot;")}" ${
+          ev.teacherId ? `data-teacher-id="${ev.teacherId}"` : ""
+        }${ev.pairedId ? ` data-paired-id="${ev.pairedId}"` : ""}${
+          ev.part ? ` data-part="${ev.part}"` : ""
+        }${
+          ev.studentids && ev.studentids.length > 0
             ? ` data-student-ids="${ev.studentids.join(",")}"`
             : ""
-          }${ev.studentnames && ev.studentnames.length > 0
+        }${
+          ev.studentnames && ev.studentnames.length > 0
             ? ` data-student-names="${ev.studentnames.join(",")}"`
             : ""
-          }${ev.avatar ? ` data-avatar="${ev.avatar}"` : ""}${ev.cohortids && ev.cohortids.length > 0
+        }${ev.avatar ? ` data-avatar="${ev.avatar}"` : ""}${
+          ev.cohortids && ev.cohortids.length > 0
             ? ` data-cohort-ids="${ev.cohortids.join(",")}"`
             : ""
-          }${ev.eventid ? ` data-event-id="${ev.eventid}"` : ""}${ev.cmid ? ` data-cm-id="${ev.cmid}"` : ""
-          }${ev.classType ? ` data-class-type="${ev.classType}"` : ""}${ev.source ? ` data-source="${ev.source}"` : ""
-          }
-        ${ev.repeat !== undefined ? ` data-repeat="${ev.repeat}"` : ""}${statusMeta ? ` data-status-code="${statusMeta.code}"` : ""
-          }>
-            ${isShortEvent &&
-            ev.classType !== "availability" &&
-            ev.classType !== "extra_slot"
-            ? `
+        }${ev.eventid ? ` data-event-id="${ev.eventid}"` : ""}${
+          ev.cmid ? ` data-cm-id="${ev.cmid}"` : ""
+        }${ev.classType ? ` data-class-type="${ev.classType}"` : ""}${
+          ev.source ? ` data-source="${ev.source}"` : ""
+        }
+        ${ev.repeat !== undefined ? ` data-repeat="${ev.repeat}"` : ""}${
+          statusMeta ? ` data-status-code="${statusMeta.code}"` : ""
+        }>
+            ${
+              isShortEvent &&
+              ev.classType !== "availability" &&
+              ev.classType !== "extra_slot"
+                ? `
                 <div class=\"ev-when\" style=\"display:flex;align-items:center;gap:4px;\">
-                  ${ev.classType === "one2one_weekly" ||
-              ev.classType === "one2one_single"
-              ? `<span class=\"ev-single\" title=\"Single Session\"><img src=\"./img/single-lesson.svg\" alt=\"\"></span>`
-              : isTimeOffEvent
-                ? ""
-                : ev.isRescheduleCurrent && !ev.isTeacherChanged
-                  ? `<span class=\"ev-makeup\" title=\"Make-up Class\"><img src=\"./img/makeup.svg\" alt=\"\"></span>`
-                  : ev.repeat
-                    ? `<span class=\"ev-repeat\" title=\"Repeats\"><img src=\"./img/ev-repeat.svg\" alt=\"\"></span>`
-                    : `<span class=\"ev-single\" title=\"Single Session\"><img src=\"./img/single-lesson.svg\" alt=\"\"></span>`
-            }
+                  ${
+                    ev.classType === "one2one_weekly" ||
+                    ev.classType === "one2one_single"
+                      ? `<span class=\"ev-single\" title=\"Single Session\"><img src=\"./img/single-lesson.svg\" alt=\"\"></span>`
+                      : isTimeOffEvent
+                      ? ""
+                      : ev.isRescheduleCurrent && !ev.isTeacherChanged
+                      ? `<span class=\"ev-makeup\" title=\"Make-up Class\"><img src=\"./img/makeup.svg\" alt=\"\"></span>`
+                      : ev.repeat
+                      ? `<span class=\"ev-repeat\" title=\"Repeats\"><img src=\"./img/ev-repeat.svg\" alt=\"\"></span>`
+                      : `<span class=\"ev-single\" title=\"Single Session\"><img src=\"./img/single-lesson.svg\" alt=\"\"></span>`
+                  }
                   <span>${fmt12(ev.start)} – ${fmt12(ev.end)}</span>
                   ${statusIconHtml}
-                  ${ev.isMidnightCrossing
-              ? `<span class=\"ev-midnight-icon\" title=\"Continues to next day\">↪</span>`
-              : ""
-            }
+                  ${
+                    ev.isMidnightCrossing
+                      ? `<span class=\"ev-midnight-icon\" title=\"Continues to next day\">↪</span>`
+                      : ""
+                  }
                 </div>
-                <div class=\"ev-title\">${(ev.classType === "one2one_weekly" ||
-              ev.classType === "one2one_single") &&
-              ev.studentnames &&
-              ev.studentnames.length > 0
-              ? ev.studentnames.join(", ")
-              : ev.title || ""
-            }</div>
+                <div class=\"ev-title\">${
+                  (ev.classType === "one2one_weekly" ||
+                    ev.classType === "one2one_single") &&
+                  ev.studentnames &&
+                  ev.studentnames.length > 0
+                    ? ev.studentnames.join(", ")
+                    : ev.title || ""
+                }</div>
                 `
-            : `
+                : `
                   ${statusIconHtml}
-                  ${!isShortEvent &&
-              ev.classType !== "availability" &&
-              ev.classType !== "extra_slot"
-              ? `<div class=\"ev-top\">
-                          <div class=\"ev-left\">${ev.avatar
-                ? `<img class=\"ev-avatar\" src=\"${ev.avatar}\" alt=\"\">`
-                : ""
-              }</div>
-                          ${isTimeOffEvent
-                ? ""
-                : ev.isRescheduleCurrent &&
-                  !ev.isTeacherChanged &&
-                  ev.repeat
-                  ? `<span class=\"ev-repeat\" title=\"Repeats\"><img src=\"./img/ev-repeat.svg\" alt=\"\"></span><span class=\"ev-makeup\" title=\"Make-up Class\"><img src=\"./img/makeup.svg\" alt=\"\"></span>`
-                  : ev.isRescheduleCurrent && !ev.isTeacherChanged
-                    ? `<span class=\"ev-makeup\" title=\"Make-up Class\"><img src=\"./img/makeup.svg\" alt=\"\"></span>`
-                    : ev.classType === "one2one_weekly" ||
-                      ev.classType === "one2one_single"
-                      ? `<span class=\"ev-single\" title=\"Single Session\"><img src=\"./img/single-lesson.svg\" alt=\"\"></span>`
-                      : ev.repeat
-                        ? `<span class=\"ev-repeat\" title=\"Repeats\"><img src=\"./img/ev-repeat.svg\" alt=\"\"></span>`
-                        : `<span class=\"ev-single\" title=\"Single Session\"><img src=\"./img/single-lesson.svg\" alt=\"\"></span>`
-              }
-                          ${ev.isMidnightCrossing
-                ? `<span class=\"ev-midnight-icon\" title=\"Continues to next day\">↪</span>`
-                : ""
-              }
+                  ${
+                    !isShortEvent &&
+                    ev.classType !== "availability" &&
+                    ev.classType !== "extra_slot"
+                      ? `<div class=\"ev-top\">
+                          <div class=\"ev-left\">${
+                            ev.avatar
+                              ? `<img class=\"ev-avatar\" src=\"${ev.avatar}\" alt=\"\">`
+                              : ""
+                          }</div>
+                          ${
+                            isTimeOffEvent
+                              ? ""
+                              : ev.isRescheduleCurrent &&
+                                !ev.isTeacherChanged &&
+                                ev.repeat
+                              ? `<span class=\"ev-repeat\" title=\"Repeats\"><img src=\"./img/ev-repeat.svg\" alt=\"\"></span><span class=\"ev-makeup\" title=\"Make-up Class\"><img src=\"./img/makeup.svg\" alt=\"\"></span>`
+                              : ev.isRescheduleCurrent && !ev.isTeacherChanged
+                              ? `<span class=\"ev-makeup\" title=\"Make-up Class\"><img src=\"./img/makeup.svg\" alt=\"\"></span>`
+                              : ev.classType === "one2one_weekly" ||
+                                ev.classType === "one2one_single"
+                              ? `<span class=\"ev-single\" title=\"Single Session\"><img src=\"./img/single-lesson.svg\" alt=\"\"></span>`
+                              : ev.repeat
+                              ? `<span class=\"ev-repeat\" title=\"Repeats\"><img src=\"./img/ev-repeat.svg\" alt=\"\"></span>`
+                              : `<span class=\"ev-single\" title=\"Single Session\"><img src=\"./img/single-lesson.svg\" alt=\"\"></span>`
+                          }
+                          ${
+                            ev.isMidnightCrossing
+                              ? `<span class=\"ev-midnight-icon\" title=\"Continues to next day\">↪</span>`
+                              : ""
+                          }
                         </div>`
-              : ""
-            }
-                  ${ev.classType !== "availability" &&
-              ev.classType !== "extra_slot"
-              ? `<div class=\"ev-when\">${fmt12(ev.start)} – ${fmt12(
-                ev.end
-              )}</div>`
-              : ""
-            }
-                  ${!isShortEvent &&
-              ev.classType !== "availability" &&
-              ev.classType !== "extra_slot"
-              ? `<div class=\"ev-title\">${(ev.classType === "one2one_weekly" ||
-                ev.classType === "one2one_single") &&
-                ev.studentnames &&
-                ev.studentnames.length > 0
-                ? ev.studentnames.join(", ")
-                : ev.title || ""
-              }</div>`
-              : ""
-            }
+                      : ""
+                  }
+                  ${
+                    ev.classType !== "availability" &&
+                    ev.classType !== "extra_slot"
+                      ? `<div class=\"ev-when\">${fmt12(ev.start)} – ${fmt12(
+                          ev.end
+                        )}</div>`
+                      : ""
+                  }
+                  ${
+                    !isShortEvent &&
+                    ev.classType !== "availability" &&
+                    ev.classType !== "extra_slot"
+                      ? `<div class=\"ev-title\">${
+                          (ev.classType === "one2one_weekly" ||
+                            ev.classType === "one2one_single") &&
+                          ev.studentnames &&
+                          ev.studentnames.length > 0
+                            ? ev.studentnames.join(", ")
+                            : ev.title || ""
+                        }</div>`
+                      : ""
+                  }
                 `
-          }
+            }
           </div>
         `).css({ top: top + "px", height: h + "px", ...cssPos });
 
@@ -3402,13 +3430,14 @@ const uniqueEvents = Array.from(eventMap.values());
           const $tooltip = $(`
             <div class="event-tooltip">
               <div class="tooltip-header">
-                <strong>${(ev.classType === "one2one_weekly" ||
-              ev.classType === "one2one_single") &&
-              ev.studentnames &&
-              ev.studentnames.length > 0
-              ? ev.studentnames.join(", ")
-              : ev.title || "Event"
-            }</strong>
+                <strong>${
+                  (ev.classType === "one2one_weekly" ||
+                    ev.classType === "one2one_single") &&
+                  ev.studentnames &&
+                  ev.studentnames.length > 0
+                    ? ev.studentnames.join(", ")
+                    : ev.title || "Event"
+                }</strong>
               </div>
               <div class="tooltip-time">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -3417,27 +3446,30 @@ const uniqueEvents = Array.from(eventMap.values());
                 </svg>
                 ${fmt12(ev.start)} – ${fmt12(ev.end)}
               </div>
-              ${ev.avatar
-              ? `
+              ${
+                ev.avatar
+                  ? `
                 <div class="tooltip-teacher">
                   <img src="${ev.avatar}" alt="" class="tooltip-avatar">
                   <span>Teacher</span>
                 </div>
               `
-              : ""
-            }
+                  : ""
+              }
               <div class="tooltip-type">
-                ${ev.repeat
-              ? '<span class="tooltip-badge">Recurring Class</span>'
-              : '<span class="tooltip-badge">Single Session</span>'
-            }
-                ${ev.classType === "one2one_weekly" ||
-              ev.classType === "one2one_single"
-              ? '<span class="tooltip-badge">1:1 Class</span>'
-              : ev.classType === "tutoring"
-                ? '<span class="tooltip-badge">Tutoring</span>'
-                : '<span class="tooltip-badge">Main Class</span>'
-            }
+                ${
+                  ev.repeat
+                    ? '<span class="tooltip-badge">Recurring Class</span>'
+                    : '<span class="tooltip-badge">Single Session</span>'
+                }
+                ${
+                  ev.classType === "one2one_weekly" ||
+                  ev.classType === "one2one_single"
+                    ? '<span class="tooltip-badge">1:1 Class</span>'
+                    : ev.classType === "tutoring"
+                    ? '<span class="tooltip-badge">Tutoring</span>'
+                    : '<span class="tooltip-badge">Main Class</span>'
+                }
               </div>
             </div>
           `);
@@ -3563,13 +3595,12 @@ const uniqueEvents = Array.from(eventMap.values());
   //   });
   // }
 
-
   // Function to reset date filter
- function clearDateFilter() {
-  selectedDateFilters = [];
-  $("#head .day-h").removeClass("date-filter-active");
-  applyFilters();
-}
+  function clearDateFilter() {
+    selectedDateFilters = [];
+    $("#head .day-h").removeClass("date-filter-active");
+    applyFilters();
+  }
 
   //   // Function to filter events by selected time slot
   //  function filterEventsByTimeSlots(slotStarts) {
@@ -3607,7 +3638,6 @@ const uniqueEvents = Array.from(eventMap.values());
   //             matchedCount++;
   //         }
   //     });
-
 
   //     console.log("Total events matched:", matchedCount);
   // }
@@ -3651,8 +3681,6 @@ const uniqueEvents = Array.from(eventMap.values());
 
     applyFilters();
   });
-
-
 
   // Add click handler to time slot elements - improved version
   $(document).on("click", ".time-label", function (event) {
@@ -3723,8 +3751,6 @@ const uniqueEvents = Array.from(eventMap.values());
       $hourBlock.addClass("time-slot-filter-active");
     }
     applyFilters();
-
-
   });
 
   function drawNow() {
@@ -3903,12 +3929,15 @@ document.addEventListener("DOMContentLoaded", () => {
             <label class="teacher-label">
                 <div class="teacher-details">
                     <div class="teacher-avatar-container">
-                        <img class="teacher-avatar" src="${t.avatar || ""
-      }" alt="${t.name
-      }" style="border-color: ${teacherColor};">
+                        <img class="teacher-avatar" src="${
+                          t.avatar || ""
+                        }" alt="${
+      t.name
+    }" style="border-color: ${teacherColor};">
                     </div>
-                    <span class="teacher-name">${t.name
-      }<span class="teacher-color-dot" style="--dot-color: ${teacherColor}; display: none;"></span></span>
+                    <span class="teacher-name">${
+                      t.name
+                    }<span class="teacher-color-dot" style="--dot-color: ${teacherColor}; display: none;"></span></span>
                 </div>
                 <div class="radio-custom">
                     <div class="radio-custom-dot"></div>
@@ -4278,10 +4307,11 @@ document.addEventListener("DOMContentLoaded", () => {
             <label class="cohort-label">
                 <div class="cohort-details">
                     <span class="cohort-name">${displayName}</span>
-                    ${c.cohorttype === "one1one"
-        ? `<span class="cohort-shortname">${cohortLabel}</span>`
-        : ""
-      }
+                    ${
+                      c.cohorttype === "one1one"
+                        ? `<span class="cohort-shortname">${cohortLabel}</span>`
+                        : ""
+                    }
                 </div>
                 <div class="radio-custom">
                     <div class="radio-custom-dot"></div>
@@ -4508,7 +4538,7 @@ document.addEventListener("DOMContentLoaded", () => {
             id: c.id,
             name: c.studentname || c.name,
           });
-        } catch (e) { }
+        } catch (e) {}
       });
     } else if (oneOnOneNoResults) {
       oneOnOneNoResults.style.display = "block";
@@ -4638,8 +4668,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const cohortShortName = s.cohortsname
       ? s.cohortsname.substring(0, 4)
       : s.cohortname
-        ? s.cohortname.substring(0, 4)
-        : "";
+      ? s.cohortname.substring(0, 4)
+      : "";
 
     // Check if this is a 1:1 cohort student
     const isOneOnOne = s.group === "1:1";
@@ -4648,19 +4678,22 @@ document.addEventListener("DOMContentLoaded", () => {
           <label class="student-label">
               <div class="student-details">
                   <div class="student-avatar-container">
-                      <img class="student-avatar" src="${s.avatar || ""
-      }" alt="${s.name}">
+                      <img class="student-avatar" src="${
+                        s.avatar || ""
+                      }" alt="${s.name}">
                   </div>
                   <div class="student-name-wrapper">
-                      ${cohortShortName
-        ? `<span class="student-cohort-badge">${cohortShortName}</span>`
-        : ""
-      }
+                      ${
+                        cohortShortName
+                          ? `<span class="student-cohort-badge">${cohortShortName}</span>`
+                          : ""
+                      }
                       <span class="student-name">${s.name}</span>
-                      ${isOneOnOne
-        ? `<div class="cohort_label_teacher_avatar"><span class="student-type-badge">1:1</span><span class="student-type-badge"><img src="${s.teacheravatar}" alt="Teacher Avatar"></span></div>`
-        : ""
-      }
+                      ${
+                        isOneOnOne
+                          ? `<div class="cohort_label_teacher_avatar"><span class="student-type-badge">1:1</span><span class="student-type-badge"><img src="${s.teacheravatar}" alt="Teacher Avatar"></span></div>`
+                          : ""
+                      }
                   </div>
               </div>
               <div class="radio-custom">
@@ -5663,16 +5696,16 @@ document.addEventListener("DOMContentLoaded", () => {
     saturday: 5,
     sunday: 6,
   };
-// for just bug
- const DAY_NAME_TO_INDEX1= {
-  sunday: 0,
-  monday: 1,
-  tuesday: 2,
-  wednesday: 3,
-  thursday: 4,
-  friday: 5,
-  saturday: 6,
-};
+  // for just bug
+  const DAY_NAME_TO_INDEX1 = {
+    sunday: 0,
+    monday: 1,
+    tuesday: 2,
+    wednesday: 3,
+    thursday: 4,
+    friday: 5,
+    saturday: 6,
+  };
 
   function normalizeMinutes(val) {
     if (typeof val === "number" && !Number.isNaN(val)) return val;
@@ -6084,10 +6117,10 @@ document.addEventListener("DOMContentLoaded", () => {
           let eventTeacherIds = Array.isArray(ev.teacherids)
             ? ev.teacherids
             : ev.teacher_id
-              ? [ev.teacher_id]
-              : ev.teacherid
-                ? [ev.teacherid]
-                : [];
+            ? [ev.teacher_id]
+            : ev.teacherid
+            ? [ev.teacherid]
+            : [];
           for (let tid of eventTeacherIds) {
             if (teacherIdSet.has(tid)) {
               teacherId = tid;
@@ -6157,10 +6190,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const localYMD =
           eventDateStr ||
           startDate.getFullYear() +
-          "-" +
-          String(startDate.getMonth() + 1).padStart(2, "0") +
-          "-" +
-          String(startDate.getDate()).padStart(2, "0");
+            "-" +
+            String(startDate.getMonth() + 1).padStart(2, "0") +
+            "-" +
+            String(startDate.getDate()).padStart(2, "0");
 
         const eventObj = {
           date: localYMD,
@@ -6179,11 +6212,11 @@ document.addEventListener("DOMContentLoaded", () => {
             typeof teacherId !== "undefined" && teacherId !== null
               ? teacherId
               : ev.teacherId ||
-              ev.teacher_id ||
-              ev.teacherid ||
-              ev.teacher ||
-              (ev.teacherids && ev.teacherids[0]) ||
-              "",
+                ev.teacher_id ||
+                ev.teacherid ||
+                ev.teacher ||
+                (ev.teacherids && ev.teacherids[0]) ||
+                "",
           classType: ev.classType || ev.class_type || "",
           source: ev.source || "event",
           studentnames: ev.studentnames || [],
@@ -6194,8 +6227,8 @@ document.addEventListener("DOMContentLoaded", () => {
             typeof ev.timeoffid !== "undefined"
               ? ev.timeoffid
               : typeof ev.id !== "undefined"
-                ? ev.id
-                : null,
+              ? ev.id
+              : null,
           cmid: ev.cmid || 0,
           googlemeetid:
             typeof ev.googlemeetid !== "undefined" ? ev.googlemeetid : 0,
@@ -6271,23 +6304,23 @@ document.addEventListener("DOMContentLoaded", () => {
         typeof loadCohortsForTeachers === "function"
           ? loadCohortsForTeachers
           : typeof loadAllCohorts === "function"
-            ? loadAllCohorts
-            : () => Promise.resolve();
+          ? loadAllCohorts
+          : () => Promise.resolve();
       const loadStudentsForCohortsFn =
         typeof loadStudentsForCohorts === "function"
           ? loadStudentsForCohorts
           : typeof loadAllStudents === "function"
-            ? loadAllStudents
-            : () => Promise.resolve();
+          ? loadAllStudents
+          : () => Promise.resolve();
 
       const safeSelectedTeachers =
         typeof selectedTeacherIds !== "undefined" &&
-          Array.isArray(selectedTeacherIds)
+        Array.isArray(selectedTeacherIds)
           ? selectedTeacherIds
           : [];
       const safeSelectedCohorts =
         typeof selectedCohortIds !== "undefined" &&
-          Array.isArray(selectedCohortIds)
+        Array.isArray(selectedCohortIds)
           ? selectedCohortIds
           : [];
 
