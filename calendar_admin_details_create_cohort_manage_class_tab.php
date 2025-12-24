@@ -703,6 +703,395 @@ hr.weekly_lesson_hr.large {
     cursor: not-allowed;
     background-color: #cccccc;
 }
+
+/* ====== MANAGE 1:1 UPDATE SCOPE MODAL ====== */
+.manage-update-scope-modal-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+}
+
+.manage-update-scope-modal-backdrop.active {
+    display: flex;
+}
+
+.manage-update-scope-modal {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    width: 90%;
+    max-width: 340px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.manage-update-scope-title {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 27px;
+    color: #000;
+    margin: 0 0 20px 0;
+}
+
+.manage-update-scope-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.manage-update-scope-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    padding: 4px 0;
+}
+
+.manage-update-scope-option input[type="radio"] {
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    border: 2px solid #dadada;
+    border-radius: 50%;
+    outline: none;
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.manage-update-scope-option input[type="radio"]:checked {
+    border-color: #fe2e0c;
+}
+
+.manage-update-scope-option input[type="radio"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 12px;
+    height: 12px;
+    background: #fe2e0c;
+    border-radius: 50%;
+}
+
+.manage-update-scope-option label {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 22px;
+    color: #232323;
+    cursor: pointer;
+    user-select: none;
+}
+
+.manage-update-scope-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.manage-update-scope-cancel-btn,
+.manage-update-scope-ok-btn {
+    border: none;
+    border-radius: 8px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    padding: 10px 24px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.manage-update-scope-cancel-btn {
+    background: #fff;
+    border: 1.3px solid #dadada;
+    color: #232323;
+}
+
+.manage-update-scope-cancel-btn:hover {
+    background: #f5f5f5;
+}
+
+.manage-update-scope-ok-btn {
+    background: #fe2e0c;
+    color: #fff;
+    min-width: 80px;
+}
+
+.manage-update-scope-ok-btn:hover {
+    background: #e52b10;
+}
+
+/* ====== RESCHEDULE LESSON MODAL ====== */
+.reschedule-lesson-modal-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+}
+
+.reschedule-lesson-modal-backdrop.active {
+    display: flex;
+}
+
+.reschedule-lesson-modal {
+    background: #fff;
+    border-radius: 8px;
+    padding: 12px;
+    width: 90%;
+    max-width: 520px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.reschedule-lesson-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.reschedule-lesson-back-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.reschedule-lesson-close-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    font-size: 24px;
+    line-height: 1;
+    color: #232323;
+}
+
+.reschedule-lesson-title {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 36px;
+    color: #000;
+    margin: 0 0 8px 0;
+}
+
+.reschedule-lesson-badge {
+    display: inline-block;
+    background: #f0f0f0;
+    border-radius: 6px;
+    padding: 4px 12px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.reschedule-lesson-card {
+    background: #f8f8f8;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+.reschedule-lesson-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.reschedule-lesson-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.reschedule-lesson-info {
+    flex: 1;
+}
+
+.reschedule-lesson-date {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    color: #000;
+    margin: 0 0 2px 0;
+}
+
+.reschedule-lesson-time {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    color: #666;
+    margin: 0;
+}
+
+.reschedule-lesson-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.reschedule-lesson-student {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    color: #666;
+}
+
+.reschedule-lesson-count {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    color: #666;
+}
+
+.reschedule-lesson-label {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 21px;
+    color: #000;
+    margin: 0 0 8px 0;
+}
+
+.reschedule-lesson-dropdown {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.reschedule-lesson-dropdown-btn {
+    width: 100%;
+    background: #fff;
+    border: 1.5px solid #dadada;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    font-size: 15px;
+    color: #999;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: border-color 0.2s;
+}
+
+.reschedule-lesson-dropdown-btn:hover,
+.reschedule-lesson-dropdown-btn.active {
+    border-color: #fe2e0c;
+}
+
+.reschedule-lesson-dropdown-list {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1.5px solid #dadada;
+    border-radius: 10px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 10;
+}
+
+.reschedule-lesson-dropdown-list.active {
+    display: block;
+}
+
+.reschedule-lesson-dropdown-item {
+    padding: 12px 16px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    color: #232323;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.reschedule-lesson-dropdown-item:hover {
+    background: #f6f6f6;
+}
+
+.reschedule-lesson-textarea {
+    width: 100%;
+    background: #fff;
+    border: 1.5px solid #dadada;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    color: #232323;
+    resize: vertical;
+    min-height: 100px;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+}
+
+.reschedule-lesson-textarea:focus {
+    outline: none;
+    border-color: #fe2e0c;
+}
+
+.reschedule-lesson-textarea::placeholder {
+    color: #999;
+}
+
+.reschedule-lesson-confirm-btn {
+    width: 100%;
+    background: #fe2e0c;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 14px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 20px;
+}
+
+.reschedule-lesson-confirm-btn:hover {
+    background: #e52b10;
+}
+
+.reschedule-lesson-confirm-btn:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+}
 </style>
 
 <div class="calendar_admin_details_create_cohort_content tab-content" id="manageclassTabContent" style="display:none;">
@@ -1215,7 +1604,124 @@ echo $studentsItemsHtml;
 <!-- Global Backdrop for Dropdowns -->
 <div class="dropdown-backdrop" id="globalDropdownBackdrop"></div>
 
+<!-- Manage 1:1 Update Scope Modal -->
+<div class="manage-update-scope-modal-backdrop" id="manageUpdateScopeModalBackdrop">
+    <div class="manage-update-scope-modal">
+        <h3 class="manage-update-scope-title">Manage 1:1</h3>
+        <div class="manage-update-scope-options">
+            <div class="manage-update-scope-option">
+                <input type="radio" name="updateScope" id="updateScopeThisEvent" value="this" checked>
+                <label for="updateScopeThisEvent">This event</label>
+            </div>
+            <div class="manage-update-scope-option">
+                <input type="radio" name="updateScope" id="updateScopeFollowing" value="following">
+                <label for="updateScopeFollowing">This and all following events</label>
+            </div>
+        </div>
+        <div class="manage-update-scope-buttons">
+            <button class="manage-update-scope-cancel-btn" id="manageUpdateScopeCancelBtn">Cancel</button>
+            <button class="manage-update-scope-ok-btn" id="manageUpdateScopeOkBtn">Ok</button>
+        </div>
+    </div>
+</div>
+
+<!-- Reschedule Lesson Modal -->
+<div class="reschedule-lesson-modal-backdrop" id="rescheduleLessonModalBackdrop">
+    <div class="reschedule-lesson-modal">
+        <div class="reschedule-lesson-header">
+            <button class="reschedule-lesson-back-btn" id="rescheduleLessonBackBtn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M15 18l-6-6 6-6" stroke="#232323" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+            </button>
+            <button class="reschedule-lesson-close-btn" id="rescheduleLessonCloseBtn">&times;</button>
+        </div>
+
+        <h2 class="reschedule-lesson-title">Reschedule lesson</h2>
+        <div class="reschedule-lesson-badge">Updated lesson</div>
+
+        <div class="reschedule-lesson-card">
+            <div class="reschedule-lesson-card-header">
+                <img src="" alt="" class="reschedule-lesson-avatar" id="rescheduleLessonAvatar">
+                <div class="reschedule-lesson-info">
+                    <p class="reschedule-lesson-date" id="rescheduleLessonDate">Friday, Sep 06</p>
+                    <p class="reschedule-lesson-time" id="rescheduleLessonTime">07:00 - 07:25</p>
+                </div>
+            </div>
+            <div class="reschedule-lesson-meta">
+                <span class="reschedule-lesson-student" id="rescheduleLessonStudent">Jonas | Subscription</span>
+                <span class="reschedule-lesson-count" id="rescheduleLessonCount">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z"
+                            stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    2 Lessons
+                </span>
+            </div>
+        </div>
+
+        <div class="reschedule-lesson-dropdown">
+            <label class="reschedule-lesson-label">Select a reason to reschedule the lesson.</label>
+            <button type="button" class="reschedule-lesson-dropdown-btn" id="rescheduleReasonBtn">
+                <span id="rescheduleReasonDisplay">Select Reason</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M6 9l6 6 6-6" stroke="#232323" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+            </button>
+            <div class="reschedule-lesson-dropdown-list" id="rescheduleReasonList">
+                <div class="reschedule-lesson-dropdown-item" data-value="not_able_to_make_it">He's not able to make it
+                    today.</div>
+                <div class="reschedule-lesson-dropdown-item" data-value="timing_not_working">The timing isn't working
+                    out today.</div>
+                <div class="reschedule-lesson-dropdown-item" data-value="tech_issues">There are some tech issues, so we
+                    can't run the class.</div>
+                <div class="reschedule-lesson-dropdown-item" data-value="teacher_unavailable">The teacher isn't
+                    available right now.</div>
+            </div>
+        </div>
+
+        <div>
+            <label class="reschedule-lesson-label">Message for Student</label>
+            <textarea class="reschedule-lesson-textarea" id="rescheduleMessage"
+                placeholder="Message for Jonas"></textarea>
+        </div>
+
+        <button class="reschedule-lesson-confirm-btn" id="rescheduleConfirmBtn" disabled>Confirm new time</button>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toastNotificationForManageClass" style="display:none; position:fixed; top:30px; right:30px; 
+            background:#000; color:#fff; padding:16px 24px; 
+            border-radius:8px; font-size:1rem; 
+            box-shadow:0 4px 12px rgba(0,0,0,0.3);
+            z-index:99999; opacity:0; transition:opacity .3s, transform .3s;
+            transform:translateY(20px);">
+</div>
+
 <script>
+// ====== TOAST NOTIFICATION FUNCTION ======
+function showToastManage(message, duration = 5000) {
+    const toast = document.getElementById('toastNotificationForManageClass');
+    if (!toast) return;
+
+    toast.textContent = message;
+    toast.style.display = 'block';
+    setTimeout(() => {
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateY(0)';
+    }, 100);
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 300);
+    }, duration);
+}
+
 // ====== GLOBAL STATE AND UTILITIES ======
 const DropdownManager = {
     activeDropdown: null,
@@ -2090,6 +2596,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const loaderOverlay = $('#loaderOverlay');
     // global holder for selected cmid (from gm.id) for the currently chosen activity
     window.selectedCmidManage = null;
+    // global holder for all events flag (false = this event, true = all following events)
+    window.allEvents = false;
+    // global holder for reschedule reason and message
+    window.rescheduleReason = null;
+    window.rescheduleMessage = null;
     const singleSection = $('#custom-single-lesson-manage');
     const weeklySection = $('#custom-weekly-lesson-manage');
 
@@ -2102,12 +2613,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const studentId = selectedStudent?.dataset.userid;
 
             if (!teacherId) {
-                alert('Please select a teacher first.');
+                showToastManage('❌ Please select a teacher first.');
                 return;
             }
 
             if (!studentId) {
-                alert('Please select a student first.');
+                showToastManage('❌ Please select a student first.');
                 return;
             }
 
@@ -2115,7 +2626,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 ?.dataset.type;
 
             if (!lessonType) {
-                alert('Please select a lesson type.');
+                showToastManage('❌ Please select a lesson type.');
                 return;
             }
             let selectedElement = null;
@@ -2127,17 +2638,76 @@ document.addEventListener('DOMContentLoaded', function() {
                     '.weekly-single-lesson-container .weekly-single-lesson-item.selected');
             }
 
-            const cmid = window.selectedCmidManage ?? selectedElement?.dataset?.cmid ?? null;
-            const originalEventData = window.currentEventData || null;
-            const payload = {
-                lessonType,
-                cmid,
-                activityIndex: selectedElement?.dataset?.activityIndex ?? null,
-                eventId: originalEventData ? originalEventData.id : null
-            };
+            // For weekly lessons, show the modal first before submitting
+            if (lessonType === 'weekly') {
+                // Store the data for later submission
+                window.pendingWeeklySubmission = {
+                    teacherId,
+                    studentId,
+                    lessonType,
+                    selectedElement
+                };
 
-            // log the payload so you can see the cmid that will be sent/updated
-            console.log('Update 1:1 class payload (manage):', payload);
+                // Show the update scope modal
+                $('#manageUpdateScopeModalBackdrop').classList.add('active');
+                return;
+            }
+
+            // For single lessons, check if reschedule values are already stored
+            if (lessonType === 'single') {
+                // If reschedule reason is already stored, skip modal and proceed with submission
+                if (window.rescheduleReason) {
+                    console.log('✅ Reschedule values already stored, proceeding with submission');
+                    // Don't return, let the main handler below continue with submission
+                } else {
+                    // Show the reschedule modal for first time
+                    window.pendingSingleSubmission = {
+                        teacherId,
+                        studentId,
+                        lessonType,
+                        selectedElement
+                    };
+
+                    // Populate modal with event data
+                    const originalEventData = window.currentEventData || null;
+                    if (originalEventData) {
+                        // Set avatar
+                        const avatar = $('#rescheduleLessonAvatar');
+                        if (avatar && originalEventData.avatar) {
+                            avatar.src = originalEventData.avatar;
+                        }
+
+                        // Set date
+                        const dateEl = $('#rescheduleLessonDate');
+                        if (dateEl && originalEventData.date) {
+                            const date = new Date(originalEventData.date);
+                            const options = {
+                                weekday: 'long',
+                                month: 'short',
+                                day: '2-digit'
+                            };
+                            dateEl.textContent = date.toLocaleDateString('en-US', options);
+                        }
+
+                        // Set time
+                        const timeEl = $('#rescheduleLessonTime');
+                        if (timeEl && originalEventData.start && originalEventData.end) {
+                            timeEl.textContent =
+                            `${originalEventData.start} - ${originalEventData.end}`;
+                        }
+
+                        // Set student name
+                        const studentEl = $('#rescheduleLessonStudent');
+                        if (studentEl && originalEventData.studentnames) {
+                            studentEl.textContent = originalEventData.studentnames.join(', ');
+                        }
+                    }
+
+                    // Show the reschedule modal
+                    $('#rescheduleLessonModalBackdrop').classList.add('active');
+                    return;
+                }
+            }
         });
     }
 
@@ -2491,13 +3061,190 @@ document.addEventListener('DOMContentLoaded', function() {
                 end24h = `${String(hour2).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
             }
 
-            window.weeklyLessonDayTimes[window.weeklyLessonCurrentDayKey] = {
+            // Store the time change temporarily
+            window.pendingWeeklyTimeChange = {
+                dayKey: window.weeklyLessonCurrentDayKey,
                 start: start24h,
                 end: end24h
             };
 
-            renderWidgetTimeManage(window.weeklyLessonCurrentDayKey, start24h, end24h);
+            // Close time picker
             $('#weeklyLessonTimepickerBackdropManage').style.display = 'none';
+
+            // Show update scope modal
+            $('#manageUpdateScopeModalBackdrop').classList.add('active');
+        });
+    })();
+
+    /* =========================================
+       UPDATE SCOPE MODAL HANDLERS
+    ========================================== */
+    (function initUpdateScopeModal() {
+        const modalBackdrop = $('#manageUpdateScopeModalBackdrop');
+        const cancelBtn = $('#manageUpdateScopeCancelBtn');
+        const okBtn = $('#manageUpdateScopeOkBtn');
+        const thisEventRadio = $('#updateScopeThisEvent');
+        const followingRadio = $('#updateScopeFollowing');
+
+        if (!modalBackdrop) return;
+
+        // Cancel button - close modal without saving
+        cancelBtn?.addEventListener('click', () => {
+            modalBackdrop.classList.remove('active');
+            window.pendingWeeklyTimeChange = null;
+            window.pendingWeeklySubmission = null;
+        });
+
+        // Ok button - save the selection and apply the time change or submission
+        okBtn?.addEventListener('click', () => {
+            // Get selected scope as boolean
+            if (thisEventRadio?.checked) {
+                window.allEvents = false; // This event only
+            } else if (followingRadio?.checked) {
+                window.allEvents = true; // All following events
+            }
+
+            // Apply the pending time change
+            if (window.pendingWeeklyTimeChange) {
+                const {
+                    dayKey,
+                    start,
+                    end
+                } = window.pendingWeeklyTimeChange;
+                window.weeklyLessonDayTimes[dayKey] = {
+                    start,
+                    end
+                };
+                renderWidgetTimeManage(dayKey, start, end);
+                window.pendingWeeklyTimeChange = null;
+            }
+
+            // Handle pending submission (when Update button was clicked)
+            if (window.pendingWeeklySubmission) {
+                const {
+                    selectedElement
+                } = window.pendingWeeklySubmission;
+                const cmid = window.selectedCmidManage ?? selectedElement?.dataset?.cmid ?? null;
+                const originalEventData = window.currentEventData || null;
+                const payload = {
+                    lessonType: 'weekly',
+                    cmid,
+                    activityIndex: selectedElement?.dataset?.activityIndex ?? null,
+                    eventId: originalEventData ? originalEventData.id : null,
+                    updateScope: window.weeklyUpdateScope
+                };
+
+                // Log the payload
+                console.log('Update 1:1 class payload (manage):', payload);
+
+                // TODO: Submit the payload to your backend
+                // fetch('your-api-endpoint', { method: 'POST', body: JSON.stringify(payload) })
+
+                window.pendingWeeklySubmission = null;
+            }
+
+            // Close modal
+            modalBackdrop.classList.remove('active');
+
+            console.log('All events flag set to:', window.allEvents);
+        });
+
+        // Close on backdrop click
+        modalBackdrop?.addEventListener('click', (e) => {
+            if (e.target === modalBackdrop) {
+                modalBackdrop.classList.remove('active');
+                window.pendingWeeklyTimeChange = null;
+                window.pendingWeeklySubmission = null;
+            }
+        });
+    })();
+
+    /* =========================================
+       RESCHEDULE LESSON MODAL HANDLERS
+    ========================================== */
+    (function initRescheduleLessonModal() {
+        const modalBackdrop = $('#rescheduleLessonModalBackdrop');
+        const closeBtn = $('#rescheduleLessonCloseBtn');
+        const backBtn = $('#rescheduleLessonBackBtn');
+        const reasonBtn = $('#rescheduleReasonBtn');
+        const reasonList = $('#rescheduleReasonList');
+        const reasonDisplay = $('#rescheduleReasonDisplay');
+        const messageTextarea = $('#rescheduleMessage');
+        const confirmBtn = $('#rescheduleConfirmBtn');
+
+        if (!modalBackdrop) return;
+
+        // Toggle dropdown
+        reasonBtn?.addEventListener('click', () => {
+            reasonList.classList.toggle('active');
+            reasonBtn.classList.toggle('active');
+        });
+
+        // Select reason
+        reasonList?.addEventListener('click', (e) => {
+            const item = e.target.closest('.reschedule-lesson-dropdown-item');
+            if (!item) return;
+
+            const value = item.dataset.value;
+            const text = item.textContent;
+
+            window.rescheduleReason = value;
+            reasonDisplay.textContent = text;
+            reasonList.classList.remove('active');
+            reasonBtn.classList.remove('active');
+
+            // Enable confirm button if reason is selected
+            if (confirmBtn) {
+                confirmBtn.disabled = false;
+            }
+        });
+
+        // Store message
+        messageTextarea?.addEventListener('input', () => {
+            window.rescheduleMessage = messageTextarea.value;
+        });
+
+        // Close handlers
+        const closeModal = () => {
+            modalBackdrop.classList.remove('active');
+            window.pendingSingleSubmission = null;
+            window.rescheduleReason = null;
+            window.rescheduleMessage = null;
+            if (reasonDisplay) reasonDisplay.textContent = 'Select Reason';
+            if (messageTextarea) messageTextarea.value = '';
+            if (confirmBtn) confirmBtn.disabled = true;
+        };
+
+        closeBtn?.addEventListener('click', closeModal);
+        backBtn?.addEventListener('click', closeModal);
+
+        // Close on backdrop click
+        modalBackdrop?.addEventListener('click', (e) => {
+            if (e.target === modalBackdrop) {
+                closeModal();
+            }
+        });
+
+        // Confirm button - store values and close modal (don't submit yet)
+        confirmBtn?.addEventListener('click', () => {
+            if (!window.rescheduleReason) {
+                showToastManage('❌ Please select a reschedule reason.');
+                return;
+            }
+
+            // Store the reschedule reason and message (already stored via input handlers above)
+            // Just close the modal and clear the pending flag
+            modalBackdrop.classList.remove('active');
+            window.pendingSingleSubmission = null;
+
+            // Values are now stored in window.rescheduleReason and window.rescheduleMessage
+            // User needs to click "Update 1:1 class" button again to actually submit
+            console.log('✅ Reschedule data stored:', {
+                reason: window.rescheduleReason,
+                message: window.rescheduleMessage
+            });
+
+            showToastManage('✅ Reschedule details saved. Click "Update 1:1 class" to confirm.');
         });
     })();
 
@@ -3034,6 +3781,12 @@ document.addEventListener('DOMContentLoaded', function() {
     ========================================== */
 
     scheduleBtn?.addEventListener('click', async () => {
+        // Check if we're waiting for modal input (reschedule or update scope)
+        if (window.pendingSingleSubmission || window.pendingWeeklySubmission) {
+            console.log('⏸️ Waiting for modal input, skipping direct submission');
+            return;
+        }
+
         const teacher = {
             id: teacherTrigger?.dataset.userid || null,
             name: teacherLabel?.textContent.trim() || 'Unknown Teacher',
@@ -3259,29 +4012,35 @@ document.addEventListener('DOMContentLoaded', function() {
                 totalDays: selectedDays.length,
                 cmid: cmid
             };
-
-            console.log('✅ CURRENT Weekly Lesson Data:');
-            console.log(`  - Start Date: ${startDate}`);
-            console.log(`  - Interval: ${interval} ${period}`);
-            console.log(`  - End Option: ${endOptionLabel}`);
-            console.log(`  - Ends On: ${endsOn}`);
-            console.log(`  - Selected Days:`, selectedDays);
-            console.log(`  - CMID: ${cmid}`);
         }
 
-        // Populate newData with all the collected form values
-        formData.newData = {
-            eventId: formData.eventId,
-            teacherId: formData.changeTeacher ? formData.newTeacherId : formData.teacherId,
-            studentId: formData.studentId,
-            lessonType: formData.lessonType,
-            cmid: formData.cmid,
-            singleLesson: formData.singleLesson || null,
-            weeklyLesson: formData.weeklyLesson || null
-        };
+        // Populate newData with only the changed/updated form values
+        formData.newData = {};
+
+        // Only add changed fields
+        if (formData.changeTeacher && formData.newTeacherId) {
+            formData.newData.teacherId = formData.newTeacherId;
+        }
+
+        // Add lesson type specific data
+        if (formData.lessonType === 'single' && formData.singleLesson) {
+            formData.newData.singleLesson = formData.singleLesson;
+            // Add reschedule reason and message if present
+            if (window.rescheduleReason) {
+                formData.newData.rescheduleReason = window.rescheduleReason;
+                formData.newData.rescheduleMessage = window.rescheduleMessage || '';
+                console.log('📝 Reschedule Reason:', formData.newData.rescheduleReason);
+                console.log('💬 Reschedule Message:', formData.newData.rescheduleMessage);
+            }
+        } else if (formData.lessonType === 'weekly' && formData.weeklyLesson) {
+            formData.newData.weeklyLesson = formData.weeklyLesson;
+            // Add allEvents flag for weekly lessons
+            formData.newData.allEvents = window.allEvents || false;
+            console.log('📌 All Events:', formData.newData.allEvents);
+        }
 
         console.log('📤 Final Form Data:', formData);
-        console.log('📋 New Data:', formData.newData);
+        console.log('📋 New Data (Updated fields only):', formData.newData);
 
         const payload = {
             data: formData,
@@ -3290,6 +4049,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         console.log('📦 Sending Payload with Event ID:', payload.eventId, '| Full Payload:',
             payload);
+
+        // Show loader
+        if (loaderOverlay) loaderOverlay.classList.add('active');
 
         try {
             const response = await fetch('ajax/update_one2one.php', {
@@ -3304,12 +4066,15 @@ document.addEventListener('DOMContentLoaded', function() {
             const result = await response.json();
             console.log('Update Response:', result);
 
+            // Hide loader
+            if (loaderOverlay) loaderOverlay.classList.remove('active');
+
             if (!result.success) {
-                alert('Error: ' + result.message);
+                showToastManage('❌ Error: ' + result.message);
                 return;
             }
 
-            alert('Session updated successfully!');
+            showToastManage('✅ Session updated successfully!');
 
             if (window.refetchCustomPluginData) {
                 window.refetchCustomPluginData('update-one2one');
@@ -3318,10 +4083,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // Reset form after successful submission
-            resetManageClassForm();
+            setTimeout(() => {
+                resetManageClassForm();
+            }, 1000);
         } catch (error) {
             console.error('Update Error:', error);
-            alert('Something went wrong while updating the session.');
+            // Hide loader
+            if (loaderOverlay) loaderOverlay.classList.remove('active');
+            showToastManage('❌ Something went wrong while updating the session.');
         }
     });
 
@@ -3472,6 +4241,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Clear global variables
         window.selectedCmidManage = null;
+        window.rescheduleReason = null;
+        window.rescheduleMessage = null;
+        window.allEvents = false;
         if (window.weeklyLessonDayTimes) {
             window.weeklyLessonDayTimes = {};
         }
