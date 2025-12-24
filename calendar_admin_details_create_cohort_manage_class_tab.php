@@ -2595,9 +2595,15 @@ document.addEventListener('DOMContentLoaded', function() {
     window.selectedCmidManage = null;
     // global holder for all events flag (false = this event, true = all following events)
     window.allEvents = false;
+    // flag to skip the scope modal once the user already chose a scope
+    window.weeklyReadyToSubmit = false;
+    // track which scope the user picked (default to this event)
+    window.weeklyUpdateScope = 'this';
     // global holder for reschedule reason and message
     window.rescheduleReason = null;
     window.rescheduleMessage = null;
+    // flag to skip the reschedule modal once the user already chose a reason
+    window.singleReadyToSubmit = false;
     const singleSection = $('#custom-single-lesson-manage');
     const weeklySection = $('#custom-weekly-lesson-manage');
 
@@ -2637,26 +2643,29 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // For weekly lessons, show the modal first before submitting
             if (lessonType === 'weekly') {
-                // Store the data for later submission
-                window.pendingWeeklySubmission = {
-                    teacherId,
-                    studentId,
-                    lessonType,
-                    selectedElement
-                };
+                // Only show the scope modal the first time; afterwards submit directly
+                if (!window.weeklyReadyToSubmit) {
+                    // Store the data for later submission
+                    window.pendingWeeklySubmission = {
+                        teacherId,
+                        studentId,
+                        lessonType,
+                        selectedElement
+                    };
 
-                // Show the update scope modal
-                $('#manageUpdateScopeModalBackdrop').classList.add('active');
-                return;
+                    // Show the update scope modal
+                    $('#manageUpdateScopeModalBackdrop').classList.add('active');
+                    return;
+                }
+
+                // Reset the flag so future clicks reopen the scope modal if needed
+                window.weeklyReadyToSubmit = false;
             }
 
             // For single lessons, check if reschedule values are already stored
             if (lessonType === 'single') {
-                // If reschedule reason is already stored, skip modal and proceed with submission
-                if (window.rescheduleReason) {
-                    console.log('✅ Reschedule values already stored, proceeding with submission');
-                    // Don't return, let the main handler below continue with submission
-                } else {
+                // Only show the reschedule modal the first time; afterwards submit directly
+                if (!window.singleReadyToSubmit) {
                     // Show the reschedule modal for first time
                     window.pendingSingleSubmission = {
                         teacherId,
@@ -2704,6 +2713,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     $('#rescheduleLessonModalBackdrop').classList.add('active');
                     return;
                 }
+
+                // Reset the flag so future clicks reopen the reschedule modal if needed
+                window.singleReadyToSubmit = false;
             }
         });
     }
@@ -3090,6 +3102,9 @@ document.addEventListener('DOMContentLoaded', function() {
             modalBackdrop.classList.remove('active');
             window.pendingWeeklyTimeChange = null;
             window.pendingWeeklySubmission = null;
+            window.weeklyReadyToSubmit = false;
+            window.weeklyUpdateScope = 'this';
+            window.allEvents = false;
         });
 
         // Ok button - save the selection and apply the time change or submission
@@ -3097,8 +3112,10 @@ document.addEventListener('DOMContentLoaded', function() {
             // Get selected scope as boolean
             if (thisEventRadio?.checked) {
                 window.allEvents = false; // This event only
+                window.weeklyUpdateScope = 'this';
             } else if (followingRadio?.checked) {
                 window.allEvents = true; // All following events
+                window.weeklyUpdateScope = 'all';
             }
 
             // Apply the pending time change
@@ -3138,6 +3155,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 // fetch('your-api-endpoint', { method: 'POST', body: JSON.stringify(payload) })
 
                 window.pendingWeeklySubmission = null;
+
+                // We already have the scope choice; immediately submit the update payload
+                // by re-triggering the main click handler with the guard flag set.
+                window.weeklyReadyToSubmit = true;
+                const submitButton = document.querySelector(
+                    '.calendar_admin_details_create_cohort_schedule_btn_manage');
+                if (submitButton) submitButton.click();
             }
 
             // Close modal
@@ -3152,6 +3176,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 modalBackdrop.classList.remove('active');
                 window.pendingWeeklyTimeChange = null;
                 window.pendingWeeklySubmission = null;
+                window.weeklyReadyToSubmit = false;
+                window.weeklyUpdateScope = 'this';
+                window.allEvents = false;
             }
         });
     })();
@@ -3207,6 +3234,7 @@ document.addEventListener('DOMContentLoaded', function() {
             window.pendingSingleSubmission = null;
             window.rescheduleReason = null;
             window.rescheduleMessage = null;
+            window.singleReadyToSubmit = false;
             if (reasonDisplay) reasonDisplay.textContent = 'Select Reason';
             if (messageTextarea) messageTextarea.value = '';
             if (confirmBtn) confirmBtn.disabled = true;
@@ -3222,7 +3250,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Confirm button - store values and close modal (don't submit yet)
+        // Confirm button - store values, close modal, and trigger submission
         confirmBtn?.addEventListener('click', () => {
             if (!window.rescheduleReason) {
                 showToastManage('❌ Please select a reschedule reason.');
@@ -3230,18 +3258,23 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // Store the reschedule reason and message (already stored via input handlers above)
-            // Just close the modal and clear the pending flag
+            // Close the modal
             modalBackdrop.classList.remove('active');
             window.pendingSingleSubmission = null;
 
             // Values are now stored in window.rescheduleReason and window.rescheduleMessage
-            // User needs to click "Update 1:1 class" button again to actually submit
             console.log('✅ Reschedule data stored:', {
                 reason: window.rescheduleReason,
                 message: window.rescheduleMessage
             });
 
-            showToastManage('✅ Reschedule details saved. Click "Update 1:1 class" to confirm.');
+            // Set the flag to allow direct submission
+            window.singleReadyToSubmit = true;
+
+            // Immediately trigger the main submit handler
+            const submitButton = document.querySelector(
+                '.calendar_admin_details_create_cohort_schedule_btn_manage');
+            if (submitButton) submitButton.click();
         });
     })();
 
