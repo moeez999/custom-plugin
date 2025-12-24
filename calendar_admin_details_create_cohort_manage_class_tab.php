@@ -895,9 +895,13 @@ echo $studentsItemsHtml;
 
     <!-- Change Teacher Checkbox -->
     <div class="one2one-change-teacher-section" style="margin-top: 15px;">
-        <label class="one2one-checkbox-label" style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-            <input type="checkbox" id="changeTeacherCheckbox" style="width: 18px; height: 18px; cursor: pointer;">
-            <span style="font-size: 14px; font-weight: 500;">Change Teacher</span>
+        <label class="one2one-checkbox-label"
+            style="display: flex; justify-content: end; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="checkbox" id="changeTeacherCheckbox"
+                style="display:none;width: 18px; height: 18px; cursor: pointer;">
+            <span style="font-size: 14px; font-weight: 600; display:flex;gap:5px; align-item:center;"><img
+                    src="./img/assign-teacher.svg" alt=""> Assign
+                Tutor</span>
         </label>
     </div>
 
