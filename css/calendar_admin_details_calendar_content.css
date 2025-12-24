@@ -42,15 +42,17 @@ body {
 .cal {
   background: #fff;
   border: 1px solid var(--col-border);
-  border-radius: 8px;
+  border-radius: 5px;
   overflow: hidden;
   box-shadow: 0 10px 30px rgba(20, 20, 40, 0.08);
+  width: 1190px;
 }
 
 .cal-head {
   display: grid;
   grid-template-columns: 84px repeat(7, 1fr);
   border-bottom: 1px solid var(--col-border);
+  background: #fafbff;
 }
 .cal-head .gutter {
   border-right: 1px solid var(--col-border);
@@ -58,16 +60,7 @@ body {
 .day-h {
   padding: 14px 6px 12px;
   text-align: center;
-  display: flex;
-  justify-content: center;
-  gap: 6px;
-  color: var(--muted);
-  border-right: 1px solid var(--col-border);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  user-select: none;
 }
-
 .day-h .dow {
   font-size: 15px;
 }
@@ -77,18 +70,6 @@ body {
   color: var(--muted);
   font-weight: 600;
   font-size: 13px;
-}
-/* Active date filter styling */
-.day-h.date-filter-active {
-  background-color: #e5e7eb;
-  color: #6b7280;
-  border-right: 1px solid #d1d5db;
-  font-weight: 600;
-  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.1);
-}
-.day-h.date-filter-active .dow,
-.day-h.date-filter-active .dt {
-  color: white;
 }
 
 .grid {
@@ -101,7 +82,7 @@ body {
 .gutter {
   position: sticky;
   left: 0;
-  z-index: 3;
+  z-index: 5;
   background: #fff;
   border-right: 1px solid var(--col-border);
 }
@@ -109,12 +90,7 @@ body {
   height: var(--slot-h);
   position: relative;
   border-top: none !important;
-  cursor: pointer;
 }
-.time-row:nth-child(even) {
-  border-bottom: 1px solid var(--col-border);
-}
-
 .time-label {
   position: absolute;
   right: 8px;
@@ -125,26 +101,6 @@ body {
   font-weight: 600;
   line-height: 1;
   top: calc(var(--slot-h) - 0.7em);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-.time-label:hover {
-  color: var(--brand-color, #4caf50);
-  font-weight: 700;
-}
-/* Time slot filter active styling */
-.time-row.time-slot-filter-active {
-  /* background-color: rgba(76, 175, 80, 0.12);
-  border-left: 4px solid var(--brand-color, #4caf50); */
-  /* box-shadow: inset 0 0 8px rgba(76, 175, 80, 0.1); */
-}
-.time-row.time-slot-filter-active .time-label {
-  color: white;
-  font-weight: 700;
-  background: linear-gradient(135deg, var(--brand-color, #4caf50), #45a049);
-  padding: 2px 6px;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3);
 }
 
 .day {
@@ -155,7 +111,6 @@ body {
 .day-inner {
   position: relative;
   height: calc(var(--rows) * var(--slot-h));
-  background: #f4f3f8;
 }
 .day-inner .slots {
   position: absolute;
@@ -167,15 +122,12 @@ body {
 }
 .day-inner .slots > div {
   border-top: 1px solid var(--slot-line);
-  /* height: 48px; */
 }
 .day-inner .slots > div:first-child {
   border-top-color: var(--hour-line);
-  /* height: 48px; */
 }
 .day-inner .slots > div:nth-child(2n + 1) {
   border-top-color: var(--hour-line);
-  /* height: 48px; */
 }
 
 /* Events */
@@ -184,17 +136,9 @@ body {
 .event {
   position: absolute;
   z-index: 1;
-  overflow: visible;
-  /* Background should be a light tint of the border color.  
-     --event-border-color should be provided by event classes or inline style. */
-  background: #fff; /* fallback for older browsers */
-  background: color-mix(
-    in srgb,
-    var(--event-border-color, #7c96ff) 10%,
-    #ffffff
-  );
-  border: 1px solid var(--event-border-color, #7c96ff);
-  border-bottom: 3px solid var(--event-border-color, #7c96ff);
+  overflow: hidden;
+  background: #fff;
+  border: 2px solid #1f57ff;
   border-radius: var(--event-radius);
   padding: 8px 8px 6px;
   box-shadow: 0 4px 10px rgba(25, 35, 60, 0.08);
@@ -209,79 +153,6 @@ body {
 .event.is-front {
   box-shadow: 0 10px 24px rgba(17, 24, 39, 0.18);
   filter: saturate(1.05);
-}
-
-/* Short events (less than 1 hour) - compact display */
-.event.short-event {
-  padding: 4px 8px;
-  display: flex;
-
-  justify-content: center;
-  flex-direction: column;
-}
-.short-event .ev-single {
-  width: inherit;
-}
-
-.event.short-event .ev-when {
-  font-size: 11px;
-  font-weight: 500;
-  margin: 0;
-  text-align: center;
-  white-space: nowrap;
-}
-
-/* Class type styles: Main vs Tutoring */
-/* Main class: solid border with blue color - teacher dot shows teacher color separately */
-.event.class-type-main {
-  --event-border-color: #095df3;
-  border-color: #095df3;
-  background: color-mix(in srgb, #095df3 10%, #ffffff);
-}
-
-/* Tutoring class: dashed border with blue color - teacher dot shows teacher color separately */
-.event.class-type-tutoring {
-  --event-border-color: #095df3;
-  border-color: #095df3;
-  border-style: dashed;
-  border-width: 2px;
-  border-bottom-width: 3px;
-  border-bottom-style: dashed;
-  background: color-mix(in srgb, #095df3 10%, #ffffff);
-}
-
-/* One-on-One Weekly class: solid border with green color - teacher dot shows teacher color separately */
-.event.class-type-one2one_weekly {
-  --event-border-color: #00b100;
-  border-color: #00b100;
-  background: color-mix(in srgb, #00b100 10%, #ffffff);
-}
-
-/* One-on-One Single class: solid border with green color - teacher dot shows teacher color separately */
-.event.class-type-one2one_single {
-  --event-border-color: #00b100;
-  border-color: #00b100;
-  background: color-mix(in srgb, #00b100 10%, #ffffff);
-}
-
-.event.class-type-timeoff {
-  --event-border-color: rgba(253, 216, 48, 0.7);
-  border-color: rgba(253, 216, 48, 0.7);
-  background: color-mix(in srgb, #fdd830 10%, #ffffff);
-}
-
-.event.event-active {
-  z-index: 9999 !important;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.16);
-}
-
-.event.event-dimmed {
-  /* opacity: 0.35;
-  filter: saturate(0.6); */
-}
-
-.event {
-  overflow: hidden;
 }
 
 .ev-top {
@@ -307,51 +178,19 @@ body {
 .ev-repeat {
   display: inline-flex;
   align-items: center;
-  justify-content: flex-start;
-
-  height: 15px;
-  font-size: 10px;
-  line-height: 1;
-  width: 100%;
-}
-
-/* Single session icon (for non-recurring events) */
-.ev-single {
-  display: inline-flex;
-  align-items: center;
-  justify-content: flex-start;
-
-  height: 15px;
-  font-size: 10px;
-  line-height: 1;
-  width: 100%;
-}
-
-/* Midnight-crossing event indicator icon */
-.ev-midnight-icon {
-  display: inline-flex;
-  align-items: center;
   justify-content: center;
   width: 15px;
   height: 15px;
-  font-size: 11px;
-  font-weight: bold;
-  color: #ff3b30;
-  background: rgba(255, 59, 48, 0.1);
-  border-radius: 3px;
-  margin: 0 2px;
-  cursor: help;
-}
-
-/* Highlight midnight-crossing events with subtle border */
-.event.midnight-crossing {
-  border-left: 3px solid #ff3b30;
+  border-radius: 50%;
+  border: 1px solid #cfd6ea;
+  font-size: 10px;
+  color: #4b5563;
+  line-height: 1;
 }
 
 .ev-when {
-  font-size: 11px;
-  font-weight: 500;
-
+  font-size: 9px;
+  color: var(--muted);
   margin-bottom: 2px;
   white-space: nowrap;
   overflow: hidden;
@@ -363,66 +202,26 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-bottom: 5px;
 }
 
 .e-blue {
-  --event-border-color: #7c96ff;
-  border-color: var(--event-border-color);
-  background: color-mix(in srgb, #7c96ff 10%, #ffffff);
+  border-color: #1f57ff;
 }
 .e-green {
-  --event-border-color: #2faa7f;
-  border-color: var(--event-border-color);
-  background: color-mix(in srgb, #2faa7f 10%, #ffffff);
+  border-color: #2faa7f;
 }
 .e-rose {
-  --event-border-color: #ea3a3a;
-  border-color: var(--event-border-color);
-  background: color-mix(in srgb, #ea3a3a 10%, #ffffff);
+  border-color: #ea3a3a;
 }
 .e-purple {
-  --event-border-color: #b535ff;
-  border-color: rgba(181, 53, 255, 0.7) !important;
-  background: color-mix(in srgb, #b535ff 10%, #ffffff) !important;
-  border-bottom-color: rgba(181, 53, 255, 0.7) !important;
-}
-.e-orange {
-  --event-border-color: #ff8a06;
-  border-color: rgba(255, 138, 6, 0.7) !important;
-  background: color-mix(in srgb, #ff8a06 10%, #ffffff) !important;
-  border-bottom-color: rgba(255, 138, 6, 0.7) !important;
+  border-color: #a855f7;
 }
 .e-gold {
-  --event-border-color: #d4a017;
-  border-color: var(--event-border-color);
-  background: color-mix(in srgb, #d4a017 10%, #ffffff);
+  border-color: #d4a017;
 }
 .e-gray {
-  --event-border-color: rgba(255, 138, 6, 0.7);
-  border-color: var(--event-border-color);
-  /* keep a subtle tint for gray/gold-like classes as before */
-  background: color-mix(in srgb, var(--event-border-color) 8%, #ffffff);
-}
-
-/* Teacher indicator dot on event */
-.event::after {
-  content: "";
-  position: absolute;
-  bottom: 4px;
-  right: 4px;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background-color: var(--teacher-dot-color, #ccc);
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-
-.event.has-teacher-indicator::after {
-  opacity: 1;
-  /* Use dynamic teacher color set via inline style */
-  background-color: var(--teacher-dot-color);
+  border-color: #d3d7df;
+  background: #f4f5f8;
 }
 
 /* NOW line: arrows pointing toward each other */
@@ -460,176 +259,9 @@ body {
   border-right: 10px solid #ff3b30; /* Was border-left before */
 }
 
-/* ====== Event Tooltip Styles ====== */
-.event-tooltip {
-  display: none;
-  position: fixed;
-  background: #ffffff;
-  border: 1px solid #e1e3ec;
-  border-radius: 8px;
-  padding: 12px 14px;
-  min-width: 220px;
-  max-width: 300px;
-  box-shadow: 0 8px 24px rgba(17, 24, 39, 0.15),
-    0 2px 8px rgba(17, 24, 39, 0.08);
-  z-index: 10000;
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-.tooltip-header {
-  margin-bottom: 8px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #f0f1f5;
-}
-
-.tooltip-header strong {
-  color: #0f1320;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.tooltip-time {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: #6b7280;
-  margin-bottom: 8px;
-  font-size: 13px;
-}
-
-.tooltip-time svg {
-  flex-shrink: 0;
-}
-
-.tooltip-teacher {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
-  padding: 6px 8px;
-  background: #f9fafb;
-  border-radius: 6px;
-}
-
-.tooltip-avatar {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #e5e7eb;
-}
-
-.tooltip-teacher span {
-  color: #6b7280;
-  font-size: 12px;
-}
-
-.tooltip-type {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 8px;
-}
-
-.tooltip-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 3px 8px;
-  background: #f3f4f6;
-  color: #4b5563;
-  border-radius: 4px;
-  font-size: 11px;
-  font-weight: 500;
-  white-space: nowrap;
-}
-
-/* Add pointer cursor to small events to indicate hover interaction */
-.event:hover {
-  box-shadow: 0 10px 24px rgba(17, 24, 39, 0.18);
-  filter: saturate(1.05);
-}
-
-/* Toggle Filter Button Styles */
-.filter-toggle-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px;
-  background: transparent;
-  margin-top: 5px;
-}
-
-.filter-toggle-label {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  user-select: none;
-  gap: 8px;
-  flex-direction: column;
-}
-
-.filter-toggle-checkbox {
-  display: none;
-}
-
-.filter-toggle-switch {
-  position: relative;
-  display: inline-flex;
-  width: 44px;
-  height: 24px;
-  background-color: #ccc;
-  border-radius: 12px;
-  transition: background-color 0.3s ease;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.filter-toggle-switch::after {
-  content: "";
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  background-color: #fff;
-  border-radius: 50%;
-  top: 2px;
-  left: 2px;
-  transition: left 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.filter-toggle-checkbox:checked + .filter-toggle-switch {
-  background-color: #095df3;
-}
-
-.filter-toggle-checkbox:checked + .filter-toggle-switch::after {
-  left: 22px;
-}
-
-.filter-toggle-text {
-  font-size: 11px;
-  font-weight: 600;
-  color: #666;
-  letter-spacing: 0.2px;
-  text-align: center;
-  line-height: 1.2;
-}
-
 @media (max-width: 700px) {
   .cal-head,
   .grid {
     grid-template-columns: 70px repeat(7, 320px);
-  }
-
-  .event-tooltip {
-    max-width: 250px;
-    font-size: 12px;
-  }
-
-  .filter-toggle-container {
-    padding: 5px;
-  }
-
-  .filter-toggle-text {
-    font-size: 10px;
   }
 }

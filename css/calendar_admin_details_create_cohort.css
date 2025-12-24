@@ -1684,8 +1684,9 @@ input[type="date"] {
 }
 
 .calendar_admin_details_cohort_tab_timezone_list {
-   overflow: auto; height: 185px;
-  max-height:185px;
+  overflow: auto;
+  height: 185px;
+  max-height: 185px;
   display: none;
   position: absolute;
   left: 0;
@@ -1765,8 +1766,9 @@ input[type="date"] {
 }
 
 .calendar_admin_details_cohort_tab_timezone_list_right {
-    overflow: auto; height: 185px;
-  max-height:185px;
+  overflow: auto;
+  height: 185px;
+  max-height: 185px;
   display: none;
   position: absolute;
   left: 0;

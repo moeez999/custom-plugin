@@ -1,7 +1,7 @@
 /* ====== CONFIG ====== */
 
 const START_H = 0,
-  END_H = 24,
+  END_H = 30,
   SLOT_MIN = 30;
 const SLOT_H =
   parseInt(
@@ -21,8 +21,6 @@ const REVEAL_MID =
     getComputedStyle(document.documentElement).getPropertyValue("--reveal-mid")
   ) || 8;
 
-let role = localStorage.getItem("role");
-let teacherId = localStorage.getItem("teacherId");
 // Helper function to get teacher color based on teacher ID (unlimited colors)
 function getTeacherColorIndex(teacherId) {
   if (!teacherId) return 1;
@@ -70,7 +68,6 @@ const DOW = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 // White slot windows derived from teacher availability payloads
 let whiteSlotRules = [];
-window.teacherExtraSlots = window.teacherExtraSlots || {};
 
 // Map event status codes to icons/labels
 const STATUS_ICON_MAP = {
@@ -124,9 +121,8 @@ function pad2(n) {
 function fmt12(min) {
   let h = Math.floor(min / 60),
     m = min % 60;
-  // Normalize hours to 0-23 range for display (don't wrap beyond 24)
-  h = h % 24;
-  // When h >= 12: PM, when h < 12: AM
+  // Wrap hours beyond 24
+  if (h >= 24) h -= 24;
   const ap = h >= 12 ? "PM" : "AM";
   const dispH = h % 12 || 12;
   return `${dispH}:${pad2(m)} ${ap}`;
@@ -160,12 +156,11 @@ function rangeText(startDate) {
     : `${m1} ${d1} - ${d2}, ${y}`;
 }
 
-/* NEW: check if a slot minute falls in any availability-derived white slot rule */
+/* NEW: check if a slot minute falls in any WHITE_SLOTS rule */
 function isWhiteSlotFor(dayIndex, isoDate, minuteOfDay) {
   const toMin = (hhmm) => {
     if (typeof hhmm === "number") return hhmm;
     const [h, m] = String(hhmm).split(":").map(Number);
-    if (Number.isNaN(h)) return null;
     return h * 60 + (m || 0);
   };
   for (const rule of whiteSlotRules) {
@@ -176,8 +171,7 @@ function isWhiteSlotFor(dayIndex, isoDate, minuteOfDay) {
     const s = toMin(rule.start),
       e = toMin(rule.end);
     if (s === null || e === null) continue;
-    if (minuteOfDay >= s && minuteOfDay < e)
-      return rule.source || "availability";
+    if (minuteOfDay >= s && minuteOfDay < e) return true;
   }
   return null;
 }
@@ -195,7 +189,6 @@ $(function () {
 
   /* ========= Create Cohort modal (uses your exact code) ========= */
   function openCreateCohortModal() {
-    if (window.closeCohortOverlays) window.closeCohortOverlays();
     $("#calendar_admin_details_create_cohort_modal_backdrop").fadeIn();
 
     const $bd = $("#calendar_admin_details_create_cohort_modal_backdrop");
@@ -214,95 +207,7 @@ $(function () {
     $("#manage_cohort_tab_content").css("display", "none");
     $("#mainModalContent").css("display", "block");
     $("#classTabContent").css("display", "none");
-
-    // Auto-select teacher from sessionStorage in create cohort (teacher1DropdownList)
-    const savedTeacherId = sessionStorage.getItem("selectedTeacherId");
-    if (savedTeacherId) {
-      setTimeout(() => {
-        const teacherIdInt = parseInt(savedTeacherId, 10);
-        const $teacherItem = $("#teacher1DropdownList").find(
-          `.teacher-option[data-userid="${teacherIdInt}"]`
-        );
-        if ($teacherItem.length) {
-          console.log("Auto-selecting teacher in create cohort:", teacherIdInt);
-          $teacherItem.trigger("click");
-        }
-      }, 300);
-    }
   }
-
-  // Helper function to auto-select teacher in various tabs based on their dropdown structure
-  function autoSelectTeacherInTab(tabId) {
-    const savedTeacherId = sessionStorage.getItem("selectedTeacherId");
-    if (!savedTeacherId) return;
-
-    setTimeout(() => {
-      const teacherIdInt = parseInt(savedTeacherId, 10);
-
-      // Different selectors for different tabs
-      let $teacherItem;
-
-      if (tabId === "classTabContent") {
-        // 1:1 Class tab uses calendar_admin_details_create_cohort_class_tab_item
-        $teacherItem = $(`#${tabId}`).find(
-          `.calendar_admin_details_create_cohort_class_tab_item[data-userid="${teacherIdInt}"]`
-        );
-      } else if (tabId === "manageclassTabContent") {
-        // Manage Class tab uses calendar_admin_details_create_cohort_manage_class_tab_item
-        $teacherItem = $(`#${tabId}`).find(
-          `.calendar_admin_details_create_cohort_manage_class_tab_item[data-userid="${teacherIdInt}"]`
-        );
-      } else if (
-        tabId === "addTimeTabContent" ||
-        tabId === "addExtraSlotsTabContent"
-      ) {
-        // Add time tabs use addtime-teacher-item
-        $teacherItem = $(`#${tabId}`).find(
-          `.addtime-teacher-item[data-userid="${teacherIdInt}"]`
-        );
-      }
-
-      if ($teacherItem && $teacherItem.length) {
-        console.log(`Auto-selecting teacher in ${tabId}:`, teacherIdInt);
-        $teacherItem.trigger("click");
-      }
-    }, 300);
-  }
-
-  // Monitor tab clicks and auto-select teacher when tabs open
-  $(document).on(
-    "click",
-    ".calendar_admin_details_create_cohort_tab",
-    function () {
-      const tabName = $(this).data("tab");
-      if (tabName === "addtime") {
-        autoSelectTeacherInTab("addTimeTabContent");
-      } else if (tabName === "extraslots") {
-        autoSelectTeacherInTab("addExtraSlotsTabContent");
-      } else if (tabName === "manage_class") {
-        autoSelectTeacherInTab("manageclassTabContent");
-      } else if (tabName === "class") {
-        autoSelectTeacherInTab("classTabContent");
-      }
-    }
-  );
-
-  // Check if coming back from setup availability page and auto-select teacher
-  $(document).ready(function () {
-    const autoSelectTeacherId = sessionStorage.getItem("autoSelectTeacher");
-    if (autoSelectTeacherId) {
-      sessionStorage.removeItem("autoSelectTeacher");
-      // Trigger auto-select for the teacher dropdown
-      const $teacherOption = $(
-        `#teacher1DropdownList li.teacher-option[data-userid="${autoSelectTeacherId}"]`
-      );
-      if ($teacherOption.length) {
-        setTimeout(() => {
-          $teacherOption.trigger("click");
-        }, 500);
-      }
-    }
-  });
 
   /* ========= Open PeerTalk Modal With Event Data ========= */
   function openPeerTalkModalWithData(eventData) {
@@ -347,22 +252,8 @@ $(function () {
     $("#classTabContent").css("display", "none");
     $("#peerTalkTabContent").css("display", "block");
 
-    // Store event ID in form for update purposes
-    const $form = $("#peerTalkForm");
-    const $parent = $("#peerTalkTabContent");
-    if (eventData.eventid) {
-      $form.data("eventId", eventData.eventid);
-      $parent.find(".peertalk_modal_btn").text("Update Peer Talk");
-    } else {
-      $form.removeData("eventId");
-      $parent.find(".peertalk_modal_btn").text("Schedule Peer Talk");
-    }
-
     // Populate the peertalk form with event data and recurrence info
     populatePeerTalkForm(eventData, recurrenceEvents);
-    setTimeout(() => {
-      scrollToActiveCohortTab();
-    }, 100);
   }
 
   /* ========= Populate PeerTalk Form With Event Data ========= */
@@ -541,8 +432,10 @@ $(function () {
         let startTime, endTime;
 
         console.log(
-          `Event data - start: ${ev.start} (type: ${typeof ev.start}), end: ${ev.end
-          } (type: ${typeof ev.end}), start_ts: ${ev.start_ts}, end_ts: ${ev.end_ts
+          `Event data - start: ${ev.start} (type: ${typeof ev.start}), end: ${
+            ev.end
+          } (type: ${typeof ev.end}), start_ts: ${ev.start_ts}, end_ts: ${
+            ev.end_ts
           }`
         );
 
@@ -599,33 +492,7 @@ $(function () {
       if ($repeatBtn.length > 0) {
         // Convert 24h time to 12h format with AM/PM
         function formatTime12h(time24) {
-          let timeStr = String(time24).trim();
-          let hours, minutes;
-
-          // Check if already in 12-hour format (contains AM/PM)
-          if (timeStr.match(/\s*(am|pm)\s*$/i)) {
-            // Already 12-hour format, extract hours and period
-            const match = timeStr.match(/^(\d+):?(\d{2})\s*(am|pm)$/i);
-            if (match) {
-              hours = parseInt(match[1], 10);
-              minutes = parseInt(match[2], 10);
-              const inputPeriod = match[3].toUpperCase();
-              // Convert to 24-hour internally, then back
-              if (inputPeriod === "PM" && hours !== 12) {
-                hours = hours + 12;
-              } else if (inputPeriod === "AM" && hours === 12) {
-                hours = 0;
-              }
-            } else {
-              return time24; // Return as-is if can't parse
-            }
-          } else {
-            // 24-hour format
-            const parts = timeStr.split(":").map(Number);
-            hours = parts[0];
-            minutes = parts[1];
-          }
-
+          const [hours, minutes] = time24.split(":").map(Number);
           const period = hours >= 12 ? "PM" : "AM";
           const hours12 = hours % 12 || 12;
           return `${String(hours12).padStart(2, "0")}:${String(
@@ -771,40 +638,11 @@ $(function () {
 
     // Helper function to format time to 12h with AM/PM
     function formatTime12h(time24) {
-      let timeStr = String(time24).trim();
-      let hours, minutes, hourStr, minStr;
-
-      // Check if already in 12-hour format (contains AM/PM)
-      if (timeStr.match(/\s*(am|pm)\s*$/i)) {
-        // Already 12-hour format, extract components
-        const match = timeStr.match(/^(\d+):?(\d{2})\s*(am|pm)$/i);
-        if (match) {
-          hours = parseInt(match[1], 10);
-          minutes = parseInt(match[2], 10);
-          const inputPeriod = match[3].toUpperCase();
-          // Convert to 24-hour internally for proper AM/PM logic
-          if (inputPeriod === "PM" && hours !== 12) {
-            hours = hours + 12;
-          } else if (inputPeriod === "AM" && hours === 12) {
-            hours = 0;
-          }
-        } else {
-          // Can't parse, return as-is
-          return { time: timeStr, period: "AM" };
-        }
-      } else {
-        // 24-hour format
-        const parts = timeStr.split(":");
-        hourStr = parts[0];
-        minStr = parts[1];
-        hours = parseInt(hourStr, 10);
-        minutes = parseInt(minStr, 10);
-      }
-
-      const ampm = hours >= 12 ? "PM" : "AM";
-      let h = hours % 12 || 12;
-      const formattedTime =
-        (h < 10 ? "0" + h : h) + ":" + (minutes < 10 ? "0" + minutes : minutes);
+      const [hours, minutes] = time24.split(":");
+      let h = parseInt(hours, 10);
+      const ampm = h >= 12 ? "PM" : "AM";
+      h = h % 12 || 12;
+      const formattedTime = (h < 10 ? "0" + h : h) + ":" + minutes;
       console.log(`formatTime12h: ${time24} -> ${formattedTime} ${ampm}`);
       return { time: formattedTime, period: ampm };
     }
@@ -930,22 +768,8 @@ $(function () {
     $("#classTabContent").css("display", "none");
     $("#conferenceTabContent").css("display", "block");
 
-    // Store event ID in form for update purposes
-    const $form = $("#conferenceForm");
-    const $parent = $("#conferenceTabContent");
-    if (eventData.eventid) {
-      $form.data("eventId", eventData.eventid);
-      $parent.find(".conference_modal_btn").text("Update Conference");
-    } else {
-      $form.removeData("eventId");
-      $parent.find(".conference_modal_btn").text("Schedule Conference");
-    }
-
     // Populate the conference form with event data and recurrence info
     populateConferenceForm(eventData, recurrenceEvents);
-    setTimeout(() => {
-      scrollToActiveCohortTab();
-    }, 100);
   }
 
   /* ========= Populate Conference Form With Event Data ========= */
@@ -1042,10 +866,10 @@ $(function () {
       setTimeout(function () {
         // Try both teacher lists (view 1 and view 2)
         const $teacherItem1 = $(
-          `#conferenceTeachersList li.conference_teacher_item[data-id="${eventData.teacherId}"]`
+          `#conferenceTeachersList li.conference_teacher_item[data-userid="${eventData.teacherId}"]`
         );
         const $teacherItem2 = $(
-          `#conferenceTeachersList2 li.conference_teacher_item[data-id="${eventData.teacherId}"]`
+          `#conferenceTeachersList2 li.conference_teacher_item[data-userid="${eventData.teacherId}"]`
         );
 
         if ($teacherItem1.length > 0) {
@@ -1120,39 +944,102 @@ $(function () {
     // Build custom recurrence array from events with same eventid
     if (recurrenceEvents && recurrenceEvents.length > 0) {
       const customRecurrenceArray = recurrenceEvents.map(function (ev) {
-        console.log("Processing recurrence event:", ev);
+        const eventDate = ev.date;
+        const dateObj = new Date(eventDate);
+        const dayNames = [
+          "Sunday",
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+        ];
+        const dayName = dayNames[dateObj.getDay()];
 
-        // Convert minutes (from midnight) to HH:MM format
-        function minutesToTime(minutes) {
-          if (minutes === undefined || minutes === null) return "00:00";
-          const h = Math.floor(minutes / 60);
-          const m = minutes % 60;
-          return String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0");
+        function minutesToTime(mins) {
+          const h = Math.floor(mins / 60);
+          const m = mins % 60;
+          const hh = h.toString().padStart(2, "0");
+          const mm = m.toString().padStart(2, "0");
+          return `${hh}:${mm}`;
         }
 
+        const startMins =
+          typeof ev.start === "number" ? ev.start : parseInt(ev.start);
+        const endMins = typeof ev.end === "number" ? ev.end : parseInt(ev.end);
+
+        const startTime = minutesToTime(startMins);
+        const endTime = minutesToTime(endMins);
+
         return {
-          date: ev.date,
-          start: ev.start,
-          end: ev.end,
-          startTime: minutesToTime(ev.start),
-          endTime: minutesToTime(ev.end),
-          day: ev.day || "",
+          date: eventDate,
+          day: dayName,
+          start_time: startTime,
+          end_time: endTime,
+          start_ts: ev.start_ts,
+          end_ts: ev.end_ts,
         };
       });
 
       console.log(
-        "Custom recurrence array for conference:",
+        "Conference custom recurrence array built:",
         customRecurrenceArray
       );
-      // Store for later use if needed
+
+      // Store the recurrence array globally for form submission
       window.conferenceRecurrenceData = customRecurrenceArray;
+
+      // Update the repeat button text
+      const $repeatBtn = $(".conference_repeat_btn");
+      if ($repeatBtn.length > 0) {
+        function formatTime12h(time24) {
+          const [hours, minutes] = time24.split(":");
+          let h = parseInt(hours, 10);
+          const ampm = h >= 12 ? "PM" : "AM";
+          h = h % 12 || 12;
+          return `${h < 10 ? "0" + h : h}:${minutes} ${ampm}`;
+        }
+
+        const shortDays = {
+          Sunday: "Sun",
+          Monday: "Mon",
+          Tuesday: "Tue",
+          Wednesday: "Wed",
+          Thursday: "Thu",
+          Friday: "Fri",
+          Saturday: "Sat",
+        };
+
+        const dayTimeParts = customRecurrenceArray.map(function (item) {
+          const shortDay = shortDays[item.day] || item.day.substring(0, 3);
+          const time = formatTime12h(item.start_time);
+          return `${shortDay}(${time})`;
+        });
+
+        const repeatText = "Weekly on " + dayTimeParts.join(", ");
+
+        $repeatBtn.html(
+          repeatText + '<span style="float:right; font-size:1rem;">▼</span>'
+        );
+
+        console.log("Updated conference repeat button to:", repeatText);
+      }
     }
   }
 
   // Expose function globally for testing
   window.openConferenceModalWithData = openConferenceModalWithData;
 
-  /* ====== CLICK: event -> bring to front + open menu ====== */
+  // // Button → open same modal (kept your trigger class)
+  // $(".calendar_admin_details_create_cohort_open")
+  //   .off("click.openCohort")
+  //   .on("click.openCohort", function (e) {
+  //     e.preventDefault();
+  //     openCreateCohortModal();
+  //   });
+
+  /* ====== CLICK: event -> bring to front only ====== */
   let zSeed = 5000;
   let currentClickedEvent = null; // Store the clicked event data
 
@@ -1164,25 +1051,10 @@ $(function () {
   $("#grid")
     .off("mousedown", ".event")
     .on("mousedown", ".event", function (e) {
-      // Ignore clicks on availability and extra slot events
-      const $clicked = $(this);
-      const clickedClassType = $clicked.data("class-type");
-      // if (
-      //   clickedClassType === "availability" ||
-      //   clickedClassType === "extra_slot"
-      // ) {
-      //   return; // Do nothing for availability/extra slot events
-      // }
-
-      if (
-        clickedClassType === "extra_slot"
-      ) {
-        return; // Do nothing for availability/extra slot events
-      }
-
       e.preventDefault();
       e.stopPropagation();
 
+      const $clicked = $(this);
       const $day = $clicked.closest(".day-inner");
       const cs = +$clicked.data("start"),
         ce = +$clicked.data("end");
@@ -1291,7 +1163,7 @@ $(function () {
           openMenuOptionsDropdown(e, this);
           return;
         }
-        // If it's a 1:1 lesson, do nothing - the .event.e-green handler in lesson_information.php will handle it
+        // If it's a 1:1 lesson, do nothing (no dropdown)
       }
     });
 
@@ -1392,9 +1264,6 @@ $(function () {
     menuContainer.style.left = left + "px";
     menuContainer.style.top = top + "px";
   }
-
-  // Expose function globally for agenda tab
-  window.openMenuOptionsDropdown = openMenuOptionsDropdown;
 
   // Function to close menu options dropdown
   window.closeMenuOptionsDropdown = function () {
@@ -1520,30 +1389,10 @@ $(function () {
       }
     }
 
-    // Populate teacher if available - check eventData or sessionStorage
-    const savedTeacherId = sessionStorage.getItem("selectedTeacherId");
-    const teacherIdToSelect =
-      eventData.teacherId ||
-      (savedTeacherId ? parseInt(savedTeacherId, 10) : null);
-
-    if (teacherIdToSelect) {
-      console.log("Event/Saved teacher ID:", teacherIdToSelect);
-      // Wait for modal to fully load, then select teacher from first teacher dropdown
-      setTimeout(() => {
-        const $teacherItem = $("#teacher1DropdownList").find(
-          `.teacher-option[data-userid="${teacherIdToSelect}"]`
-        );
-        if ($teacherItem.length) {
-          console.log("Found teacher in dropdown:", $teacherItem.text().trim());
-          // Trigger click to select the teacher
-          $teacherItem.trigger("click");
-        } else {
-          console.warn(
-            "Teacher not found in teacher1DropdownList:",
-            teacherIdToSelect
-          );
-        }
-      }, 200);
+    // Populate teacher if available
+    if (eventData.teacherId) {
+      console.log("Event teacher ID:", eventData.teacherId);
+      // Teacher selection will be handled by the manage cohort modal's existing logic
     }
 
     // Populate date and time if available
@@ -1606,8 +1455,9 @@ $(function () {
           "Friday",
           "Saturday",
         ];
-        dateStr = `${dayNames[dateObj.getDay()]}, ${monthNames[month - 1]
-          } ${day}`;
+        dateStr = `${dayNames[dateObj.getDay()]}, ${
+          monthNames[month - 1]
+        } ${day}`;
       }
     }
 
@@ -1671,8 +1521,9 @@ $(function () {
           "Friday",
           "Saturday",
         ];
-        dateStr = `${dayNames[dateObj.getDay()]}, ${monthNames[month - 1]
-          } ${day}`;
+        dateStr = `${dayNames[dateObj.getDay()]}, ${
+          monthNames[month - 1]
+        } ${day}`;
       }
     }
 
@@ -1987,9 +1838,8 @@ $(function () {
     const $startBtn = $("#session-start-btn");
     $startList.empty();
 
-    // Generate standardized times from 12:00 AM to 11:30 PM with 30-minute intervals
     for (let h = 0; h < 24; h++) {
-      for (let m = 0; m < 60; m += 30) {
+      for (let m = 0; m < 60; m += 5) {
         const min = h * 60 + m;
         const label = fmt12(min);
         const $li = $(`<li data-time-value="${min}">${label}</li>`);
@@ -2015,9 +1865,8 @@ $(function () {
     const $endBtn = $("#session-end-btn");
     $endList.empty();
 
-    // Generate standardized times from 12:00 AM to 11:30 PM with 30-minute intervals
     for (let h = 0; h < 24; h++) {
-      for (let m = 0; m < 60; m += 30) {
+      for (let m = 0; m < 60; m += 5) {
         const min = h * 60 + m;
         const label = fmt12(min);
         const $li = $(`<li data-time-value="${min}">${label}</li>`);
@@ -2288,7 +2137,7 @@ $(function () {
     // Persist event data for downstream handlers (e.g., cancel click)
     try {
       $("#timeoff-modal").data("eventData", eventData || {});
-    } catch (e) { }
+    } catch (e) {}
     // Format date
     let dateStr = "";
     let dayStr = "";
@@ -2337,8 +2186,9 @@ $(function () {
       startMin != null && endMin != null ? Math.max(0, endMin - startMin) : 0;
     const durationStr =
       durationMin >= 60
-        ? `${Math.floor(durationMin / 60)} hour${Math.floor(durationMin / 60) > 1 ? "s" : ""
-        }`
+        ? `${Math.floor(durationMin / 60)} hour${
+            Math.floor(durationMin / 60) > 1 ? "s" : ""
+          }`
         : `${durationMin} min`;
 
     // Populate
@@ -2413,39 +2263,17 @@ $(function () {
       })
       .data("class-value");
 
-    // Helper to parse 'h:mm AM/PM' to minutes
-    function parse12HourTime(str) {
-      const match = str.match(/^(\d{1,2}):(\d{2})\s*([AP]M)$/i);
-      if (!match) return null;
-      let h = parseInt(match[1], 10);
-      const m = parseInt(match[2], 10);
-      const ap = match[3].toUpperCase();
-      if (ap === "PM" && h !== 12) h += 12;
-      if (ap === "AM" && h === 12) h = 0;
-      return h * 60 + m;
-    }
-
-    // Get selected start time: if not found in list, fallback to button text
-    let selectedStartTime = $("#session-start-list li")
+    const selectedStartTime = $("#session-start-list li")
       .filter(function () {
         return $(this).text().trim() === $("#session-start-btn").text().trim();
       })
       .data("time-value");
-    if (typeof selectedStartTime === "undefined") {
-      const btnText = $("#session-start-btn").text().trim();
-      selectedStartTime = parse12HourTime(btnText);
-    }
 
-    // Get selected end time: if not found in list, fallback to button text
-    let selectedEndTime = $("#session-end-list li")
+    const selectedEndTime = $("#session-end-list li")
       .filter(function () {
         return $(this).text().trim() === $("#session-end-btn").text().trim();
       })
       .data("time-value");
-    if (typeof selectedEndTime === "undefined") {
-      const btnText = $("#session-end-btn").text().trim();
-      selectedEndTime = parse12HourTime(btnText);
-    }
 
     const selectedDate = $("#session-event-date-btn").data("raw-date") || "";
 
@@ -2481,38 +2309,18 @@ $(function () {
     // ============================================================
     // BUILD PAYLOAD WITH FORMATTED TIMES
     // ============================================================
-    const newStartFormatted = formatTime(selectedStartTime);
-    const newEndFormatted = formatTime(selectedEndTime);
-    const oldStartFormatted = formatTime(oldStart);
-    const oldEndFormatted = formatTime(oldEnd);
-
-    // Check if any changes were made
-    const changesDetected =
-      oldTeacherId !== selectedTeacherId ||
-      oldDate !== selectedDate ||
-      oldStartFormatted !== newStartFormatted ||
-      oldEndFormatted !== newEndFormatted;
-
-    // Only send if changes were detected
-    if (!changesDetected) {
-      console.warn("No changes detected in session update");
-      if (window.showToast) {
-        window.showToast("No changes detected", "info");
-      }
-      return;
-    }
-
     const payload = {
+      status: "reschedule",
       eventid: eventId,
       googlemeetid: googleMeetId,
       oldTeacherId: oldTeacherId,
       newTeacherId: selectedTeacherId,
       oldDate: oldDate,
       newDate: selectedDate,
-      oldStart: oldStartFormatted,
-      oldEnd: oldEndFormatted,
-      newStart: newStartFormatted,
-      newEnd: newEndFormatted,
+      oldStart: formatTime(oldStart),
+      oldEnd: formatTime(oldEnd),
+      newStart: formatTime(selectedStartTime),
+      newEnd: formatTime(selectedEndTime),
     };
 
     console.log("Final Reschedule Payload:", payload);
@@ -2620,96 +2428,6 @@ $(function () {
     .off("mousedown.emptySlot", ".day-inner")
     .on("mousedown.emptySlot", ".day-inner", function (e) {
       if ($(e.target).closest(".event").length) return;
-
-      // If dropdowns or event menu are open, close them and do not open the cohort modal
-      const isMenuOptionsOpen =
-        $("#menu-options").is(":visible") ||
-        $("#menu-options").css("display") === "block";
-
-      const isAnyDropdownOpen =
-        $(".custom-dropdown .dropdown-list").filter(function () {
-          const $el = $(this);
-          return $el.is(":visible") || $el.css("display") !== "none";
-        }).length > 0;
-
-      const isSearchDropdownOpen = [
-        ".search-teacher-section",
-        ".cohort-search-widget-container",
-        ".search-student-section",
-      ].some((sel) => {
-        const $el = $(sel);
-        return (
-          $el.length && ($el.is(":visible") || $el.css("display") !== "none")
-        );
-      });
-
-      // Check if filter popover is open
-      const isFilterPopoverOpen = $(".events-filter-popover").is(":visible");
-
-      if (
-        isMenuOptionsOpen ||
-        isAnyDropdownOpen ||
-        isSearchDropdownOpen ||
-        isFilterPopoverOpen
-      ) {
-        if (window.closeMenuOptionsDropdown) window.closeMenuOptionsDropdown();
-        if (isAnyDropdownOpen) $(".custom-dropdown .dropdown-list").hide();
-        if (isSearchDropdownOpen || isFilterPopoverOpen) e.preventDefault();
-        e.stopPropagation();
-        return;
-      }
-
-      // Get the clicked day and time slot
-      const $dayInner = $(this);
-      const dateStr = $dayInner.data("date");
-      // Find the slot index from mouse position
-      let slotIndex = 0;
-      const $slots = $dayInner.find(".slots > div");
-      const offsetY = e.pageY - $dayInner.offset().top;
-      for (let i = 0; i < $slots.length; i++) {
-        const slotTop = $($slots[i]).position().top;
-        const slotHeight = $($slots[i]).outerHeight();
-        if (offsetY >= slotTop && offsetY < slotTop + slotHeight) {
-          slotIndex = i;
-          break;
-        }
-      }
-
-      // Highlight the clicked slot
-      $slots.removeClass("cohort-slot-highlight");
-      $($slots[slotIndex]).addClass("cohort-slot-highlight");
-      window._lastCohortSlot = $($slots[slotIndex]);
-
-      // Calculate start and end time in minutes
-      const startMin =
-        (typeof START_H !== "undefined" ? START_H : 6) * 60 +
-        slotIndex * (typeof SLOT_MIN !== "undefined" ? SLOT_MIN : 30);
-      const endMin =
-        startMin + (typeof SLOT_MIN !== "undefined" ? SLOT_MIN : 30);
-
-      // Format time as 12h
-      function pad2(n) {
-        return String(n).padStart(2, "0");
-      }
-      function fmt12(min) {
-        let h = Math.floor(min / 60),
-          m = min % 60;
-        if (h >= 24) h -= 24;
-        const ap = h >= 12 ? "PM" : "AM";
-        const dispH = h % 12 || 12;
-        return `${dispH}:${pad2(m)} ${ap}`;
-      }
-
-      // Get day name
-      const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-      const d = new Date(dateStr);
-      const dayName = dayNames[d.getDay()];
-
-      // Build label
-      const timeLabel = `${fmt12(startMin)} - ${fmt12(endMin)}`;
-      const scheduleLabel = `Weekly on ${dayName}(<span class="time-range">${timeLabel}</span>) <span class="cohort_schedule_arrow">&#9660;</span>`;
-
-      // Open modal and set label after modal is visible
       openCreateCohortModal();
       setTimeout(function () {
         $(".cohort_schedule_btn").html(scheduleLabel);
@@ -2741,22 +2459,16 @@ $(function () {
 
   // Navigation
   $("#prev-week").on("click", () => {
-    clearDateFilter(); // Clear filter when changing weeks
-    clearTimeSlotFilter(); // Clear time slot filter when changing weeks
     currentWeekStart.setDate(currentWeekStart.getDate() - 7);
     renderWeek(true);
   });
   $("#next-week").on("click", () => {
-    clearDateFilter(); // Clear filter when changing weeks
-    clearTimeSlotFilter(); // Clear time slot filter when changing weeks
     currentWeekStart.setDate(currentWeekStart.getDate() + 7);
     renderWeek(true);
   });
 
   // Today button: jump to current week (Monday)
   $("#btnToday").on("click", () => {
-    clearDateFilter(); // Clear filter when jumping to today
-    clearTimeSlotFilter(); // Clear time slot filter when jumping to today
     currentWeekStart = mondayOf(new Date());
     renderWeek(true);
   });
@@ -2764,62 +2476,8 @@ $(function () {
   // Now line heartbeat
   setInterval(drawNow, 60 * 1000);
 
-  // Update Today button enabled/disabled state
-  function updateTodayButton() {
-    const todayMonday = mondayOf(new Date());
-    const isTodayWeek = todayMonday.getTime() === currentWeekStart.getTime();
-    $("#btnToday").prop("disabled", isTodayWeek);
-  }
-
   /* ====== RENDER ====== */
   function renderWeek(resetScroll = false) {
-    // Determine whether to show white slots based on teacher selection
-    const selectedTeachers = window.calendarFilterState
-      ? window.calendarFilterState.getSelectedTeachers()
-      : [];
-
-    // Show white slots as background only when exactly 1 teacher is selected
-    SHOW_WHITE_SLOTS = selectedTeachers.length === 1;
-
-    // Filter events based on teacher selection
-    let eventsToRender = window.events.filter((ev) => {
-      // When single teacher selected, exclude availability/extra slot events
-      if (selectedTeachers.length === 1) {
-        if (
-          ev.classType === "availability" ||
-          ev.source === "availability" ||
-          ev.classType === "extra_slot" ||
-          ev.source === "extra_slot"
-        ) {
-          return false; // Exclude availability/extra slot events
-        }
-      }
-      return true;
-    });
-
-    // When multiple teachers selected, add availability data as events
-    if (selectedTeachers.length > 1 && whiteSlotRules.length > 0) {
-      // Convert white slot rules to availability events for multiple teacher display
-      const availabilityEvents = whiteSlotRules.map((rule, index) => ({
-        availabilityId: `availability-${index}-${Date.now()}`,
-        date: rule.date,
-        classType: "availability",
-        source: "availability",
-        title: "Available",
-        start:
-          typeof rule.start === "string" ? minutes(rule.start) : rule.start,
-        end: typeof rule.end === "string" ? minutes(rule.end) : rule.end,
-        color: "e-availability",
-        teacherId: rule.teacherid,
-      }));
-      eventsToRender = [...eventsToRender, ...availabilityEvents];
-    }
-    
-
-    // Temporarily replace window.events with modified list
-    const originalEvents = window.events;
-    window.events = eventsToRender;
-
     // Header
     const $head = $("#head");
     $head.find(".day-h").remove();
@@ -2832,8 +2490,6 @@ $(function () {
         .appendTo($head);
     }
     $("#calendar-range").text(rangeText(currentWeekStart));
-    // Keep Today button state in sync
-    updateTodayButton();
 
     // FULL GRID rebuild
     const $grid = $("#grid");
@@ -2857,31 +2513,12 @@ $(function () {
       const $inner = $('<div class="day-inner">').appendTo($col);
       $inner.attr("data-date", ymd(d));
 
-      // CREATE SLOTS (white background layer is optional)
+      // CREATE SLOTS with white background when matched
       const $slots = $('<div class="slots">').appendTo($inner);
       for (let r = 0; r < rows; r++) {
         const minuteOfDay = START_H * 60 + r * SLOT_MIN;
-        const slotSource = SHOW_WHITE_SLOTS
-          ? isWhiteSlotFor(i, ymd(d), minuteOfDay)
-          : null;
-        const makeWhite = !!slotSource;
-        const $slot = $("<div>").toggleClass("slot-white", makeWhite);
-        if (slotSource) {
-          $slot.attr("data-source", slotSource);
-          // Add dotted border class for extra slots
-          if (slotSource === "extra_slot") {
-            $slot.addClass("slot-extra");
-          }
-          if (r === 0 || minuteOfDay % 120 === 0) {
-            // Log occasionally to avoid spam
-            console.log("White slot created:", {
-              date: ymd(d),
-              minute: minuteOfDay,
-              source: slotSource,
-            });
-          }
-        }
-        $slot.appendTo($slots);
+        const makeWhite = isWhiteSlotFor(i, ymd(d), minuteOfDay);
+        $("<div>").toggleClass("slot-white", makeWhite).appendTo($slots);
       }
 
       $grid.append($col);
@@ -2891,49 +2528,7 @@ $(function () {
     // Prepare per-day buckets
     const perDay = Array.from({ length: 7 }, () => []);
     console.log("Events to render:", events);
-
-function timeToMinutes(time) {
-  if (typeof time === "number") return time;
-  const [h, m] = time.split(":").map(Number);
-  return h * 60 + m;
-}
-
-const eventMap = new Map();
-
-events.forEach((event) => {
-  const startMinutes = timeToMinutes(event.start);
-  const endMinutes = timeToMinutes(event.end);
-  const key = `${event.teacherId}-${event.date}-${startMinutes}-${endMinutes}`;
-
-  if (!eventMap.has(key)) {
-    eventMap.set(key, event);
-  } else {
-    const existing = eventMap.get(key);
-    // Prefer e-blue over other colors
-    if (event.color === "e-blue") {
-      eventMap.set(key, event);
-    } 
-    // else keep existing
-  }
-});
-
-const uniqueEvents = Array.from(eventMap.values());
-
-    // Remove duplicate availability events by availabilityId
-    // const seenAvailabilityIds = new Set();
-    // const uniqueEvents = events.filter((raw) => {
-    //   if (raw.availabilityId && seenAvailabilityIds.has(raw.availabilityId)) {
-    //     return false; // Skip duplicate availability
-    //   }
-    //   if (raw.availabilityId) {
-    //     seenAvailabilityIds.add(raw.availabilityId);
-    //   }
-    //   return true;
-    // });
-
-    
-    console.log("Unique events to render:", uniqueEvents);
-    uniqueEvents.forEach((raw) => {
+    events.forEach((raw) => {
       // Check if event has reschedule_instant status with previous/current data
       const statusMeta = getActiveStatusMeta(raw.statuses);
       let hasRescheduleInstant = false;
@@ -2954,8 +2549,8 @@ const uniqueEvents = Array.from(eventMap.values());
           details.current.action === "reschedule_instant"
         ) {
           hasRescheduleInstant = true;
-          previousEvent = raw.rescheduled.previous;
-          currentEvent = raw.rescheduled.current;
+          previousEvent = details.previous;
+          currentEvent = details.current;
         }
       }
 
@@ -3014,13 +2609,6 @@ const uniqueEvents = Array.from(eventMap.values());
               : currentEvent.end;
           eCurr.teacherId = currentEvent.teacher || raw.teacherId;
           eCurr.isRescheduleCurrent = true;
-
-          // Check if teacher changed
-          const oldTeacherId = previousEvent.teacher;
-          const newTeacherId = currentEvent.teacher;
-          if (oldTeacherId !== newTeacherId) {
-            eCurr.isTeacherChanged = true;
-          }
 
           // Handle midnight-crossing for current event
           if (eCurr.end < eCurr.start) {
@@ -3092,7 +2680,7 @@ const uniqueEvents = Array.from(eventMap.values());
       }
     });
 
-    // Overlap logic - improved for consistent sequential stacking
+    // Overlap logic (unchanged)
     const MAX_LEFT = 0 + (STACK_CAP - 1) * STACK_OFFSET;
 
     perDay.forEach((list, di) => {
@@ -3102,64 +2690,34 @@ const uniqueEvents = Array.from(eventMap.values());
       // First pass: calculate _max (maximum concurrent events at any time)
       const active = [];
       list.forEach((ev) => {
-        // Remove events that ended before this one starts
         for (let i = active.length - 1; i >= 0; i--) {
           if (active[i].end <= ev.start) active.splice(i, 1);
         }
         active.push(ev);
 
         const conc = active.length;
-        // Update _max for all active events
         active.forEach((a) => {
           a._max = Math.max(a._max || 0, conc);
         });
-      });
 
-      // Second pass: assign stackIndex based on position in sorted order for overlaps
-      // This ensures events maintain sequential positions left-to-right
-      list.forEach((ev) => {
-        // Find all events that overlap with this one
-        const overlapping = list.filter((other) => {
-          // Check if events overlap in time
-          return !(other.end <= ev.start || other.start >= ev.end);
-        });
-
-        // Sort overlapping events by start time, then end time
-        overlapping.sort((a, b) => a.start - b.start || a.end - b.end);
-
-        // Find this event's position in the overlapping group
-        const position = overlapping.indexOf(ev);
-        ev.stackIndex = Math.min(position, STACK_CAP - 1);
+        ev.stackIndex = Math.min(conc - 1, STACK_CAP - 1);
       });
 
       list.forEach((ev) => {
         const top = (ev.start - START_H * 60) * PX_PER_MIN;
-        const h = (ev.end - ev.start) * PX_PER_MIN - 0;
+        const h = (ev.end - ev.start) * PX_PER_MIN - 4;
 
         const isSingleton = (ev._max || 1) === 1;
-        const cssPos = (() => {
-        if (isSingleton) return { left: "0px", width: "100%" };
-
-        const overlapping = perDay[di].filter(
-          other => !(other.end <= ev.start || other.start >= ev.end)
-        ).sort((a, b) => a.start - b.start || a.end - b.end);
-
-        const total = overlapping.length;
-        const position = overlapping.indexOf(ev);
-
-        const overlapPercent = 70; // % of slot width for horizontal overlap per event
-        const widthPercent = 100 / (total - (total - 1) * (overlapPercent / 100));
-        const leftPercent = position * (widthPercent - (widthPercent * (overlapPercent / 100)));
-
-        return {
-          left: `${leftPercent}%`,
-          width: `${widthPercent}%`,
-          opacity: `1`
-        };
-      })();
-
-
-
+        const cssPos = isSingleton
+          ? { left: "0px", width: "calc(100% - 0px)" }
+          : (() => {
+              const leftPx = ev.stackIndex * STACK_OFFSET;
+              const rightPad = STACK_OFFSET; // small inset on the right for overlap
+              return {
+                left: `${leftPx}px`,
+                width: `calc(100% - ${leftPx + rightPad}px)`,
+              };
+            })();
 
         // Get teacher color class and inline style for unlimited colors
         let teacherColorClass = "";
@@ -3167,17 +2725,7 @@ const uniqueEvents = Array.from(eventMap.values());
 
         if (ev.teacherId) {
           const colorIndex = getTeacherColorIndex(ev.teacherId);
-
-          // Only show teacher indicator dot if more than 1 teacher is selected
-          // AND the event is not an availability event (availability uses background color instead)
-          const selectedTeachers = window.calendarFilterState
-            ? window.calendarFilterState.getSelectedTeachers()
-            : [];
-          const showTeacherDot =
-            selectedTeachers.length > 1 && ev.classType !== "availability";
-
-          teacherColorClass = `teacher-${colorIndex}${showTeacherDot ? " has-teacher-indicator" : ""
-            }`;
+          teacherColorClass = `teacher-${colorIndex} has-teacher-indicator`;
 
           // Generate dynamic color for the ::after pseudo-element (teacher dot indicator)
           const teacherColor = getTeacherColor(ev.teacherId);
@@ -3207,57 +2755,26 @@ const uniqueEvents = Array.from(eventMap.values());
         ) {
           classTypeClass = "class-type-timeoff";
           borderColorStyle = "border-color: rgba(253,216,48,0.7) !important;";
-        } else if (ev.classType === "availability") {
-          classTypeClass = "class-type-availability";
-          // Use teacher color for both background and border
-          if (ev.teacherId) {
-            const teacherColor = getTeacherColor(ev.teacherId);
-            borderColorStyle = `border: 2px solid ${teacherColor} !important; background: color-mix(in srgb, ${teacherColor} 15%, #fff) !important;`;
-          } else {
-            borderColorStyle =
-              "border: 2px solid #9aa7b8 !important; background: color-mix(in srgb, #9aa7b8 15%, #fff) !important;";
-          }
-        } else if (ev.classType === "extra_slot") {
-          classTypeClass = "class-type-extra-slot";
-          // Use teacher color for both background and dotted border
-          if (ev.teacherId) {
-            const teacherColor = getTeacherColor(ev.teacherId);
-            borderColorStyle = `border: 2px dotted ${teacherColor} !important; background: color-mix(in srgb, ${teacherColor} 15%, #fff) !important;`;
-          } else {
-            borderColorStyle =
-              "border: 2px dotted #7088ff !important; background: color-mix(in srgb, #7088ff 15%, #fff) !important;";
-          }
         }
 
         // Combine styles (include any custom inline style from the event object)
-        const combinedStyle = `${teacherColorStyle}${borderColorStyle}${ev.style || ""
-          }`.trim();
+        const combinedStyle = `${teacherColorStyle}${borderColorStyle}${
+          ev.style || ""
+        }`.trim();
 
         // Check if event is short (less than 1 hour)
         const eventDuration = ev.end - ev.start;
-        const isShortEvent = eventDuration < 31;
+        const isShortEvent = eventDuration < 60;
 
         const isTimeOffEvent =
           ev.classType === "teacher_timeoff" ||
           ev.class_type === "teacher_timeoff" ||
           ev.source === "teacher_timeoff";
-
+        debugger;
         const statusMeta = getActiveStatusMeta(ev.statuses);
         const statusIconHtml = (() => {
           // Hide status icon for current reschedule events (makeup icon shows instead)
-          if (ev.isRescheduleCurrent && !ev.isTeacherChanged) return "";
-
-          // Show covered icon if teacher changed
-          if (ev.isTeacherChanged) {
-            return `
-             <span class="ev-status-icon" style="position:absolute; top:6px; right:26px; display:inline-flex; align-items:center; justify-content:center; pointer-events:none; z-index:2;">
-                <img src=${ev.rescheduled.current.teacher_pic} alt="Teacher Changed" title="Teacher Changed" style="width:16px; height:16px; border-radius:50%;">
-              </span>
-            <span class="ev-status-icon" style="position:absolute; top:6px; right:6px; display:inline-flex; align-items:center; justify-content:center; pointer-events:none; z-index:2;">
-                <img src="./img/covered.svg" alt="Teacher Changed" title="Teacher Changed" style="width:16px; height:16px;">
-              </span>`;
-          }
-
+          if (ev.isRescheduleCurrent) return "";
           if (!statusMeta) return "";
           if (statusMeta.code === "cancel_reschedule_later") {
             return `<span class="ev-status-icon" style="position:absolute; top:6px; right:6px; display:inline-flex; gap:4px; align-items:center; justify-content:flex-end; pointer-events:none; z-index:2;">
@@ -3276,115 +2793,82 @@ const uniqueEvents = Array.from(eventMap.values());
 
         // Add faded styling for previous reschedule events
         const fadedClass = ev.isFadedReschedule ? " faded-reschedule" : "";
-        const fadedStyle = ev.isFadedReschedule ? "filter: grayscale(1);" : "";
+        const fadedStyle = ev.isFadedReschedule
+          ? "opacity: 0.4; filter: grayscale(0.5);"
+          : "";
 
         // Build event HTML - hide details for short events
         const $ev = $(`
-          <div class="event ${ev.color || "e-blue"
-          } ${teacherColorClass} ${classTypeClass}${ev.isMidnightCrossing ? " midnight-crossing" : ""
-          }${isShortEvent ? " short-event" : ""
-          }${fadedClass}" style="${combinedStyle}${fadedStyle}" data-start="${ev.start
-          }" data-end="${ev.end}" data-date="${ev.date || ""}" data-event-date="${ev.date || ""
-          }" data-title="${(ev.title || "").replace(/"/g, "&quot;")}" ${ev.teacherId ? `data-teacher-id="${ev.teacherId}"` : ""
-          }${ev.pairedId ? ` data-paired-id="${ev.pairedId}"` : ""}${ev.part ? ` data-part="${ev.part}"` : ""
-          }${ev.studentids && ev.studentids.length > 0
+          <div class="event ${
+            ev.color || "e-blue"
+          } ${teacherColorClass} ${classTypeClass}${
+          ev.isMidnightCrossing ? " midnight-crossing" : ""
+        }${
+          isShortEvent ? " short-event" : ""
+        }${fadedClass}" style="${combinedStyle}${fadedStyle}" data-start="${
+          ev.start
+        }" data-end="${ev.end}" data-date="${ev.date || ""}" data-title="${(
+          ev.title || ""
+        ).replace(/"/g, "&quot;")}" ${
+          ev.teacherId ? `data-teacher-id="${ev.teacherId}"` : ""
+        }${ev.pairedId ? ` data-paired-id="${ev.pairedId}"` : ""}${
+          ev.part ? ` data-part="${ev.part}"` : ""
+        }${
+          ev.studentids && ev.studentids.length > 0
             ? ` data-student-ids="${ev.studentids.join(",")}"`
             : ""
-          }${ev.studentnames && ev.studentnames.length > 0
+        }${
+          ev.studentnames && ev.studentnames.length > 0
             ? ` data-student-names="${ev.studentnames.join(",")}"`
             : ""
-          }${ev.avatar ? ` data-avatar="${ev.avatar}"` : ""}${ev.cohortids && ev.cohortids.length > 0
+        }${ev.avatar ? ` data-avatar="${ev.avatar}"` : ""}${
+          ev.cohortids && ev.cohortids.length > 0
             ? ` data-cohort-ids="${ev.cohortids.join(",")}"`
             : ""
-          }${ev.eventid ? ` data-event-id="${ev.eventid}"` : ""}${ev.cmid ? ` data-cm-id="${ev.cmid}"` : ""
-          }${ev.classType ? ` data-class-type="${ev.classType}"` : ""}${ev.source ? ` data-source="${ev.source}"` : ""
-          }
-        ${ev.repeat !== undefined ? ` data-repeat="${ev.repeat}"` : ""}${statusMeta ? ` data-status-code="${statusMeta.code}"` : ""
-          }>
-            ${isShortEvent &&
-            ev.classType !== "availability" &&
-            ev.classType !== "extra_slot"
-            ? `
-                <div class=\"ev-when\" style=\"display:flex;align-items:center;gap:4px;\">
-                  ${ev.classType === "one2one_weekly" ||
-              ev.classType === "one2one_single"
-              ? `<span class=\"ev-single\" title=\"Single Session\"><img src=\"./img/single-lesson.svg\" alt=\"\"></span>`
-              : isTimeOffEvent
-                ? ""
-                : ev.isRescheduleCurrent && !ev.isTeacherChanged
-                  ? `<span class=\"ev-makeup\" title=\"Make-up Class\"><img src=\"./img/makeup.svg\" alt=\"\"></span>`
-                  : ev.repeat
-                    ? `<span class=\"ev-repeat\" title=\"Repeats\"><img src=\"./img/ev-repeat.svg\" alt=\"\"></span>`
-                    : `<span class=\"ev-single\" title=\"Single Session\"><img src=\"./img/single-lesson.svg\" alt=\"\"></span>`
-            }
-                  <span>${fmt12(ev.start)} – ${fmt12(ev.end)}</span>
-                  ${statusIconHtml}
-                  ${ev.isMidnightCrossing
-              ? `<span class=\"ev-midnight-icon\" title=\"Continues to next day\">↪</span>`
-              : ""
-            }
-                </div>
-                <div class=\"ev-title\">${(ev.classType === "one2one_weekly" ||
-              ev.classType === "one2one_single") &&
-              ev.studentnames &&
-              ev.studentnames.length > 0
-              ? ev.studentnames.join(", ")
-              : ev.title || ""
-            }</div>
-                `
-            : `
-                  ${statusIconHtml}
-                  ${!isShortEvent &&
-              ev.classType !== "availability" &&
-              ev.classType !== "extra_slot"
-              ? `<div class=\"ev-top\">
-                          <div class=\"ev-left\">${ev.avatar
-                ? `<img class=\"ev-avatar\" src=\"${ev.avatar}\" alt=\"\">`
-                : ""
+        }${ev.eventid ? ` data-event-id="${ev.eventid}"` : ""}${
+          ev.cmid ? ` data-cm-id="${ev.cmid}"` : ""
+        }${ev.classType ? ` data-class-type="${ev.classType}"` : ""}${
+          ev.repeat !== undefined ? ` data-repeat="${ev.repeat}"` : ""
+        }${statusMeta ? ` data-status-code="${statusMeta.code}"` : ""}>
+            ${statusIconHtml}
+            ${
+              !isShortEvent
+                ? `<div class="ev-top">
+              <div class="ev-left">${
+                ev.avatar
+                  ? `<img class="ev-avatar" src="${ev.avatar}" alt="">`
+                  : ""
               }</div>
-                          ${isTimeOffEvent
-                ? ""
-                : ev.isRescheduleCurrent &&
-                  !ev.isTeacherChanged &&
-                  ev.repeat
-                  ? `<span class=\"ev-repeat\" title=\"Repeats\"><img src=\"./img/ev-repeat.svg\" alt=\"\"></span><span class=\"ev-makeup\" title=\"Make-up Class\"><img src=\"./img/makeup.svg\" alt=\"\"></span>`
-                  : ev.isRescheduleCurrent && !ev.isTeacherChanged
-                    ? `<span class=\"ev-makeup\" title=\"Make-up Class\"><img src=\"./img/makeup.svg\" alt=\"\"></span>`
-                    : ev.classType === "one2one_weekly" ||
-                      ev.classType === "one2one_single"
-                      ? `<span class=\"ev-single\" title=\"Single Session\"><img src=\"./img/single-lesson.svg\" alt=\"\"></span>`
-                      : ev.repeat
-                        ? `<span class=\"ev-repeat\" title=\"Repeats\"><img src=\"./img/ev-repeat.svg\" alt=\"\"></span>`
-                        : `<span class=\"ev-single\" title=\"Single Session\"><img src=\"./img/single-lesson.svg\" alt=\"\"></span>`
+              ${
+                isTimeOffEvent
+                  ? ""
+                  : ev.isRescheduleCurrent
+                  ? `<span class="ev-makeup" title="Make-up Class"><img src="./img/makeup.svg" alt=""></span>`
+                  : ev.repeat
+                  ? `<span class="ev-repeat" title="Repeats"><img src="./img/ev-repeat.svg" alt=""></span>`
+                  : `<span class="ev-single" title="Single Session"><img src="./img/single-lesson.svg" alt=""></span>`
               }
-                          ${ev.isMidnightCrossing
-                ? `<span class=\"ev-midnight-icon\" title=\"Continues to next day\">↪</span>`
+              ${
+                ev.isMidnightCrossing
+                  ? `<span class="ev-midnight-icon" title="Continues to next day">↪</span>`
+                  : ""
+              }
+            </div>`
                 : ""
-              }
-                        </div>`
-              : ""
             }
-                  ${ev.classType !== "availability" &&
-              ev.classType !== "extra_slot"
-              ? `<div class=\"ev-when\">${fmt12(ev.start)} – ${fmt12(
-                ev.end
-              )}</div>`
-              : ""
+            <div class="ev-when">${fmt12(ev.start)} – ${fmt12(ev.end)}</div>
+            ${
+              !isShortEvent
+                ? `<div class="ev-title">${
+                    (ev.classType === "one2one_weekly" ||
+                      ev.classType === "one2one_single") &&
+                    ev.studentnames &&
+                    ev.studentnames.length > 0
+                      ? ev.studentnames.join(", ")
+                      : ev.title || ""
+                  }</div>`
+                : ""
             }
-                  ${!isShortEvent &&
-              ev.classType !== "availability" &&
-              ev.classType !== "extra_slot"
-              ? `<div class=\"ev-title\">${(ev.classType === "one2one_weekly" ||
-                ev.classType === "one2one_single") &&
-                ev.studentnames &&
-                ev.studentnames.length > 0
-                ? ev.studentnames.join(", ")
-                : ev.title || ""
-              }</div>`
-              : ""
-            }
-                `
-          }
           </div>
         `).css({ top: top + "px", height: h + "px", ...cssPos });
 
@@ -3392,23 +2876,20 @@ const uniqueEvents = Array.from(eventMap.values());
         const baseZ = 1000 + (ev.stackIndex || 0);
         $ev.css("z-index", baseZ);
 
-        // Add hover tooltip for short events (less than 1 hour) - exclude availability and extra_slot events
-        if (
-          isShortEvent &&
-          ev.classType !== "availability" &&
-          ev.classType !== "extra_slot"
-        ) {
+        // Add hover tooltip for short events (less than 1 hour)
+        if (isShortEvent) {
           // Create tooltip element
           const $tooltip = $(`
             <div class="event-tooltip">
               <div class="tooltip-header">
-                <strong>${(ev.classType === "one2one_weekly" ||
-              ev.classType === "one2one_single") &&
-              ev.studentnames &&
-              ev.studentnames.length > 0
-              ? ev.studentnames.join(", ")
-              : ev.title || "Event"
-            }</strong>
+                <strong>${
+                  (ev.classType === "one2one_weekly" ||
+                    ev.classType === "one2one_single") &&
+                  ev.studentnames &&
+                  ev.studentnames.length > 0
+                    ? ev.studentnames.join(", ")
+                    : ev.title || "Event"
+                }</strong>
               </div>
               <div class="tooltip-time">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -3417,27 +2898,30 @@ const uniqueEvents = Array.from(eventMap.values());
                 </svg>
                 ${fmt12(ev.start)} – ${fmt12(ev.end)}
               </div>
-              ${ev.avatar
-              ? `
+              ${
+                ev.avatar
+                  ? `
                 <div class="tooltip-teacher">
                   <img src="${ev.avatar}" alt="" class="tooltip-avatar">
                   <span>Teacher</span>
                 </div>
               `
-              : ""
-            }
+                  : ""
+              }
               <div class="tooltip-type">
-                ${ev.repeat
-              ? '<span class="tooltip-badge">Recurring Class</span>'
-              : '<span class="tooltip-badge">Single Session</span>'
-            }
-                ${ev.classType === "one2one_weekly" ||
-              ev.classType === "one2one_single"
-              ? '<span class="tooltip-badge">1:1 Class</span>'
-              : ev.classType === "tutoring"
-                ? '<span class="tooltip-badge">Tutoring</span>'
-                : '<span class="tooltip-badge">Main Class</span>'
-            }
+                ${
+                  ev.repeat
+                    ? '<span class="tooltip-badge">Recurring Class</span>'
+                    : '<span class="tooltip-badge">Single Session</span>'
+                }
+                ${
+                  ev.classType === "one2one_weekly" ||
+                  ev.classType === "one2one_single"
+                    ? '<span class="tooltip-badge">1:1 Class</span>'
+                    : ev.classType === "tutoring"
+                    ? '<span class="tooltip-badge">Tutoring</span>'
+                    : '<span class="tooltip-badge">Main Class</span>'
+                }
               </div>
             </div>
           `);
@@ -3481,251 +2965,13 @@ const uniqueEvents = Array.from(eventMap.values());
       });
     });
 
-    if (resetScroll) {
-      $grid.scrollTop(0);
-    } else {
-      // Scroll to first event if there are any events
-      const firstEvent = $grid.find(".event").first();
-      if (firstEvent.length) {
-        const firstEventTop = parseInt(firstEvent.css("top")) || 0;
-        // Scroll to position the first event near the top, with some padding
-        $grid.scrollTop(Math.max(0, firstEventTop - 50));
-      }
-    }
+    if (resetScroll) $grid.scrollTop(0);
     drawNow();
 
     // Restore original events array
     window.events = originalEvents;
   }
   window.renderWeek = renderWeek;
-
-  /* ====== DATE FILTER FUNCTIONALITY ====== */
-  // Global state for calendar date filter
-  // let selectedDateFilter = null; // stores the selected date in YYYY-MM-DD format
-  // let selectedTimeSlotFilter = null; // stores the selected time slot in minutes from midnight
-  let selectedDateFilters = []; // array of YYYY-MM-DD
-  let selectedTimeSlotFilters = new Set(); // minutes
-  let filteringEnabled = false; // toggle state for filters - initially disabled
-  function applyFilters() {
-    $(".event").hide();
-
-    const hasDateFilter = selectedDateFilters.length > 0;
-    const hasTimeFilter = selectedTimeSlotFilters.size > 0;
-
-    $(".event").each(function () {
-      const eventDate = $(this).data("event-date");
-      const eventStart = parseInt($(this).data("start"), 10);
-      const eventEnd = parseInt($(this).data("end"), 10);
-
-      if (isNaN(eventStart) || isNaN(eventEnd)) return;
-
-      // Check date filter
-      let dateMatch = !hasDateFilter || selectedDateFilters.includes(eventDate);
-
-      // Check time slot filter
-      let timeMatch = false;
-      if (!hasTimeFilter) {
-        timeMatch = true;
-      } else {
-        for (const slotStart of selectedTimeSlotFilters) {
-          const slotEnd = slotStart + 60; // 60 minutes per slot
-          if (eventStart < slotEnd && eventEnd > slotStart) {
-            timeMatch = true;
-            break;
-          }
-        }
-      }
-
-      // Show event only if it matches both filters
-      if (dateMatch && timeMatch) $(this).show();
-    });
-  }
-
-  // Function to filter events by selected date
-  // function filterEventsByDates(dates) {
-  //   // No date selected → show everything
-  //   if (!dates || dates.length === 0) {
-  //     $(".event").show();
-  //     $(".time-row").show();
-  //     selectedDateFilters = [];
-  //     $("#head .day-h").removeClass("date-filter-active");
-  //     return;
-  //   }
-
-  //   $(".event").hide();
-
-  //   $(".event").each(function () {
-  //     const eventDate = $(this).data("event-date");
-
-  //     if (dates.includes(eventDate)) {
-  //       $(this).show();
-  //     }
-  //   });
-  // }
-
-
-  // Function to reset date filter
- function clearDateFilter() {
-  selectedDateFilters = [];
-  $("#head .day-h").removeClass("date-filter-active");
-  applyFilters();
-}
-
-  //   // Function to filter events by selected time slot
-  //  function filterEventsByTimeSlots(slotStarts) {
-  //      clearDateFilter();
-  //      if (!slotStarts || slotStarts.length === 0) {
-  //         $(".event").show();
-  //         $(".time-row").removeClass("time-slot-filter-active");
-  //         selectedTimeSlotFilters.clear();
-  //         return;
-  //     }
-
-  //      const SLOT_DURATION = 60;
-
-  //     $(".event").hide();
-  //     let matchedCount = 0;
-
-  //     $(".event").each(function () {
-  //         const eventStart = parseInt($(this).data("start"), 10);
-  //         const eventEnd   = parseInt($(this).data("end"), 10);
-  //         if (isNaN(eventStart) || isNaN(eventEnd)) return;
-
-  //         let matches = false;
-
-  //         for (const slotStart of slotStarts) {
-  //             const slotEnd = slotStart + SLOT_DURATION;
-  //             // ✅ STRICT overlap check
-  //             if (eventStart < slotEnd && eventEnd > slotStart) {
-  //                 matches = true;
-  //                 break;
-  //             }
-  //         }
-
-  //         if (matches) {
-  //             $(this).show();
-  //             matchedCount++;
-  //         }
-  //     });
-
-
-  //     console.log("Total events matched:", matchedCount);
-  // }
-  // Function to clear time slot filter
-  // function clearTimeSlotFilter() {
-  //   filterEventsByTimeSlots(null);
-  // }
-
-  // function selectTimeSlots(slotStarts) {
-  //   selectedTimeSlotFilters.clear();
-  //   for (const slot of slotStarts) {
-  //     selectedTimeSlotFilters.add(slot);
-  //   }
-
-  //   applyFilters();
-  // }
-  function clearTimeSlotFilter() {
-    selectedTimeSlotFilters.clear();
-    $(".time-row").removeClass("time-slot-filter-active");
-    applyFilters();
-  }
-
-  // Add click handler to calendar header date elements
-  $(document).on("click", "#head .day-h", function () {
-    if (!filteringEnabled) return;
-
-    const $dayHeader = $(this);
-    const dayIndex = $("#head .day-h").index($dayHeader);
-    const d = new Date(currentWeekStart);
-    d.setDate(d.getDate() + dayIndex);
-    const fullDate = ymd(d); // YYYY-MM-DD
-
-    const idx = selectedDateFilters.indexOf(fullDate);
-    if (idx > -1) {
-      selectedDateFilters.splice(idx, 1);
-      $dayHeader.removeClass("date-filter-active");
-    } else {
-      selectedDateFilters.push(fullDate);
-      $dayHeader.addClass("date-filter-active");
-    }
-
-    applyFilters();
-  });
-
-
-
-  // Add click handler to time slot elements - improved version
-  $(document).on("click", ".time-label", function (event) {
-    event.stopPropagation();
-
-    // Check if filtering is enabled
-    if (!filteringEnabled) {
-      return;
-    }
-
-    console.log("TIME LABEL CLICKED - Handler triggered");
-
-    const $timeLabel = $(this);
-    const labelText = $timeLabel.text().trim();
-
-    console.log("Text content:", labelText);
-
-    // Parse time from text like "2:00 PM"
-    let timeMinutes = null;
-
-    // Remove any whitespace and special characters
-    const cleanText = labelText.replace(/\s+/g, " ");
-    console.log("Clean text:", cleanText);
-
-    // Extract hours, minutes, and period
-    const parts = cleanText.match(/(\d+):(\d+)\s+(AM|PM)/i);
-
-    if (parts && parts.length >= 4) {
-      let h = parseInt(parts[1], 10);
-      const m = parseInt(parts[2], 10);
-      const period = parts[3].toUpperCase();
-
-      console.log(
-        "Extracted: hours=" + h + ", minutes=" + m + ", period=" + period
-      );
-
-      // Convert to 24-hour format
-      if (period === "PM" && h !== 12) h += 12;
-      if (period === "AM" && h === 12) h = 0;
-
-      timeMinutes = h * 60 + m;
-      console.log("Converted to minutes:" + timeMinutes);
-    } else {
-      console.log("NO MATCH - could not parse time label");
-      return;
-    }
-
-    console.log("Final time minutes:", timeMinutes);
-
-    if (isNaN(timeMinutes)) {
-      console.error("ERROR: timeMinutes is NaN");
-      return;
-    }
-
-    const $timeRow = $timeLabel.closest(".time-row");
-
-    // Find the hour block (the time-row with the hour label at m % 60 === 0)
-    const $hourBlock = $timeRow;
-
-    // Check if same slot already selected
-    if (selectedTimeSlotFilters.has(timeMinutes)) {
-      // TOGGLE OFF
-      selectedTimeSlotFilters.delete(timeMinutes);
-      $hourBlock.removeClass("time-slot-filter-active");
-    } else {
-      // TOGGLE ON
-      selectedTimeSlotFilters.add(timeMinutes);
-      $hourBlock.addClass("time-slot-filter-active");
-    }
-    applyFilters();
-
-
-  });
 
   function drawNow() {
     $(".now").remove();
@@ -3744,21 +2990,6 @@ const uniqueEvents = Array.from(eventMap.values());
     const dayInner = $("#grid .day .day-inner").eq(di);
     $('<div class="now">').css({ top: y }).appendTo(dayInner);
   }
-
-  // Toggle filter functionality
-  $(document).on("change", "#filterToggle", function () {
-    filteringEnabled = $(this).is(":checked");
-    console.log("Filtering enabled:", filteringEnabled);
-
-    // If disabling filters, clear all active filters
-    if (!filteringEnabled) {
-      clearDateFilter();
-      clearTimeSlotFilter();
-      $(".event").show();
-      $(".time-row").removeClass("time-slot-filter-active");
-      $("#head .day-h").removeClass("date-filter-active");
-    }
-  });
 });
 
 //from calender admin php
@@ -3803,7 +3034,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let selectedTeacherIds = [];
   let selectedCohortIds = []; // Changed from single to array
   let selectedStudentIds = [];
-  let teacherStudentsCache = []; // Store students array for teachers
 
   // ---------- helpers ----------
 
@@ -3903,12 +3133,15 @@ document.addEventListener("DOMContentLoaded", () => {
             <label class="teacher-label">
                 <div class="teacher-details">
                     <div class="teacher-avatar-container">
-                        <img class="teacher-avatar" src="${t.avatar || ""
-      }" alt="${t.name
-      }" style="border-color: ${teacherColor};">
+                        <img class="teacher-avatar" src="${
+                          t.avatar || ""
+                        }" alt="${
+      t.name
+    }" style="border-color: ${teacherColor};">
                     </div>
-                    <span class="teacher-name">${t.name
-      }<span class="teacher-color-dot" style="--dot-color: ${teacherColor}; display: none;"></span></span>
+                    <span class="teacher-name">${
+                      t.name
+                    }<span class="teacher-color-dot" style="--dot-color: ${teacherColor}; display: none;"></span></span>
                 </div>
                 <div class="radio-custom">
                     <div class="radio-custom-dot"></div>
@@ -3929,28 +3162,11 @@ document.addEventListener("DOMContentLoaded", () => {
       if (checkbox.checked) {
         if (!selectedTeacherIds.includes(id)) selectedTeacherIds.push(id);
         wrap.classList.add("selected");
-        // Show dot only if more than 1 teacher will be selected
-        if (colorDot)
-          colorDot.style.display =
-            selectedTeacherIds.length > 1 ? "inline-block" : "none";
+        if (colorDot) colorDot.style.display = "inline-block";
       } else {
         selectedTeacherIds = selectedTeacherIds.filter((x) => x !== id);
         wrap.classList.remove("selected");
         if (colorDot) colorDot.style.display = "none";
-      }
-
-      // Save teacher ID to session storage only if exactly 1 teacher is selected
-      if (selectedTeacherIds.length === 1) {
-        sessionStorage.setItem("selectedTeacherId", selectedTeacherIds[0]);
-        console.log(
-          "Single teacher selected. Saved to session storage:",
-          selectedTeacherIds[0]
-        );
-      } else {
-        sessionStorage.removeItem("selectedTeacherId");
-        console.log(
-          "Multiple or no teachers selected. Cleared session storage."
-        );
       }
 
       updateTeacherPills();
@@ -3978,16 +3194,6 @@ document.addEventListener("DOMContentLoaded", () => {
       selectedTeachersContainer.style.display = "none";
       return;
     }
-
-    // Update color dot visibility for all teacher options based on selection count
-    const showDots = selectedTeacherIds.length > 1;
-    teacherFieldset.querySelectorAll(".teacher-option").forEach((opt) => {
-      const colorDot = opt.querySelector(".teacher-color-dot");
-      const checkbox = opt.querySelector(".teacher-checkbox");
-      if (colorDot && checkbox && checkbox.checked) {
-        colorDot.style.display = showDots ? "inline-block" : "none";
-      }
-    });
 
     teacherDisplayText.textContent = "";
     selectedTeachersContainer.style.display = "flex";
@@ -4051,32 +3257,51 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // ---------- Compact top summary (trigger view) ----------
-    // const maxAvatars = 5; // remove this
-    const visibleTeachers = selectedTeacherIds; // show all
+    const maxAvatars = 5; // show first two profile images
+    const visibleTeachers = selectedTeacherIds.slice(0, maxAvatars);
 
     visibleTeachers.forEach((id, idx) => {
       const opt = teacherFieldset.querySelector(
         `.teacher-option[data-teacher-id="${id}"]`
       );
       if (!opt) return;
-
       const avatar = opt.dataset.teacherImg || "./img/default-avatar.svg";
       const img = document.createElement("img");
       img.src = avatar;
       img.alt = opt.dataset.teacherName || "";
       img.className = "teacher-summary-avatar";
-
-      // Higher z-index for earlier avatars (so they stack nicely)
-      img.style.zIndex = visibleTeachers.length - idx;
-
+      img.style.zIndex = maxAvatars - idx;
       // Use dynamic teacher color for border
       const teacherColor = getTeacherColor(id);
       img.style.borderColor = teacherColor;
-
       teacherPillsContainer.appendChild(img);
     });
 
-    // Do NOT append initials or any text
+    // Build initials string for **all selected teachers**
+    const initialsList = selectedTeacherIds
+      .map((id) => {
+        const opt = teacherFieldset.querySelector(
+          `.teacher-option[data-teacher-id="${id}"]`
+        );
+        if (!opt) return "";
+        const name = opt.dataset.teacherName || "";
+        return getInitial(name);
+      })
+      .filter(Boolean);
+
+    if (initialsList.length) {
+      const initialsText = initialsList.join(", ");
+      const text = document.createElement("span");
+      text.className = "teacher-summary-initials";
+      text.textContent = initialsText;
+      teacherPillsContainer.appendChild(text);
+    }
+
+    function getInitial(name) {
+      const parts = name.trim().split(" ");
+      if (parts.length === 0) return "";
+      return parts[0][0].toUpperCase();
+    }
   }
 
   async function loadTeachers() {
@@ -4112,10 +3337,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const colorDot = option.querySelector(".teacher-color-dot");
         if (checkbox) checkbox.checked = true;
         option.classList.add("selected");
-        // Only show dot if more than 1 teacher is selected
-        if (colorDot)
-          colorDot.style.display =
-            selectedTeacherIds.length > 1 ? "inline-block" : "none";
+        if (colorDot) colorDot.style.display = "inline-block";
       }
     });
 
@@ -4214,10 +3436,6 @@ document.addEventListener("DOMContentLoaded", () => {
               ) {
                 window.fetchCalendarEvents();
               }
-              // Also refresh agenda view
-              if (typeof window.refreshAgendaView === "function") {
-                window.refreshAgendaView();
-              }
             }, 100);
           });
         targetContainer.appendChild(dropdownPill);
@@ -4247,11 +3465,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (namesList.length) {
         const fullText = namesList.join(", ");
-        const text = document.querySelector(".cohort-pill-container");
-
-        // Create spans for each name, separated by commas
-        text.innerHTML = namesList.map((name) => `<p>${name}</p>`).join(", ");
+        const text = document.createElement("span");
+        text.className = "cohort-summary-names";
+        text.textContent = fullText;
         text.title = fullText; // Show full text on hover
+        cohortPillsContainer.appendChild(text);
       }
     }
   }
@@ -4270,18 +3488,15 @@ document.addEventListener("DOMContentLoaded", () => {
     // Display student name for one1one cohorts, otherwise show cohort name
     const displayName =
       c.cohorttype === "one1one" && c.studentname ? c.studentname : c.name;
-    const cohortLabel = c.cohortshortname;
 
     // Log cohorts being added to dropdown
+
+    console.log("Dropdown Cohort:", c);
 
     wrap.innerHTML = `
             <label class="cohort-label">
                 <div class="cohort-details">
                     <span class="cohort-name">${displayName}</span>
-                    ${c.cohorttype === "one1one"
-        ? `<span class="cohort-shortname">${cohortLabel}</span>`
-        : ""
-      }
                 </div>
                 <div class="radio-custom">
                     <div class="radio-custom-dot"></div>
@@ -4334,10 +3549,6 @@ document.addEventListener("DOMContentLoaded", () => {
         ) {
           window.fetchCalendarEvents();
         }
-        // Also refresh agenda view
-        if (typeof window.refreshAgendaView === "function") {
-          window.refreshAgendaView();
-        }
       }, 100);
     });
 
@@ -4379,10 +3590,6 @@ document.addEventListener("DOMContentLoaded", () => {
           typeof window.fetchCalendarEvents === "function"
         ) {
           window.fetchCalendarEvents();
-        }
-        // Also refresh agenda view
-        if (typeof window.refreshAgendaView === "function") {
-          window.refreshAgendaView();
         }
       }, 100);
     });
@@ -4430,25 +3637,8 @@ document.addEventListener("DOMContentLoaded", () => {
     cohortNoResults.style.display = "none";
     if (oneOnOneNoResults) oneOnOneNoResults.style.display = "none";
 
-    let data;
-    if (role === "admin") {
-      data = await fetchJSON(`${API_BASE}?action=cohorts`);
-    } else if (role === "teacher") {
-      data = await fetchJSON(
-        `${API_BASE}?action=cohorts&teacherId=${teacherId}`
-      );
-    } else if (role === "student") {
-      data = await fetchJSON(`${API_BASE}?action=cohorts`);
-    }
-
-    console.log("Cohort data fetched:", data);
+    const data = await fetchJSON(`${API_BASE}?action=cohorts`);
     if (!data.ok) return [];
-
-    // Store students array if role is teacher
-    if (role === "teacher" && data.students) {
-      teacherStudentsCache = data.students;
-      console.log("Teacher students cached:", teacherStudentsCache);
-    }
 
     const list = data.data || [];
     if (!list.length) {
@@ -4485,6 +3675,10 @@ document.addEventListener("DOMContentLoaded", () => {
           if (checkbox) checkbox.checked = true;
           option.classList.add("selected");
         }
+        // Log group cohorts appended
+        try {
+          console.log("Appended Group Cohort:", { id: c.id, name: c.name });
+        } catch (e) {}
       });
     } else {
       cohortNoResults.style.display = "block";
@@ -4508,7 +3702,7 @@ document.addEventListener("DOMContentLoaded", () => {
             id: c.id,
             name: c.studentname || c.name,
           });
-        } catch (e) { }
+        } catch (e) {}
       });
     } else if (oneOnOneNoResults) {
       oneOnOneNoResults.style.display = "block";
@@ -4579,6 +3773,13 @@ document.addEventListener("DOMContentLoaded", () => {
           if (checkbox) checkbox.checked = true;
           option.classList.add("selected");
         }
+        // Log group cohorts appended (teacher-filtered)
+        try {
+          console.log("Appended Group Cohort (by teacher):", {
+            id: c.id,
+            name: c.name,
+          });
+        } catch (e) {}
       });
     } else {
       cohortNoResults.style.display = "block";
@@ -4605,6 +3806,13 @@ document.addEventListener("DOMContentLoaded", () => {
           if (checkbox) checkbox.checked = true;
           option.classList.add("selected");
         }
+        // Log 1:1 cohorts appended (teacher-filtered)
+        try {
+          console.log("Appended 1:1 Cohort (by teacher):", {
+            id: c.id,
+            name: c.studentname || c.name,
+          });
+        } catch (e) {}
       });
     } else if (oneOnOneNoResults) {
       oneOnOneNoResults.style.display = "block";
@@ -4628,6 +3836,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // ---------- Students ----------
 
   function createStudentOption(s) {
+    console.log("Creating student option:", s);
     const wrap = document.createElement("div");
     wrap.className = "student-option";
     wrap.dataset.studentId = s.id;
@@ -4638,29 +3847,32 @@ document.addEventListener("DOMContentLoaded", () => {
     const cohortShortName = s.cohortsname
       ? s.cohortsname.substring(0, 4)
       : s.cohortname
-        ? s.cohortname.substring(0, 4)
-        : "";
+      ? s.cohortname.substring(0, 4)
+      : "";
 
     // Check if this is a 1:1 cohort student
-    const isOneOnOne = s.group === "1:1";
+    const isOneOnOne = s.cohorttype === "one1one";
 
     wrap.innerHTML = `
           <label class="student-label">
               <div class="student-details">
                   <div class="student-avatar-container">
-                      <img class="student-avatar" src="${s.avatar || ""
-      }" alt="${s.name}">
+                      <img class="student-avatar" src="${
+                        s.avatar || ""
+                      }" alt="${s.name}">
                   </div>
                   <div class="student-name-wrapper">
-                      ${cohortShortName
-        ? `<span class="student-cohort-badge">${cohortShortName}</span>`
-        : ""
-      }
+                      ${
+                        cohortShortName
+                          ? `<span class="student-cohort-badge">${cohortShortName}</span>`
+                          : ""
+                      }
                       <span class="student-name">${s.name}</span>
-                      ${isOneOnOne
-        ? `<div class="cohort_label_teacher_avatar"><span class="student-type-badge">1:1</span><span class="student-type-badge"><img src="${s.teacheravatar}" alt="Teacher Avatar"></span></div>`
-        : ""
-      }
+                      ${
+                        isOneOnOne
+                          ? '<span class="student-type-badge">1:1</span>'
+                          : ""
+                      }
                   </div>
               </div>
               <div class="radio-custom">
@@ -4700,10 +3912,6 @@ document.addEventListener("DOMContentLoaded", () => {
           typeof window.fetchCalendarEvents === "function"
         ) {
           window.fetchCalendarEvents();
-        }
-        // Also refresh agenda view
-        if (typeof window.refreshAgendaView === "function") {
-          window.refreshAgendaView();
         }
       }, 100);
     });
@@ -4776,56 +3984,63 @@ document.addEventListener("DOMContentLoaded", () => {
             ) {
               window.fetchCalendarEvents();
             }
-            // Also refresh agenda view
-            if (typeof window.refreshAgendaView === "function") {
-              window.refreshAgendaView();
-            }
           }, 100);
         });
 
       selectedStudentsContainer.appendChild(dropdownPill);
     });
 
-    // ---------- Compact top summary (trigger view) - Like Teachers ----------
-
-    const visibleStudents = selectedStudentIds;
+    // ---------- Compact top summary (trigger view) ----------
+    const maxAvatars = 2; // show first two avatars
+    const visibleStudents = selectedStudentIds.slice(0, maxAvatars);
 
     visibleStudents.forEach((id, idx) => {
       const opt = studentFieldset.querySelector(
         `.student-option[data-student-id="${id}"]`
       );
       if (!opt) return;
-
       const avatar = opt.dataset.studentImg || "./img/default-avatar.svg";
       const img = document.createElement("img");
       img.src = avatar;
       img.alt = opt.dataset.studentName || "";
       img.className = "student-summary-avatar";
-
-      // Optional stacking order
-      img.style.zIndex = visibleStudents.length - idx;
-
+      img.style.zIndex = maxAvatars - idx;
       studentPillsContainer.appendChild(img);
     });
 
-    // Do NOT append ellipsis or initials
+    // Build initials for all selected students
+    const initialsList = selectedStudentIds
+      .map((id) => {
+        const opt = studentFieldset.querySelector(
+          `.student-option[data-student-id="${id}"]`
+        );
+        if (!opt) return "";
+        const name = opt.dataset.studentName || "";
+        return getInitial(name);
+      })
+      .filter(Boolean);
+
+    if (initialsList.length) {
+      const initialsText = initialsList.join(", ");
+      const text = document.createElement("span");
+      text.className = "student-summary-initials";
+      text.textContent = initialsText;
+      studentPillsContainer.appendChild(text);
+    }
+
+    function getInitial(name) {
+      const parts = name.trim().split(" ");
+      if (parts.length === 0) return "";
+      return parts[0][0].toUpperCase();
+    }
   }
 
   async function loadAllStudents() {
     clear(studentFieldset);
+    const data = await fetchJSON(`${API_BASE}?action=students`);
+    if (!data.ok) return;
 
-    let list = [];
-
-    // If role is teacher, use cached students from cohorts response
-    if (role === "teacher" && teacherStudentsCache.length > 0) {
-      list = teacherStudentsCache;
-    } else {
-      // Otherwise fetch students separately
-      const data = await fetchJSON(`${API_BASE}?action=students`);
-      if (!data.ok) return;
-      list = data.data || [];
-    }
-
+    const list = data.data || [];
     if (!list.length) {
       const div = document.createElement("div");
       div.style.padding = "8px";
@@ -5099,10 +4314,6 @@ document.addEventListener("DOMContentLoaded", () => {
         ) {
           window.fetchCalendarEvents();
         }
-        // Also refresh agenda view
-        if (typeof window.refreshAgendaView === "function") {
-          window.refreshAgendaView();
-        }
       }, 100);
     } else {
       // No cohorts for that teacher -> keep students empty and show message
@@ -5123,10 +4334,6 @@ document.addEventListener("DOMContentLoaded", () => {
           typeof window.fetchCalendarEvents === "function"
         ) {
           window.fetchCalendarEvents();
-        }
-        // Also refresh agenda view
-        if (typeof window.refreshAgendaView === "function") {
-          window.refreshAgendaView();
         }
       }, 100);
     }
@@ -5178,22 +4385,18 @@ document.addEventListener("DOMContentLoaded", () => {
   async function fetchEventsForTeachers(teacherIds) {
     if (!teacherIds || !teacherIds.length) return [];
 
-    const rangeEl = document.getElementById("calendar-range");
-    if (!rangeEl) return [];
-
-    // Example: "December 8 - 14, 2025"
-    const text = rangeEl.textContent.trim();
-    const match = text.match(/^([A-Za-z]+)\s+(\d+)\s*-\s*(\d+),\s*(\d{4})$/);
-
-    if (!match) {
-      console.error("Invalid calendar range format:", text);
-      return [];
-    }
-
-    const [, monthName, startDay, endDay, year] = match;
-
-    const startDate = new Date(`${monthName} ${startDay}, ${year}`);
-    const endDate = new Date(`${monthName} ${endDay}, ${year}`);
+    const params = new URLSearchParams();
+    const now = new Date();
+    const startDate = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() - 30
+    );
+    const endDate = new Date(
+      now.getFullYear(),
+      now.getMonth() + 3,
+      now.getDate()
+    );
 
     const formatYMD = (d) => {
       const y = d.getFullYear();
@@ -5202,7 +4405,6 @@ document.addEventListener("DOMContentLoaded", () => {
       return `${y}-${m}-${day}`;
     };
 
-    const params = new URLSearchParams();
     params.set("start", formatYMD(startDate));
     params.set("end", formatYMD(endDate));
     params.set("teacherids", teacherIds.join(","));
@@ -5210,7 +4412,9 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const response = await fetch(
         `ajax/calendar_admin_get_events.php?${params.toString()}`,
-        { credentials: "same-origin" }
+        {
+          credentials: "same-origin",
+        }
       );
 
       if (!response.ok) return [];
@@ -5321,13 +4525,7 @@ document.addEventListener("DOMContentLoaded", () => {
   clear(studentFieldset);
 
   (async () => {
-    if (role === "admin") {
-      await loadTeachers();
-    } else {
-      document.querySelector(".teacher-search-dropdown").style.display = "none";
-    }
-
-    // Load teachers list only
+    await loadTeachers(); // Load teachers list only
     await loadAllCohorts(); // Show available cohorts (optional)
     await loadAllStudents(); // Show available students (optional)
 
@@ -5527,10 +4725,6 @@ document.addEventListener("DOMContentLoaded", () => {
           ) {
             window.fetchCalendarEvents();
           }
-          // Also refresh agenda view
-          if (typeof window.refreshAgendaView === "function") {
-            window.refreshAgendaView();
-          }
         }, 100);
       } catch (err) {
         console.error("Student reset error:", err);
@@ -5663,16 +4857,6 @@ document.addEventListener("DOMContentLoaded", () => {
     saturday: 5,
     sunday: 6,
   };
-// for just bug
- const DAY_NAME_TO_INDEX1= {
-  sunday: 0,
-  monday: 1,
-  tuesday: 2,
-  wednesday: 3,
-  thursday: 4,
-  friday: 5,
-  saturday: 6,
-};
 
   function normalizeMinutes(val) {
     if (typeof val === "number" && !Number.isNaN(val)) return val;
@@ -5719,7 +4903,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const availSlots = getSlotsForTeacher(availabilityMap, tid);
       availSlots.forEach((slot) => {
         const dayIndex =
-          DAY_NAME_TO_INDEX1[String(slot.day || "").toLowerCase()];
+          DAY_NAME_TO_INDEX[String(slot.day || "").toLowerCase()];
         if (typeof dayIndex !== "number") return;
 
         const dayDate = new Date(baseDate);
@@ -5734,8 +4918,6 @@ document.addEventListener("DOMContentLoaded", () => {
           dayIndex,
           start: startMin,
           end: endMin,
-          teacherid: tid,
-          source: "availability",
         });
       });
 
@@ -5770,179 +4952,9 @@ document.addEventListener("DOMContentLoaded", () => {
           dayIndex: (startDate.getDay() + 6) % 7,
           start: startMin,
           end: endMin,
-          teacherid: tid,
-          source: "extra_slot",
         });
       });
     });
-  }
-
-  function minutesToHHMM(mins) {
-    const h = Math.floor(mins / 60);
-    const m = mins % 60;
-    return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
-  }
-
-  function buildAvailabilityEvents(
-    availabilityMap = {},
-    activeTeacherIds = [],
-    weekStart,
-    weekEnd
-  ) {
-    const events = [];
-    const addedIds = new Set(); // Track added availability IDs to prevent duplicates
-    const teachers =
-      activeTeacherIds && activeTeacherIds.length > 0
-        ? activeTeacherIds
-        : Object.keys(availabilityMap);
-
-    if (!teachers || teachers.length === 0) return events;
-
-    const baseDate = weekStart || currentStart || new Date();
-
-    teachers.forEach((tid) => {
-      const slots = getSlotsForTeacher(availabilityMap, tid);
-      slots.forEach((slot) => {
-        // Skip if this availability ID was already added
-        if (slot.id && addedIds.has(slot.id)) {
-          return;
-        }
-
-        const startMin = normalizeMinutes(slot.startTime);
-        const endMin = normalizeMinutes(slot.endTime);
-        if (startMin === null || endMin === null) return;
-
-        // Determine the event date using the declared day; respect startDate as the earliest allowed occurrence.
-        const dateStr = (() => {
-          const startDateObj = slot.startDate
-            ? new Date(`${slot.startDate}T00:00:00`)
-            : null;
-
-          const dayIndex =
-            DAY_NAME_TO_INDEX[String(slot.day || "").toLowerCase()];
-          if (typeof dayIndex === "number") {
-            const candidate = new Date(baseDate);
-            candidate.setDate(baseDate.getDate() + dayIndex);
-
-            // If this candidate week is before the startDate, skip this week
-            if (startDateObj && candidate < startDateObj) return null;
-
-            return ymd(candidate);
-          }
-
-          // Fallback to startDate weekday if day is missing
-          if (startDateObj && !Number.isNaN(startDateObj.getTime())) {
-            const startDayIdx = (startDateObj.getDay() + 6) % 7;
-            const candidate = new Date(baseDate);
-            candidate.setDate(baseDate.getDate() + startDayIdx);
-            if (candidate < startDateObj) return null;
-            return ymd(candidate);
-          }
-
-          // Last resort: use base date
-          return ymd(baseDate);
-        })();
-
-        // If dateStr is null (week is before startDate), skip this slot for this week
-        if (!dateStr) return;
-
-        const startStr = minutesToHHMM(startMin);
-        const endStr = minutesToHHMM(endMin);
-
-        const teacherColor = getTeacherColor(tid);
-        const bg = teacherColor.replace("50%", "95%");
-
-        // Check if dateStr matches the day name
-        if (slot.day) {
-          const dateObj = new Date(dateStr);
-          const dayNames = [
-            "Sunday",
-            "Monday",
-            "Tuesday",
-            "Wednesday",
-            "Thursday",
-            "Friday",
-            "Saturday",
-          ];
-          const actualDay = dayNames[dateObj.getDay()];
-          if (actualDay !== slot.day) {
-            console.warn(
-              `Availability slot day mismatch: dateStr=${dateStr} is ${actualDay}, but slot.day=${slot.day}`
-            );
-          }
-        }
-        events.push({
-          start: `${dateStr}T${startStr}:00`,
-          end: `${dateStr}T${endStr}:00`,
-          date: dateStr, // Ensure event.date matches slot.startDate
-          title: slot.title || "Availability",
-          classType: "availability",
-          source: "availability",
-          teacherids: [Number(tid) || tid],
-          teacherid: Number(tid) || tid,
-          color: "e-availability",
-          style: `border: 1px dashed ${teacherColor}; background-color: ${bg};`,
-          availabilityId: slot.id, // Store the availability ID
-          day: slot.day || null,
-        });
-
-        // Mark this availability ID as added
-        if (slot.id) {
-          addedIds.add(slot.id);
-        }
-      });
-    });
-
-    return events;
-  }
-
-  function buildExtraSlotEvents(
-    extraSlotMap = {},
-    activeTeacherIds = [],
-    weekStart,
-    weekEnd
-  ) {
-    const events = [];
-    const teachers =
-      activeTeacherIds && activeTeacherIds.length > 0
-        ? activeTeacherIds
-        : Object.keys(extraSlotMap);
-
-    if (!teachers || teachers.length === 0) return events;
-
-    const baseMs = (weekStart || currentStart || new Date()).getTime();
-    const weekEndMs =
-      weekEnd && weekEnd.getTime
-        ? weekEnd.getTime()
-        : baseMs + 6 * 24 * 60 * 60 * 1000;
-
-    teachers.forEach((tid) => {
-      const slots = getSlotsForTeacher(extraSlotMap, tid);
-      slots.forEach((slot) => {
-        const startMs = slot.start ? Date.parse(slot.start) : null;
-        const endMs = slot.end ? Date.parse(slot.end) : null;
-        if (!startMs || !endMs) return;
-        if (endMs <= startMs) return;
-        if (startMs < baseMs || startMs > weekEndMs) return;
-
-        const teacherColor = getTeacherColor(tid);
-        const bg = teacherColor.replace("50%", "92%");
-
-        events.push({
-          start: slot.start,
-          end: slot.end,
-          title: slot.title || "Extra Slot",
-          classType: "extra_slot",
-          source: "extra_slot",
-          teacherids: [Number(tid) || tid],
-          teacherid: Number(tid) || tid,
-          color: "e-extra-slot",
-          style: `border: 1px solid ${teacherColor}; background-color: ${bg};`,
-        });
-      });
-    });
-
-    return events;
   }
 
   // ---------------- API call ----------------
@@ -5994,17 +5006,7 @@ document.addEventListener("DOMContentLoaded", () => {
         whiteSlotRules = [];
       }
 
-      window.teacherExtraSlots =
-        data && data.ok && data.teacher_extra_slots
-          ? data.teacher_extra_slots
-          : {};
-      document.dispatchEvent(
-        new CustomEvent("extraSlotsUpdated", {
-          detail: { map: window.teacherExtraSlots },
-        })
-      );
-
-      // Merge regular events, peertalk events, conference events, teacher time off, availability, and extra slots
+      // Merge regular events, peertalk events, conference events, and teacher time off
       let allEvents = [];
       if (data.ok && Array.isArray(data.events)) {
         allEvents = [...data.events];
@@ -6025,8 +5027,6 @@ document.addEventListener("DOMContentLoaded", () => {
             allEvents.push({
               start: item.start,
               end: item.end,
-              start_ts: item.start_ts,
-              end_ts: item.end_ts,
               title: item.title || "Busy",
               classType: "teacher_timeoff",
               class_type: "teacher_timeoff",
@@ -6042,60 +5042,25 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
 
-      // Availability and extra slots as events
-      if (data.ok) {
-        const availabilityEvents = buildAvailabilityEvents(
-          data.teacher_availability || {},
-          teacherids,
-          currentStart,
-          currentEnd
-        );
-        const extraSlotEvents = buildExtraSlotEvents(
-          data.teacher_extra_slots || {},
-          teacherids,
-          currentStart,
-          currentEnd
-        );
-        allEvents = [...allEvents, ...availabilityEvents, ...extraSlotEvents];
-      }
-
-      // Optimization: Use a map for teacher ID lookups
-      const teacherIdSet = teacherids ? new Set(teacherids) : null;
       window.events = [];
-      for (let i = 0; i < allEvents.length; i++) {
-        const ev = allEvents[i];
-
-        // Extract date directly from the string to avoid timezone conversion issues
-        let eventDateStr = null;
-        if (
-          ev.start &&
-          typeof ev.start === "string" &&
-          ev.start.includes("T")
-        ) {
-          eventDateStr = ev.start.split("T")[0]; // Get YYYY-MM-DD directly from string
-        }
-
-        // Only parse dates once
+      allEvents.forEach((ev) => {
         const startDate = new Date(ev.start);
         const endDate = new Date(ev.end);
-        // Fast teacherId lookup
+
+        // Match event teacher with selected teachers for proper color assignment
         let teacherId = null;
-        if (teacherIdSet) {
-          let eventTeacherIds = Array.isArray(ev.teacherids)
+        if (teacherids && teacherids.length > 0) {
+          const eventTeacherIds = Array.isArray(ev.teacherids)
             ? ev.teacherids
             : ev.teacher_id
-              ? [ev.teacher_id]
-              : ev.teacherid
-                ? [ev.teacherid]
-                : [];
-          for (let tid of eventTeacherIds) {
-            if (teacherIdSet.has(tid)) {
-              teacherId = tid;
-              break;
-            }
-          }
-          if (!teacherId && eventTeacherIds.length > 0)
-            teacherId = eventTeacherIds[0];
+            ? [ev.teacher_id]
+            : ev.teacherid
+            ? [ev.teacherid]
+            : [];
+          teacherId =
+            teacherids.find((selectedId) =>
+              eventTeacherIds.includes(selectedId)
+            ) || eventTeacherIds[0];
         } else if (Array.isArray(ev.teacherids) && ev.teacherids.length > 0) {
           teacherId = ev.teacherids[0];
         } else if (ev.teacher_id) {
@@ -6105,6 +5070,7 @@ document.addEventListener("DOMContentLoaded", () => {
         } else if (ev.teacher) {
           teacherId = ev.teacher;
         }
+
         let eventColor = "e-blue";
         if (
           ev.class_type === "one2one_weekly" ||
@@ -6125,48 +5091,13 @@ document.addEventListener("DOMContentLoaded", () => {
         ) {
           eventColor = "e-timeoff";
         }
-        // Main event object
-        let eventStart, eventEnd;
-        if (
-          ev.source === "teacher_timeoff" ||
-          ev.classType === "teacher_timeoff"
-        ) {
-          if (ev.start_ts && ev.end_ts) {
-            const startDate_ts = new Date(ev.start_ts * 1000);
-            const endDate_ts = new Date(ev.end_ts * 1000);
-            eventStart = startDate_ts.toTimeString().slice(0, 5);
-            eventEnd = endDate_ts.toTimeString().slice(0, 5);
-          } else {
-            eventStart = "00:00";
-            eventEnd = "23:59";
-          }
-        } else {
-          if (ev.start && ev.start.includes("T")) {
-            eventStart = ev.start.split("T")[1].slice(0, 5);
-          } else {
-            eventStart = startDate.toTimeString().slice(0, 5);
-          }
-          if (ev.end && ev.end.includes("T")) {
-            eventEnd = ev.end.split("T")[1].slice(0, 5);
-          } else {
-            eventEnd = endDate.toTimeString().slice(0, 5);
-          }
-        }
-        // Use the date extracted directly from the string (no timezone conversion)
-        // If we couldn't extract it, fall back to local date components
-        const localYMD =
-          eventDateStr ||
-          startDate.getFullYear() +
-          "-" +
-          String(startDate.getMonth() + 1).padStart(2, "0") +
-          "-" +
-          String(startDate.getDate()).padStart(2, "0");
 
+        // Main event object
         const eventObj = {
-          date: localYMD,
+          date: startDate.toISOString().split("T")[0],
           title: ev.title || "",
-          start: eventStart,
-          end: eventEnd,
+          start: startDate.toTimeString().slice(0, 5),
+          end: endDate.toTimeString().slice(0, 5),
           color: eventColor,
           repeat:
             typeof ev.is_recurring !== "undefined"
@@ -6179,11 +5110,11 @@ document.addEventListener("DOMContentLoaded", () => {
             typeof teacherId !== "undefined" && teacherId !== null
               ? teacherId
               : ev.teacherId ||
-              ev.teacher_id ||
-              ev.teacherid ||
-              ev.teacher ||
-              (ev.teacherids && ev.teacherids[0]) ||
-              "",
+                ev.teacher_id ||
+                ev.teacherid ||
+                ev.teacher ||
+                (ev.teacherids && ev.teacherids[0]) ||
+                "",
           classType: ev.classType || ev.class_type || "",
           source: ev.source || "event",
           studentnames: ev.studentnames || [],
@@ -6194,8 +5125,8 @@ document.addEventListener("DOMContentLoaded", () => {
             typeof ev.timeoffid !== "undefined"
               ? ev.timeoffid
               : typeof ev.id !== "undefined"
-                ? ev.id
-                : null,
+              ? ev.id
+              : null,
           cmid: ev.cmid || 0,
           googlemeetid:
             typeof ev.googlemeetid !== "undefined" ? ev.googlemeetid : 0,
@@ -6209,23 +5140,29 @@ document.addEventListener("DOMContentLoaded", () => {
           rescheduled:
             typeof ev.rescheduled !== "undefined" ? ev.rescheduled : null,
           faded: false,
-          availabilityId: ev.availabilityId || null,
         };
         window.events.push(eventObj);
+
         // If event is reschedule_instant, add previous event as faded
         if (
           Array.isArray(ev.statuses) &&
           ev.statuses.some((s) => s.code === "reschedule_instant" && s.previous)
         ) {
+          // Find the status with previous
           const statusObj = ev.statuses.find(
             (s) => s.code === "reschedule_instant" && (s.previous || null)
           );
           if (statusObj && statusObj.previous) {
+            // Parse previous event date and times
+            const prevDate = statusObj.previous.date;
+            const prevStart = statusObj.previous.start;
+            const prevEnd = statusObj.previous.end;
+            // Use previous teacher/avatar if available
             window.events.push({
               ...eventObj,
-              date: statusObj.previous.date,
-              start: statusObj.previous.start,
-              end: statusObj.previous.end,
+              date: prevDate,
+              start: prevStart,
+              end: prevEnd,
               faded: true,
               title: eventObj.title
                 ? eventObj.title + " (Previous)"
@@ -6236,15 +5173,11 @@ document.addEventListener("DOMContentLoaded", () => {
             });
           }
         }
-      }
+      });
 
       // Re-render your week view
       if (typeof renderWeek === "function") {
         renderWeek(false);
-      }
-      // ✅ NEW: Refresh agenda view after events are populated
-      if (typeof window.refreshAgendaView === "function") {
-        window.refreshAgendaView();
       }
     } catch (err) {
       console.error("Failed to load calendar events:", err);
@@ -6271,23 +5204,23 @@ document.addEventListener("DOMContentLoaded", () => {
         typeof loadCohortsForTeachers === "function"
           ? loadCohortsForTeachers
           : typeof loadAllCohorts === "function"
-            ? loadAllCohorts
-            : () => Promise.resolve();
+          ? loadAllCohorts
+          : () => Promise.resolve();
       const loadStudentsForCohortsFn =
         typeof loadStudentsForCohorts === "function"
           ? loadStudentsForCohorts
           : typeof loadAllStudents === "function"
-            ? loadAllStudents
-            : () => Promise.resolve();
+          ? loadAllStudents
+          : () => Promise.resolve();
 
       const safeSelectedTeachers =
         typeof selectedTeacherIds !== "undefined" &&
-          Array.isArray(selectedTeacherIds)
+        Array.isArray(selectedTeacherIds)
           ? selectedTeacherIds
           : [];
       const safeSelectedCohorts =
         typeof selectedCohortIds !== "undefined" &&
-          Array.isArray(selectedCohortIds)
+        Array.isArray(selectedCohortIds)
           ? selectedCohortIds
           : [];
 

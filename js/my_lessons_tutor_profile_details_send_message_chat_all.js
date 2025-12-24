@@ -20,7 +20,6 @@ var ICONS = {
 
 /* ===========================
    MESSAGE EDIT MENU (EMOJIS + ACTIONS)
-   ids/classes start with my_messages_details_edit_message_menu_*
    =========================== */
 
 var my_messages_details_edit_message_menu_ICON_PATHS = {
@@ -370,7 +369,7 @@ function my_messages_details_edit_message_menu_sendCurrentText() {
 }
 
 /* ===========================
-   CHAT DATA
+   CHAT DATA (with attachments)
    =========================== */
 
 var chats = [
@@ -397,6 +396,24 @@ var chats = [
       { from: "other", text: "Thank you for understanding.",      time: "11:03", date: "5/18/2025" },
       { from: "me",   text: "No worries, let me know if you want to reschedule!", time: "11:04", date: "5/18/2025" },
       { from: "other", text: "Sure, I will book a new lesson.",   time: "11:05", date: "5/18/2025" }
+    ],
+    attachments: [
+      {
+        date: "Wed, 07 May",
+        from: "Latingles A.",
+        time: "17:09",
+        url: "https://docs.google.com/presentation/d/1-example-1",
+        label: "Lesson slides – Unit 3",
+        status: "Sent"
+      },
+      {
+        date: "Wed, 14 May",
+        from: "Latingles A.",
+        time: "17:05",
+        url: "https://docs.google.com/document/d/1-example-2",
+        label: "Homework – Coffee shop dialog",
+        status: "Sent"
+      }
     ]
   },
   {
@@ -419,6 +436,16 @@ var chats = [
     messages: [
       { from: "other", text: "Hi Latingles! preply sent me this message.", time: "11:14", date: "5/7/2025" },
       { from: "me",   text: "Welcome Jonathan! How can I help you today?", time: "11:16", date: "5/7/2025" }
+    ],
+    attachments: [
+      {
+        date: "Tue, 06 May",
+        from: "Latingles A.",
+        time: "09:15",
+        url: "https://docs.google.com/spreadsheets/d/1-example-3",
+        label: "Interview vocabulary list",
+        status: "Sent"
+      }
     ]
   },
   {
@@ -441,7 +468,8 @@ var chats = [
     messages: [
       { from: "other", text: "You've added 4 hours of lessons!", time: "14:00", date: "5/13/2025" },
       { from: "me",   text: "Great, let's plan your next session!", time: "14:04", date: "5/13/2025" }
-    ]
+    ],
+    attachments: []
   },
   {
     id: 4,
@@ -463,13 +491,10 @@ var chats = [
     messages: [
       { from: "other", text: "Hi Latingles, Thank you for showing me the details.", time: "18:00", date: "5/6/2025" },
       { from: "me",   text: "You’re welcome Eleanor!", time: "18:04", date: "5/6/2025" }
-    ]
+    ],
+    attachments: []
   }
 ];
-
-
-
-
 
 /* ===========================
    EXTRA CHAT DATA (FOR SCROLL)
@@ -496,7 +521,8 @@ var extraChats = [
     messages: [
       { from: "other", text: "Hello! This is the link to join my class.", time: "16:20", date: "5/03/2025" },
       { from: "me", text: "Thanks Savannah!", time: "16:21", date: "5/03/2025" }
-    ]
+    ],
+    attachments: []
   },
   {
     id: 11,
@@ -518,7 +544,8 @@ var extraChats = [
     messages: [
       { from: "other", text: "You've added 4 hours of lessons!", time: "09:40", date: "7/10/2025" },
       { from: "other", text: "Would you like to schedule?", time: "09:41", date: "7/10/2025" }
-    ]
+    ],
+    attachments: []
   },
   {
     id: 12,
@@ -540,7 +567,8 @@ var extraChats = [
     messages: [
       { from: "other", text: "Hello! This is the link to join my lesson.", time: "12:10", date: "10/24/2024" },
       { from: "me", text: "Thanks Jacob!", time: "12:15", date: "10/24/2024" }
-    ]
+    ],
+    attachments: []
   },
   {
     id: 13,
@@ -561,7 +589,8 @@ var extraChats = [
     },
     messages: [
       { from: "other", text: "Hello! This is the link to join.", time: "15:00", date: "10/24/2024" }
-    ]
+    ],
+    attachments: []
   },
   {
     id: 14,
@@ -571,7 +600,6 @@ var extraChats = [
     date: "5/01/2025",
     preview: "Hello! This is the link to join...",
     unread_count: 1,
-
     details: {
       rating: 0,
       reviews: 7,
@@ -583,25 +611,13 @@ var extraChats = [
     },
     messages: [
       { from: "other", text: "Hello! This is the link to join my conversation class.", time: "17:10", date: "5/01/2025" }
-    ]
+    ],
+    attachments: []
   }
 ];
 
 /* merge into main chats list */
 chats = chats.concat(extraChats);
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /* ===========================
    HELPERS / RENDERING
@@ -656,12 +672,12 @@ function renderDetails(idx) {
   var chat = chats[idx];
   var details = chat.details;
   var ratingStars = "";
-  for (var i = 0; i < 5; i++) ratingStars += "☆";
+  for (var i = 0; i < 5; i++) ratingStars += "★";
 
   var detailsHTML = `
     <img class="details_profile_avatar" src="${chat.avatar}">
-    <div class="details_profile_name">${chat.name}</div>
-    <div class="details_profile_stars">${ratingStars}<span class="details_profile_reviews">(${details.reviews})</span></div>
+    <a href="my_lessons_tutor_profile.php" style="color:black;"><div class="details_profile_name">${chat.name}</div></a>
+    <div class="details_profile_stars">${ratingStars}<a href="my_lessons_tutor_profile.php#my_lessons_tutor_profile_reviews_section" style="color:black;"><span class="details_profile_reviews">(${details.reviews})</span></a></div>
     <div class="details_profile_price">${details.price}<span class="details_profile_perlesson">per lesson</span></div>
 
     <div class="details_profile_btnrow">
@@ -713,13 +729,59 @@ function renderDetails(idx) {
       <img src="${ICONS.classroom}" class="message_all_btn_icon" alt="">
       Entre Classroom
     </button>
-    <button class="message_all_btn_white">
+    <button class="message_all_btn_white" id="my_lessons_tutor_profile_send_message_details_post_review_step1_open_modal_button">
       <img src="${ICONS.review}" class="message_all_btn_icon" alt="">
       Post Review
     </button>
   `;
   $("#message_all_details_btns").html(btnHTML);
 }
+
+/* ============ ATTACHMENTS RENDERING ============ */
+
+function renderAttachments(idx) {
+  var chat = chats[idx];
+  var list = (chat && chat.attachments) ? chat.attachments : [];
+  var $panelList = $('#message_all_attachments_list');
+  if (!$panelList.length) return;
+
+  if (!list.length) {
+    $panelList.html('<div class="attachment_no_items">No attachments yet.</div>');
+    return;
+  }
+
+  var html = "";
+  var lastDate = "";
+
+  list.forEach(function (att) {
+    if (att.date && att.date !== lastDate) {
+      html += '<div class="attachment_date_sep">' + att.date + '</div>';
+      lastDate = att.date;
+    }
+
+    html += '<div class="attachment_item">';
+    html +=   '<div class="attachment_sender_time">' +
+                (att.from || '') +
+                (att.time ? '<span class="attachment_time">' + att.time + '</span>' : '') +
+              '</div>';
+    if (att.url) {
+      var label = att.label || att.url;
+      html += '<a href="' + att.url + '" target="_blank" class="attachment_link">' +
+                 label +
+              '</a>';
+    }
+    if (att.status) {
+      html += '<div class="attachment_status">' + att.status + '</div>';
+    }
+    html += '</div>';
+  });
+
+  $panelList.html(html);
+}
+
+/* ===========================
+   RENDER CHAT MESSAGES
+   =========================== */
 
 function renderChat(idx) {
   var chat = chats[idx];
@@ -796,6 +858,9 @@ $("#message_all_chat_list").on("click", "li", function () {
   renderChatList(idx);
   renderChat(idx);
   renderDetails(idx);
+
+  // hide attachments panel when switching chats
+  $('#message_all_attachments_panel').hide();
 });
 
 // send on Enter
@@ -821,6 +886,21 @@ $(document).on('click', '#my_messages_details_edit_message_menu_reply_ok', funct
 $(document).on('click', '#my_messages_details_edit_message_menu_reply_close', function (e) {
   e.preventDefault();
   my_messages_details_edit_message_menu_exitComposeMode();
+});
+
+/* ATTACHMENTS TOGGLE / CLOSE */
+
+$(document).on('click', '#message_all_attachments_toggle', function () {
+  var $selected = $("#message_all_chat_list li.selected");
+  var idx = $selected.data('idx');
+  if (typeof idx === 'undefined') idx = 0;
+
+  renderAttachments(idx);
+  $('#message_all_attachments_panel').show();
+});
+
+$(document).on('click', '#message_all_attachments_close', function () {
+  $('#message_all_attachments_panel').hide();
 });
 
 /* ===========================

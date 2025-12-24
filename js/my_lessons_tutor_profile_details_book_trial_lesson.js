@@ -33,7 +33,7 @@ $(function(){
   }
 
   // OPEN Step1
-  $('#my_lessons_tutor_profile_details_book_trial_lesson_btn').click(function(){
+  $('.my_lessons_tutor_profile_details_book_trial_lesson_btn').click(function(){
     $back.fadeIn(200); $mod1.fadeIn(200);
   });
 

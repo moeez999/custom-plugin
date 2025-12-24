@@ -1,7 +1,6 @@
 .create_new_cohort_tab_select_color_left_row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 9px;
   margin-bottom: 8px;
   margin-top: 10px;
@@ -22,20 +21,15 @@
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   background: #fff;
   border: 2px solid #e0e0e0;
   border-radius: 22px;
-  padding: 0 10px 0 1px;
-  min-width: 75px;
-  height: 37px;
+  padding: 0 10px 0 6px;
+  min-width: 56px;
+  height: 34px;
   box-shadow: 0 1px 4px #0001;
   cursor: pointer;
   transition: border-color 0.18s;
-}
-
-.create_new_cohort_tab_select_color_left_dropdown:hover {
-  border: 2px solid #232323;
 }
 
 .create_new_cohort_tab_select_color_left_dropdown:focus-within,
@@ -50,8 +44,8 @@
 }
 
 .create_new_cohort_tab_select_color_left_circle {
-  width: 30px;
-  height: 30px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   display: inline-block;
   border: 2px solid #e0e0e0;
@@ -72,26 +66,20 @@
    */
   margin-bottom: 215px;
   right: 110%; /* to the left of the button */
-  width: 58px; /* This matches the width in your screenshot */
+  width: 58px;   /* This matches the width in your screenshot */
   min-height: 210px; /* approx the height of your menu in screenshot */
   background: #fff;
   border-radius: 16px;
   box-shadow: 0 5px 18px #0002;
   z-index: 50;
   padding: 8px 0;
-  animation: fadeIn 0.13s;
+  animation: fadeIn .13s;
   overflow-y: auto;
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateX(16px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
+  from { opacity: 0; transform: translateX(16px);}
+  to   { opacity: 1; transform: none;}
 }
 
 .create_new_cohort_tab_select_color_left_list ul {
@@ -106,7 +94,7 @@
   margin: 10px auto;
   border-radius: 50%;
   cursor: pointer;
-  transition: box-shadow 0.13s, border 0.12s;
+  transition: box-shadow .13s, border .12s;
   border: 2.5px solid transparent;
   box-sizing: border-box;
 }
@@ -133,7 +121,6 @@
 .create_new_cohort_tab_select_color_right_row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 9px;
   margin-bottom: 8px;
   margin-top: 10px;
@@ -152,20 +139,15 @@
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   background: #fff;
   border: 2px solid #e0e0e0;
   border-radius: 22px;
-  padding: 0 10px 0 1px;
-  min-width: 75px;
-  height: 37px;
+  padding: 0 10px 0 6px;
+  min-width: 56px;
+  height: 34px;
   box-shadow: 0 1px 4px #0001;
   cursor: pointer;
   transition: border-color 0.18s;
-}
-
-.create_new_cohort_tab_select_color_right_dropdown:hover {
-  border: 2px solid #232323;
 }
 .create_new_cohort_tab_select_color_right_dropdown:focus-within,
 .create_new_cohort_tab_select_color_right_dropdown.active {
@@ -179,8 +161,8 @@
 }
 
 .create_new_cohort_tab_select_color_right_circle {
-  width: 30px;
-  height: 30px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   display: inline-block;
   border: 2px solid #e0e0e0;
@@ -197,8 +179,8 @@
   display: none;
   position: absolute;
   /* top: 0; */
-  margin-bottom: 215px;
-  right: 110%; /* pops to the right of the button */
+margin-bottom: 215px;
+  left: 110%; /* pops to the right of the button */
   width: 58px;
   min-height: 210px;
   background: #fff;
@@ -206,19 +188,13 @@
   box-shadow: 0 5px 18px #0002;
   z-index: 50;
   padding: 8px 0;
-  animation: fadeIn 0.13s;
+  animation: fadeIn .13s;
   overflow-y: auto;
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateX(-16px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
+  from { opacity: 0; transform: translateX(-16px);}
+  to   { opacity: 1; transform: none;}
 }
 
 .create_new_cohort_tab_select_color_right_list ul {
@@ -233,7 +209,7 @@
   margin: 10px auto;
   border-radius: 50%;
   cursor: pointer;
-  transition: box-shadow 0.13s, border 0.12s;
+  transition: box-shadow .13s, border .12s;
   border: 2.5px solid transparent;
   box-sizing: border-box;
 }
@@ -256,3 +232,4 @@
     padding: 2px 0;
   }
 }
+

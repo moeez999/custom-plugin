@@ -6,7 +6,6 @@
   flex-wrap: wrap;
   gap: 22px;
   margin-bottom: 18px;
-  height: 508px;
 }
 .merge-col {
   flex: 1 1 220px;
@@ -14,24 +13,11 @@
   position: relative;
 }
 .merge-label {
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: #232323;
   font-weight: 500;
   margin-bottom: 6px;
   display: block;
-}
-.merging-date-con {
-  margin-top: 10px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.closing-merge-date-con {
-  margin-top: 10px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
 }
 .merge-dropdown-wrapper {
   position: relative;
@@ -50,10 +36,6 @@
   min-width: 180px;
   transition: border 0.13s, box-shadow 0.13s;
   font-weight: 500;
-}
-
-.merge-dropdown-btn:hover {
-  border: 2px solid #232323;
 }
 .merge-dropdown-btn:focus,
 .merge-dropdown-btn.active {
@@ -105,11 +87,10 @@
   color: #fe2e0c;
 }
 
-#mergeCohortForm .merge-date-btn {
+.merge-date-btn {
   background: #fff;
   border: 2px solid #dadada;
-  color: #232323;
-  border-radius: 8px;
+  border-radius: 21px;
   padding: 10px 22px;
   font-size: 1.07rem;
   font-weight: 500;
@@ -118,40 +99,10 @@
   transition: border 0.13s;
   box-shadow: 0 1px 8px #2323230d;
 }
-
-#mergeCohortForm .merge-date-btn:hover {
-  border: 2px solid #232323;
-}
-
-#mergeCohortForm .merge-checkbox-label input[type="checkbox"] {
-  width: 22px;
-  height: 22px;
-  accent-color: #fe2e0c; /* keeps your red accent */
-  background-color: #fff; /* ensures white background */
-  border: 1.5px solid #ccc;
-  border-radius: 4px;
-  appearance: none;
-  cursor: pointer;
-  position: relative;
-  margin-right: 6px;
-  transition: all 0.2s ease;
-}
-
-#mergeCohortForm .merge-checkbox-label input[type="checkbox"]:checked {
-  background-color: #fe2e0c;
-  border-color: #fe2e0c;
-}
-
-#mergeCohortForm .merge-checkbox-label input[type="checkbox"]:checked::after {
-  content: "";
-  position: absolute;
-  left: 5px;
-  top: 2px;
-  width: 5px;
-  height: 10px;
-  border: solid #fff;
-  border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
+.merge-date-btn.selected {
+  border: 2px solid #fe2e0c;
+  color: #fe2e0c;
+  background: #fff4f1;
 }
 
 .merge-checkbox-label {
@@ -220,6 +171,14 @@
   left: 50%;
   transform: translate(-50%, -50%);
   font-family: inherit;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 .merge-calendar-header {
   display: flex;

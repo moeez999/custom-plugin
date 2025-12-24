@@ -57,7 +57,9 @@ function updateCalendar() {
 }
 
 // ====== DROPDOWN HELPERS ======
-
+function closeAllDropdowns() {
+  $(".dropdown-menu, .profile-menu").hide();
+}
 function showDropdownMenu($trigger, $dropdown) {
   closeAllDropdowns();
   let offset = $trigger.offset();
