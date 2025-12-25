@@ -562,6 +562,65 @@ $add_one2one_events = function() use (
                 }
             }
 
+
+            // =====================================================
+// PATCH: APPLY 1:1 STATUS (reschedule / cancel) PER EVENT
+// =====================================================
+
+
+$statusrow = $DB->get_record(
+    'local_gm_event_status',
+    [
+        'eventid' => (int)$e->id,
+        'isactive' => 1
+    ],
+    'id, statuscode, detailsjson',
+    IGNORE_MISSING
+);
+
+if ($statusrow && !empty($statusrow->detailsjson)) {
+
+    $details = json_decode($statusrow->detailsjson, true);
+
+    // -------------------------------
+    // RESCHEDULE LOGIC
+    // -------------------------------
+    if (!empty($details['current'])) {
+
+        $cur = $details['current'];
+
+        // Override time
+        if (!empty($cur['start_ts']) && !empty($cur['end_ts'])) {
+            $eventStart = (int)$cur['start_ts'];
+            $eventEnd   = (int)$cur['end_ts'];
+        }
+
+        // Override teacher if changed
+        if (!empty($cur['teacher'])) {
+            $teacherIdsForEvent = [(int)$cur['teacher']];
+
+            // rebuild teacher names
+            $teacherNames = [];
+            if (isset($teacherUserMap[$cur['teacher']])) {
+                $teacherNames[] = fullname($teacherUserMap[$cur['teacher']], true);
+            }
+        }
+    }
+
+    // -------------------------------
+    // CANCEL LOGIC
+    // -------------------------------
+    if (($details['action'] ?? '') === 'cancelled') {
+        // Skip this event completely
+        continue;
+    }
+}
+
+// =====================================================
+// END PATCH
+// =====================================================
+
+
                        $events[] = [
                 'id'            => '1to1-' . $e->id,
                 'eventid'       => (int)$e->id,
@@ -593,6 +652,8 @@ $add_one2one_events = function() use (
                 'meetingurl'    => $meetingurl,
                 'viewurl'       => $viewurl,
                 'studentavatar' => $studentAvatars,
+                'previous'      => $details['previous'],
+                'current'       => $details['current'],
             ];
 
             // =====================================================
@@ -674,6 +735,10 @@ $add_one2one_events = function() use (
         }
     }
 };
+
+
+
+
 
 /**
  * Group events (course 2)
@@ -1021,6 +1086,7 @@ try {
     // If a specific 1:1 googlemeet is selected, ONLY load that 1:1 meet's events.
     if ($one2onegmid) {
         $add_one2one_events();
+        
     } else {
         // Normal behaviour: load both group + 1:1 events.
         $add_group_events();
@@ -1900,7 +1966,7 @@ try {
 
             // Convert weekday → day name
             $dayName = date('l', strtotime("Sunday +{$r->weekday} days"));
-            
+
             // Convert unix startdate → Y-m-d
             $startDateStr = $r->startdate ? date("Y-m-d", (int)$r->startdate) : null;
 
@@ -2209,6 +2275,8 @@ if (!empty($details['previous']['teacher'])) {
 // -------------------------------------------------------------
 foreach ($allStatuses as $s) {
 
+    
+
     $details = json_decode($s->detailsjson ?? '', true);
 
    
@@ -2219,6 +2287,12 @@ foreach ($allStatuses as $s) {
 // ------------------------------------------------------------
 $cohortids = [];
 $classType = 'group'; // default class type
+$sourcee = 'group';
+
+if (strpos($s->statuscode, 'one2one') !== false) {
+       $classType = 'one2one'; // default class type
+       $sourcee = 'one2one';
+    }
 
 $gm = $DB->get_record('googlemeet', ['id' => $s->googlemeetid], '*', IGNORE_MISSING);
 
@@ -2227,7 +2301,7 @@ $gm = $DB->get_record('googlemeet', ['id' => $s->googlemeetid], '*', IGNORE_MISS
 // Example: "KY4-02132025-0107 Main Classes"
 // ---------------------------------------
 $cohortids = [];
-$classType = 'group';
+// $classType = 'group';
 
 if (!empty($gm->name)) {
     // Split at first dash
@@ -2478,7 +2552,7 @@ foreach ($allStatusess as $s) {
         'is_parent'     => true,
         'sequence'      => 1,
 
-        'source'        => 'group',
+        'source'        => $sourcee,
         'courseid'      => (int)($gm->course ?? 0),
         'cmid'          => 0,
         'googlemeetid'  => (int)$base->googlemeetid,
@@ -2509,9 +2583,7 @@ foreach ($allStatusess as $s) {
     ];
 
 
-    if($eid === 32201){
-        $a=1;
-    }
+   
 
     $addedEventIds[$eid] = true;
 }

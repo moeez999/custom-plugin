@@ -28,6 +28,8 @@
         .my_students_details_lessons_plans_step3_primary-btn {
             background-color: #ff3b1f;
             transition: background-color 0.2s ease, transform 0.1s ease;
+            border: 2px solid black;
+
         }
 
         .my_students_details_lessons_plans_step3_primary-btn:hover {
@@ -67,14 +69,16 @@
     <header id="my_students_details_lessons_plans_step3_header"
         class="border-b border-slate-200">
         <div class="my_students_details_lessons_plans_step3_main-layout mx-auto px-6 md:px-14 py-5 flex items-center justify-between">
-            <div class="my_students_details_lessons_plans_step3_logo flex items-center space-x-3">
-                <!-- Replace src with your real logo -->
-                <img id="my_students_details_lessons_plans_step3_logo_img"
-                    src="img/my_students/logo_header.svg"
-                    alt="LATINGLES Logo"
-                    class="my_students_details_lessons_plans_step3_logo_img w-30 h-30">
-            </div>
+            <a href="http://localhost/latingles_lms_v2/course/index.php">
+                <div class="my_students_details_lessons_plans_step3_logo flex items-center space-x-3">
+                    <!-- Replace src with your real logo -->
 
+                    <img id="my_students_details_lessons_plans_step3_logo_img"
+                        src="img/my_students/logo_header.svg"
+                        alt="LATINGLES Logo"
+                        class="my_students_details_lessons_plans_step3_logo_img w-30 h-30">
+                </div>
+            </a>
             <button id="my_students_details_lessons_plans_step3_language_button"
                 class="my_students_details_lessons_plans_step3_language-btn flex items-center gap-2 px-4 py-2 rounded-md bg-white text-sm text-slate-700">
                 <span class="my_students_details_lessons_plans_step3_language-label">English, USD</span>
@@ -113,25 +117,27 @@
 
             <!-- Right section (50%, grey background) -->
             <section id="my_students_details_lessons_plans_step3_right_section"
-                class="my_students_details_lessons_plans_step3_right-section w-full md:w-1/2 bg-[#f5f5f7] px-4 md:px-10 py-8 md:py-12 flex items-start justify-center">
+                class="my_students_details_lessons_plans_step3_right-section w-full md:w-1/2 bg-[#f5f5f7] px-4 md:px-10 py-8  flex items-start justify-center" style="height: 615px;">
                 <div class="my_students_details_lessons_plans_step3_plan-panel w-full h-full flex relative">
 
                     <!-- Close icon -->
-                    <button id="my_students_details_lessons_plans_step3_close_btn"
-                        class="my_students_details_lessons_plans_step3_close-btn absolute top-1 right-0 w-8 h-8 flex text-lg leading-none"
-                        style="font-size: 30px;">
-                        ×
-                    </button>
+                    <a href="http://localhost/latingles_lms_v2/course/index.php">
+                        <button id="my_students_details_lessons_plans_step3_close_btn"
+                            class="my_students_details_lessons_plans_step3_close-btn absolute top-1 right-0 w-8 h-8 flex text-lg leading-none"
+                            style="font-size: 30px;">
+                            ×
+                        </button>
+                    </a>
 
                     <!-- White card -->
-                    <div class="my_students_details_lessons_plans_step3_plan-card bg-white rounded-lg shadow-sm p-6 md:p-7 max-w-[560px] w-full mx-auto">
+                    <div class="my_students_details_lessons_plans_step3_plan-card bg-white rounded-lg shadow-sm p-6 md:p-7 max-w-[620px] w-full mx-auto" style="margin-left:10px; border: 1.5px solid #e4e4e4;">
 
                         <!-- Card header -->
                         <div class="my_students_details_lessons_plans_step3_plan-header flex items-center justify-between mb-4">
-                            <h2 class="my_students_details_lessons_plans_step3_plan-title text-base font-semibold text-slate-900">
+                            <h2 class="my_students_details_lessons_plans_step3_plan-title text-base font-semibold text-slate-900" style="font-size: 1.2rem;">
                                 Your learning plan
                             </h2>
-                            <button class="my_students_details_lessons_plans_step3_plan-see-all text-xs font-medium text-slate-500 underline">
+                            <button class="my_students_details_lessons_plans_step3_plan-see-all text-xs font-medium text-slate-1000 underline" style="font-size: 15px;">
                                 See All Plans
                             </button>
                         </div>
@@ -144,7 +150,7 @@
                             <p class="my_students_details_lessons_plans_step3_plan-main text-2xl font-semibold text-slate-900 mb-1">
                                 3 lessons per week
                             </p>
-                            <p class="my_students_details_lessons_plans_step3_plan-sub text-xs text-slate-500">
+                            <p class="my_students_details_lessons_plans_step3_plan-sub text-xs text-slate-500" style="color: #494949;font-weight: 500;">
                                 That’s 12 lessons every 4 weeks at $108.00.
                             </p>
                         </div>
@@ -155,16 +161,16 @@
                                 <p class="my_students_details_lessons_plans_step3_price-main text-3xl font-semibold text-slate-900 leading-none mb-1">
                                     $5
                                 </p>
-                                <p class="my_students_details_lessons_plans_step3_price-caption text-xs text-slate-500">
+                                <p class="my_students_details_lessons_plans_step3_price-caption text-xs text-slate-500" style="font-weight: 500;color: #494949;">
                                     per 50-min lesson
                                 </p>
                             </div>
 
-                            <div class="my_students_details_lessons_plans_step3_price-column">
+                            <div class="my_students_details_lessons_plans_step3_price-column" style="margin-left:20%;">
                                 <p class="my_students_details_lessons_plans_step3_price-main text-3xl font-semibold text-slate-900 leading-none mb-1">
                                     $60
                                 </p>
-                                <p class="my_students_details_lessons_plans_step3_price-caption text-xs text-slate-500">
+                                <p class="my_students_details_lessons_plans_step3_price-caption text-xs text-slate-500" style="font-weight: 500;color: #494949;">
                                     Every 4 week
                                 </p>
                             </div>
@@ -172,12 +178,12 @@
 
                         <!-- CTA button -->
                         <button id="my_students_details_lessons_plans_step3_checkout_btn"
-                            class="my_students_details_lessons_plans_step3_primary-btn w-full py-3 rounded-md text-white text-sm font-semibold mb-6">
+                            class="my_students_details_lessons_plans_step3_primary-btn w-full py-3 rounded-md text-white text-md font-semibold mb-6">
                             Continue to checkout
                         </button>
 
                         <!-- Bullet list -->
-                        <ul class="my_students_details_lessons_plans_step3_benefits space-y-3 text-xs md:text-sm text-slate-700">
+                        <ul class="my_students_details_lessons_plans_step3_benefits space-y-6 text-xs md:text-sm text-slate-700">
                             <li class="my_students_details_lessons_plans_step3_benefit-item flex items-start gap-2">
                                 <span class="my_students_details_lessons_plans_step3_check-icon flex-shrink-0 rounded-full flex items-center justify-center">
                                     <img id="my_students_details_lessons_plans_step3_tick_icon_1"
@@ -185,7 +191,7 @@
                                         alt="Tick icon"
                                         class="my_students_details_lessons_plans_step3_tick-img w-4 h-4">
                                 </span>
-                                <span>You have 12 lessons to schedule every month</span>
+                                <span style="font-weight: 600;">You have 12 lessons to schedule every month</span>
                             </li>
 
                             <li class="my_students_details_lessons_plans_step3_benefit-item flex items-start gap-2">
@@ -195,7 +201,7 @@
                                         alt="Tick icon"
                                         class="my_students_details_lessons_plans_step3_tick-img w-4 h-4">
                                 </span>
-                                <span>You choose the length of your lessons</span>
+                                <span style="font-weight: 600;">You choose the length of your lessons</span>
                             </li>
 
                             <li class="my_students_details_lessons_plans_step3_benefit-item flex items-start gap-2">
@@ -205,7 +211,7 @@
                                         alt="Tick icon"
                                         class="my_students_details_lessons_plans_step3_tick-img w-4 h-4">
                                 </span>
-                                <span>Switch tutors for free at any time</span>
+                                <span style="font-weight: 600;">Switch tutors for free at any time</span>
                             </li>
 
                             <li class="my_students_details_lessons_plans_step3_benefit-item flex items-start gap-2">
@@ -215,7 +221,7 @@
                                         alt="Tick icon"
                                         class="my_students_details_lessons_plans_step3_tick-img w-4 h-4">
                                 </span>
-                                <span>Pause or cancel your plan for free at any time</span>
+                                <span style="font-weight: 600;">Pause or cancel your plan for free at any time</span>
                             </li>
                         </ul>
                     </div>

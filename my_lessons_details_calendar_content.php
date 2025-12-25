@@ -4,7 +4,7 @@
 
 <link rel="stylesheet" href="css/my_lessons_details_calendar_content.css">
 
-<div class="w-full max-w-[1400px] mx-auto px-3 sm:px-4">
+<div class="w-full max-w-[1400px] mx-auto">
     <div class="cal_header">
       <div class="cal_header_left">
         <button id="btn_today" class="btn_today">Today</button>

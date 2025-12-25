@@ -7,19 +7,22 @@
   const DOW = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 
   const ICONS = {
-    confirmed: 'img/yellow.svg',
-    recurring: 'img/default.svg',
-    single:    'img/default.svg',
+    recurring: 'img/recurring.svg',
+    confirmed: 'img/confirmed.svg',
+    single:    'img/single.svg',
     default:   'img/default.svg'
   };
 
   let weekStart = startOfWeek(new Date());
 
   const events = [
-    { date:'2025-09-09', start:'07:00', end:'08:00', type:'confirmed', name:'Mary Janes', avatar:'https://randomuser.me/api/portraits/women/82.jpg' },
-    { date:'2025-09-09', start:'10:00', end:'11:00', type:'single',    name:'Mary Janes', avatar:'https://randomuser.me/api/portraits/women/68.jpg' },
-    { date:'2025-09-11', start:'16:00', end:'17:00', type:'confirmed', name:'Mary Janes', avatar:'https://randomuser.me/api/portraits/women/12.jpg' },
-    { date:'2025-09-12', start:'07:00', end:'08:00', type:'recurring', name:'Mary Janes', avatar:'https://randomuser.me/api/portraits/women/45.jpg' }
+    { date:'2025-12-18', start:'07:00', end:'08:00', type:'recurring', name:'Mary Janes', avatar:'https://randomuser.me/api/portraits/women/82.jpg' },
+    { date:'2025-12-16', start:'08:00', end:'09:00', type:'confirmed',    name:'Mary Janes', avatar:'https://randomuser.me/api/portraits/women/68.jpg' },
+    { date:'2025-12-15', start:'10:00', end:'11:00', type:'confirmed', name:'Mary Janes', avatar:'https://randomuser.me/api/portraits/women/12.jpg' },
+    { date:'2025-12-20', start:'10:00', end:'11:00', type:'single', name:'Mary Janes', avatar:'https://randomuser.me/api/portraits/women/45.jpg' },
+    { date:'2025-12-16', start:'13:00', end:'14:00', type:'single', name:'Mary Janes', avatar:'https://randomuser.me/api/portraits/women/45.jpg' },
+    { date:'2025-12-18', start:'15:00', end:'16:00', type:'recurring', name:'Mary Janes', avatar:'https://randomuser.me/api/portraits/women/45.jpg' },
+    { date:'2025-12-20', start:'16:00', end:'17:00', type:'single', name:'Mary Janes', avatar:'https://randomuser.me/api/portraits/women/45.jpg' },
   ];
 
   const my_lessons_details_calendar_content_tutor_tutors = [
@@ -128,7 +131,7 @@
       const iconSrc = ICONS[ev.type] || ICONS.default;
 
       $col.find('.evwrap').append(
-        `<div class="event ${ev.type}" style="top:${Math.max(top,0)}px;height:${Math.max(height,40)}px">
+        `<div class="event pointer ${ev.type}" style="top:${Math.max(top,0)}px;height:${Math.max(height,40)}px">
           <img class="avatar" src="${ev.avatar}" alt="">
           <span class="badge-icon"><img src="${iconSrc}" alt=""></span>
           <div class="event-body">

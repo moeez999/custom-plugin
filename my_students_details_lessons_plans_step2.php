@@ -44,29 +44,31 @@
     <div
         class="my_students_details_lessons_plans_step2_top_row w-full px-4 md:px-8 pt-4 flex items-center justify-between">
         <!-- Back button (icon only) -->
-        <button
-            id="my_students_details_lessons_plans_step2_back_button"
-            type="button"
-            class="my_students_details_lessons_plans_step2_back_btn inline-flex items-center justify-center w-8 h-8 rounded-[5px] focus:outline-none">
-            <img
-                src="img/my_students/back_arrow_icon.svg"
-                alt="Back"
-                class="my_students_details_lessons_plans_step2_back_icon w-4 h-4 object-contain">
-        </button>
-
+        <a href="my_students_details_lessons_plans.php"><button
+                id="my_students_details_lessons_plans_step2_back_button"
+                type="button"
+                class="my_students_details_lessons_plans_step2_back_btn inline-flex items-center justify-center w-8 h-8 rounded-[5px] focus:outline-none">
+                <img
+                    src="img/my_students/back_arrow_icon.svg"
+                    alt="Back"
+                    class="my_students_details_lessons_plans_step2_back_icon w-4 h-4 object-contain">
+            </button>
+        </a>
         <div class="my_students_details_lessons_plans_step2_top_spacer flex-1"></div>
 
         <!-- Skip this step button -->
-        <button
-            id="my_students_details_lessons_plans_step2_skip_button"
-            type="button"
-            class="my_students_details_lessons_plans_step2_skip_btn text-xs sm:text-sm md:text-base border border-gray-300 bg-white rounded-[5px] px-4 py-1.5 hover:border-gray-400 transition">
-            Skip this step
-        </button>
+        <a href="my_students_details_lessons_plans_step2_skip_content.php">
+            <button
+                id="my_students_details_lessons_plans_step2_skip_button"
+                type="button"
+                class="my_students_details_lessons_plans_step2_skip_btn text-xs sm:text-sm md:text-base border border-gray-300 bg-white rounded-[5px] px-4 py-1.5 hover:border-gray-400 transition">
+                Skip this step
+            </button>
+        </a>
     </div>
 
     <!-- Main content -->
-    <main class="my_students_details_lessons_plans_step2_main flex-1 flex flex-col items-center px-4 pb-24">
+    <main class="my_students_details_lessons_plans_step2_main flex-1 flex flex-col items-center px-4 pb-24" style="margin-top: 17%;">
         <div class="my_students_details_lessons_plans_step2_container max-w-3xl w-full text-center">
 
             <!-- Heading -->
@@ -182,10 +184,12 @@
                            inline-flex items-center gap-2 border border-gray-300 rounded-[5px] px-4 py-2 bg-white
                            text-xs sm:text-sm md:text-base shadow-sm transition"
                     data-option="something_else">
-                    <img
+                    <!-- <img
                         src="img/my_students/something_else.svg"
                         alt="Something else icon"
-                        class="my_students_details_lessons_plans_step2_option_icon w-4 h-4 md:w-5 md:h-5 object-contain">
+                        class="my_students_details_lessons_plans_step2_option_icon w-4 h-4 md:w-5 md:h-5 object-contain"> -->
+
+
                     <span class="my_students_details_lessons_plans_step2_option_label">
                         Something else
                     </span>
@@ -225,7 +229,7 @@
         class="my_students_details_lessons_plans_step2_submit_container fixed bottom-6 left-0 right-0 flex justify-center px-4">
         <a href="my_students_details_lessons_plans_step3.php" style='width:500px; margin-left:110px;'><button
                 id="my_students_details_lessons_plans_step2_submit_button"
-                class="my_students_details_lessons_plans_step2_submit_btn w-full max-w-xs md:max-w-sm py-3 md:py-3.5 bg-[#ff3b00] text-white rounded-[5px] text-base md:text-lg font-semibold shadow-md hover:opacity-95 transition border-[2px] border-black"
+                class="my_students_details_lessons_plans_step2_submit_btn w-full max-w-xs md:max-w-sm py-2  bg-[#ff3b00] text-white rounded-[5px] text-base md:text-lg font-semibold shadow-md hover:opacity-95 transition border-[2px] border-black"
                 type="button">
                 Submit
             </button>

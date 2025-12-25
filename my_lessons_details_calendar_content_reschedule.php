@@ -8,7 +8,7 @@ $PAGE->requires->css(new moodle_url('./style.css?v=' . time()), true);
 $PAGE->requires->css(new moodle_url('./course.css?v=' . time()), true);
 
 echo $OUTPUT->header();
-require_once('custom_header.php');
+// require_once('custom_header.php');
 ?>
 
 <script src="https://cdn.tailwindcss.com"></script>

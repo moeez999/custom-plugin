@@ -27,19 +27,21 @@
         <!-- Logo -->
         <div class="flex items-center gap-3">
             <!-- Logo icon as image placeholder -->
-            <div class="w-30 h-30 flex items-center justify-center">
-                <img
-                    src="img/my_students/logo_header.svg"
-                    alt="Latingles logo icon"
-                    class="w-full h-full object-contain" />
+            <a href="http://localhost/latingles_lms_v2/course/index.php">
+                <div class="w-30 h-30 flex items-center justify-center">
+                    <img
+                        src="img/my_students/logo_header.svg"
+                        alt="Latingles logo icon"
+                        class="w-full h-full object-contain" />
+                </div>
+              </a>
             </div>
-        </div>
 
         <!-- Skip button -->
-        <button
-            class="px-5 py-2 text-sm md:text-base border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">
-            Skip
-        </button>
+        <a href="my_students_details_lessons_plans_teacher_profiles_list.php"><button
+                class="px-5 py-2 text-sm md:text-base border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">
+                Skip
+            </button></a>
     </header>
 
     <!-- Main content -->

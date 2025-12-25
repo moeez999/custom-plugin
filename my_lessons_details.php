@@ -4,33 +4,35 @@
 
 <div id="my_lessons_container">
     <!-- Header + Actions -->
-    <h1 class="my_lessons_header">My Lessons</h1>
-    <div class="my_lessons_actions">
-      <button  class="openTransfer my_lessons_btn_outline">
-        Transfer lessons or subscription
-      </button>
-      <div class="my_lessons_schedule_dropdown my_lessons_calendar_slot_empty">
-        <button id="my_lessons_schedule_btn" class="my_lessons_btn_primary">
-          + Schedule lesson <i class="fas fa-chevron-down"></i>
+     <div style="display:flex; justify-content: space-between; align-items:center">
+        <h1 class="my_lessons_header">My Lessons</h1>
+        <div class="my_lessons_actions">
+        <button  class="openTransfer my_lessons_btn_outline" style="font-weight:600">
+          Transfer lessons or subscription
         </button>
-        <div id="my_lessons_schedule_menu" class="my_lessons_dropdown_menu">
-          <div class="my_lessons_schedule_option" data-type="weekly">
-            <i class="fas fa-sync-alt my_lessons_option_icon"></i>
-            <div class="my_lessons_option_text">
-              <span class="my_lessons_recommended_pill">Recommended</span>
-              <h4>Weekly lessons</h4>
-              <p>Lessons are scheduled automatically for the same time every week</p>
+        <div class="my_lessons_schedule_dropdown my_lessons_calendar_slot_empty">
+          <button id="my_lessons_schedule_btn" class="my_lessons_btn_primary" style="font-weight:600">
+            + Schedule lesson <i class="fas fa-chevron-down"></i>
+          </button>
+          <div id="my_lessons_schedule_menu" class="my_lessons_dropdown_menu">
+            <div class="my_lessons_schedule_option" data-type="weekly">
+              <i class="fas fa-sync-alt my_lessons_option_icon"></i>
+              <div class="my_lessons_option_text">
+                <span class="my_lessons_recommended_pill">Recommended</span>
+                <h4>Weekly lessons</h4>
+                <p>Lessons are scheduled automatically for the same time every week</p>
+              </div>
             </div>
-          </div>
 
-          <div class="my_lessons_schedule_option" data-type="single">
-            <i class="fas fa-calendar-alt my_lessons_option_icon"></i>
-            <div class="my_lessons_option_text">
-              <h4>Single lessons</h4>
-              <p>Lessons happen once</p>
+            <div class="my_lessons_schedule_option" data-type="single">
+              <i class="fas fa-calendar-alt my_lessons_option_icon"></i>
+              <div class="my_lessons_option_text">
+                <h4>Single lessons</h4>
+                <p>Lessons happen once</p>
+              </div>
             </div>
-          </div>
 
+          </div>
         </div>
       </div>
     </div>
@@ -204,7 +206,7 @@
 <!-- Tutors Tab -->
 <div id="my_lessons_tab_tutors" class="my_lessons_tab_content">
   <!-- Tutor 1 -->
-  <div class="my_lessons_card" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; position:relative;">
+  <div class="my_lessons_card" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; margin-top:32px; position:relative;">
     <div style="display: flex; align-items: center;">
       <img class="my_lessons_avatar" src="https://randomuser.me/api/portraits/women/4.jpg" alt="Daniela" style="width:56px; height:56px; border-radius:50%; margin-right:18px;">
       <div>
@@ -212,7 +214,7 @@
         <div style="color:#888;">English</div>
       </div>
     </div>
-    <div style="text-align: right;">
+    <div style="text-align: left;">
       <div style="font-weight:bold;">11 lessons</div>
      
       <!-- <div style="color:#888; font-size:15px;">to schedule <i class="fas fa-sync-alt" style="color:#3fb37f; margin-left:5px;"></i></div> -->
@@ -232,7 +234,7 @@
 
     
     </div>
-    <div style="text-align: right;">
+    <div style="text-align: left;">
       <div style="font-weight:bold;">$5.40</div>
       <div style="color:#888; font-size:15px;">per lesson</div>
     </div>
@@ -260,11 +262,11 @@
       </div>
     </div>
 
-    <div style="text-align: right;">
+    <div style="text-align: left;">
       <div style="font-weight:bold;">0 lessons</div>
       <div style="color:#888; font-size:15px;">to schedule</div>
     </div>
-    <div style="text-align: right;">
+    <div style="text-align: left;">
       <div style="font-weight:bold;">$11.00</div>
       <div style="color:#888; font-size:15px;">per lesson</div>
     </div>
@@ -291,11 +293,11 @@
         <div style="color:#888;">English</div>
       </div>
     </div>
-    <div style="text-align: right;">
+    <div style="text-align: left;">
       <div style="font-weight:bold;">0 lessons</div>
       <div style="color:#888; font-size:15px;">to schedule</div>
     </div>
-    <div style="text-align: right;">
+    <div style="text-align: left;">
       <div style="font-weight:bold;">$7.00</div>
       <div style="color:#888; font-size:15px;">per lesson</div>
     </div>
@@ -322,11 +324,11 @@
         <div style="color:#888;">English</div>
       </div>
     </div>
-    <div style="text-align: right;">
+    <div style="text-align: left;">
       <div style="font-weight:bold;">1 lessons</div>
       <div style="color:#888; font-size:15px;">to schedule</div>
     </div>
-    <div style="text-align: right;">
+    <div style="text-align: left;">
       <div style="font-weight:bold;">$5.00</div>
       <div style="color:#888; font-size:15px;">per lesson</div>
     </div>
@@ -349,10 +351,10 @@
         <div style="color:#888;">English</div>
       </div>
     </div>
-    <div style="text-align: right;">
+    <div style="text-align: left;">
       <div style="font-weight:bold;">Subscription cancelled</div>
     </div>
-    <div style="text-align: right;">
+    <div style="text-align: left;">
       <div style="font-weight:bold;">$10.00</div>
       <div style="color:#888; font-size:15px;">per lesson</div>
     </div>
