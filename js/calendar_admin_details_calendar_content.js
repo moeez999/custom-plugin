@@ -2825,13 +2825,20 @@ $(function () {
     // Header
     const $head = $("#head");
     $head.find(".day-h").remove();
+    const today = ymd(new Date());
     for (let i = 0; i < 7; i++) {
       const d = new Date(currentWeekStart);
       d.setDate(d.getDate() + i);
-      $('<div class="day-h">')
+      const $dayHeader = $('<div class="day-h">')
         .append(`<span class="dow">${DOW[i]}</span>`)
-        .append(`<span class="dt">${d.getDate()}</span>`)
-        .appendTo($head);
+        .append(`<span class="dt">${d.getDate()}</span>`);
+
+      // Add 'today' class if this is today's date
+      if (ymd(d) === today) {
+        $dayHeader.addClass("today");
+      }
+
+      $dayHeader.appendTo($head);
     }
     $("#calendar-range").text(rangeText(currentWeekStart));
     // Keep Today button state in sync
@@ -3776,8 +3783,12 @@ $(function () {
     filteringEnabled = $(this).is(":checked");
     console.log("Filtering enabled:", filteringEnabled);
 
-    // If disabling filters, clear all active filters
-    if (!filteringEnabled) {
+    // Add or remove filtering-enabled class to body for hover effects
+    if (filteringEnabled) {
+      $("body").addClass("filtering-enabled");
+    } else {
+      $("body").removeClass("filtering-enabled");
+      // Clear all active filters
       clearDateFilter();
       clearTimeSlotFilter();
       $(".event").show();

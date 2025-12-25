@@ -20,7 +20,11 @@
     <div id="message_all_chat_header">
       <img src="" alt="">
       <div class="message_all_name"></div>
-      <div class="message_all_actions" title="Archive">
+
+      <!-- ATTACHMENTS TOGGLE BUTTON -->
+
+      <!-- Archive icon (existing) -->
+      <div class="message_all_actions" title="Archive" id="message_all_attachments_toggle">
         <img src="img/my_students/header_archive_icon.svg"
           class="message_all_header_icon"
           alt="Archive"
@@ -90,6 +94,15 @@
     <div id="message_all_details_header">Details</div>
     <div id="message_all_details_scroll"></div>
     <div id="message_all_details_btns"></div>
+
+    <!-- ATTACHMENTS OVERLAY PANEL (covers details when open) -->
+    <div id="message_all_attachments_panel">
+      <div id="message_all_attachments_header">
+        <span>Attachments</span>
+        <button type="button" id="message_all_attachments_close">×</button>
+      </div>
+      <div id="message_all_attachments_list"></div>
+    </div>
   </div>
 </div>
 
@@ -98,3 +111,5 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="js/my_lessons_tutor_profile_details_send_message_chat_all.js"></script>
 <script src="js/my_lessons_tutor_profile_details_send_message_chat_all_share_modal.js"></script>
+
+<?php require_once('my_lessons_tutor_profile_send_message_details_post_review.php'); ?>

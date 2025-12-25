@@ -63,9 +63,21 @@ body {
   gap: 6px;
   color: var(--muted);
   border-right: 1px solid var(--col-border);
-  cursor: pointer;
+  cursor: default;
   transition: all 0.2s ease;
   user-select: none;
+}
+
+/* Enable pointer cursor and hover effect only when filtering is enabled */
+body.filtering-enabled .day-h {
+  cursor: pointer;
+}
+
+body.filtering-enabled .day-h:hover {
+  background-color: #f9f9fb;
+  color: #374151;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .day-h .dow {
@@ -78,11 +90,16 @@ body {
   font-weight: 600;
   font-size: 13px;
 }
+/* Today's date styling */
+.day-h.today {
+  border-bottom: 4px solid #fe2e0c;
+}
+
 /* Active date filter styling */
 .day-h.date-filter-active {
   background-color: #f4f3f8;
   color: #6b7280;
-  border-right: 1px solid #232323;
+  border: 1px solid #232323;
   font-weight: 600;
   box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.1);
 }
@@ -121,8 +138,22 @@ body {
   font-weight: 600;
   line-height: 1;
   top: calc(var(--slot-h) - 0.7em);
-  cursor: pointer;
+  cursor: default;
   transition: all 0.2s ease;
+}
+
+/* Enable pointer cursor and hover effect only when filtering is enabled */
+body.filtering-enabled .time-label {
+  cursor: pointer;
+}
+
+body.filtering-enabled .time-label:hover {
+  color: #374151;
+  background: #f3f4f6;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transform: scale(1.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 /* Time slot filter active styling */
