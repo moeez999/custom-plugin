@@ -993,6 +993,9 @@ $(function() {
     $(document).on('click', '#ef-reset', function() {
         applyEventTypeFilter();
     });
+
+    // Initialize with all filters selected by default
+    $('#ef_select_all').prop('checked', true).trigger('change');
 });
 </script>
 <?php require_once('calendar_admin_details_create_cohort.php'); ?>
