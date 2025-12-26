@@ -3431,8 +3431,11 @@ $(function () {
           </div>
         `).css({ top: top + "px", height: h + "px", ...cssPos });
 
-        // Base z-index by stackIndex so layers stay ordered; click will still raise
-        const baseZ = 1000 + (ev.stackIndex || 0);
+        // Base z-index: availability stays behind everything else
+        const baseZ =
+          ev.classType === "availability"
+            ? 10 + (ev.stackIndex || 0)
+            : 1000 + (ev.stackIndex || 0);
         $ev.css("z-index", baseZ);
 
         // Add hover tooltip for short events (less than 1 hour) - exclude availability and extra_slot events
