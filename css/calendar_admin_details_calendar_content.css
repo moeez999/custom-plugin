@@ -93,6 +93,12 @@ body.filtering-enabled .day-h:hover {
 /* Today's date styling */
 .day-h.today {
   border-bottom: 4px solid #fe2e0c;
+  font-weight: 700;
+  color: #0f1320;
+}
+.day-h.today .dt {
+  font-weight: 700;
+  color: #0f1320;
 }
 
 /* Active date filter styling */

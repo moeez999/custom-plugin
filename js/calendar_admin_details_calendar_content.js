@@ -86,6 +86,11 @@ const STATUS_ICON_MAP = {
     label: "Cancelled (Reschedule Later)",
   },
   reschedule_instant: { icon: "./img/rescheduled.svg", label: "Rescheduled" },
+  rescheduled: { icon: "./img/rescheduled.svg", label: "Rescheduled" },
+  reschedule_one2one: {
+    icon: "./img/rescheduled.svg",
+    label: "Rescheduled 1:1",
+  },
   covered: { icon: "./img/covered.svg", label: "Covered" },
   missed: { icon: "./img/missed.svg", label: "Missed" },
   pendingconfirmation: {
