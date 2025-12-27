@@ -1,7 +1,11 @@
 <?php
 define('AJAX_SCRIPT', true);
 
+
 require_once(__DIR__ . '/../../../config.php');
+require_once($CFG->dirroot . '/course/lib.php');
+require_once($CFG->dirroot . '/course/modlib.php');
+require_once($CFG->libdir . '/gradelib.php'); // Needed for grade_item etc.
 require_login();
 
 @header('Content-Type: application/json; charset=utf-8');
@@ -102,6 +106,14 @@ try {
         'action'   => 'cancel'
     ];
 
+    $cm = get_coursemodule_from_instance(
+    'googlemeet',
+    $event->googlemeetid,
+    0,
+    false,
+    MUST_EXIST
+);
+
     // -------------------------------------------------
     // Update / Insert status row
     // -------------------------------------------------
@@ -119,6 +131,8 @@ try {
         $insert->eventid      = $eventid;
         $insert->googlemeetid = $event->googlemeetid;
         $insert->statuscode   = 'cancel';
+        $insert->courseid     = 24;
+        $insert->cmid         = $cm->id;
         $insert->isactive     = 1;
         $insert->detailsjson  = json_encode($details);
         $insert->timecreated  = time();

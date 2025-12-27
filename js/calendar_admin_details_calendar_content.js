@@ -5074,8 +5074,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const cohorts = await loadCohortsForTeachers(selectedTeacherIds, true);
 
     if (cohorts && cohorts.length) {
-      // Fetch events first to determine which cohorts/students have events
-      const eventsData = await fetchEventsForTeachers(selectedTeacherIds);
+      // Use existing events from window.events instead of fetching again
+      const eventsData = window.events || [];
 
       if (eventsData && eventsData.length > 0) {
         // Extract unique cohort IDs and student IDs from events
