@@ -1,5 +1,3 @@
-
-
 <link rel="stylesheet" href="css/explore_tutors_details.css">
 <link rel="stylesheet" href="css/book_trail_lessons.css">
 <link rel="stylesheet" href="css/send_message_steps.css">
@@ -152,82 +150,46 @@
 </div>
 
 
-  <!-- Teacher Section -->
-  <section id="teacherSection">
-    <div class="teacher-card">
-      <div class="teacher-avatar"><img src="https://randomuser.me/api/portraits/women/4.jpg" alt="Daniela"/></div>
-      <div class="teacher-details">
-        <div class="teacher-header">
+<!-- Teacher Section -->
+<section id="teacherSection">
+  <div class="teacher-card">
+    <div class="teacher-avatar"><img src="https://randomuser.me/api/portraits/women/4.jpg" alt="Daniela" /></div>
+    <div class="teacher-details">
+      <div class="teacher-header">
+        <a href="my_lessons_tutor_profile.php">
           <h3 class="teacher-name">Daniela <span class="verified">✔️</span></h3>
-          <button class="favorite">♡</button>
-        </div>
-        <ul class="meta-list">
-          <li>🎓 English</li>
-          <li>👥 30 active students • 1,260 lessons</li>
-          <li>🌐 English (Native)</li>
-        </ul>
-        <p class="bio">Hi! I’m Daniela, an experienced English teacher with over a decade of helping students master the language. I’m passionate about creating engaging lessons tailored to each learner’s needs.</p>
-        <a class="see-more">See More...</a>
+        </a>
+        <button class="favorite">♡</button>
       </div>
-      <div class="action-panel">
-        <div class="rating">★ 4.7 <small>17 reviews</small></div>
-        <div class="stats"><div>858<small>lessons</small></div><div>US$8<small>50-min lesson</small></div></div>
-        <button class="btn-primary" id="openTrialModal">Book trial lesson US$0</button>
-        <button class="btn-outline" id="send_message_btn">Send a Message</button>
+      <ul class="meta-list">
+        <li>🎓 English</li>
+        <li>👥 30 active students • 1,260 lessons</li>
+        <li>🌐 English (Native)</li>
+      </ul>
+      <p class="bio">Hi! I’m Daniela, an experienced English teacher with over a decade of helping students master the language. I’m passionate about creating engaging lessons tailored to each learner’s needs.</p>
+      <a class="see-more">See More...</a>
+    </div>
+    <div class="action-panel">
+      <div class="rating">★ 4.7 <small>17 reviews</small></div>
+      <div class="stats">
+        <div>858<small>lessons</small></div>
+        <div>US$8<small>50-min lesson</small></div>
       </div>
-      
+      <button class="btn-primary" id="openTrialModal">Book trial lesson US$0</button>
+      <button class="btn-outline" id="send_message_btn">Send a Message</button>
     </div>
-    <div class="schedule-panel">
-      <div class="schedule-preview"><span class="play-icon">▶</span></div>
-      <button class="schedule-btn">View full schedule</button>
-    </div>
-  </section>
 
-  <?php require_once('book_trail_lessons.php');?>
-  <?php require_once('send_message_steps.php');?>
+  </div>
+  <div class="schedule-panel">
+    <div class="schedule-preview"><span class="play-icon">▶</span></div>
+    <button class="schedule-btn">View full schedule</button>
+  </div>
+</section>
 
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="js/explore_tutors_details.js"></script>
-  <script src="js/book_trail_lessons.js"></script>
-  <script src="js/send_message_steps.js"></script>
+<?php require_once('book_trail_lessons.php'); ?>
+<?php require_once('send_message_steps.php'); ?>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="js/explore_tutors_details.js"></script>
+<script src="js/book_trail_lessons.js"></script>
+<script src="js/send_message_steps.js"></script>
