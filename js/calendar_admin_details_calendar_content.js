@@ -2563,7 +2563,6 @@ $(function () {
       contentType: "application/json",
       success: function (response) {
         console.log("Reschedule Response:", response);
-        if (window.hideGlobalLoader) window.hideGlobalLoader();
         if (window.showToast) {
           window.showToast("Session updated successfully!", "success");
         } else {
@@ -2588,6 +2587,7 @@ $(function () {
             setTimeout(() => toast.remove(), 400);
           }, 2200);
         }
+        // Don't hide loader here - refetchCustomPluginData will manage it
         if (window.refetchCustomPluginData) {
           window.refetchCustomPluginData("reschedule");
         } else if (window.fetchCalendarEvents) {
@@ -3959,14 +3959,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function __setLoaderDisplay(display) {
     try {
+      const el = document.getElementById("loader");
+      if (el) {
+        el.style.display = display;
+        if (display === "flex") {
+          el.style.zIndex = "99999";
+        }
+      }
+      // Also try jQuery if available
       if (window.$) {
-        window.$("#loader").css("display", display);
-      } else {
-        const el = document.getElementById("loader");
-        if (el) el.style.display = display;
+        window.$("#loader").css({
+          "display": display,
+          "z-index": display === "flex" ? "99999" : "auto"
+        });
       }
     } catch (e) {
-      /* ignore */
+      console.warn("__setLoaderDisplay error:", e);
     }
   }
 
@@ -3977,6 +3985,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     __setLoaderDisplay("flex");
     __loaderShownAt = Date.now();
+    console.log("Loader shown at:", __loaderShownAt);
   }
 
   function hideGlobalLoader() {
@@ -3987,6 +3996,7 @@ document.addEventListener("DOMContentLoaded", () => {
       __setLoaderDisplay("none");
       __loaderShownAt = 0;
       __loaderHideTimer = null;
+      console.log("Loader hidden");
     }
     if (elapsed >= __LOADER_MIN_MS) {
       doHide();
@@ -3994,6 +4004,10 @@ document.addEventListener("DOMContentLoaded", () => {
       __loaderHideTimer = setTimeout(doHide, __LOADER_MIN_MS - elapsed);
     }
   }
+
+  // Expose globally
+  window.showGlobalLoader = showGlobalLoader;
+  window.hideGlobalLoader = hideGlobalLoader;
 
   // Function to trigger calendar reload
   function triggerCalendarReload() {
@@ -6075,7 +6089,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ---------------- API call ----------------
 
-  async function fetchCalendarEvents() {
+  async function fetchCalendarEvents(skipLoaderShow = false) {
     const teacherids = getSelectedTeacherIds();
     const cohortids = getSelectedCohortIds();
     const studentids = getSelectedStudentIds();
@@ -6090,10 +6104,27 @@ document.addEventListener("DOMContentLoaded", () => {
       params.set("cohortids", cohortids.join(","));
     if (studentids && studentids.length > 0)
       params.set("studentids", studentids.join(","));
-    try {
-      $("#loader").css("display", "flex");
-    } catch (e) {
-      /* ignore */
+    
+    // Show loader immediately unless told to skip (when called from refetchCustomPluginData)
+    if (!skipLoaderShow) {
+      try {
+        console.log("fetchCalendarEvents: Showing loader");
+        if (window.showGlobalLoader) {
+          window.showGlobalLoader();
+        } else {
+          const loaderEl = document.getElementById("loader");
+          if (loaderEl) {
+            loaderEl.style.display = "flex";
+            loaderEl.style.zIndex = "99999";
+          } else if (window.$) {
+            window.$("#loader").css({"display": "flex", "z-index": "99999"});
+          }
+        }
+      } catch (e) {
+        console.warn("Could not show loader:", e);
+      }
+    } else {
+      console.log("fetchCalendarEvents: Skipping loader show (already shown)");
     }
 
     try {
@@ -6106,6 +6137,7 @@ document.addEventListener("DOMContentLoaded", () => {
           "calendar_admin_get_events.php HTTP error",
           response.status
         );
+        // Don't return early - let finally block handle loader hiding
         return;
       }
 
@@ -6377,16 +6409,67 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (err) {
       console.error("Failed to load calendar events:", err);
     } finally {
+      // Always hide loader in finally block
       try {
-        $("#loader").css("display", "none");
+        console.log("fetchCalendarEvents: Hiding loader in finally");
+        if (window.hideGlobalLoader) {
+          window.hideGlobalLoader();
+        } else {
+          const loaderEl = document.getElementById("loader");
+          if (loaderEl) {
+            loaderEl.style.display = "none";
+          } else if (window.$) {
+            window.$("#loader").css("display", "none");
+          }
+        }
       } catch (e) {
-        /* ignore */
+        console.warn("Could not hide loader:", e);
       }
     }
   }
 
   // Unified helper to reload dropdown data + calendar after mutations
+  // Optimized with debouncing to prevent rapid successive calls
+  let __refetchTimer = null;
+  let __isRefetching = false;
+  
   async function refetchCustomPluginData(reason = "") {
+    // Debounce: if already refetching, wait for it to complete
+    if (__isRefetching) {
+      console.log(`Refetch already in progress, skipping duplicate call (${reason})`);
+      return;
+    }
+
+    // Clear any pending debounce timer
+    if (__refetchTimer) {
+      clearTimeout(__refetchTimer);
+      __refetchTimer = null;
+    }
+
+    // Show loader immediately - force show with multiple fallbacks
+    try {
+      console.log("refetchCustomPluginData: Showing loader for", reason);
+      if (window.showGlobalLoader) {
+        window.showGlobalLoader();
+      } else {
+        // Try multiple methods to ensure loader shows
+        const loaderEl = document.getElementById("loader");
+        if (loaderEl) {
+          loaderEl.style.display = "flex";
+          loaderEl.style.zIndex = "99999";
+        }
+        if (window.$) {
+          window.$("#loader").css({"display": "flex", "z-index": "99999"});
+        }
+      }
+      // Force a small delay to ensure DOM update
+      await new Promise(resolve => setTimeout(resolve, 50));
+    } catch (e) {
+      console.warn("Could not show loader:", e);
+    }
+
+    __isRefetching = true;
+
     try {
       console.log(`Refetching calendar data${reason ? ` (${reason})` : ""}`);
 
@@ -6419,6 +6502,7 @@ document.addEventListener("DOMContentLoaded", () => {
           ? selectedCohortIds
           : [];
 
+      // Load dropdown data in parallel (optimized)
       await Promise.allSettled([
         loadTeachersFn(),
         safeSelectedTeachers.length
@@ -6429,13 +6513,26 @@ document.addEventListener("DOMContentLoaded", () => {
           : loadStudentsForCohortsFn(),
       ]);
 
+      // Fetch calendar events (loader is already shown, pass flag to skip showing again)
       if (typeof fetchCalendarEvents === "function") {
-        await fetchCalendarEvents();
+        await fetchCalendarEvents(true); // true = skip loader show since we already showed it
       } else if (typeof triggerCalendarReload === "function") {
         triggerCalendarReload();
       }
     } catch (err) {
       console.error("refetchCustomPluginData failed", err);
+      // Ensure loader is hidden even on error
+      try {
+        if (window.hideGlobalLoader) {
+          window.hideGlobalLoader();
+        } else {
+          $("#loader").css("display", "none");
+        }
+      } catch (e) {
+        console.warn("Could not hide loader:", e);
+      }
+    } finally {
+      __isRefetching = false;
     }
   }
 

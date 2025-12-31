@@ -13,6 +13,24 @@
 <link rel="stylesheet" href="css/calendar_admin_details_create_cohort_add_time_tab.css">
 <link rel="stylesheet" href="css/calendar_admin_details_create_cohort.css">
 
+<!-- Global Loader -->
+<div id="loader"
+    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.8); z-index:99999; align-items:center; justify-content:center;">
+    <img src="../../img/loader.png" alt="Loading..." class="spin-logo"
+        style="width:100px;height:100px; animation:spin 2s linear infinite;">
+</div>
+<style>
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+</style>
+
 <div class="calendar_admin_main_wrapper">
 
     <!-- Sidebar -->
