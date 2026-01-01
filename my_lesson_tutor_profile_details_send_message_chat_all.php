@@ -10,7 +10,7 @@
         Unread
         <span class="message_all_tab_badge">0</span>
       </li>
-      <li data-tab="archived">Archived</li>
+      <li data-tab="archived" style="margin-right: 4%;">Archived</li>
     </ul>
     <ul id="message_all_chat_list"></ul>
   </div>
@@ -91,7 +91,9 @@
 
   <!-- RIGHT DETAILS PANEL -->
   <div id="message_all_details_wrap">
-    <div id="message_all_details_header">Details</div>
+    <div id="message_all_details_header">
+      Details
+    </div>
     <div id="message_all_details_scroll"></div>
     <div id="message_all_details_btns"></div>
 

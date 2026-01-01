@@ -5,13 +5,15 @@
     <button
         id="my_lessons_tutor_profile_send_message_details_post_review_anonymous_feedback_step4_back_button"
         aria-label="Back">
-        ←
+       <div class="back-arrow">
+            <img src="./img/arrow-back.svg">
+        </div>
     </button>
 
     <!-- Avatar -->
     <div class="my_lessons_tutor_profile_send_message_details_post_review_anonymous_feedback_step4_avatar_wrapper">
         <img
-            src="path/to/tutor-avatar.jpg"
+            src="./img/images/teacher.jpg"
             alt="Tutor avatar"
             class="my_lessons_tutor_profile_send_message_details_post_review_anonymous_feedback_step4_avatar">
     </div>

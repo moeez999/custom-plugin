@@ -107,16 +107,16 @@
     .my_lessons_tab_item {
       padding: 12px 24px;
       cursor: pointer;
-      color: #333;
-      font-size: 15px;
+      color: hsl(244, 10%, 33%);
+      font-size: 16px;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
       position: relative;
+      font-weight: 500;
     }
     .my_lessons_tab_item.active {
-      color: #ff3b30;
-      font-weight: 600;
+      color: #000000;
     }
     .my_lessons_tab_item.active::after {
       content: "";

@@ -5,7 +5,9 @@
     <button
         id="my_lessons_tutor_profile_send_message_details_post_review_anonymous_feedback_step3_back_button"
         aria-label="Back">
-        ←
+       <div class="back-arrow">
+            <img src="./img/arrow-back.svg">
+        </div>
     </button>
 
     <!-- Title -->

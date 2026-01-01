@@ -13,12 +13,12 @@
     <!-- Centered stacked avatars/logo -->
     <div class="my_lessons_tutor_profile_send_message_details_post_review_step3_avatar_stack">
         <div class="my_lessons_tutor_profile_send_message_details_post_review_step3_avatar_logo_wrapper">
-            <img src="path/to/platform-logo.png"
+            <img src="./img/images/platform-logo.svg"
                  alt="Logo"
                  class="my_lessons_tutor_profile_send_message_details_post_review_step3_avatar_logo">
         </div>
         <div class="my_lessons_tutor_profile_send_message_details_post_review_step3_avatar_user_wrapper">
-            <img src="path/to/tutor-avatar.jpg"
+            <img src="./img/images/teacher.jpg"
                  alt="Tutor"
                  class="my_lessons_tutor_profile_send_message_details_post_review_step3_avatar_user">
         </div>

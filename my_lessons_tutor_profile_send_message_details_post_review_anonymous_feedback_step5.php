@@ -16,14 +16,14 @@
 
         <div class="my_lessons_tutor_profile_send_message_details_post_review_anonymous_feedback_step5_logo_wrapper">
             <img
-                src="path/to/platform-logo.png"
+                src="./img/images/platform-logo.svg"
                 alt="Logo"
                 class="my_lessons_tutor_profile_send_message_details_post_review_anonymous_feedback_step5_logo_image">
         </div>
 
         <div class="my_lessons_tutor_profile_send_message_details_post_review_anonymous_feedback_step5_user_wrapper">
             <img
-                src="path/to/tutor-avatar.jpg"
+                src="./img/images/teacher.jpg"
                 alt="Tutor"
                 class="my_lessons_tutor_profile_send_message_details_post_review_anonymous_feedback_step5_user_image">
         </div>

@@ -12,7 +12,7 @@ var ICONS = {
   archive:    "img/my_students/archive_icon.svg",
   subject:    "img/my_students/subject_icon.svg",
   time:       "img/my_students/time_icon.svg",
-  details:    "img/my_students/details_icon.svg",
+  details:    "img/my_students/details_icon.png",
   schedule:   "img/my_students/schedule_icon.svg",
   classroom:  "img/my_students/classroom_icon.svg",
   review:     "img/my_students/review_icon.svg"
@@ -691,27 +691,27 @@ function renderDetails(idx) {
       </button>
     </div>
 
-    <div class="details_section_label" style="margin-right:65%;">
+    <div class="details_section_label" style="margin-right:auto; padding-left: 16px;">
       <img src="${ICONS.subject}" class="details_section_icon" alt="">
       Subject
     </div>
-    <div class="details_section_value" style="margin-right:68%;">${details.subject}</div>
+    <div class="details_section_value" style="margin-right:auto; padding-left: 29px">${details.subject}</div>
 
     <div class="details_hr"></div>
 
-    <div class="details_section_label" style="margin-right:54%;">
+    <div class="details_section_label" style="margin-right:auto;padding-left: 16px;">
       <img src="${ICONS.time}" class="details_section_icon" alt="">
       Tutor’s time
     </div>
-    <div class="details_section_value"  style="margin-right:20%;">${details.tutorTime}</div>
+    <div class="details_section_value"  style="margin-right:auto;padding-left: 29px;">${details.tutorTime}</div>
 
     <div class="details_hr"></div>
 
-    <div class="details_section_label"  style="margin-right:60%;">
+    <div class="details_section_label"  style="margin-right:auto;">
       <img src="${ICONS.details}" class="details_section_icon" alt="">
       Details
     </div>
-    <div class="details_section_value" style="margin-right:8%;">
+    <div class="details_section_value" style="margin-right:auto; padding-left: 29px;">
       Main reason for lesson:<br>${details.mainReason}<br>
       Level of knowledge: ${details.knowledge}
     </div>
@@ -720,11 +720,11 @@ function renderDetails(idx) {
 
   $("#message_all_details_scroll").html(detailsHTML);
 
-  var btnHTML = `
+  var btnHTML = `<a href="./my_lessons_details_reshedule.php" class="w-100">
     <button class="message_all_btn_schedule">
       <img src="${ICONS.schedule}" class="message_all_btn_icon" alt="">
       Shedule Lesson
-    </button>
+    </button></a>
     <button class="message_all_btn_white">
       <img src="${ICONS.classroom}" class="message_all_btn_icon" alt="">
       Entre Classroom

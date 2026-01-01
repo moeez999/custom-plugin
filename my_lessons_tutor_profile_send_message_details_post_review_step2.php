@@ -3,20 +3,22 @@
 
     <!-- Back button -->
     <button id="my_lessons_tutor_profile_send_message_details_post_review_step2_back_button">
-        ←
+        <div class="back-arrow">
+            <img src="./img/arrow-back.svg">
+        </div>
     </button>
 
     <!-- Avatar -->
     <div class="my_lessons_tutor_profile_send_message_details_post_review_step2_avatar_wrapper">
         <img
-            src="path/to/tutor-avatar.jpg"
+            src="./img/images/teacher.jpg"
             alt="Tutor avatar"
             class="my_lessons_tutor_profile_send_message_details_post_review_step2_avatar">
     </div>
 
     <!-- Title -->
     <h1 class="my_lessons_tutor_profile_send_message_details_post_review_step2_title">
-        Please write down your review<br>for Daniela Canelon?
+        Please write down your review for Daniela Canelon?
     </h1>
 
     <!-- Subtitle -->

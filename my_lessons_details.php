@@ -40,13 +40,16 @@
     <!-- Tabs -->
     <ul id="my_lessons_tabs" class="my_lessons_tabs">
       <li class="my_lessons_tab_item active" data-target="#my_lessons_tab_lessons">
-        <i class="fas fa-video"></i> Lessons
+        <!-- <i class="fas fa-video"></i> Lessons -->
+        <img src="../customplugin/img/play.svg"><span>Lessons</span>
       </li>
       <li class="my_lessons_tab_item" data-target="#my_lessons_tab_calendar">
-        <i class="fas fa-calendar-alt"></i> Calendar
-      </li>
-      <li class="my_lessons_tab_item" data-target="#my_lessons_tab_tutors">
-        <i class="fas fa-user-graduate"></i> Tutors
+        <!-- <i class="fas fa-calendar-alt"></i> Calendar -->
+         <img src="../customplugin/img/schedule.svg"><span>Calendar</span>
+        </li>
+        <li class="my_lessons_tab_item" data-target="#my_lessons_tab_tutors">
+          <!-- <i class="fas fa-user-graduate"></i> Tutors -->
+          <img src="../customplugin/img/grad.svg"><span>Tutors</span>
       </li>
     </ul>
 
@@ -107,7 +110,7 @@
         </div>
         <div class="my_lessons_card_menu">
           <ul>
-            <li><i class="fas fa-calendar-alt"></i> Reschedule</li>
+            <li><a href="../customplugin/my_lessons_details_reshedule.php"><i class="fas fa-calendar-alt"></i> Reschedule</a></li>
             <li><i class="fas fa-comment"></i> Message Tutor</li>
             <li><i class="fas fa-user"></i> See Tutor Profile</li>
             <li class="my_lessons_cancel"><i class="fas fa-ban"></i> Cancel</li>
@@ -133,7 +136,7 @@
         </div>
         <div class="my_lessons_card_menu">
           <ul>
-            <li><i class="fas fa-calendar-alt"></i> Reschedule</li>
+            <li><a href="../customplugin/my_lessons_details_reshedule.php"><i class="fas fa-calendar-alt"></i> Reschedule</a></li>
             <li><i class="fas fa-comment"></i> Message Tutor</li>
             <li><i class="fas fa-user"></i> See Tutor Profile</li>
             <li class="my_lessons_cancel"><i class="fas fa-ban"></i> Cancel</li>
@@ -159,7 +162,7 @@
         </div>
         <div class="my_lessons_card_menu">
           <ul>
-            <li><i class="fas fa-calendar-alt"></i> Reschedule</li>
+            <li><a href="../customplugin/my_lessons_details_reshedule.php"><i class="fas fa-calendar-alt"></i> Reschedule</a></li>
             <li><i class="fas fa-comment"></i> Message Tutor</li>
             <li><i class="fas fa-user"></i> See Tutor Profile</li>
             <li class="my_lessons_cancel"><i class="fas fa-ban"></i> Cancel</li>
@@ -188,7 +191,7 @@
         </div>
         <div class="my_lessons_card_menu">
           <ul>
-            <li><i class="fas fa-calendar-alt"></i> Reschedule</li>
+            <li><a href="../customplugin/my_lessons_details_reshedule.php"><i class="fas fa-calendar-alt"></i> Reschedule</li></a>
             <li><i class="fas fa-comment"></i> Message Tutor</li>
             <li><i class="fas fa-user"></i> See Tutor Profile</li>
             <li class="my_lessons_cancel"><i class="fas fa-ban"></i> Cancel</li>

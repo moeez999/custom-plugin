@@ -252,7 +252,7 @@
                 <div class="my_lessons_tutor_profile_send_message_details_post_review_step1_modal_header">
                     <div class="my_lessons_tutor_profile_send_message_details_post_review_step1_modal_avatar_wrapper">
                         <img
-                            src="path/to/tutor-avatar.jpg"
+                            src="./img/images/teacher.jpg"
                             alt="Daniela avatar"
                             class="my_lessons_tutor_profile_send_message_details_post_review_step1_modal_avatar">
                     </div>
@@ -271,13 +271,13 @@
                             name="my_lessons_tutor_profile_send_message_details_post_review_step1_feedback_type"
                             value="public_review"
                             class="my_lessons_tutor_profile_send_message_details_post_review_step1_radio_input">
-                        <div
+                        <div style="padding-left: 8px;"
                             class="my_lessons_tutor_profile_send_message_details_post_review_step1_option_card my_lessons_tutor_profile_send_message_details_post_review_step1_option_card_unselected"
                             data-my_lessons_tutor_profile_send_message_details_post_review_step1_option="public_review">
-                            <div class="my_lessons_tutor_profile_send_message_details_post_review_step1_option_left">
-                                <div class="my_lessons_tutor_profile_send_message_details_post_review_step1_option_icon_box">
+                            <div class="my_lessons_tutor_profile_send_message_details_post_review_step1_option_left" style="gap:0px">
+                                <div class="my_lessons_tutor_profile_send_message_details_post_review_step1_option_icon_box" style="background: transparent">
                                     <img
-                                        src="path/to/public-review-icon.png"
+                                        src="./img/images/crown.png"
                                         alt="Public review icon"
                                         class="my_lessons_tutor_profile_send_message_details_post_review_step1_option_icon_image">
                                 </div>
@@ -299,13 +299,13 @@
                             name="my_lessons_tutor_profile_send_message_details_post_review_step1_feedback_type"
                             value="anonymous_feedback"
                             class="my_lessons_tutor_profile_send_message_details_post_review_step1_radio_input">
-                        <div
+                        <div style="padding-left: 8px;"
                             class="my_lessons_tutor_profile_send_message_details_post_review_step1_option_card my_lessons_tutor_profile_send_message_details_post_review_step1_option_card_unselected"
                             data-my_lessons_tutor_profile_send_message_details_post_review_step1_option="anonymous_feedback">
-                            <div class="my_lessons_tutor_profile_send_message_details_post_review_step1_option_left">
-                                <div class="my_lessons_tutor_profile_send_message_details_post_review_step1_option_icon_box">
+                            <div class="my_lessons_tutor_profile_send_message_details_post_review_step1_option_left" style="gap:0px">
+                                <div class="my_lessons_tutor_profile_send_message_details_post_review_step1_option_icon_box" style="background: transparent">
                                     <img
-                                        src="path/to/anonymous-feedback-icon.png"
+                                        src="./img/images/anonymous.png"
                                         alt="Anonymous feedback icon"
                                         class="my_lessons_tutor_profile_send_message_details_post_review_step1_option_icon_image">
                                 </div>
