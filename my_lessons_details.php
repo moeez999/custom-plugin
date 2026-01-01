@@ -11,29 +11,31 @@
           Transfer lessons or subscription
         </button>
         <div class="my_lessons_schedule_dropdown my_lessons_calendar_slot_empty">
-          <button id="my_lessons_schedule_btn" class="my_lessons_btn_primary" style="font-weight:600">
-            + Schedule lesson <i class="fas fa-chevron-down"></i>
+          <button class="my_lessons_btn_primary schedule-btn" style="font-weight:600">
+            + &nbsp;Schedule lesson
           </button>
-          <div id="my_lessons_schedule_menu" class="my_lessons_dropdown_menu">
-            <div class="my_lessons_schedule_option" data-type="weekly">
-              <i class="fas fa-sync-alt my_lessons_option_icon"></i>
-              <div class="my_lessons_option_text">
-                <span class="my_lessons_recommended_pill">Recommended</span>
-                <h4>Weekly lessons</h4>
-                <p>Lessons are scheduled automatically for the same time every week</p>
-              </div>
-            </div>
-
-            <div class="my_lessons_schedule_option" data-type="single">
-              <i class="fas fa-calendar-alt my_lessons_option_icon"></i>
-              <div class="my_lessons_option_text">
-                <h4>Single lessons</h4>
-                <p>Lessons happen once</p>
-              </div>
-            </div>
-
-          </div>
         </div>
+        <button id="my_lessons_schedule_btn" class="my_lessons_btn_primary relative" style="font-weight:600">
+          <img src="./img/white-dropdown.svg">
+          <div id="my_lessons_schedule_menu" class="my_lessons_dropdown_menu">
+              <div class="my_lessons_schedule_option" data-type="weekly">
+                <i class="fas fa-sync-alt my_lessons_option_icon"></i>
+                <div class="my_lessons_option_text">
+                  <span class="my_lessons_recommended_pill">Recommended</span>
+                  <h4>Weekly lessons</h4>
+                  <p>Lessons are scheduled automatically for the same time every week</p>
+                </div>
+              </div>
+
+              <div class="my_lessons_schedule_option" data-type="single">
+                <i class="fas fa-calendar-alt my_lessons_option_icon"></i>
+                <div class="my_lessons_option_text">
+                  <h4>Single lessons</h4>
+                  <p>Lessons happen once</p>
+                </div>
+              </div>
+          </div>
+        </button>
       </div>
     </div>
 
@@ -81,10 +83,10 @@
         <div class="my_lessons_card_menu">
 
           <ul>
-            <li><a href="my_lessons_details_reshedule.php"><i class="fas fa-calendar-alt"></i> Reschedule</a></li>
-            <li class="my_lessons_details_my_lessons_content_message_tutor_btn"><i class="fas fa-comment"></i> Message Tutor</li>
-            <li><a href="my_lessons_tutor_profile.php"><i class="fas fa-user"></i> See Tutor Profile</a></li>
-            <li class="my_lessons_cancel my_lesson_details_cancel__open"><i class="fas fa-ban"></i> Cancel</li>
+            <li><a href="../customplugin/my_lessons_details_reshedule.php" style="width: 100%; display: flex; align-items: center; gap: 8px;"><img src="./img/dotted-cal.svg"> <span>Reschedule</span></a></li>
+            <li class="my_lessons_details_my_lessons_content_message_tutor_btn" style="width: 100%; display: flex; align-items: center; gap: 8px;"><img src="./img/dotted-msg.svg">Message Tutor</li>
+            <li><a href="my_lessons_tutor_profile.php" style="width: 100%; display: flex; align-items: center; gap: 8px;"><img src="./img/black-profile.svg"> See Tutor Profile</a></li>
+            <li class="my_lessons_cancel my_lesson_details_cancel__open" style="width: 100%; display: flex; align-items: center; gap: 8px;"><img src="./img/cancel-icon.svg">Cancel</li>
           </ul>
         </div>
       </div>
@@ -110,10 +112,10 @@
         </div>
         <div class="my_lessons_card_menu">
           <ul>
-            <li><a href="../customplugin/my_lessons_details_reshedule.php"><i class="fas fa-calendar-alt"></i> Reschedule</a></li>
-            <li><i class="fas fa-comment"></i> Message Tutor</li>
-            <li><i class="fas fa-user"></i> See Tutor Profile</li>
-            <li class="my_lessons_cancel"><i class="fas fa-ban"></i> Cancel</li>
+            <li><a href="../customplugin/my_lessons_details_reshedule.php" style="width: 100%; display: flex; align-items: center; gap: 8px;"><img src="./img/dotted-cal.svg"> <span>Reschedule</span></a></li>
+            <li class="my_lessons_details_my_lessons_content_message_tutor_btn" style="width: 100%; display: flex; align-items: center; gap: 8px;"><img src="./img/dotted-msg.svg">Message Tutor</li>
+            <li><a href="my_lessons_tutor_profile.php" style="width: 100%; display: flex; align-items: center; gap: 8px;"><img src="./img/black-profile.svg"> See Tutor Profile</a></li>
+            <li class="my_lessons_cancel my_lesson_details_cancel__open" style="width: 100%; display: flex; align-items: center; gap: 8px;"><img src="./img/cancel-icon.svg">Cancel</li>
           </ul>
         </div>
       </div>
@@ -135,11 +137,11 @@
           <i class="fas fa-ellipsis-h my_lessons_menu_icon"></i>
         </div>
         <div class="my_lessons_card_menu">
-          <ul>
-            <li><a href="../customplugin/my_lessons_details_reshedule.php"><i class="fas fa-calendar-alt"></i> Reschedule</a></li>
-            <li><i class="fas fa-comment"></i> Message Tutor</li>
-            <li><i class="fas fa-user"></i> See Tutor Profile</li>
-            <li class="my_lessons_cancel"><i class="fas fa-ban"></i> Cancel</li>
+         <ul>
+            <li><a href="../customplugin/my_lessons_details_reshedule.php" style="width: 100%; display: flex; align-items: center; gap: 8px;"><img src="./img/dotted-cal.svg"> <span>Reschedule</span></a></li>
+            <li class="my_lessons_details_my_lessons_content_message_tutor_btn" style="width: 100%; display: flex; align-items: center; gap: 8px;"><img src="./img/dotted-msg.svg">Message Tutor</li>
+            <li><a href="my_lessons_tutor_profile.php" style="width: 100%; display: flex; align-items: center; gap: 8px;"><img src="./img/black-profile.svg"> See Tutor Profile</a></li>
+            <li class="my_lessons_cancel my_lesson_details_cancel__open" style="width: 100%; display: flex; align-items: center; gap: 8px;"><img src="./img/cancel-icon.svg">Cancel</li>
           </ul>
         </div>
       </div>
@@ -161,11 +163,11 @@
           <i class="fas fa-ellipsis-h my_lessons_menu_icon"></i>
         </div>
         <div class="my_lessons_card_menu">
-          <ul>
-            <li><a href="../customplugin/my_lessons_details_reshedule.php"><i class="fas fa-calendar-alt"></i> Reschedule</a></li>
-            <li><i class="fas fa-comment"></i> Message Tutor</li>
-            <li><i class="fas fa-user"></i> See Tutor Profile</li>
-            <li class="my_lessons_cancel"><i class="fas fa-ban"></i> Cancel</li>
+        <ul>
+            <li><a href="../customplugin/my_lessons_details_reshedule.php" style="width: 100%; display: flex; align-items: center; gap: 8px;"><img src="./img/dotted-cal.svg"> <span>Reschedule</span></a></li>
+            <li class="my_lessons_details_my_lessons_content_message_tutor_btn" style="width: 100%; display: flex; align-items: center; gap: 8px;"><img src="./img/dotted-msg.svg">Message Tutor</li>
+            <li><a href="my_lessons_tutor_profile.php" style="width: 100%; display: flex; align-items: center; gap: 8px;"><img src="./img/black-profile.svg"> See Tutor Profile</a></li>
+            <li class="my_lessons_cancel my_lesson_details_cancel__open" style="width: 100%; display: flex; align-items: center; gap: 8px;"><img src="./img/cancel-icon.svg">Cancel</li>
           </ul>
         </div>
       </div>
@@ -191,10 +193,10 @@
         </div>
         <div class="my_lessons_card_menu">
           <ul>
-            <li><a href="../customplugin/my_lessons_details_reshedule.php"><i class="fas fa-calendar-alt"></i> Reschedule</li></a>
-            <li><i class="fas fa-comment"></i> Message Tutor</li>
-            <li><i class="fas fa-user"></i> See Tutor Profile</li>
-            <li class="my_lessons_cancel"><i class="fas fa-ban"></i> Cancel</li>
+            <li><a href="../customplugin/my_lessons_details_reshedule.php" style="width: 100%; display: flex; align-items: center; gap: 8px;"><img src="./img/dotted-cal.svg"> <span>Reschedule</span></a></li>
+            <li class="my_lessons_details_my_lessons_content_message_tutor_btn" style="width: 100%; display: flex; align-items: center; gap: 8px;"><img src="./img/dotted-msg.svg">Message Tutor</li>
+            <li><a href="my_lessons_tutor_profile.php" style="width: 100%; display: flex; align-items: center; gap: 8px;"><img src="./img/black-profile.svg"> See Tutor Profile</a></li>
+            <li class="my_lessons_cancel my_lesson_details_cancel__open" style="width: 100%; display: flex; align-items: center; gap: 8px;"><img src="./img/cancel-icon.svg">Cancel</li>
           </ul>
         </div>
       </div>
@@ -213,23 +215,23 @@
     <div style="display: flex; align-items: center;">
       <img class="my_lessons_avatar" src="https://randomuser.me/api/portraits/women/4.jpg" alt="Daniela" style="width:56px; height:56px; border-radius:50%; margin-right:18px;">
       <div>
-        <a href="#" class="my_lessons_name" style="font-weight:bold; text-decoration:underline;">Daniela</a>
-        <div style="color:#888;">English</div>
+        <a href="#" class="my_lessons_name" style="text-decoration:underline;">Daniela</a>
+        <div style="color:#4D4C5C;">English</div>
       </div>
     </div>
     <div style="text-align: left;">
-      <div style="font-weight:bold;">11 lessons</div>
+      <div style="">11 lessons</div>
      
-      <!-- <div style="color:#888; font-size:15px;">to schedule <i class="fas fa-sync-alt" style="color:#3fb37f; margin-left:5px;"></i></div> -->
+      <!-- <div style="color:#4D4C5C; font-size:16px; font-weight: 400;">to schedule <i class="fas fa-sync-alt" style="color:#3fb37f; margin-left:5px;"></i></div> -->
 
-        <div style="color:#888; font-size:15px; display:inline-block; position:relative;">
+        <div style="color:#4D4C5C; font-size:16px; font-weight: 400; display:inline-block; position:relative;">
           to schedule 
           <span class="my-subscription-tooltip-anchor" style="position:relative;">
             <i class="fas fa-sync-alt" style="color:#3fb37f; margin-left:5px; cursor:pointer;"></i>
             <div class="my-subscription-tooltip">
               <div style="font-weight:600; font-size:19px; margin-bottom:6px;">Your Subscription</div>
               <div style="margin-bottom:4px;">8 lessons • $61.44 every 4 weeks</div>
-              <div style="font-size:15px; margin-bottom:12px;">Next billing : 2025-03-18</div>
+              <div style="font-size:16px; font-weight: 400; margin-bottom:12px;">Next billing : 2025-03-18</div>
               <a href="YOUR_LINK_HERE" target="_blank" style="font-weight:600; text-decoration:underline; color:#fff;">View Setting</a>
             </div>
           </span>
@@ -238,18 +240,20 @@
     
     </div>
     <div style="text-align: left;">
-      <div style="font-weight:bold;">$5.40</div>
-      <div style="color:#888; font-size:15px;">per lesson</div>
+      <div style="">$5.40</div>
+      <div style="color:#4D4C5C; font-size:16px; font-weight: 400;">per lesson</div>
     </div>
-    <div style="position:relative;">
+    <div style="position:relative;display: flex;
+    flex-direction: column;
+    align-items: flex-end;">
       <span class="tutor-action-dot"><i class="fas fa-ellipsis-h"></i></span>
       <div class="tutor-action-menu">
         <ul>
-          <li class="open_step1"><i class="fas fa-comment"></i> Message Tutor</li>
-          <li class="my_lesson_tutor_detail_change_your_plan_button"><i class="fas fa-dollar-sign"></i> Change your plan</li>
-          <a href="my_lessons_details_calendar_content_reschedule.php"><li><i class="fas fa-calendar-alt"></i> Schedule lessons</li></a>
-          <li id="my_lessons_tutors_tab_add_extra_lessons_open_modal"><i class="fas fa-wallet"></i> Add extra lessons</li>
-          <li class="openTransfer"><i class="fas fa-sync-alt"></i> Transfer lessons or subscription</li>
+          <li class="open_step1 my_lessons_details_my_lessons_content_message_tutor_btn"><img src="./img/black-msg.svg" style="margin-right: 12px"> Message Tutor</li>
+          <li class="my_lesson_tutor_detail_change_your_plan_button"><img src="./img/black-dollar.svg" style="margin-right: 12px"> Change your plan</li>
+          <a href="my_lessons_details_calendar_content_reschedule.php"><li><img src="./img/black-calendar.svg" style="margin-right: 12px"> Schedule lessons</li></a>
+          <li id="my_lessons_tutors_tab_add_extra_lessons_open_modal"><img src="./img/black-wallet.svg" style="margin-right: 12px"> Add extra lessons</li>
+          <li class="openTransfer"><img src="./img/black-loop.svg" style="margin-right: 12px">Transfer lessons or subscription</li>
         </ul>
       </div>
     </div>
@@ -260,28 +264,30 @@
     <div style="display: flex; align-items: center;">
       <img class="my_lessons_avatar" src="https://randomuser.me/api/portraits/women/68.jpg" alt="Patricia" style="width:56px; height:56px; border-radius:50%; margin-right:18px;">
       <div>
-        <a href="#" class="my_lessons_name" style="font-weight:bold; text-decoration:underline;">Patricia</a>
-        <div style="color:#888;">English</div>
+        <a href="#" class="my_lessons_name" style="text-decoration:underline;">Patricia</a>
+        <div style="color:#4D4C5C;">English</div>
       </div>
     </div>
 
     <div style="text-align: left;">
-      <div style="font-weight:bold;">0 lessons</div>
-      <div style="color:#888; font-size:15px;">to schedule</div>
+      <div style="">0 lessons</div>
+      <div style="color:#4D4C5C; font-size:16px; font-weight: 400;">to schedule</div>
     </div>
     <div style="text-align: left;">
-      <div style="font-weight:bold;">$11.00</div>
-      <div style="color:#888; font-size:15px;">per lesson</div>
+      <div style="">$11.00</div>
+      <div style="color:#4D4C5C; font-size:16px; font-weight: 400;">per lesson</div>
     </div>
-    <div style="position:relative;">
+    <div style="position:relative;display: flex;
+    flex-direction: column;
+    align-items: flex-end;">
       <span class="tutor-action-dot"><i class="fas fa-ellipsis-h"></i></span>
       <div class="tutor-action-menu">
         <ul>
-          <li><i class="fas fa-comment"></i> Message Tutor</li>
-          <li><i class="fas fa-dollar-sign"></i> Change your plan</li>
-          <li><i class="fas fa-calendar-alt"></i> Schedule lessons</li>
-          <li><i class="fas fa-wallet"></i> Add extra lessons</li>
-          <li><i class="fas fa-sync-alt"></i> Transfer lessons or subscription</li>
+        <li class="open_step1 my_lessons_details_my_lessons_content_message_tutor_btn"><img src="./img/black-msg.svg" style="margin-right: 12px"> Message Tutor</li>
+          <li class="my_lesson_tutor_detail_change_your_plan_button"><img src="./img/black-dollar.svg" style="margin-right: 12px"> Change your plan</li>
+          <a href="my_lessons_details_calendar_content_reschedule.php"><li><img src="./img/black-calendar.svg" style="margin-right: 12px"> Schedule lessons</li></a>
+          <li id="my_lessons_tutors_tab_add_extra_lessons_open_modal"><img src="./img/black-wallet.svg" style="margin-right: 12px"> Add extra lessons</li>
+          <li class="openTransfer"><img src="./img/black-loop.svg" style="margin-right: 12px">Transfer lessons or subscription</li>
         </ul>
       </div>
     </div>
@@ -292,27 +298,29 @@
     <div style="display: flex; align-items: center;">
       <img class="my_lessons_avatar" src="https://randomuser.me/api/portraits/men/32.jpg" alt="Guy Hawkins" style="width:56px; height:56px; border-radius:50%; margin-right:18px;">
       <div>
-        <a href="#" class="my_lessons_name" style="font-weight:bold; text-decoration:underline;">Guy Hawkins</a>
-        <div style="color:#888;">English</div>
+        <a href="#" class="my_lessons_name" style="text-decoration:underline;">Guy Hawkins</a>
+        <div style="color:#4D4C5C;">English</div>
       </div>
     </div>
     <div style="text-align: left;">
-      <div style="font-weight:bold;">0 lessons</div>
-      <div style="color:#888; font-size:15px;">to schedule</div>
+      <div style="">0 lessons</div>
+      <div style="color:#4D4C5C; font-size:16px; font-weight: 400;">to schedule</div>
     </div>
     <div style="text-align: left;">
-      <div style="font-weight:bold;">$7.00</div>
-      <div style="color:#888; font-size:15px;">per lesson</div>
+      <div style="">$7.00</div>
+      <div style="color:#4D4C5C; font-size:16px; font-weight: 400;">per lesson</div>
     </div>
-    <div style="position:relative;">
+    <div style="position:relative; display: flex;
+    flex-direction: column;
+    align-items: flex-end;">
       <span class="tutor-action-dot"><i class="fas fa-ellipsis-h"></i></span>
       <div class="tutor-action-menu">
         <ul>
-          <li><i class="fas fa-comment"></i> Message Tutor</li>
-          <li><i class="fas fa-dollar-sign"></i> Change your plan</li>
-          <li><i class="fas fa-calendar-alt"></i> Schedule lessons</li>
-          <li><i class="fas fa-wallet"></i> Add extra lessons</li>
-          <li><i class="fas fa-sync-alt"></i> Transfer lessons or subscription</li>
+         <li class="open_step1 my_lessons_details_my_lessons_content_message_tutor_btn"><img src="./img/black-msg.svg" style="margin-right: 12px"> Message Tutor</li>
+          <li class="my_lesson_tutor_detail_change_your_plan_button"><img src="./img/black-dollar.svg" style="margin-right: 12px"> Change your plan</li>
+          <a href="my_lessons_details_calendar_content_reschedule.php"><li><img src="./img/black-calendar.svg" style="margin-right: 12px"> Schedule lessons</li></a>
+          <li id="my_lessons_tutors_tab_add_extra_lessons_open_modal"><img src="./img/black-wallet.svg" style="margin-right: 12px"> Add extra lessons</li>
+          <li class="openTransfer"><img src="./img/black-loop.svg" style="margin-right: 12px">Transfer lessons or subscription</li>
         </ul>
       </div>
     </div>
@@ -323,23 +331,24 @@
     <div style="display: flex; align-items: center;">
       <img class="my_lessons_avatar" src="https://randomuser.me/api/portraits/women/4.jpg" alt="Daniela" style="width:56px; height:56px; border-radius:50%; margin-right:18px;">
       <div>
-        <a href="#" class="my_lessons_name" style="font-weight:bold; text-decoration:underline;">Daniela</a>
-        <div style="color:#888;">English</div>
+        <a href="#" class="my_lessons_name" style="text-decoration:underline;">Daniela</a>
+        <div style="color:#4D4C5C;">English</div>
       </div>
     </div>
     <div style="text-align: left;">
-      <div style="font-weight:bold;">1 lessons</div>
-      <div style="color:#888; font-size:15px;">to schedule</div>
+      <div style="">1 lessons</div>
+      <div style="color:#4D4C5C; font-size:16px; font-weight: 400;">to schedule</div>
     </div>
     <div style="text-align: left;">
-      <div style="font-weight:bold;">$5.00</div>
-      <div style="color:#888; font-size:15px;">per lesson</div>
+      <div style="">$5.00</div>
+      <div style="color:#4D4C5C; font-size:16px; font-weight: 400;">per lesson</div>
     </div>
-    <div style="display:flex;gap:7px;">
+    <div style="display:flex;gap:7px;justify-content: end;">
       <button class="open_step1" style="background:transparent; border:1.5px solid #ececec; border-radius:8px; padding:7px 9px; margin-right:5px; cursor:pointer;">
-        <i class="fas fa-comment" style="font-size:17px;"></i>
+        <!-- <i class="fas fa-comment" style="font-size:17px;"></i> -->
+         <img src="./img/comment.svg">
       </button>
-      <a href="my_lessons_details_calendar_content_reschedule.php"><button style="background:#fff; border:2px solid #232323; border-radius:8px; padding:7px 17px; font-weight:bold; cursor:pointer;">
+      <a href="my_lessons_details_calendar_content_reschedule.php"><button class="tutor-action-btn" style="background:#fff; border:2px solid #121117; border-radius:8px; padding:7px 17px;  cursor:pointer;font-weight: 600;font-weight: 600;">
         Shedule Lesson
       </button></a>
     </div>
@@ -350,22 +359,23 @@
     <div style="display: flex; align-items: center;">
       <img class="my_lessons_avatar" src="https://randomuser.me/api/portraits/men/41.jpg" alt="Jacob Jones" style="width:56px; height:56px; border-radius:50%; margin-right:18px;">
       <div>
-        <a href="#" class="my_lessons_name" style="font-weight:bold; text-decoration:underline;">Jacob Jones</a>
-        <div style="color:#888;">English</div>
+        <a href="#" class="my_lessons_name" style="text-decoration:underline;">Jacob Jones</a>
+        <div style="color:#4D4C5C;">English</div>
       </div>
     </div>
     <div style="text-align: left;">
-      <div style="font-weight:bold;">Subscription cancelled</div>
+      <div style="">Subscription cancelled</div>
     </div>
     <div style="text-align: left;">
-      <div style="font-weight:bold;">$10.00</div>
-      <div style="color:#888; font-size:15px;">per lesson</div>
+      <div style="">$10.00</div>
+      <div style="color:#4D4C5C; font-size:16px; font-weight: 400;">per lesson</div>
     </div>
-    <div style="display:flex;gap:7px;">
+    <div style="display:flex;gap:7px;justify-content: end;">
       <button style="background:transparent; border:1.5px solid #ececec; border-radius:8px; padding:7px 9px; margin-right:5px; cursor:pointer;">
-        <i class="fas fa-comment" style="font-size:17px;"></i>
+        <!-- <i class="fas fa-comment" style="font-size:17px;"></i> -->
+         <img src="./img/comment.svg">
       </button>
-      <button style="background:#fff; border:2px solid #232323; border-radius:8px; padding:7px 17px; font-weight:bold; cursor:pointer;">
+      <button class="tutor-action-btn" style="background:#fff; border:2px solid #232323; border-radius:8px; padding:7px 17px;  cursor:pointer;font-weight: 600;">
         Resubscribe
       </button>
     </div>
