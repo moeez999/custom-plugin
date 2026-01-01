@@ -1562,7 +1562,7 @@ echo $studentsItemsHtml;
 
 <!-- Loader Overlay -->
 <div class="loader-overlay" id="loaderOverlay">
-    <img src="../../img/loader.png" alt="Loading..." class="spin-logo" style="width:100px;height:100px;">
+    <img src="./img/loader.png" alt="Loading..." class="spin-logo" style="width:100px;height:100px;">
 </div>
 
 <!-- Custom Calendar Modal -->

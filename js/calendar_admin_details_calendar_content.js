@@ -3308,12 +3308,22 @@ $(function () {
           if (ev.isTeacherChanged) {
             // Get teacher pic from rescheduled or from status details
             let teacherPic = null;
+            let prevTeacherName = null;
+            let newTeacherName = null;
+            let eventTime = null;
+
             if (
               ev.rescheduled &&
               ev.rescheduled.current &&
               ev.rescheduled.current.teacher_pic
             ) {
               teacherPic = ev.rescheduled.current.teacher_pic;
+              newTeacherName =
+                ev.rescheduled.current.teacher_name || "New Teacher";
+              if (ev.rescheduled.previous) {
+                prevTeacherName =
+                  ev.rescheduled.previous.teacher_name || "Previous Teacher";
+              }
             } else if (
               statusMeta &&
               statusMeta.statusObj &&
@@ -3322,12 +3332,44 @@ $(function () {
               statusMeta.statusObj.details.current.teacher_pic
             ) {
               teacherPic = statusMeta.statusObj.details.current.teacher_pic;
+              newTeacherName =
+                statusMeta.statusObj.details.current.teacher_name ||
+                "New Teacher";
+              if (statusMeta.statusObj.details.previous) {
+                prevTeacherName =
+                  statusMeta.statusObj.details.previous.teacher_name ||
+                  "Previous Teacher";
+              }
             }
 
             if (teacherPic) {
-              return `
-              <span class="ev-status-icon" style="position:absolute; top:6px; right:6px; display:inline-flex; align-items:center; justify-content:center; pointer-events:none; z-index:2;">
-                <img src="${teacherPic}" alt="Teacher Changed" title="Teacher Changed" style="width:16px; height:16px; border-radius:50%;">
+              // Format date and time
+              const eventDate = ev.date || currentWeekStart;
+              const dayName = [
+                "Sunday",
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+              ][new Date(eventDate).getDay()];
+              const monthDay = new Date(eventDate).toLocaleDateString("en-US", {
+                month: "long",
+                day: "numeric",
+              });
+              const year = new Date(eventDate).getFullYear();
+              const startTime = fmt12(ev.start);
+              const endTime = fmt12(ev.end);
+              const eventDateTime = `${dayName}, ${monthDay} ${year}, ${startTime}-${endTime}`;
+
+              // Return only the icon, tooltip will be created dynamically
+              return `<span class="ev-status-icon" style="position:absolute; top:6px; right:6px; display:inline-flex; align-items:center; justify-content:center; pointer-events:auto; z-index:2; cursor: pointer; user-select: none;" data-teacher-pic="${teacherPic}" data-prev-teacher="${
+                prevTeacherName || "N/A"
+              }" data-new-teacher="${
+                newTeacherName || "N/A"
+              }" data-event-datetime="${eventDateTime}">
+                <img src="${teacherPic}" alt="Teacher Changed" style="width:16px; height:16px; border-radius:50%;">
               </span>`;
             }
           }
@@ -3408,9 +3450,7 @@ $(function () {
                       ? ""
                       : ev.isRescheduleCurrent && !ev.isTeacherChanged
                       ? `<span class=\"ev-makeup\" title=\"Make-up Class\"><img src=\"./img/makeup.svg\" alt=\"\"></span>`
-                      : ev.repeat
-                      ? `<span class=\"ev-repeat\" title=\"Repeats\"><img src=\"./img/ev-repeat.svg\" alt=\"\"></span>`
-                      : `<span class=\"ev-single\" title=\"Single Session\"><img src=\"./img/single-lesson.svg\" alt=\"\"></span>`
+                      : `<span class=\"ev-repeat\" title=\"Repeats\"><img src=\"./img/ev-repeat.svg\" alt=\"\"></span>`
                   }
                   <span>${fmt12(ev.start)} – ${fmt12(ev.end)}</span>
                   ${statusIconHtml}
@@ -3449,9 +3489,7 @@ $(function () {
                               : ev.classType === "one2one_weekly" ||
                                 ev.classType === "one2one_single"
                               ? `<span class=\"ev-single\" title=\"Single Session\"><img src=\"./img/single-lesson.svg\" alt=\"\"></span>`
-                              : ev.repeat
-                              ? `<span class=\"ev-repeat\" title=\"Repeats\"><img src=\"./img/ev-repeat.svg\" alt=\"\"></span>`
-                              : `<span class=\"ev-single\" title=\"Single Session\"><img src=\"./img/single-lesson.svg\" alt=\"\"></span>`
+                              : `<span class=\"ev-repeat\" title=\"Repeats\"><img src=\"./img/ev-repeat.svg\" alt=\"\"></span>`
                           }
                           ${
                             ev.isMidnightCrossing
@@ -3580,6 +3618,170 @@ $(function () {
           $ev.on("mouseleave", function () {
             $tooltip.fadeOut(200, function () {
               $tooltip.remove();
+            });
+          });
+        }
+
+        // Add hover tooltip for teacher change icon
+        const teacherChangeIcon = $ev.find(".ev-status-icon[data-teacher-pic]");
+        if (teacherChangeIcon.length > 0) {
+          const $teacherTooltip = $(`
+            <div class="notification-card teacher-change-tooltip-card">
+              <div class="notification-content">
+                <h3 class="notification-title">Session Reassigned</h3>
+                <p class="notification-body">This session has been reassigned from <strong>${teacherChangeIcon.attr(
+                  "data-prev-teacher"
+                )}</strong> to <strong>${teacherChangeIcon.attr(
+            "data-new-teacher"
+          )}</strong></p>
+              </div>
+              <svg class="notification-arrow" width="18" height="12" viewBox="0 0 18 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 12L0 0H18L9 12Z" fill="#121117"/>
+              </svg>
+            </div>
+          `);
+
+          teacherChangeIcon.on("mouseenter", function (e) {
+            const $icon = $(this);
+            const iconOffset = $icon.closest(".event").offset();
+            const iconPos = $icon.position();
+            const iconWidth = $icon.outerWidth();
+            const iconHeight = $icon.outerHeight();
+
+            // Position tooltip above and to the right of the icon
+            $teacherTooltip.css({
+              position: "fixed",
+              top: iconOffset.top - 165 + "px",
+              left: iconOffset.left + iconPos.left + iconWidth + 10 + "px",
+              zIndex: 10000,
+            });
+
+            $("body").append($teacherTooltip);
+
+            // Adjust if tooltip goes off screen
+            const tooltipRect = $teacherTooltip[0].getBoundingClientRect();
+            if (tooltipRect.right > window.innerWidth) {
+              // Position to the left instead
+              $teacherTooltip.css({
+                left:
+                  iconOffset.left +
+                  iconPos.left -
+                  $teacherTooltip.outerWidth() -
+                  10 +
+                  "px",
+              });
+            }
+            if (tooltipRect.top < 10) {
+              // Position below instead
+              $teacherTooltip.css({
+                top: iconOffset.top + iconPos.top + iconHeight + 10 + "px",
+              });
+            }
+
+            $teacherTooltip.fadeIn(200);
+          });
+
+          teacherChangeIcon.on("mouseleave", function () {
+            $teacherTooltip.fadeOut(200, function () {
+              $teacherTooltip.remove();
+            });
+          });
+
+          // Keep tooltip open when hovering over it
+          $(document).on(
+            "mouseenter",
+            ".teacher-change-tooltip-card",
+            function () {
+              $teacherTooltip.stop(true, true).fadeIn(200);
+            }
+          );
+
+          $(document).on(
+            "mouseleave",
+            ".teacher-change-tooltip-card",
+            function () {
+              $teacherTooltip.fadeOut(200, function () {
+                $teacherTooltip.remove();
+              });
+            }
+          );
+        }
+
+        // Add hover tooltip for makeup events
+        if (
+          ev.isRescheduleCurrent &&
+          !ev.isTeacherChanged &&
+          ev.rescheduled &&
+          ev.rescheduled.previous
+        ) {
+          const $makeupTooltip = $(`
+            <div class="notification-card makeup-tooltip-card">
+              <div class="notification-content">
+                <h3 class="notification-title">Makeup session detail</h3>
+                <p class="notification-body">Old timing : ${fmt12(
+                  typeof ev.rescheduled.previous.start === "string"
+                    ? minutes(ev.rescheduled.previous.start)
+                    : ev.rescheduled.previous.start
+                )} – ${fmt12(
+            typeof ev.rescheduled.previous.end === "string"
+              ? minutes(ev.rescheduled.previous.end)
+              : ev.rescheduled.previous.end
+          )}<br>New timing : ${fmt12(ev.start)} – ${fmt12(ev.end)}</p>
+              </div>
+              <svg class="notification-arrow" width="18" height="12" viewBox="0 0 18 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 12L0 0H18L9 12Z" fill="#121117"/>
+              </svg>
+            </div>
+          `);
+
+          $ev.on("mouseenter", function (e) {
+            const $event = $(this);
+            const eventOffset = $event.offset();
+            const eventWidth = $event.outerWidth();
+
+            // Position tooltip above and to the right of the event
+            $makeupTooltip.css({
+              position: "fixed",
+              top: eventOffset.top - 165 + "px",
+              left: eventOffset.left + eventWidth + 10 + "px",
+              zIndex: 10000,
+            });
+
+            $("body").append($makeupTooltip);
+
+            // Adjust if tooltip goes off screen
+            const tooltipRect = $makeupTooltip[0].getBoundingClientRect();
+            if (tooltipRect.right > window.innerWidth) {
+              // Position to the left instead
+              $makeupTooltip.css({
+                left:
+                  eventOffset.left - $makeupTooltip.outerWidth() - 10 + "px",
+              });
+            }
+            if (tooltipRect.top < 10) {
+              // Position below instead
+              $makeupTooltip.css({
+                top: eventOffset.top + $event.outerHeight() + 10 + "px",
+              });
+            }
+
+            $makeupTooltip.fadeIn(200);
+          });
+
+          $ev.on("mouseleave", function () {
+            $makeupTooltip.fadeOut(200, function () {
+              $makeupTooltip.remove();
+            });
+          });
+
+          // Keep tooltip open when hovering over it
+          $(document).on("mouseenter", ".makeup-tooltip-card", function () {
+            $makeupTooltip.stop(true, true).fadeIn(200);
+          });
+
+          $(document).on("mouseleave", ".makeup-tooltip-card", function () {
+            $makeupTooltip.fadeOut(200, function () {
+              $makeupTooltip.remove();
             });
           });
         }
@@ -3970,7 +4172,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (window.$) {
         window.$("#loader").css({
           "display": display,
-          "z-index": display === "flex" ? "99999" : "auto"
+          "z-index": display === "flex" ? "99999" : "auto",
         });
       }
     } catch (e) {
@@ -6104,7 +6306,7 @@ document.addEventListener("DOMContentLoaded", () => {
       params.set("cohortids", cohortids.join(","));
     if (studentids && studentids.length > 0)
       params.set("studentids", studentids.join(","));
-    
+
     // Show loader immediately unless told to skip (when called from refetchCustomPluginData)
     if (!skipLoaderShow) {
       try {
@@ -6117,7 +6319,7 @@ document.addEventListener("DOMContentLoaded", () => {
             loaderEl.style.display = "flex";
             loaderEl.style.zIndex = "99999";
           } else if (window.$) {
-            window.$("#loader").css({"display": "flex", "z-index": "99999"});
+            window.$("#loader").css({ "display": "flex", "z-index": "99999" });
           }
         }
       } catch (e) {
@@ -6432,11 +6634,13 @@ document.addEventListener("DOMContentLoaded", () => {
   // Optimized with debouncing to prevent rapid successive calls
   let __refetchTimer = null;
   let __isRefetching = false;
-  
+
   async function refetchCustomPluginData(reason = "") {
     // Debounce: if already refetching, wait for it to complete
     if (__isRefetching) {
-      console.log(`Refetch already in progress, skipping duplicate call (${reason})`);
+      console.log(
+        `Refetch already in progress, skipping duplicate call (${reason})`
+      );
       return;
     }
 
@@ -6459,11 +6663,11 @@ document.addEventListener("DOMContentLoaded", () => {
           loaderEl.style.zIndex = "99999";
         }
         if (window.$) {
-          window.$("#loader").css({"display": "flex", "z-index": "99999"});
+          window.$("#loader").css({ "display": "flex", "z-index": "99999" });
         }
       }
       // Force a small delay to ensure DOM update
-      await new Promise(resolve => setTimeout(resolve, 50));
+      await new Promise((resolve) => setTimeout(resolve, 50));
     } catch (e) {
       console.warn("Could not show loader:", e);
     }
@@ -6656,5 +6860,80 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("next-week")?.addEventListener("click", function () {
     shiftWeek(1);
+  });
+
+  // ====== TEACHER CHANGE TOOLTIP HANDLER ======
+  document.addEventListener("mouseover", function (e) {
+    const statusIcon = e.target.closest(".ev-status-icon[data-tooltip-id]");
+    if (statusIcon) {
+      const tooltipId = statusIcon.getAttribute("data-tooltip-id");
+      const tooltip = document.getElementById(tooltipId);
+      if (tooltip) {
+        const iconRect = statusIcon.getBoundingClientRect();
+        const eventElement = statusIcon.closest(".event, [class*='event']");
+        const eventRect = eventElement
+          ? eventElement.getBoundingClientRect()
+          : null;
+
+        let left, top;
+        const tooltipWidth = 320;
+        const tooltipHeight = 160;
+        const gap = 8;
+
+        if (eventRect) {
+          // Position tooltip above the event, aligned with icon horizontally
+          left = iconRect.left + iconRect.width / 2 - tooltipWidth / 2;
+          top = eventRect.top - tooltipHeight - gap;
+        } else {
+          // Fallback: position above icon
+          left = iconRect.left + iconRect.width / 2 - tooltipWidth / 2;
+          top = iconRect.top - tooltipHeight - gap;
+        }
+
+        // Keep within viewport with safety margin
+        if (left < 10) left = 10;
+        if (left + tooltipWidth > window.innerWidth - 10)
+          left = window.innerWidth - tooltipWidth - 10;
+        if (top < 10) top = 10;
+        if (top + tooltipHeight > window.innerHeight - 10)
+          top = window.innerHeight - tooltipHeight - 10;
+
+        tooltip.style.left = left + "px";
+        tooltip.style.top = top + "px";
+        tooltip.style.display = "";
+      }
+    }
+  });
+
+  document.addEventListener("mouseout", function (e) {
+    const statusIcon = e.target.closest(".ev-status-icon[data-tooltip-id]");
+    if (statusIcon) {
+      const tooltipId = statusIcon.getAttribute("data-tooltip-id");
+      const tooltip = document.getElementById(tooltipId);
+      if (tooltip) {
+        tooltip.style.display = "none";
+      }
+    }
+  });
+
+  // Keep tooltip open when hovering over it
+  document.addEventListener("mouseover", function (e) {
+    if (e.target.closest(".teacher-change-tooltip")) {
+      const tooltip = e.target.closest(".teacher-change-tooltip");
+      tooltip.style.display = "";
+    }
+  });
+
+  document.addEventListener("mouseout", function (e) {
+    if (e.target.closest(".teacher-change-tooltip")) {
+      const tooltip = e.target.closest(".teacher-change-tooltip");
+      const tooltipId = tooltip.id;
+      const statusIcon = document.querySelector(
+        `.ev-status-icon[data-tooltip-id="${tooltipId}"]`
+      );
+      if (!statusIcon || !statusIcon.matches(":hover")) {
+        tooltip.style.display = "none";
+      }
+    }
   });
 })();
