@@ -1,10 +1,11 @@
     /* ===== Global & Header ===== */
+    @import url(https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap);
     #my_lessons_container {
       max-width: 992px;
       margin: 0px auto;
       /* padding: 0 20px; */
       padding: 0px;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: "Poppins", serif;
     }
     .my_lessons_header {
       font-size: 32px;
@@ -20,33 +21,54 @@
     }
     .my_lessons_btn_outline {
       padding: 8px 16px;
-      font-size: 14px;
+      font-size: 16px;
       border: 1px solid #ccc;
       border-radius: 6px;
       background: transparent;
       cursor: pointer;
+      color: #121117;
     }
+    .my_lessons_tab_item:hover,
+    .my_lessons_btn_outline:hover {
+       background: #f7f7f7;
+    }
+
     .my_lessons_schedule_dropdown {
       position: relative;
     }
     .my_lessons_btn_primary {
       padding: 8px 16px;
-      font-size: 14px;
+      font-size: 16px;
       border: none;
       border-radius: 6px;
       background: #ff3b30;
       color: #fff;
       cursor: pointer;
     }
+    .my_lessons_btn_primary:hover {
+       background: color-mix(in srgb, #ff3b30 80%, white);
+    }
+
+    .relative {
+      position: relative;
+    }
     .my_lessons_btn_primary i {
       margin-left: 6px;
     }
-
+    .schedule-btn {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+    #my_lessons_schedule_btn {
+      margin-left: -11px;
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
     /* ===== Schedule Dropdown Card ===== */
     .my_lessons_dropdown_menu {
       display: none;
       position: absolute;
-      top: 100%;
+      top:37px;
       right: 0;
       width: 300px;
       background: #fff;
@@ -62,9 +84,15 @@
       align-items: flex-start;
       padding: 16px;
       cursor: pointer;
+      margin: 16px;
+      border: 2px solid #DCDCE5;
+      border-radius: 4px;
+    }
+    .my_lessons_schedule_option:hover {
+      border: 2px solid #000;
     }
     .my_lessons_schedule_option + .my_lessons_schedule_option {
-      border-top: 1px solid #e4e4e4;
+      /* border-top: 1px solid #e4e4e4; */
     }
     .my_lessons_option_icon {
       font-size: 24px;
@@ -73,6 +101,7 @@
     }
     .my_lessons_option_text {
       flex: 1;
+      text-align: left;
     }
     .my_lessons_recommended_pill {
       display: inline-block;
@@ -114,9 +143,17 @@
       gap: 8px;
       position: relative;
       font-weight: 500;
+      border-radius: 10px;
+
+      img {
+        opacity: 0.7;
+      }
     }
     .my_lessons_tab_item.active {
       color: #000000;
+      img {
+        opacity: 1;
+      }
     }
     .my_lessons_tab_item.active::after {
       content: "";
@@ -148,6 +185,7 @@
       border-radius: 10px;
       padding: 16px;
       margin-bottom: 16px;
+      height: 102px;
     }
     .my_lessons_lesson_avatar {
       width: 48px;
@@ -174,17 +212,29 @@
       color: #333;
     }
     .my_lessons_lesson_time {
-      /* inherited */
+       font-size: 16px;
+      color: #121117;
+      font-weight: 500;
     }
     .my_lessons_lesson_subject {
-      font-size: 14px;
-      color: #666;
+      font-size: 16px;
+      color: #4D4C5C;
       margin-top: 4px;
+      font-weight: 400;
     }
     .my_lessons_menu_section {
-      width: 40px;
+      width: 30px;
+      height: 30px;
+     display: flex;
+    justify-content: center;
+    align-items: center;
       text-align: right;
+      border-radius: 5px;
     }
+    .my_lessons_menu_section:hover {
+       background: #f7f7f7;
+    }
+
     .my_lessons_menu_icon {
       font-size: 20px;
       color: #333;
@@ -194,8 +244,8 @@
     /* Context menu on lesson */
     .my_lessons_card_menu {
       position: absolute;
-      top: 50%;
-      right: 0;
+      top: 145px;
+      right: 10px;
       transform: translateY(-50%);
       background: #fff;
       border: 1px solid #e4e4e4;
@@ -215,8 +265,8 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 14px;
-      color: #333;
+      font-size: 16px;
+      color: #121117;
       padding: 8px 16px;
       cursor: pointer;
     }
@@ -342,6 +392,10 @@
     }
 
     /* ===== Tutors Panel ===== */
+    .my_lessons_card > div {
+      width: 25%;
+    }
+
     .my_lessons_card {
       display: flex;
       align-items: center;
@@ -369,8 +423,8 @@
     }
     .my_lessons_name {
       font-size: 16px;
-      font-weight: 600;
-      color: #111;
+      font-weight: 500;
+      color: #121117;
       text-decoration: none;
     }
     .my_lessons_name:hover {
@@ -485,17 +539,28 @@
   left: 0;
   top: -2px;
 }
+.tutor_arrow {
+  transform: rotate(180deg);
+}
 
-
-
-  .tutor-action-dot {
+.tutor-action-btn {
+  cursor: pointer;
+}
+.tutor-action-btn:hover {
+ background: #f2f2f2 !important;
+ color: #121117;
+}
+.tutor-action-dot {
   cursor: pointer;
   padding: 6px 8px;
-  border-radius: 50%;
+  border-radius: 10%;
   background: none;
   font-size: 22px;
   transition: background 0.2s;
   position: relative;
+  height: 35px;
+  display: inline-flex;
+  align-items: center;
 }
 .tutor-action-dot:hover {
   background: #f2f2f2;
@@ -504,7 +569,7 @@
   display: none;
   position: absolute;
   right: 0;
-  top: 36px;
+  top: 42px;
   min-width: 300px;
   background: #fff;
   box-shadow: 0 8px 24px rgba(0,0,0,0.11);
@@ -523,9 +588,10 @@
   cursor: pointer;
   display: flex;
   align-items: center;
-  font-weight: 500;
+  font-weight: 400;
   border-radius: 6px;
   transition: background 0.16s;
+  font-size: 16px;
 }
 .tutor-action-menu li:hover {
   background: #f2f2f2;
