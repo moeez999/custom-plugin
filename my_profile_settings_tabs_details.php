@@ -191,7 +191,8 @@
             <section class="md:col-span-9">
 
                 <div id="my_profile_settings_tabs_details_panel_account"
-                    class="my_profile_settings_tabs_details_panel my_profile_settings_tabs_details_show">
+                    class="my_profile_settings_tabs_details_panel 
+                     <?php if (!$isSubscriptionActive) echo 'my_profile_settings_tabs_details_show'; ?>">
                     <?php require_once('my_profile_settings_tab_account.php'); ?>
                 </div>
 
@@ -207,7 +208,7 @@
                     <?php require_once('my_profile_settings_tab_payment_methods.php'); ?>
                 </div>
 
-                <div id="my_profile_settings_tabs_details_panel_subscription" class="my_profile_settings_tabs_details_panel">
+                <div id="my_profile_settings_tabs_details_panel_subscription" class="my_profile_settings_tabs_details_panel <?php if ($isSubscriptionActive) echo 'my_profile_settings_tabs_details_show'; ?>">
                     <?php require_once('my_profile_settings_tab_subscription.php'); ?>
                 </div>
 
