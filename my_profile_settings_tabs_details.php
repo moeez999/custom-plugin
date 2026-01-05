@@ -118,8 +118,14 @@
             <aside class="md:col-span-3">
                 <nav class="my_profile_settings_tabs_details_list pr-0 md:pr-6">
 
-                    <button class="my_profile_settings_tabs_details_item my_profile_settings_tabs_details_active"
+                    <?php
+                    $isSubscriptionActive =
+                        isset($_GET['subscription']) && $_GET['subscription'] === 'active';
+                    ?>
+                    <button  class="my_profile_settings_tabs_details_item
+                        <?php if (!$isSubscriptionActive) echo 'my_profile_settings_tabs_details_active'; ?>"
                         data-my_profile_settings_tabs_details_target="account">
+                        
                         <span class="my_profile_settings_tabs_details_indicator_bar"></span>
                         Account
                     </button>
@@ -142,7 +148,8 @@
                         Payment methods
                     </button>
 
-                    <button class="my_profile_settings_tabs_details_item"
+                    <button class="my_profile_settings_tabs_details_item 
+                        <?php if ($isSubscriptionActive) echo 'my_profile_settings_tabs_details_active'; ?>"
                         data-my_profile_settings_tabs_details_target="subscription">
                         <span class="my_profile_settings_tabs_details_indicator_bar"></span>
                         Subscription
@@ -184,7 +191,8 @@
             <section class="md:col-span-9">
 
                 <div id="my_profile_settings_tabs_details_panel_account"
-                    class="my_profile_settings_tabs_details_panel my_profile_settings_tabs_details_show">
+                    class="my_profile_settings_tabs_details_panel 
+                     <?php if (!$isSubscriptionActive) echo 'my_profile_settings_tabs_details_show'; ?>">
                     <?php require_once('my_profile_settings_tab_account.php'); ?>
                 </div>
 
@@ -200,7 +208,7 @@
                     <?php require_once('my_profile_settings_tab_payment_methods.php'); ?>
                 </div>
 
-                <div id="my_profile_settings_tabs_details_panel_subscription" class="my_profile_settings_tabs_details_panel">
+                <div id="my_profile_settings_tabs_details_panel_subscription" class="my_profile_settings_tabs_details_panel <?php if ($isSubscriptionActive) echo 'my_profile_settings_tabs_details_show'; ?>">
                     <?php require_once('my_profile_settings_tab_subscription.php'); ?>
                 </div>
 
