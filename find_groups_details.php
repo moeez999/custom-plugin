@@ -14,7 +14,7 @@
     --find_groups_details-gray:#e5e7eb;
     --find_groups_details-black:#111827;
   }
-
+  
   /* ===== Field cards ===== */
   .find_groups_details_card{
     border:1px solid var(--find_groups_details-border);
@@ -162,6 +162,11 @@
   }
   .what-would-you-like-to-do-modal {
     display: none !important;
+  }
+  @media (min-width: 993px) and (max-width: 1422px){
+    article.find_groups_details_available_card {
+      overflow: scroll;
+    }
   }
 </style>
 <div style="max-width: 1600px;

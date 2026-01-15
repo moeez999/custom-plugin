@@ -200,10 +200,12 @@
             <!-- Center content -->
             <div id="find_groups_details_available_center_col" class="min-w-0 s2-col" >
               <!-- Title single line -->
-              <h3 id="find_groups_details_available_title"
-                  class="text-[20px] font-semibold whitespace-nowrap overflow-hidden text-ellipsis">
-                English Group Classes (Bilingual)
-              </h3>
+               <a href="find_group_profile_page.php">
+                <h3 id="find_groups_details_available_title"
+                    class="text-[20px] font-semibold whitespace-nowrap overflow-hidden text-ellipsis">
+                  English Group Classes (Bilingual)
+                </h3>
+              </a>
               
               <!-- badges -->
               <div id="find_groups_details_available_badges"
@@ -413,11 +415,12 @@
             <!-- Center content -->
             <div id="find_groups_details_available_center_col" class="min-w-0 s2-col" >
               <!-- Title single line -->
-              <h3 id="find_groups_details_available_title"
-                  class="text-[20px] font-semibold whitespace-nowrap overflow-hidden text-ellipsis">
-                English Group Classes (Bilingual)
-              </h3>
-              
+               <a href="find_group_profile_page.php">
+                <h3 id="find_groups_details_available_title"
+                    class="text-[20px] font-semibold whitespace-nowrap overflow-hidden text-ellipsis">
+                  English Group Classes (Bilingual)
+                </h3>
+              </a>
               <!-- badges -->
               <div id="find_groups_details_available_badges"
                    class="mt-2 flex items-center gap-2 whitespace-nowrap">
@@ -626,11 +629,12 @@
             <!-- Center content -->
             <div id="find_groups_details_available_center_col" class="min-w-0 s2-col" >
               <!-- Title single line -->
-              <h3 id="find_groups_details_available_title"
-                  class="text-[20px] font-semibold whitespace-nowrap overflow-hidden text-ellipsis">
-                English Group Classes (Bilingual)
-              </h3>
-              
+              <a href="find_group_profile_page.php">
+                <h3 id="find_groups_details_available_title"
+                    class="text-[20px] font-semibold whitespace-nowrap overflow-hidden text-ellipsis">
+                  English Group Classes (Bilingual)
+                </h3>
+              </a>
               <!-- badges -->
               <div id="find_groups_details_available_badges"
                    class="mt-2 flex items-center gap-2 whitespace-nowrap">
