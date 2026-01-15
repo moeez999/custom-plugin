@@ -20,14 +20,17 @@
   }
 
   .my_lessons_details_calendar_content_weekly_schedule_lesson_x{width:36px;height:36px;border-radius:8px}
-  .my_lessons_details_calendar_content_weekly_schedule_lesson_x:hover{background:#EFEFF4}
+  .my_lessons_details_calendar_content_weekly_schedule_lesson_x:hover{}
 
   .my_lessons_details_calendar_content_weekly_schedule_lesson_btn{
     background:#FF3B1F;border:1px solid #000;color:#fff;
     height:50px;width:420px;border-radius:10px;font-weight:600;font-size:16px;
     border: 2px solid black;
   }
-  .my_lessons_details_calendar_content_weekly_schedule_lesson_btn:hover{opacity:.96}
+  #my_lessons_details_reshedule_cta:hover,
+  .my_lessons_details_calendar_content_weekly_schedule_lesson_btn:hover{
+    background: rgba(255, 88, 60, 1) !important;
+  }
 
   .my_lessons_details_calendar_content_weekly_schedule_lesson_plus{
     width:40px;
@@ -55,20 +58,24 @@
 <div id="my_lessons_details_calendar_content_weekly_schedule_lesson_modal"
      class="my_lessons_details_calendar_content_weekly_schedule_lesson_fs hidden">
   <div class="my_lessons_details_calendar_content_weekly_schedule_lesson_wrap">
-
+    <img src="./img/logo-img.svg" class="absolute top-8 left-8">
     <button id="my_lessons_details_calendar_content_weekly_schedule_lesson_close"
-            class="my_lessons_details_calendar_content_weekly_schedule_lesson_x absolute top-4 right-4 grid place-items-center text-[22px]"
+            class="my_lessons_details_calendar_content_weekly_schedule_lesson_x absolute top-8 right-8 grid place-items-center text-[22px]"
             aria-label="Close">×</button>
 
     <!-- peach band -->
-    <div class="my_lessons_details_calendar_content_weekly_schedule_lesson_top w-full">
-      <div class="max-w-5xl mx-auto px-4 sm:px-6">
+    <div class="my_lessons_details_calendar_content_weekly_schedule_lesson_top w-full" style="height: 50vh">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6" style="    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 51vh;
+">
         <div class="pt-10 sm:pt-14 pb-24 sm:pb-28 flex flex-col items-center text-center">
           <img id="my_lessons_details_calendar_content_weekly_schedule_lesson_avatar"
                class="w-20 h-20 rounded-xl object-cover mb-4 border border-white/60 shadow"
                src="" alt="">
           <h1 id="my_lessons_details_calendar_content_weekly_schedule_lesson_headline"
-              class="text-[34px] sm:text-[25px] leading-[1.15] font-semibold tracking-[-0.01em]">
+              class="text-[34px] sm:text-[29px] leading-[1.15] font-semibold tracking-[-0.01em]">
             All set! Your lesson with Daniela<br class="hidden sm:block"> is scheduled.
           </h1>
         </div>
@@ -79,7 +86,7 @@
     <div class="my_lessons_details_calendar_content_weekly_schedule_lesson_overlap flex justify-center px-4">
       <div class="my_lessons_details_calendar_content_weekly_schedule_lesson_card w-full max-w-[420px] bg-white border border-gray-200">
         <div class="px-6 pt-6 pb-2 text-center">
-          <div class="text-[18px] font-semibold leading-tight">
+          <div class="text-[16px] font-semibold leading-tight">
             Upcoming<br>Lesson
           </div>
         </div>
@@ -107,7 +114,7 @@
 
     <!-- helper text BELOW the card (darker like your snapshot) -->
     <div class="mt-3 flex justify-center px-4">
-      <p class="text-[14px] leading-[20px] text-[#3f3f40] text-center max-w-[420px]">
+      <p class="text-[16px] leading-[20px] text-[#3f3f40] text-center max-w-[420px]" style="color: #4D4C5C">
         Cancel or reschedule for free up to 12 hrs before the lesson starts.
       </p>
     </div>

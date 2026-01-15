@@ -18,22 +18,74 @@ echo $OUTPUT->header();
   /* === Tabs (exact like snapshot) === */
   .my-tabs-group{ border-radius: 18px; }
   .my_lessons_details_reshedule_tab_btn{
+    z-index: 2;
     background:#f3f4f8; color:#0f1115; border:1px solid #E6E7EF;
     box-shadow:0 1px 0 rgba(16,18,27,.04);
     transition:background .15s, box-shadow .15s, border-color .15s;
+    border-radius: 0px;
   }
-  .my_lessons_details_reshedule_tab_btn[data-active="true"]{ background:#fff; }
+  .tab-heading {
+    font-weight: 500;
+    font-size: 19px;
+    color: #121117;
+  }
+  .tab-subheading {
+    font-weight: 400;
+    font-size: 14px;
+    color: #4D4C5C;
+  }
+  .highlighted-day {
+    background: #FFEBF3;
+    color: #FF2500;
+  }
+  .my_lessons_details_reshedule_tab_btn[data-active="true"]{ background:#fff; border-bottom: none;box-shadow: none}
   .mytab-right{ margin-left:-1px; } /* collapse middle seam */
   /* OUTER corners rounded, inner corners square */
   .my_lessons_details_reshedule_tab_btn[data-side="left"]{
-    border-top-left-radius:5px;border-bottom-left-radius:5px;border-top-right-radius:0;border-bottom-right-radius:0;
+    border-top-left-radius:8px;border-bottom-left-radius:8px;border-top-right-radius:0;border-bottom-right-radius:0;
   }
   .my_lessons_details_reshedule_tab_btn[data-side="right"]{
-    border-top-right-radius:5px;border-bottom-right-radius:5px;border-top-left-radius:0;border-bottom-left-radius:0;
+    border-top-right-radius:8px;border-bottom-right-radius:8px;border-top-left-radius:0;border-bottom-left-radius:0;
   }
   .my_lessons_details_reshedule_tab_btn:hover{ background:rgba(246,247,251,.9); }
   .my_lessons_details_reshedule_tab_btn[data-active="true"]:hover{ background:#fff; }
-  .tab-ico{ width:22px;height:22px; display:block; }
+  .my_lessons_details_reshedule_tab_btn[data-active="true"][data-side="left"]{
+        border-bottom-left-radius:0px;
+        border-top-right-radius:8px;
+   }
+   .my_lessons_details_reshedule_tab_btn[data-active="true"][data-side="right"]{
+        border-bottom-right-radius:0px;
+        border-top-left-radius:8px;
+   }
+  .my-tabs-group:has(.my_lessons_details_reshedule_tab_btn[data-active="true"][data-side="left"]) .my_lessons_details_reshedule_tab_btn[data-side="right"]{
+    box-shadow: none;
+    border: none;
+    position: relative;
+    z-index: 1;
+    margin-left: -4px;
+  }
+  .my-tabs-group:has(.my_lessons_details_reshedule_tab_btn[data-active="true"][data-side="right"]) .my_lessons_details_reshedule_tab_btn[data-side="left"]{
+    box-shadow: none;
+    border: none;
+    position: relative;
+    z-index: 1;
+    margin-right: -3px;
+  }
+  
+  .my-tabs-group:has(.my_lessons_details_reshedule_tab_btn[data-active="true"][data-side="right"])
+  .my_lessons_details_reshedule_tab_btn[data-side="left"] .tab-heading,
+  .my-tabs-group:has(.my_lessons_details_reshedule_tab_btn[data-active="true"][data-side="right"])
+  .my_lessons_details_reshedule_tab_btn[data-side="left"] .tab-subheading {
+    color: #6A697C !important;
+  }
+
+    .my-tabs-group:has(.my_lessons_details_reshedule_tab_btn[data-active="true"][data-side="left"])
+  .my_lessons_details_reshedule_tab_btn[data-side="right"] .tab-heading,
+  .my-tabs-group:has(.my_lessons_details_reshedule_tab_btn[data-active="true"][data-side="left"])
+  .my_lessons_details_reshedule_tab_btn[data-side="right"] .tab-subheading {
+    color: #6A697C !important;
+  }
+  .tab-ico{ width:24px;height:24px; display:block; }
 
   /* Show/Hide date+pager (Single only shows) */
   #my_lessons_details_reshedule_datebar[data-visible="false"]{ display:none; }
@@ -47,19 +99,40 @@ echo $OUTPUT->header();
   .my_lessons_details_reshedule_slot{
     width:168px;height:56px;max-width:90vw;display:flex;align-items:center;justify-content:center;
     padding:0 14px;background:#fff;color:#0f1115;font-weight:500;font-size:16px;line-height:1;user-select:none;cursor:pointer;
-    border:2px solid #e6e7ef;border-radius:5px;box-shadow:0 1px 0 rgba(16,18,27,.04);
+    border:2px solid #DCDCE5;border-radius:8px;box-shadow:0 1px 0 rgba(16,18,27,.04);
     transition:transform .06s ease, background-color .12s ease, border-color .12s ease, color .12s ease, box-shadow .12s ease;
   }
-  .my_lessons_details_reshedule_slot:hover{ background:#fbfbfe;border-color:#dfe2ea;box-shadow:0 2px 6px rgba(16,18,27,.06); }
+  .my_lessons_details_reshedule_slot:hover{ background:#f3f4f8;border-color:#dfe2ea;box-shadow:0 2px 6px rgba(16,18,27,.06); }
   .my_lessons_details_reshedule_slot:active{ transform:scale(.985); }
   .my_lessons_details_reshedule_selected{ background:#0f1115!important;color:#fff!important;border-color:#0f1115!important;box-shadow:0 4px 10px rgba(16,18,27,.16); }
   .my_lessons_details_reshedule_disabled{ background:#f2f3f7!important;color:#a6adba!important;border-color:#dadce6!important;cursor:not-allowed!important;box-shadow:none!important; }
   .my_lessons_details_reshedule_redborder{ border-color:#ff3b1f!important; }
 
+  .grid-slot-container {
+    column-gap: 4px;
+    row-gap: 4px;
+  }
+  .main-grid {
+    gap: 32px;
+  }
+  .title-heading {
+    font-weight: 600;
+    font-size: 16px;
+    color: #121117;
+  }
+  #my_lessons_details_reshedule_duration_label {
+    font-weight: 500;
+    font-size: 16px;
+    text-decoration: underline;
+    color: #121117
+  }
+  #my_lessons_details_reshedule_days {
+    white-space: nowrap;
+  }
   /* Tooltip */
   .my_lessons_details_reshedule_tip{
     position:fixed; z-index:9999; background:#0f1115; color:#fff;
-    padding:10px 14px; border-radius:5px; font-weight:500; font-size: 10px;
+    padding:10px 14px; border-radius:8px; font-weight:500; font-size: 10px;
     box-shadow:0 10px 24px rgba(0,0,0,.25); max-width:min(90vw,420px);
   }
   .my_lessons_details_reshedule_tip .my_lessons_details_reshedule_tip_sub{ display:block; margin-top:2px; font-weight:600; color:#cfd3dc; }
@@ -75,7 +148,7 @@ echo $OUTPUT->header();
   #my_lessons_details_reshedule_duration_menu .mylessons-row:hover{ background:#f2f3f7; }
 
   /* TZ text */
-  #my_lessons_details_reshedule_tzbar{ font-size:12px; line-height:20px; color:#6b7280; font-weight:500; }
+  #my_lessons_details_reshedule_tzbar{ font-size:12px; line-height:20px; color:#4D4C5C; font-weight:500; }
   #my_lessons_details_reshedule_tzText { font-size:12px; line-height:20px; color:#6b7280; font-weight:500; }
 
   /* Pager icons */
@@ -110,7 +183,7 @@ echo $OUTPUT->header();
   }
   .rp-chosen{
     display:flex; flex-direction:column; gap:4px;
-    border:2px solid #0f1115; border-radius:5px; padding:10px 44px 10px 14px; background:#fff; position:relative;
+    border:2px solid #0f1115; border-radius:8px; padding:10px 44px 10px 14px; background:#fff; position:relative;
   }
   .rp-chosen-title{ font-weight:600; color:#0f1115; }
   .rp-chosen-sub{ font-size:13px; color:#6B7280; }
@@ -122,48 +195,60 @@ echo $OUTPUT->header();
     /* border:1px solid #E5E7EB;background:#fff; */
   }
   .rp-remove:hover{ background:#f4f4f6; }
+  .schedule-main-title {
+    font-weight: 600;
+    font-size: 24px;
+    color: #121117;
+  }
 </style>
 
+<div class="d-flex">
+  <img src="./img/logo-img.svg">
+  <h2 style="margin-left: 21px;" class="schedule-main-title">Schedule your lessons</h2>
+</div>
 <div class="max-w-[1600px] mx-auto py-6 h-screen overflow-hidden">
-  <div class="grid grid-cols-1 lg:grid-cols-12 h-full gap-6">
+  <div class="grid grid-cols-1 lg:grid-cols-12 h-full gap-6 main-grid">
 
     <!-- LEFT -->
     <div class="lg:col-span-7 overflow-y-auto pr-3 my_lessons_details_reshedule_scrollbarNone" id="my_lessons_details_reshedule_leftpane" style="margin-top:20px; margin-left:10%;">
 
       <!-- ── FROZEN HEADER: tabs → date+pager → days -->
-      <div class="sticky top-0 z-20 bg-white" style="width:720px;">
+      <!-- <div class="sticky top-0 z-20 bg-white" style="width:720px;"> -->
+      <div class="sticky top-0 z-20 bg-white">
         <!-- TABS -->
         <div id="my_lessons_details_reshedule_tabs" class="mt-1">
           <div class="my-tabs-group flex gap-0">
             <!-- Weekly -->
             <button
+             style="height: 90px; gap: 8px;"
               id="my_lessons_details_reshedule_tab_weekly"
               type="button"
               data-tab="weekly"
               data-side="left"
               class="my_lessons_details_reshedule_tab_btn mytab-left group flex items-center gap-3 flex-1 px-4 py-3 ring-0">
-              <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center">
+              <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center" style="margin-top: -45px">
                 <img class="tab-ico" src="img/weekly_lesson_reschedule.svg" alt="">
               </span>
               <span class="text-left">
-                <span class="block text-[16px] leading-5 font-semibold">Weekly lessons</span>
-                <span class="block text-[13px] leading-5 text-gray-500">Repeat lessons at the same time every week</span>
+                <span class="block text-[19px] leading-5 tab-heading">Weekly lessons</span>
+                <span class="block text-[13px] leading-5 tab-subheading" style="margin-top: 2px;">Repeat lessons at the same time every week</span>
               </span>
             </button>
 
             <!-- Single -->
             <button
+              style="height: 90px; gap: 8px;"
               id="my_lessons_details_reshedule_tab_single"
               type="button"
               data-tab="single"
               data-side="right"
-              class="my_lessons_details_reshedule_tab_btn mytab-right group flex items-center gap-3 flex-1 px-4 py-3 ring-0">
+              class="my_lessons_details_reshedule_tab_btn mytab-right group flex gap-3 flex-1 px-4 py-3 ring-0">
               <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center">
-                <img class="tab-ico" src="img/single_lesson_reschedule.svg" alt="">
+                <img class="tab-ico" src="img/single_lesson_reschedule.svg" alt="" style="margin-top: -20px">
               </span>
               <span class="text-left">
-                <span class="block text-[16px] leading-5 font-semibold">Single lessons</span>
-                <span class="block text-[13px] leading-5 text-gray-500">Choose different times for each lesson</span>
+                <span class="block text-[19px] leading-5 tab-heading">Single lessons</span>
+                <span class="block text-[13px] leading-5 tab-subheading" style="margin-top: 2px;">Choose different times for each lesson</span>
               </span>
             </button>
           </div>
@@ -195,7 +280,7 @@ echo $OUTPUT->header();
         </div>
 
         <!-- DAYS -->
-        <div id="my_lessons_details_reshedule_days" class="grid grid-cols-7 gap-x-4 pb-2 border-b border-gray-200" style="margin-top:2%;"></div>
+        <div id="my_lessons_details_reshedule_days" class="grid grid-cols-7 gap-x-4 pb-2 border-b border-gray-200" style="margin-top:2%; padding-bottom: 13px; border-bottom: 2px solid #DCDCE5;"></div>
       </div>
 
       <!-- TZ -->
@@ -208,7 +293,7 @@ echo $OUTPUT->header();
       </div>
 
       <!-- GRID -->
-      <div id="my_lessons_details_reshedule_grid" class="mt-2 grid grid-cols-7 gap-x-4 gap-y-2"></div>
+      <div id="my_lessons_details_reshedule_grid" class="mt-3 grid grid-cols-7 grid-slot-container"></div>
       <div class="py-6"></div>
     </div>
 
@@ -221,13 +306,13 @@ echo $OUTPUT->header();
                   class="absolute -top-2 -right-2 w-6 h-6 flex items-center justify-center text-[18px] leading-none text-gray-700 hover:text-black"
                   aria-label="Close">×</button>
 
-          <div class="border border-gray-200 rounded-md bg-white shadow-[0_10px_28px_rgba(16,18,27,0.06)] p-5 max-w-md ml-auto">
+          <div class="border border-gray-200 rounded-md bg-white shadow-[0_10px_28px_rgba(16,18,27,0.06)] p-5 max-w-md" style="margin-left: 32px !important;">
             <!-- Tutor + Duration -->
             <div class="flex items-start gap-4">
               <img class="w-12 h-12 rounded-xl object-cover"
                    src="https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=400&auto=format&fit=crop" alt="">
               <div class="flex-1">
-                <div class="text-lg font-semibold">English with Daniela</div>
+                <div class="title-heading">English with Daniela</div>
 
                 <div id="my_lessons_details_reshedule_duration_wrap" class="relative inline-block mt-1">
                   <button id="my_lessons_details_reshedule_duration_toggle"
@@ -278,7 +363,7 @@ echo $OUTPUT->header();
             </div>
 
             <!-- Right-panel header + list (3 max) -->
-            <div id="my_lessons_details_reshedule_lessons_counter" class="mt-4 mb-3 text-[16px] font-semibold text-gray-900">3 lessons to schedule</div>
+            <div id="my_lessons_details_reshedule_lessons_counter" class="text-[16px] font-semibold text-gray-900" style="margin-block: 16px 8px;">3 lessons to schedule</div>
             <div id="my_lessons_details_reshedule_list" class="flex flex-col gap-3"></div>
 
             <button id="my_lessons_details_reshedule_cta" disabled
@@ -286,7 +371,7 @@ echo $OUTPUT->header();
               Schedule
             </button>
 
-            <p class="text-black-500 text-center mt-3 text-sm leading-4" style="font-size:12px;">
+            <p class="text-black-500 text-center mt-3 text-sm leading-4" style="font-size:16px; color: #4D4C5C;   font-family: 'Figtree', sans-serif; margin-top: 12px">
               Cancel or reschedule for free up to 12 hrs<br>before the lesson starts.
             </p>
 
@@ -495,7 +580,7 @@ echo $OUTPUT->footer();
         const isSun = i===0;
         $row.append(`
           <div class="flex justify-center">
-            <div class="${isSun?'bg-red-50 text-red-600 font-semibold':'text-gray-900 font-medium'} px-3 py-2 rounded-xl">${full}</div>
+            <div class="${isSun?'highlighted-day font-semibold':'text-gray-900 font-medium'} px-3 py-2 rounded-xl">${full}</div>
           </div>
         `);
       });
@@ -504,7 +589,7 @@ echo $OUTPUT->footer();
         const isSun = i===0;
         $row.append(`
           <div class="flex justify-center">
-            <div class="${isSun?'bg-red-50 text-red-600 font-semibold':'text-gray-900 font-medium'} px-3 py-2 rounded-xl">${d}</div>
+            <div class="${isSun?'highlighted-day font-semibold':'text-gray-900 font-medium'} px-3 py-2 rounded-xl">${d}</div>
           </div>
         `);
       });
@@ -677,12 +762,17 @@ $("#my_lessons_details_reshedule_cta")
   .on("click.weeklyModal", function () {
     // ignore if CTA is disabled
     if ($(this).prop("disabled")) return;
-
+    let st;
     // open only for WEEKLY flow
-    if (my_lessons_details_reshedule_activeTab !== "weekly") return;
+    if (my_lessons_details_reshedule_activeTab !== "weekly"){
+       st = state.single;
+    }
+    else {
+      st = state.weekly;
+    }
 
     // need at least one selected slot
-    const st = state.weekly;
+    // const st = state.single;
     if (!st || !st.selections || st.selections.length === 0) return;
 
     const sel = st.selections[0];                 // first chosen selection

@@ -1,0 +1,401 @@
+  @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+  @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+  @import url("https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
+
+  :root{
+      --fgda-border:#000000;      /* black outer border */
+      --fgda-inner:#E7E7EE;       /* inner box borders */
+      --fgda-muted:#6B6E76;
+      --fgda-text:#121117;
+      --fgda-peach:#FF2500;
+    }
+    
+    .wrapper-course:has(#find_group_profile_container){
+      padding: 48px 148px !important;
+    }
+    /* ====== Layout ====== */
+    #find_group_profile_container {
+      display: flex;
+      align-items: flex-start;
+      gap: 92px;
+      max-width: 1200px;
+      margin: 0 auto;
+      font-family: "Poppins", sans-serif;
+      color: #1d1d1f;
+    }
+    #my_lessons_tutor_profile_right {
+      box-shadow:
+        0px 9.38px 21.56px 0px #00000008,
+        0px 39.38px 39.38px 0px #00000008,
+        0px 88.13px 52.5px 0px #00000005,
+        0px 156.56px 62.81px 0px #00000000,
+        0px 244.69px 68.44px 0px #00000000;
+
+    }
+    #my_lessons_tutor_profile_left { flex:1; line-height:1.5; }
+    #my_lessons_tutor_profile_right {
+      width:400px;
+      position:sticky;
+      top:20px;
+      align-self:flex-start;
+    }
+
+    .group-profile-heading {
+      font-weight: 600;
+      font-size: 24px;
+      color: #121117;
+    }
+    .group-subheading {
+      font-weight: 300;
+      font-size: 16px;
+      color: #121117;
+    }
+    /* ====== Intro Section ====== */
+    .find_groups_details_available_card{border:1px solid #0000001F; border-radius:10px; background:#fff;    box-shadow: 0px 9.38px 21.56px 0px #00000008, 0px 88.13px 52.5px 0px #00000005, 0px 156.56px 62.81px 0px #00000000, 0px 244.69px 68.44px 0px #00000000;
+      cursor: pointer;}
+    .find_groups_details_available_card:hover{border:2px solid var(--fgda-border)}
+    .find_groups_details_available_badge{font-size:14px; line-height:18px; padding:2px 10px; border-radius:4px; font-weight:400; display:inline-flex; align-items:center; white-space:nowrap; color: #121117}
+    .find_groups_details_available_box{border:1px solid #DCDCE5; background:#fff; border-radius: 9px;}
+    .find_groups_details_available_num{width:36px; height:36px; border:1.5px solid var(--fgda-inner); border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:600; background:#fff;}
+    .find_groups_details_available_input{border:1.5px solid #E4E7EE; border-radius:10px; height:46px; padding-left:40px; font-size:14px; box-shadow: none;}
+    .find_groups_details_available_like svg{transition:transform .15s ease;}
+    .find_groups_details_available_like:hover svg{transform:scale(1.05);}
+    .find_groups_details_available_clickable{cursor:pointer;}
+
+    #find_groups_details_available_box_practice_teacher,
+    #find_groups_details_available_box_schedule,
+    #find_groups_details_available_box_students,
+    #find_groups_details_available_box_main_teacher {
+      padding: 11px !important;
+    }
+    
+    /* ====== Reviews Section ====== */
+    #my_lessons_tutor_profile_rating_summary {
+      display:flex; gap:18px;margin-bottom:40px;
+    }
+    .my_lessons_tutor_profile_avg { text-align:center; }
+    .my_lessons_tutor_profile_avg_value { font-size:41px;font-family: "Noto Sans", sans-serif; color: #121117; font-weight: 500;}
+    .my_lessons_tutor_profile_stars { font-size:20px; color:#000; }
+    .my_lessons_tutor_profile_total_reviews { font-size:14px; color:#000; }
+    .my_lessons_tutor_profile_bars {
+      list-style:none; padding:0; margin:0; flex:1;
+    }
+    .my_lessons_tutor_profile_bars li {
+      display:flex; align-items:center; margin-bottom:6px;
+    }
+    .my_lessons_tutor_profile_bar_label { width:16px; font-size:0.85rem; }
+    .my_lessons_tutor_profile_bar_bg {
+      flex:1; height:8px; background:#eee; margin:0 8px;
+      position:relative;
+    }
+    .my_lessons_tutor_profile_bar_fill {
+      height:100%; background:#1d1d1f;
+    }
+    .my_lessons_tutor_profile_bar_count {
+      width:32px; text-align:right; font-size: 14px
+    }
+    #my_lessons_tutor_profile_reviews_list {
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:24px;
+      overflow:hidden;
+      transition:max-height 0.3s;
+    }
+    #my_lessons_tutor_profile_reviews_list.my_lessons_tutor_profile_collapsed {
+      max-height:600px;
+    }
+    #my_lessons_tutor_profile_reviews_list.my_lessons_tutor_profile_expanded {
+      max-height:none;
+    }
+    .my_lessons_tutor_profile_review_item {
+      display:flex; gap:16px;
+    }
+    .my_lessons_tutor_profile_review_avatar {
+      width:48px; height:48px; border-radius:7px; object-fit:cover;
+    }
+    .my_lessons_tutor_profile_review_meta {
+      font-size:0.9rem; color:#3c3c43;
+    }
+    .my_lessons_tutor_profile_review_header {
+      display:flex; gap:4px; flex-direction: column;
+    }
+    .my_lessons_tutor_profile_review_header strong { font-weight:600; }
+    .my_lessons_tutor_profile_review_header span { color:#6e6e73; }
+    .my_lessons_tutor_profile_review_stars {
+      color:#000 !important;
+      font-size: 20px;
+    }
+    .my_lessons_tutor_profile_review_text {
+      color:#3c3c43; line-height:1.4;
+    }
+    
+    .my_lessons_tutor_profile_btn_outline:hover,
+    #find_groups_book_trail_lesson_step2_btn_next:hover,
+    #find_groups_book_trail_lesson_step2_btn_prev:hover,
+    .my_lesson_tutor_profile_my_specialities_header:hover,
+    .my_lessons_tutor_profile_toggle_reviews:hover {
+       background-color: #f2f4f7;
+    }
+    .my_lessons_tutor_profile_toggle_reviews {
+      height: 44px;
+      display: flex;
+      align-items: center;
+      padding-inline: 11px 21px;
+      border: 2px solid #DCDCE5;
+      background:#fff; 
+      border-radius:9px;
+      cursor:pointer;          
+      font-weight: 500;
+      font-size: 14px;
+      color: #000000;
+    }
+
+    /* ====== Schedule ====== */
+    
+    #my_lessons_tutor_profile_details_book_trial_lesson_btn:hover,
+    .button-continue:hover {
+      background: rgba(255, 88, 60, 1) !important;
+    }
+    .w-47 {
+      width: 47px !important;
+    } 
+    .h-70 {
+      height: 70px !important;
+    }
+    .find_groups_book_trail_lesson_step2_box {
+      border: 2px solid #DCDCE5;
+    }
+    /* ====== Right Card ====== */
+    .my_lessons_tutor_profile_card {
+      background:#fff; border-radius:19px;
+      overflow:hidden;
+      padding:24px;
+    }
+    .my_lessons_tutor_profile_card_media {
+      position:relative;
+    }
+    .my_lessons_tutor_profile_card_img {
+      width:100%; display:block;
+    }
+    .my_lessons_tutor_profile_card_play {
+      position:absolute; right:16px; top:124px;
+      width:60px; height:60px; background:var(--fgda-peach);
+      border-radius:50%; color:#fff; font-size:24px;
+      line-height:48px; text-align:center; cursor:pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .my_lessons_tutor_profile_card_stats {
+      display:flex; justify-content:space-between;
+      padding:16px; border-bottom:1px solid #eee;
+      font-size:0.95rem; color:#3c3c43;
+    }
+    .my_lessons_tutor_profile_rating {
+      display:flex; align-items:baseline; gap:4px;
+    }
+    .my_lessons_tutor_profile_rating_star {
+      color:#f5a623; font-size:1.1rem;
+    }
+    .my_lessons_tutor_profile_lessons,
+    .my_lessons_tutor_profile_price {
+      text-align:center; font-weight:600;
+    }
+    .my_lessons_tutor_profile_card_actions {
+      display:flex; flex-direction:column; gap:12px; padding:16px;
+    }
+    .my_lessons_tutor_profile_btn {
+      height:48px; border-radius:8px; font-size:18px; cursor:pointer; font-weight: 600;
+      border: 3px solid #121117;
+    }
+    .my_lessons_tutor_profile_btn_primary {
+      background:#FF2500; color:#fff;
+    }
+    .my_lessons_tutor_profile_btn_outline {
+      background:#fff; color:#1d1d1f; 
+    }
+    .my_lessons_tutor_profile_card_footer {
+      border-top:1px solid #eee; padding:16px; font-size:0.9rem; color:#3c3c43;
+    }
+    .my_lessons_tutor_profile_popular,
+    .my_lessons_tutor_profile_response {
+      display:flex; align-items:center; gap:8px; margin-bottom:8px;
+    }
+
+
+
+
+  /* Container */
+  #my_lesson_tutor_profile_my_specialities {
+    max-width: 800px;
+    margin: 40px auto;
+    
+    color: #1d1d1f;
+  }
+  .my_lesson_tutor_profile_my_specialities_content,
+  .speciality-item{
+    font-weight: 400;
+    font-size: 16px;
+    color: #121117
+  }
+  .speciality-item{
+    padding-left: 16px;
+  }
+
+  /* Each accordion item */
+  .my_lesson_tutor_profile_my_specialities_item {
+    /* border-bottom: 1px solid #e5e5e5; */
+  }
+  .my_lesson_tutor_profile_my_specialities_item.active  .my_lesson_tutor_profile_my_specialities_header{
+    width: calc(100% + 16px);
+    padding-right: 16px;
+  }
+  .my_lesson_tutor_profile_my_specialities_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 0px;
+    cursor: pointer;
+    border-bottom: 1px solid #e5e5e5;
+  }
+  .my_lesson_tutor_profile_my_specialities_header span {
+    font-size: 1rem;
+    color: #1d1d1f;
+  }
+  .my_lesson_tutor_profile_my_specialities_item.active,
+  .my_lesson_tutor_profile_my_specialities_arrow {
+    transition: transform;
+    padding-right: 16px;
+  }
+
+  /* Rotate arrow when open */
+  .my_lesson_tutor_profile_my_specialities_item.active
+    .my_lesson_tutor_profile_my_specialities_arrow {
+    transform: rotate(-180deg);
+  }
+
+  /* Hidden content */
+  .my_lesson_tutor_profile_my_specialities_content {
+    display: none;
+    color: #3c3c43;
+    line-height: 1.5;
+    padding: 16px;
+  }
+
+  #my_lessons_tutor_profile_tiles {
+    margin: 40px auto;
+    
+    color: #1d1d1f;
+  }
+  #my_lessons_tutor_profile_tiles h2 {
+    font-size: 1.5rem;
+    margin-bottom: 16px;
+  }
+  .my_lessons_tutor_profile_tiles_container {
+    position: relative;
+  }
+  .my_lessons_tutor_profile_tiles_wrapper {
+    display: flex;
+    gap: 24px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding-bottom: 8px;
+  }
+  .my_lessons_tutor_profile_tiles_wrapper::-webkit-scrollbar {
+    display: none;
+  }
+
+  .my_lessons_tutor_profile_tiles_item {
+    flex: 0 0 180px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    padding: 16px;
+  }
+  .my_lessons_tutor_profile_tiles_imgwrap {
+    position: relative;
+    width: 100%;
+    padding-top: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+  .my_lessons_tutor_profile_tiles_img {
+    position: absolute;
+    top:0; left:0;
+    width:100%; height:100%;
+    object-fit:cover;
+  }
+  .my_lessons_tutor_profile_tiles_flag {
+    position: absolute;
+    bottom: 8px; right: 8px;
+    font-size: 1.2rem;
+  }
+  .my_lessons_tutor_profile_tiles_name {
+    margin: 0 0 4px;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+  .my_lessons_tutor_profile_tiles_rating {
+    font-size: 1rem;
+    margin-bottom: 8px;
+  }
+  .my_lessons_tutor_profile_tiles_rating span {
+    font-weight: 400;
+    color: #6e6e73;
+    margin-left: 4px;
+  }
+  .my_lessons_tutor_profile_tiles_desc {
+    font-size: 0.95rem;
+    line-height: 1.4;
+    margin-bottom: 12px;
+    color: #3c3c43;
+  }
+  .my_lessons_tutor_profile_tiles_price {
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  .my_lessons_tutor_profile_tiles_nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 36px; height: 36px;
+    border: 1px solid #ccc;
+    background: #fff;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    line-height: 34px;
+    text-align: center;
+    cursor: pointer;
+    z-index: 1;
+  }
+  #my_lessons_tutor_profile_tiles_prev {
+    left: -18px;
+  }
+  #my_lessons_tutor_profile_tiles_next {
+    right: -18px;
+  }
+  /* CSS */
+.my_lessons_tutor_profile_edit_button {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.my_lessons_tutor_profile_edit_button:hover {
+  background-color: #f2f4f7;
+  border-color: #999;
+}
+
+.my_lessons_tutor_profile_edit_button i {
+  font-size: 16px;
+  color: #4a4a4a;
+}
