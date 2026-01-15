@@ -2,8 +2,9 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-
 <style>
+  @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
   :root{
     --find_groups_details-border:#e7e7ee;
     --find_groups_details-muted:#747684;
@@ -21,15 +22,18 @@
     box-shadow:0 1px 0 rgba(18,17,23,.02);
     transition:border-color .15s, box-shadow .15s;
   }
+  .find_groups_details_card:hover {
+    border:1px solid #000;
+  }
   .find_groups_details_card--active{
     border-color:var(--find_groups_details-active)!important;
     box-shadow:0 1px 0 rgba(18,17,23,.02),0 0 0 3px rgba(39,100,255,.15);
   }
   .find_groups_details_label{
-    font-size:11px;line-height:18px;color:var(--find_groups_details-muted);font-weight:500;
+    font-size:12px;line-height:18px;color:var(--find_groups_details-text);font-weight:400;
   }
   .find_groups_details_value{
-    font-size:16px;line-height:22px;font-weight:600;color:var(--find_groups_details-text);
+    font-size:16px;line-height:22px;font-weight:600;color:#000000;
   }
   .find_groups_details_iconbtn{
     width:28px;height:28px;display:flex;align-items:center;justify-content:center;
@@ -47,7 +51,7 @@
   .find_groups_details_menu_inner{padding:12px 16px;}
   .find_groups_details_menu_btn{
     width:100%;text-align:left;padding:10px 16px;border-radius:8px;
-    font-size:15px;line-height:22px;color:#1c1b20;
+    font-size:16px;line-height:22px;color:#121117;
   }
   .find_groups_details_menu_btn:hover{background:#f6f7fb;}
 
@@ -56,12 +60,16 @@
     display:flex;align-items:center;gap:8px;
     border:1px solid var(--find_groups_details-border);
     border-radius:10px;padding:8px 12px;margin-bottom:12px;
+    height: 53px;
   }
+  .find_groups_details_search input:hover,
   .find_groups_details_search input{
+    box-shadow: none;
     flex:1;border:none;outline:none;font-size:15px;color:#1c1b20;background:transparent;
+    padding-left: 0px !important;
   }
 
-  .find_groups_details_sectiontitle{font-size:14px;color:#6b7280;font-weight:600;margin:18px 0 10px;}
+  .find_groups_details_sectiontitle{font-size:16px;color:#121117;font-weight:600;margin:11px 0 10px;}
   .find_groups_details_titlelg{font-size:16px;color:#121117;font-weight:700;margin-bottom:8px;}
 
   /* ===== Chips for “I'm available” ===== */
@@ -84,6 +92,15 @@
     display:flex;align-items:center;justify-content:space-between;
     padding:10px 12px;border-radius:8px;cursor:pointer;
     font-size:15px;font-weight:500;color:#1c1b20;
+    border-bottom: 1px solid #DCDCE5;
+    border-radius: 0px;
+    /*  */
+    margin-left: -16px;
+    width: calc(100% + 32px);
+    padding-inline: 16px;
+  }
+  .find_groups_details_checkoption.last-child {
+    border-bottom: none;
   }
   .find_groups_details_checkoption:hover{background:#f6f7fb;}
   .find_groups_details_checkbox{
@@ -101,7 +118,7 @@
   }
   .find_groups_details_range_wrap{padding:6px 6px 14px 6px;}
   .find_groups_details_range_track{
-    position:relative;height:8px;border-radius:9999px;background:var(--find_groups_details-gray);
+    position:relative;height:4px;border-radius:9999px;background:var(--find_groups_details-gray);
   }
   .find_groups_details_range_fill{
     position:absolute;height:4px;border-radius:9999px;background:var(--find_groups_details-black);
@@ -120,16 +137,47 @@
   /* hide scrollbars but allow scroll */
   .find_groups_details_noscroll::-webkit-scrollbar{width:0;height:0}
   .find_groups_details_noscroll{scrollbar-width:none;-ms-overflow-style:none}
+  .find-groups-main-title {
+    font-weight: 600;
+    font-size: 24px;
+    color: #000;
+  }
+  .find-groups-sub-heading {
+    font-weight: 400;
+    font-size: 16px;
+    color: #121117;
+  }
+  .wrapper-course:has(#find_groups_details_available_section) {
+    padding-inline: 80px !important;
+  }
+  .poppins {
+      font-family: "Poppins", sans-serif;
+  }
+  .pd-i-18 {
+      padding-inline: 18px !important;
+  }
+  .h-16 {
+    /* height: 16px !important;
+    max-height: 16px !important; */
+  }
+  .what-would-you-like-to-do-modal {
+    display: none !important;
+  }
 </style>
-<div class="max-w-[1600px] mx-auto px-4 md:px-6 py-4">
+<div style="max-width: 1600px;
+    margin: 0 auto;" class="poppins">
+<h2 class="find-groups-main-title">Find Online English Study Groups for Students</h2>
+<p class="find-groups-sub-heading" style="margin-top: 4px;">Looking for a group to practice English with? Latingles is the leading online language learning platform worldwide. Choose from thousands of student groups led by experienced teachers to improve your English together.</p>
+<div style="padding-top: 0px !important;
+    margin-top: 40px;">
   <div id="find_groups_details_filters_row"
-       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2">
 
 <!-- 1) English Level -->
 <div class="relative" id="find_groups_details_level_wrap">
   <button type="button" 
           id="find_groups_details_btn_level" 
-          class="find_groups_details_card w-full px-4 text-left flex items-center justify-between"
+          class="pd-i-18 h-16 find_groups_details_card w-full px-4 text-left flex items-center justify-between"
           aria-haspopup="listbox"            
           aria-expanded="false"              
           aria-controls="find_groups_details_menu_level">
@@ -139,9 +187,10 @@
     </span>
   
     <span class="find_groups_details_iconbtn" aria-hidden="true">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-           stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-    </span>
+      <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M6 7L0 1.39L1.487 0L6 4.22L10.513 0L12 1.39L6 7Z" fill="#121117"/>
+</svg>
+
   </button>
 
   <!-- Menu -->
@@ -162,15 +211,16 @@
     <!-- 2) I'm available (icons above numbers + Days) -->
     <div class="relative">
       <button type="button" id="find_groups_details_btn_available"
-              class="find_groups_details_card w-full px-4 text-left flex items-center justify-between">
+              class="pd-i-18 h-16 find_groups_details_card w-full px-4 text-left flex items-center justify-between">
         <span class="block">
           <span class="find_groups_details_label block">I'm available</span>
           <span id="find_groups_details_value_available" class="find_groups_details_value">Anytime</span>
         </span>
         <span class="find_groups_details_iconbtn">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-               stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-        </span>
+         <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M6 7L0 1.39L1.487 0L6 4.22L10.513 0L12 1.39L6 7Z" fill="#121117"/>
+</svg>
+
       </button>
 
       <div id="find_groups_details_menu_available" class="find_groups_details_menu absolute z-50 mt-2 hidden w-[360px] max-w-[92vw]">
@@ -254,24 +304,26 @@
     <!-- 3) Class taught in (SEARCH + CHECKBOXES) -->
     <div class="relative">
       <button type="button" id="find_groups_details_btn_lang"
-              class="find_groups_details_card w-full px-4 text-left flex items-center justify-between">
+              class="pd-i-18 h-16 find_groups_details_card w-full px-4 text-left flex items-center justify-between">
         <span class="block">
           <span class="find_groups_details_label block">Class taught in</span>
           <span id="find_groups_details_value_lang" class="find_groups_details_value">English &amp; Spanish</span>
         </span>
         <span class="find_groups_details_iconbtn">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-               stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-        </span>
+         <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M6 7L0 1.39L1.487 0L6 4.22L10.513 0L12 1.39L6 7Z" fill="#121117"/>
+</svg>
+
       </button>
 
       <div id="find_groups_details_menu_lang" class="find_groups_details_menu absolute z-50 mt-2 hidden w-[360px] max-w-[92vw]">
         <div class="find_groups_details_menu_inner max-h-[70vh] overflow-auto find_groups_details_noscroll">
 
           <div class="find_groups_details_search">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-            </svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M17 11C17 11.788 16.8448 12.5682 16.5433 13.2961C16.2418 14.0241 15.7998 14.6855 15.2427 15.2427C14.6855 15.7998 14.0241 16.2418 13.2961 16.5433C12.5682 16.8448 11.788 17 11 17C10.2121 17 9.43189 16.8448 8.70394 16.5433C7.97599 16.2418 7.31455 15.7998 6.7574 15.2427C6.20025 14.6855 5.75829 14.0241 5.45676 13.2961C5.15524 12.5682 5.00004 11.788 5.00004 11C5.00004 9.40874 5.63218 7.88262 6.7574 6.7574C7.88262 5.63218 9.40874 5.00004 11 5.00004C12.5913 5.00004 14.1175 5.63218 15.2427 6.7574C16.3679 7.88262 17 9.40874 17 11ZM15.497 17.618C13.8499 18.7372 11.8447 19.2018 9.87323 18.9211C7.90178 18.6404 6.1059 17.6345 4.83664 16.1001C3.56739 14.5657 2.91602 12.6131 3.00987 10.6239C3.10372 8.63483 3.93604 6.75221 5.34413 5.34413C6.75221 3.93604 8.63483 3.10372 10.6239 3.00987C12.6131 2.91602 14.5657 3.56739 16.1001 4.83664C17.6345 6.1059 18.6404 7.90178 18.9211 9.87323C19.2018 11.8447 18.7372 13.8499 17.618 15.497L20.657 18.535L18.535 20.657L15.497 17.618Z" fill="#6A697C"/>
+</svg>
+
             <input id="find_groups_details_search_lang" type="text" placeholder="Type to search..."/>
           </div>
 
@@ -284,7 +336,7 @@
                 <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
               </div>
             </div>
-            <div class="find_groups_details_checkoption" data-value="English ( only )">
+            <div class="find_groups_details_checkoption last-child" data-value="English ( only )">
               English ( only )
               <div class="find_groups_details_checkbox"></div>
             </div>
@@ -297,14 +349,16 @@
     <!-- 4) Class Type (POPULAR + CHECKBOXES) -->
     <div class="relative">
       <button type="button" id="find_groups_details_btn_type"
-              class="find_groups_details_card w-full px-4 text-left flex items-center justify-between">
+              class="pd-i-18 h-16 find_groups_details_card w-full px-4 text-left flex items-center justify-between">
         <span class="block">
           <span class="find_groups_details_label block">Class Type</span>
           <span id="find_groups_details_value_type" class="find_groups_details_value" title="Theoretical &amp; Conversational">Theoretical and…</span>
         </span>
         <span class="find_groups_details_iconbtn">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-               stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M6 7L0 1.39L1.487 0L6 4.22L10.513 0L12 1.39L6 7Z" fill="#121117"/>
+</svg>
+
         </span>
       </button>
 
@@ -319,8 +373,8 @@
                 <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
               </div>
             </div>
-            <div class="find_groups_details_divider"></div>
-            <div class="find_groups_details_checkoption" data-value="Conversational (only)">
+            <!-- <div class="find_groups_details_divider"></div> -->
+            <div class="find_groups_details_checkoption last-child" data-value="Conversational (only)">
               Conversational (only)
               <div class="find_groups_details_checkbox"></div>
             </div>
@@ -333,14 +387,16 @@
     <!-- 5) Price per Month (RANGE SLIDER) -->
     <div class="relative">
       <button type="button" id="find_groups_details_btn_price"
-              class="find_groups_details_card w-full px-4 text-left flex items-center justify-between">
+              class="pd-i-18 h-16 find_groups_details_card w-full px-4 text-left flex items-center justify-between">
         <span class="block">
           <span class="find_groups_details_label block">Price per Month</span>
           <span id="find_groups_details_value_price" class="find_groups_details_value">1 to 40+</span>
         </span>
         <span class="find_groups_details_iconbtn">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-               stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+         <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M6 7L0 1.39L1.487 0L6 4.22L10.513 0L12 1.39L6 7Z" fill="#121117"/>
+</svg>
+
         </span>
       </button>
 
@@ -354,13 +410,14 @@
               <div id="find_groups_details_price_thumb_min" class="find_groups_details_range_thumb" style="left:0%"></div>
               <div id="find_groups_details_price_thumb_max" class="find_groups_details_range_thumb" style="left:100%"></div>
             </div>
-            <div class="find_groups_details_price_hint">Drag the boxes to set your range</div>
+            <!-- <div class="find_groups_details_price_hint">Drag the boxes to set your range</div> -->
           </div>
         </div>
       </div>
     </div>
 
   </div>
+</div>
 </div>
 
 <script>
