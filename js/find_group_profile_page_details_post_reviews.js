@@ -2,7 +2,6 @@
     // Open Post-Review modal
     $('#my_lessons_tutor_profile_details_post_review_trigger').on('click', function(e){
       e.preventDefault();
-      alert("sds");
       $('#my_lessons_tutor_profile_details_post_review_backdrop, #my_lessons_tutor_profile_details_post_review_modal')
         .fadeIn(200);
     });

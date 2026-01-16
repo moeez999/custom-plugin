@@ -240,7 +240,7 @@
       </section>
 
       <!-- schedule -->
-       <div id="find_groups_book_trail_lesson_step2_container" class="" style="padding: 31px; border: 0.5px solid #00000033;
+       <div class="" style="padding: 31px; border: 0.5px solid #00000033;
           border-radius: 12px;
           margin-top: 40px;">
         <div class="mt-2 flex items-center" style="gap: 15px;">
@@ -269,42 +269,42 @@
           </button>
         </div>
 
-        <div id="find_groups_book_trail_lesson_step2_days" class="mt-3 d-flex" style="justify-content: space-between;  font-family: 'Figtree', sans-serif; font-weight: 700">
-        <button type="button" class="select-none w-47 h-70" data-key="sat">
-          <div class="text-[12px] text-[#6B6E76]">sat</div>
-          <div class="mt-1 w-9 h-9 mx-auto rounded-full flex items-center justify-center text-[#121117]">16</div>
-        </button>
+        <div id="" class="mt-3 d-flex" style="justify-content: space-between;  font-family: 'Figtree', sans-serif; font-weight: 700">
+          <button type="button" class="select-none w-47 h-70" data-key="sat">
+            <div class="text-[15px] text-[#6B6E76]">sat</div>
+            <div class="mt-1 w-9 h-9 mx-auto rounded-full flex items-center justify-center text-[#121117]">16</div>
+          </button>
+        
+          <button type="button" class="select-none w-47 h-70" data-key="sun">
+            <div class="text-[15px] text-[#6B6E76]">sun</div>
+            <div class="mt-1 w-9 h-9 mx-auto rounded-full flex items-center justify-center text-[#121117]">17</div>
+          </button>
+        
+          <button type="button" class="select-none w-47 h-70" data-key="mon">
+            <div class="text-[15px] text-[#121117] font-semibold">mon</div>
+            <div class="mt-1 w-9 h-9 mx-auto rounded-full flex items-center justify-center bg-[#FF2500] text-white">18</div>
+          </button>
+        
+          <button type="button" class="select-none w-47 h-70" data-key="tue">
+            <div class="text-[15px] text-[#6B6E76]">tue</div>
+            <div class="mt-1 w-9 h-9 mx-auto rounded-full flex items-center justify-center text-[#121117]">19</div>
+          </button>
       
-        <button type="button" class="select-none w-47 h-70" data-key="sun">
-          <div class="text-[12px] text-[#6B6E76]">sun</div>
-          <div class="mt-1 w-9 h-9 mx-auto rounded-full flex items-center justify-center text-[#121117]">17</div>
-        </button>
-      
-        <button type="button" class="select-none w-47 h-70" data-key="mon">
-          <div class="text-[12px] text-[#121117] font-semibold">mon</div>
-          <div class="mt-1 w-9 h-9 mx-auto rounded-full flex items-center justify-center bg-[#FF2500] text-white">18</div>
-        </button>
-      
-        <button type="button" class="select-none w-47 h-70" data-key="tue">
-          <div class="text-[12px] text-[#6B6E76]">tue</div>
-          <div class="mt-1 w-9 h-9 mx-auto rounded-full flex items-center justify-center text-[#121117]">19</div>
-        </button>
-      
-        <button type="button" class="select-none w-47 h-70" data-key="wed">
-          <div class="text-[12px] text-[#6B6E76]">wed</div>
-          <div class="mt-1 w-9 h-9 mx-auto rounded-full flex items-center justify-center text-[#121117]">20</div>
-        </button>
-      
-        <button type="button" class="select-none w-47 h-70" data-key="thu">
-          <div class="text-[12px] text-[#6B6E76]">thu</div>
-          <div class="mt-1 w-9 h-9 mx-auto rounded-full flex items-center justify-center text-[#121117]">21</div>
-        </button>
-      
-        <button type="button" class="select-none w-47 h-70" data-key="fri">
-          <div class="text-[12px] text-[#6B6E76]">fri</div>
-          <div class="mt-1 w-9 h-9 mx-auto rounded-full flex items-center justify-center text-[#121117]">22</div>
-        </button>
-      </div>
+          <button type="button" class="select-none w-47 h-70" data-key="wed">
+            <div class="text-[15px] text-[#6B6E76]">wed</div>
+            <div class="mt-1 w-9 h-9 mx-auto rounded-full flex items-center justify-center text-[#121117]">20</div>
+          </button>
+        
+          <button type="button" class="select-none w-47 h-70" data-key="thu">
+            <div class="text-[15px] text-[#6B6E76]">thu</div>
+            <div class="mt-1 w-9 h-9 mx-auto rounded-full flex items-center justify-center text-[#121117]">21</div>
+          </button>
+        
+          <button type="button" class="select-none w-47 h-70" data-key="fri">
+            <div class="text-[15px] text-[#6B6E76]">fri</div>
+            <div class="mt-1 w-9 h-9 mx-auto rounded-full flex items-center justify-center text-[#121117]">22</div>
+          </button>
+        </div>
 
         <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div class="find_groups_book_trail_lesson_step2_box rounded-xl p-3">
@@ -496,33 +496,64 @@
 
           <span style="margin-left: 8px;">Send a Message</span>  
           </button>
-          <button class="save_list my_lessons_tutor_profile_btn my_lessons_tutor_profile_btn_outline" style="display: flex; align-items: center; justify-content: center;">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M10.7489 4.95C11.1333 4.56749 11.5899 4.26517 12.0922 4.06059C12.5944 3.85602 13.1323 3.75326 13.6746 3.75829C14.2169 3.76333 14.7528 3.87605 15.2512 4.08992C15.7495 4.30378 16.2004 4.61453 16.5777 5.00411C16.955 5.39369 17.2511 5.85434 17.4489 6.35931C17.6466 6.86429 17.7421 7.40352 17.7297 7.94569C17.7173 8.48787 17.5974 9.02218 17.3768 9.51761C17.1562 10.013 16.8394 10.4597 16.4447 10.8317L9.99805 16.875L3.55222 10.8317C3.16218 10.4586 2.84977 10.012 2.63295 9.51776C2.41612 9.02347 2.29918 8.49119 2.28884 7.95154C2.2785 7.41189 2.37496 6.87552 2.57269 6.3733C2.77041 5.87107 3.06549 5.41289 3.44095 5.02513C3.81641 4.63737 4.26483 4.32767 4.76043 4.11386C5.25602 3.90005 5.789 3.78634 6.3287 3.77928C6.8684 3.77222 7.40418 3.87195 7.90519 4.07272C8.40621 4.2735 8.86258 4.57136 9.24805 4.94917L9.99805 5.69917L10.7489 4.95ZM15.3606 6.1275C15.1351 5.90204 14.8675 5.72319 14.573 5.60116C14.2784 5.47914 13.9627 5.41634 13.6439 5.41634C13.3251 5.41634 13.0094 5.47914 12.7148 5.60116C12.4203 5.72319 12.1526 5.90204 11.9272 6.1275L9.99805 8.05667L8.06889 6.1275C7.84025 5.90379 7.56965 5.72748 7.27264 5.60869C6.97563 5.48991 6.65808 5.43099 6.33823 5.43534C6.01838 5.43968 5.70254 5.5072 5.40887 5.63401C5.1152 5.76082 4.84949 5.94442 4.62701 6.17426C4.40453 6.40409 4.22967 6.67564 4.11248 6.97327C3.99529 7.27091 3.93808 7.58878 3.94414 7.9086C3.9502 8.22842 4.01941 8.54389 4.14779 8.83688C4.27617 9.12987 4.46119 9.39459 4.69222 9.61583L9.99805 14.5908L15.3047 9.61583C15.5422 9.39326 15.7325 9.1252 15.8643 8.8276C15.9961 8.53 16.0667 8.20893 16.0719 7.8835C16.0771 7.55806 16.0168 7.2349 15.8946 6.93324C15.7724 6.63157 15.5908 6.35756 15.3606 6.1275Z" fill="#121117"/>
-            </svg>
-          <span style="margin-left: 8px;"> Save to my list</span>  
-         </button>
+         <button class="save_list my_lessons_tutor_profile_btn my_lessons_tutor_profile_btn_outline">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true" >
+            <path
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M10.7489 4.95C11.1333 4.56749 11.5899 4.26517 12.0922 4.06059C12.5944 3.85602 13.1323 3.75326 13.6746 3.75829C14.2169 3.76333 14.7528 3.87605 15.2512 4.08992C15.7495 4.30378 16.2004 4.61453 16.5777 5.00411C16.955 5.39369 17.2511 5.85434 17.4489 6.35931C17.6466 6.86429 17.7421 7.40352 17.7297 7.94569C17.7173 8.48787 17.5974 9.02218 17.3768 9.51761C17.1562 10.013 16.8394 10.4597 16.4447 10.8317L9.99805 16.875L3.55222 10.8317C3.16218 10.4586 2.84977 10.012 2.63295 9.51776C2.41612 9.02347 2.29918 8.49119 2.28884 7.95154C2.2785 7.41189 2.37496 6.87552 2.57269 6.3733C2.77041 5.87107 3.06549 5.41289 3.44095 5.02513C3.81641 4.63737 4.26483 4.32767 4.76043 4.11386C5.25602 3.90005 5.789 3.78634 6.3287 3.77928C6.8684 3.77222 7.40418 3.87195 7.90519 4.07272C8.40621 4.2735 8.86258 4.57136 9.24805 4.94917L9.99805 5.69917L10.7489 4.95Z"
+            />
+          </svg>
+
+          <span>Save to my list</span>
+        </button>
+
         </div>
       </div>
     </div><!-- /right -->
  </div><!-- /container -->
 
+ <style>
+/* default icon */
+.save_list {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #111;
+  cursor: pointer;
+}
+.save_list svg path {
+  fill: none;
+  stroke: #000;
+}
+
+/* saved state */
+.save_list.is-saved {
+  color: #121117;
+}
+
+.save_list.is-saved svg path {
+  fill: currentColor;
+  stroke: #111;
+}
+ </style>
+
  <script>
 $(document).on('click', '.save_list', function () {
-  const $btn  = $(this);
+  const $btn = $(this);
   const $text = $btn.find('span');
-  const $path = $btn.find('svg path');
 
-  $btn.toggleClass('is-saved');
+  const isSaved = $btn.toggleClass('is-saved').hasClass('is-saved');
 
-  const isSaved = $btn.hasClass('is-saved');
-
-  // Toggle text
   $text.text(isSaved ? 'Saved' : 'Save to my list');
-
-  // Toggle SVG fill (IMPORTANT FIX)
-  $path.css('fill', isSaved ? '#121117' : 'transparent');
 });
+
 
 
   </script>
