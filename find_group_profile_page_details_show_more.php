@@ -2,149 +2,98 @@
 <!-- 3) Backdrop -->
 <div id="my_lessson_tutor_profile_detail_show_more_backdrop"></div>
 <!-- 4) Modal -->
-<div id="my_lessson_tutor_profile_detail_show_more_modal">
+<div id="my_lessson_tutor_profile_detail_show_more_modal" class="my_lessons_tutor_profile_modal_show_more">
   <!-- 4.1) Header -->
-  <div class="my_lessson_tutor_profile_detail_show_more_header">
-    <h2>
-      What my students say
-      <span class="my_lessson_tutor_profile_detail_show_more_info">ℹ️</span>
-    </h2>
-    <div class="buttons">
-      <!-- <button id="my_lessson_tutor_profile_detail_show_more_edit">Edit</button> -->
-      <button class="my_lessson_tutor_profile_detail_show_more_close">&times;</button>
+     <button class="my_lessons_tutor_profile_modal_close" id="my_lessons_tutor_profile_modal_close">&times;</button>
+    <div class="my_lessons_tutor_profile_modal_body" class="my_lessons_tutor_profile_modal_body">
+    <h3 class="mb-3">What my students say <img src="img/info1.svg"></h3>
+
+    <div class="d-flex gap-3 items-center" style="max-height: 104px;">
+      <!-- summary -->
+      <div class="my_lessons_tutor_profile_modal_rating_summary">
+        <div class="modal_avg">5</div>
+        <div class="modal_stars">★★★★★</div>
+        <div class="modal_total">3 reviews</div>
+      </div>
+
+      <!-- breakdown bars -->
+      <ul class="my_lessons_tutor_profile_modal_bars" style="flex:1">
+        <li><span>5</span><div class="bar_bg"><div class="bar_fill" style="width:100%"></div></div><span class="ml-3">(3)</span></li>
+        <li><span class="op-8">4</span><div class="bar_bg"><div class="bar_fill" style="width:0%"></div></div><span  class="ml-3 op-8">(0)</span></li>
+        <li><span class="op-8">3</span><div class="bar_bg"><div class="bar_fill" style="width:0%"></div></div><span  class="ml-3 op-8">(0)</span></li>
+        <li><span class="op-8">2</span><div class="bar_bg"><div class="bar_fill" style="width:0%"></div></div><span  class="ml-3 op-8">(0)</span></li>
+        <li><span class="op-8">1</span><div class="bar_bg"><div class="bar_fill" style="width:0%"></div></div><span  class="ml-3 op-8">(0)</span></li>
+      </ul>
+    </div>
+  
+    
+    <!-- reviews list -->
+    <div class="my_lessons_tutor_profile_modal_reviews">
+      
+      <div class="review-item mt-3">
+        <div class="review-header">
+          <img src="img/Latingles.svg" alt="Marcos" class="review-avatar">
+          <div>
+            <div class="review-name">Marcos</div>
+            <div class="review-date">March 27, 2025</div>
+          </div>
+          <div style="flex:1; display: flex; justify-content:end">
+            <button class="edit_review_btn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M16.707 3.29306L16 2.58606L15.293 3.29306L3.293 15.2931L3 15.5861V21.0001H8.414L8.707 20.7071L20.707 8.70706L21.414 8.00006L20.707 7.29306L16.707 3.29306ZM5 19.0001V16.4141L13.207 8.20706L15.793 10.7931L7.586 19.0001H5Z" fill="#121117"/>
+            </svg>
+              <span>Edit</span>
+
+            </button>
+          </div>
+        </div>
+        <div class="review-stars mt-3">★★★★★</div>
+        <div class="review-text">
+          I took several lessons with Carolina. She is proficient in English. In every lesson I learned new words and phrasal verbs, but most important, I felt confident learning with her. So, I recommend her since she has all the skills and knowledge to boost your English.
+        </div>
+      </div>
+       <div class="review-item">
+        <div class="review-header">
+          <img src="img/images/josh.jpg" alt="Marcos" class="review-avatar">
+          <div>
+            <div class="review-name">Marcos</div>
+            <div class="review-date">March 27, 2025</div>
+          </div>
+        </div>
+        <div class="review-stars mt-3">★★★★★</div>
+        <div class="review-text">
+          The best teacher on earth. She’s very professional and patient. * Carolina was the only teacher that really understand what i needed to improve my pronunciation and my language structure. And as a bonus! you will learn a lot of cultural things and expressions. So you wont end up using "regular and boring" ones. I definitely recommend her as a tutor/teacher. See you soon, Carolina! Best of luck to you! 🤞
+        </div>
+      </div>
+       <div class="review-item">
+        <div class="review-header">
+          <img src="img/images/josh.jpg" alt="Marcos" class="review-avatar">
+          <div>
+            <div class="review-name">Marcos</div>
+            <div class="review-date">March 27, 2025</div>
+          </div>
+        </div>
+        <div class="review-stars mt-3">★★★★★</div>
+        <div class="review-text">
+          Great teacher. Very patient and committed to helping the student feel confident with speaking and continue learning English
+         </div>
+      </div>
+      <div class="review-item">
+        <div class="review-header">
+          <img src="img/images/josh.jpg" alt="Marcos" class="review-avatar">
+          <div>
+            <div class="review-name">Marcos</div>
+            <div class="review-date">March 27, 2025</div>
+          </div>
+        </div>
+        <div class="review-stars mt-3">★★★★★</div>
+        <div class="review-text">
+          Great teacher. Very patient and committed to helping the student feel confident with speaking and continue learning English
+         </div>
+      </div>
     </div>
   </div>
 
-  <!-- 4.2) Scrollable content -->
-  <div class="my_lessson_tutor_profile_detail_show_more_scroll">
-
-    <!-- A) SUMMARY -->
-    <div class="summary">
-      <div class="overall">
-        <span class="number">5</span>
-        <div class="stars">★★★★★</div>
-        <div class="count">31 reviews</div>
-      </div>
-      <div class="distribution">
-        <div class="row"><span>5</span><div class="bar"><div style="width:100%"></div></div><span>(31)</span></div>
-        <div class="row"><span>4</span><div class="bar"><div style="width:0%"></div></div><span>(0)</span></div>
-        <div class="row"><span>3</span><div class="bar"><div style="width:0%"></div></div><span>(0)</span></div>
-        <div class="row"><span>2</span><div class="bar"><div style="width:0%"></div></div><span>(0)</span></div>
-        <div class="row"><span>1</span><div class="bar"><div style="width:0%"></div></div><span>(0)</span></div>
-      </div>
-    </div>
-
-    <!-- B) REVIEWS -->
-    <div class="reviews-container">
-
-      <!-- 1) Latingles -->
-      <div class="review">
-        <div class="review-header">
-          <div class="reviewer">
-            <img src="https://via.placeholder.com/40" alt="Latingles">
-            <div class="info">
-              <strong>Latingles</strong>
-              <small>May 12, 2025</small>
-            </div>
-          </div>
-          <button id="my_lessson_tutor_profile_detail_show_more_review_edit">Edit</button>
-        </div>
-        <div class="rating">★★★★★</div>
-        <p>excellent teacher. great experience</p>
-        <div class="reply">
-          <div class="reviewer">
-            <img src="https://via.placeholder.com/32" alt="Daniela">
-            <div class="info">
-              <strong>Reply from Daniela</strong>
-              <small>March 9, 2025</small>
-            </div>
-          </div>
-          <p>Thank you, for your thoughtful review. I am very happy with your progress.</p>
-        </div>
-      </div>
-      <hr>
-
-      <!-- 2) Rachel -->
-      <div class="review">
-        <div class="review-header">
-          <div class="reviewer">
-            <img src="https://via.placeholder.com/40" alt="Rachel">
-            <div class="info">
-              <strong>Rachel</strong>
-              <small>March 29, 2025</small>
-            </div>
-          </div>
-        </div>
-        <div class="rating">★★★★★</div>
-        <p>
-          Daniela has been exceptional in helping me progress. He is patient,
-          engaging, and tailors all the lessons and examples to my specific
-          needs, making every lesson enjoyable and productive. I highly recommend
-          him to anyone looking to learn or improve their English; his prices are
-          also very affordable given his experience and teaching skill level! Shukran ktiir Daniela
-        </p>
-        <div class="reply">
-          <div class="reviewer">
-            <img src="https://via.placeholder.com/32" alt="Daniela">
-            <div class="info">
-              <strong>Reply from Daniela</strong>
-              <small>April 19, 2025</small>
-            </div>
-          </div>
-          <p>
-            Thank you so much, Rachel! I am delighted that you are progressing
-            greatly from just a few lessons.
-          </p>
-        </div>
-      </div>
-      <hr>
-
-      <!-- 3) Christian -->
-      <div class="review">
-        <div class="review-header">
-          <div class="reviewer">
-            <img src="https://via.placeholder.com/40" alt="Christian">
-            <div class="info">
-              <strong>Christian</strong>
-              <small>November 10, 2024</small>
-            </div>
-          </div>
-        </div>
-        <div class="rating">★★★★★</div>
-        <p>Very friendly and patient</p>
-      </div>
-      <hr>
-
-      <!-- 4) Bishr / Kai -->
-      <div class="review">
-        <div class="review-header">
-          <div class="reviewer">
-            <img src="https://via.placeholder.com/40" alt="Bishr / Kai">
-            <div class="info">
-              <strong>Bishr / Kai</strong>
-              <small>November 6, 2024</small>
-            </div>
-          </div>
-        </div>
-        <div class="rating">★★★★★</div>
-        <p>Great and motivated. Very good with children</p>
-      </div>
-
-    </div><!-- /.reviews-container -->
-
-    <!-- C) EDIT FORM (hidden by default, moved into place on Edit) -->
-    <div class="my_lessson_tutor_profile_detail_show_more_edit_body" style="display:none;">
-      <div class="star-inputs">
-        <span>☆</span><span>☆</span><span>☆</span><span>☆</span><span>☆</span>
-      </div>
-      <textarea id="my_lessson_tutor_profile_detail_show_more_edit_text">excellent teacher. great experience</textarea>
-      <div class="my_lessson_tutor_profile_detail_show_more_edit_actions">
-        <button id="my_lessson_tutor_profile_detail_show_more_cancel_edit">Cancel</button>
-        <button id="my_lessson_tutor_profile_detail_show_more_update_edit">Update review</button>
-      </div>
-    </div>
-
-  </div><!-- /.scroll -->
 </div><!-- /#modal -->
 
 
