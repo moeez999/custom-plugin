@@ -1,9 +1,8 @@
     <link rel="stylesheet" href="css/find_group_profile_page_details.css">
     <link rel="stylesheet" href="css/find_group_profile_page_details_reviews.css">
     <link rel="stylesheet" href="css/find_group_profile_page_details_post_reviews.css">
-    <link rel="stylesheet" href="css/my_lessons_tutor_profile_details_book_trial_lesson.css">
-    <link rel="stylesheet" href="css/my_lesson_tutor_profile_details_send_message.css">
-
+    <link rel="stylesheet" href="css/find_group_profile_page_details_book_trial_lesson.css">
+    
       <!-- Tailwind + jQuery -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
@@ -565,18 +564,6 @@ $(document).on('click', '.save_list', function () {
 <?php require_once('find_group_profile_page_details_post_reviews.php');?>
 
 <!-- js -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="js/find_group_profile_page_details_reviews.js"></script>
 <script src="js/find_group_profile_page_details_show_more.js"></script>
 <script src="js/find_group_profile_page_details_post_reviews.js"></script>
-
- <!-- check if needed -->
- <?php require_once('find_group_profile_page_details_book_trail_lesson.php');?>
- <?php require_once('find_group_profile_page_details_send_message.php');?>
-
-
-  <script src="js/my_lessons_tutor_profile_details.js"></script>
-  <script src="js/my_lessons_tutor_profile_details_book_trial_lesson.js"></script>
-  <script src="js/my_lessons_tutor_profile_details_send_message.js"></script>
-
-  
