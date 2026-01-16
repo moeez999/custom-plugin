@@ -32,6 +32,30 @@
         0px 244.69px 68.44px 0px #00000000;
 
     }
+    
+    /* default icon */
+    .save_list {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: #111;
+      cursor: pointer;
+    }
+    .save_list svg path {
+      fill: none;
+      stroke: #000;
+    }
+
+    /* saved state */
+    .save_list.is-saved {
+      color: #121117;
+    }
+
+    .save_list.is-saved svg path {
+      fill: currentColor;
+      stroke: #111;
+    }
     #my_lessons_tutor_profile_left { flex:1; line-height:1.5; min-width: 653px;}
     #my_lessons_tutor_profile_right {
       width:400px;

@@ -517,53 +517,14 @@
     </div><!-- /right -->
  </div><!-- /container -->
 
- <style>
-/* default icon */
-.save_list {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  color: #111;
-  cursor: pointer;
-}
-.save_list svg path {
-  fill: none;
-  stroke: #000;
-}
-
-/* saved state */
-.save_list.is-saved {
-  color: #121117;
-}
-
-.save_list.is-saved svg path {
-  fill: currentColor;
-  stroke: #111;
-}
- </style>
-
- <script>
-$(document).on('click', '.save_list', function () {
-  const $btn = $(this);
-  const $text = $btn.find('span');
-
-  const isSaved = $btn.toggleClass('is-saved').hasClass('is-saved');
-
-  $text.text(isSaved ? 'Saved' : 'Save to my list');
-});
-
-
-
-  </script>
-
-
 <?php require_once('find_group_profile_page_details_reviews.php');?>
 <?php require_once("find_groups_book_trail_lesson.php");?>
 <?php require_once('find_group_profile_page_details_show_more.php');?>
 <?php require_once('find_group_profile_page_details_post_reviews.php');?>
 
 <!-- js -->
+<script src="js/find_group_profile_page_details.js"></script>
 <script src="js/find_group_profile_page_details_reviews.js"></script>
 <script src="js/find_group_profile_page_details_show_more.js"></script>
 <script src="js/find_group_profile_page_details_post_reviews.js"></script>
+
