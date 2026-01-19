@@ -1,43 +1,5 @@
 <!-- ===== Modal (standalone; not inside calendar) ===== -->
-<style>
-  .latmodal-backdrop{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.45);z-index:5000;padding:18px}
-  .latmodal-dialog{width:520px;max-width:92vw;background:#fff;border-radius:10px;box-shadow:0 18px 60px rgba(0,0,0,.22);transform:translateY(10px);opacity:0;transition:opacity .18s ease,transform .18s ease}
-  .latmodal-dialog.show{opacity:1;transform:translateY(0)}
-  .latmodal-header{padding:16px 22px 12px;display:flex;align-items:flex-start;justify-content:space-between}
-  .latmodal-title{color:#e53935;font-weight:700;font-size:1.05rem;line-height:1;position:relative;display:inline-block;padding-bottom:10px;margin-top:2px}
-  .latmodal-title:after{content:"";position:absolute;left:0;bottom:-24px;height:3px;width:92px;background:#e53935;border-radius:2px}
-  .latmodal-hr{height:1px;background:#ececec}
-  .latmodal-close{border:0;background:transparent;width:34px;height:34px;opacity:.8;margin-top:2px;cursor:pointer}
-  .latmodal-close:hover{opacity:1}
-  .latmodal-body{padding:14px 22px 10px}
-  .latmodal-busyline{display:flex;align-items:center;gap:12px;margin-bottom:6px}
-  .latmodal-busyline .ring{width:18px;height:18px;border-radius:50%;background:#fff;border:2px solid #f1c94a;display:inline-block}
-  .latmodal-busytext{font-weight:700;color:#111}
-  .latmodal-dt-row{display:flex;align-items:flex-start;gap:12px;margin-top:14px}
-  .latmodal-icon{width:20px;height:20px;margin-top:2px;opacity:.95}
-  .latmodal-dt-wrap{display:flex;align-items:flex-start;gap:18px}
-  .latmodal-col-date{min-width:180px}
-  .latmodal-date{font-weight:700;color:#1b1c1d}
-  .latmodal-weekday{color:#7b7f86;margin-top:4px}
-  .latmodal-vbar{width:1px;background:#e6e6e6;height:40px;margin:0 6px}
-  .latmodal-time{font-weight:700;color:#0f141a}
-  .latmodal-duration{color:#6c7a89;font-weight:700;font-size:.95rem;margin-top:6px}
-
-  .latmodal-footer{ padding:12px 22px 18px 22px; }
-  .latmodal-btn-cancel{
-    width:100%; 
-    border:2px solid #e53935; 
-    color:#e53935; 
-    background:#fff; 
-    font-weight:700;
-    border-radius:12px; 
-    padding:12px 16px; 
-    cursor:pointer;
-    font-size:1rem;
-  }
-  .latmodal-btn-cancel:hover{ background:#fff6f6; }
-
-</style>
+<link rel="stylesheet" href="<?php echo $CFG->wwwroot; ?>/local/customplugin/css/calendar_admin_details_time_off.css">
 
 <div id="latBusyBackdrop" class="latmodal-backdrop" aria-hidden="true">
   <div class="latmodal-dialog" role="dialog" aria-modal="true" aria-labelledby="latBusyTitle">

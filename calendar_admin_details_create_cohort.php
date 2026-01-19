@@ -2011,6 +2011,14 @@
         // Also close the recurrence modal if it's open
         $('.calendar_admin_details_create_cohort_customrec_modal').removeClass('open').attr('aria-hidden',
             'true');
+        // Remove slot highlight when closing modal
+        $(".day-inner .slots > div").removeClass("cohort-slot-highlight");
+        if (window._lastCohortSlot) {
+            window._lastCohortSlot = null;
+        }
+        if (window._lastCohortSlotInfo) {
+            window._lastCohortSlotInfo = null;
+        }
         $('#calendar_admin_details_create_cohort_modal_backdrop').fadeOut();
     });
 

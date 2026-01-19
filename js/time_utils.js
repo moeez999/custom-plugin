@@ -49,13 +49,18 @@ function minutes(hhmm) {
         return hhmm;
     }
     
-    // If input is not a string, log warning and return 0
-    if (!hhmm || typeof hhmm !== 'string') {
-        console.warn('minutes: Invalid input', hhmm);
+    // Handle null, undefined, or non-string inputs
+    if (hhmm === null || hhmm === undefined || typeof hhmm !== 'string') {
+        // Silently return 0 for null/undefined to avoid console spam
         return 0;
     }
     
     const trimmed = hhmm.trim();
+    
+    // Handle empty strings
+    if (!trimmed) {
+        return 0;
+    }
     
     // Check if it's in 12-hour format (contains AM/PM)
     const ampmMatch = trimmed.match(/(\d{1,2}):(\d{2})\s*([APap][Mm])$/);
@@ -81,7 +86,7 @@ function minutes(hhmm) {
     
     // Handle 24-hour format (HH:MM)
     const [h, m] = trimmed.split(":").map(Number);
-    if (isNaN(h) || isNaN(m)) {
+    if (isNaN(h) || isNaN(m) || trimmed.split(":").length !== 2) {
         console.warn('minutes: Could not parse', hhmm);
         return 0;
     }

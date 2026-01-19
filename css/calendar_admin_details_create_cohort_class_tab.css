@@ -679,3 +679,487 @@
 }
 
 /*=======================Teacher Dropdown list END=========================================*/
+
+/* Field error highlighting */
+.field-error {
+    border: 2px solid #dc3545 !important;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1) !important;
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-5px);
+    }
+
+    75% {
+        transform: translateX(5px);
+    }
+}
+
+/* Ensure form elements are visible when highlighted */
+.calendar_admin_details_create_cohort_class_tab_wrap.field-error {
+    border: 2px solid #dc3545 !important;
+    border-radius: 8px;
+    padding: 4px;
+}
+
+.one2one-add-student-card.field-error {
+    border: 2px solid #dc3545 !important;
+}
+
+#customDateDropdownDisplay.field-error,
+.time-input.field-error,
+#durationDropdownWrapper.field-error,
+#wl_start_date_btn.field-error,
+#wl_end_date_btn.field-error,
+.wl_scroll_widget.field-error {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.2) !important;
+}
+
+/* ====== WEEKLY LESSON MODAL STYLES ====== */
+.calendar_admin_details_create_cohort_schedule_btn {
+    width: 100%;
+    background-color: #fe2e0c;
+    color: white;
+    padding: 15px 0;
+    border: none;
+    font-weight: bold;
+    font-size: 1.11rem;
+    margin-top: 13px;
+    border-radius: 9px;
+    cursor: pointer;
+    letter-spacing: .5px;
+    box-shadow: 0 3px 13px 0 rgba(254, 46, 12, .07);
+    position: absolute;
+    bottom: 0;
+    z-index: 5;
+}
+
+#custom-weekly-lesson {
+    border-radius: 13px;
+    border: 1.5px solid #dadada;
+    padding: 10px 18px 12px 18px;
+}
+
+.time-dropdown div:hover {
+    background: #f6f6f6;
+    color: #fe2e0c;
+}
+
+#wl_tp_start {
+    width: auto;
+}
+
+#wl_tp_end {
+    width: auto;
+}
+
+.weekly_lesson_modal_container-create {
+
+    width: 100%;
+
+    font-size: 1.03rem;
+}
+
+.weekly_lesson_close_btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    font-size: 23px;
+    cursor: pointer;
+    color: #232323;
+    background: none;
+    border: none;
+}
+
+.weekly_lesson_stepper {
+    border: none;
+    background: #f3f3f3;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    font-size: 1.27rem;
+    font-weight: 600;
+    color: #232323;
+    cursor: pointer;
+    transition: background 0.13s;
+}
+
+.weekly_lesson_stepper:active {
+    background: #ececec;
+}
+
+.weekly_lesson_dropdown_wrapper {
+    position: relative;
+}
+
+.weekly_lesson_dropdown_btn {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border: 1.3px solid #dadada;
+    border-radius: 11px;
+    padding: 8px 18px;
+    font-size: 1.01rem;
+    cursor: pointer;
+    min-width: 120px;
+    font-weight: 600;
+    margin-left: 10px;
+}
+
+.weekly_lesson_dropdown_btn:hover {
+    border: 2px solid #232323;
+}
+
+.weekly_lesson_dropdown_btn svg {
+    margin-left: 7px;
+}
+
+.weekly_lesson_dropdown_list {
+    display: none;
+    position: absolute;
+    top: 110%;
+    left: 0;
+    width: 160px;
+    background: #fff;
+    border: 1.5px solid #dadada;
+    border-radius: 13px;
+    box-shadow: 0 4px 18px #0001;
+    z-index: 110;
+}
+
+.weekly_lesson_option {
+    padding: 13px 18px;
+    font-size: 1rem;
+    border-radius: 9px;
+    cursor: pointer;
+    transition: background 0.15s;
+    font-weight: 500;
+    color: #232323;
+}
+
+.weekly_lesson_option:hover {
+    background: #f6f6f6;
+    color: #fe2e0c;
+}
+
+.weekly_lesson_date_btn {
+    background: #ececec;
+    border: none;
+    border-radius: 7px;
+    font-size: 1.01rem;
+    font-weight: 500;
+    color: #6d6d6d;
+    padding: 8px 14px;
+    cursor: pointer;
+    opacity: 0.6;
+}
+
+.weekly_lesson_date_btn:hover {
+    border: 2px solid #232323;
+}
+
+.weekly_lesson_date_btn.enabled {
+    background: #fff;
+    color: #232323;
+    border: 1.3px solid #dadada;
+    opacity: 1;
+}
+
+.weekly_lesson_occurrence_counter {
+    display: inline-flex;
+    align-items: center;
+}
+
+.weekly_lesson_occurrence_counter button {
+    margin: 0 5px;
+}
+
+/* ---- Weekly day widgets ---- */
+.weekly_lesson_widget_row {
+    display: flex;
+    gap: 9px;
+    margin-top: 10px;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+}
+
+.wl_scroll_widget {
+    box-sizing: border-box;
+    width: 41px;
+    min-height: 41px;
+    background-color: #f2f2f2;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 104.61px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    user-select: none;
+    cursor: pointer;
+    opacity: 0.55;
+    transition: opacity .15s, box-shadow .15s, transform .06s;
+}
+
+.wl_scroll_widget:active {
+    transform: translateY(1px);
+}
+
+.wl_scroll_widget.selected {
+    opacity: 1;
+    box-shadow: 0 2px 10px #0001;
+    padding: 14px 0px;
+    border: 1px solid #fe2e0c;
+}
+
+.wl_widget_text {
+    color: #121212;
+    font-family: "Poppins", sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 21px;
+}
+
+.wl_widget_divider {
+    width: 25px;
+    border-top: 0.5px solid rgba(0, 0, 0, 0.2);
+    display: none;
+}
+
+.wl_scroll_widget.selected .wl_widget_divider {
+    display: block;
+}
+
+.wl_widget_button {
+    box-sizing: border-box;
+    width: 25px;
+    height: 25px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    border: none;
+}
+
+.wl_scroll_widget.selected .wl_widget_button {
+    display: flex;
+}
+
+.wl_widget_arrow {
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid #000000;
+}
+
+.wl_widget_time {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    text-align: center;
+    font-family: "Poppins", sans-serif;
+}
+
+.wl_scroll_widget.selected .wl_widget_time.has-time {
+    display: flex;
+}
+
+.wl_widget_hm {
+    color: #000;
+    font-weight: 500;
+    font-size: 11px;
+    line-height: 14px;
+}
+
+.wl_widget_period {
+    color: #ff2500;
+    font-weight: 500;
+    font-size: 11px;
+    line-height: 14px;
+}
+
+.wl_widget_dash {
+    font-size: 11px;
+    line-height: 14px;
+    color: #000;
+    opacity: .8;
+}
+
+.wl_widget_button.has-time {
+    display: none !important;
+}
+
+.wl_widget_button .wl_dot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    height: 18px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: #ff2500;
+    color: #fff;
+    font-family: "Poppins", sans-serif;
+    font-weight: 600;
+    font-size: 10px;
+    line-height: 18px;
+    margin-left: 4px;
+}
+
+.weekly_lesson_btn {
+    border-radius: 8px;
+    padding: 12px 0;
+    width: 100%;
+    font-size: 1.09rem;
+    font-weight: bold;
+    transition: background .14s, color .14s, border .14s;
+    border: none;
+    box-shadow: 0 2px 8px #0001;
+    letter-spacing: 0.01em;
+    margin-top: 10px;
+    outline: none;
+    cursor: pointer;
+}
+
+/* ====== Time Picker for Weekly ====== */
+.wl_timepicker_modal_backdrop {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.14);
+}
+
+.wl_timepicker_modal {
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 10px 36px 0 rgba(0, 0, 0, .16);
+    max-width: 300px;
+    max-width: 97vw;
+    padding: 26px 24px 24px 24px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: inherit;
+}
+
+.wl_tp_card_title {
+    color: #000000;
+    font-family: "Poppins", sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    margin: 0 0 16px 0;
+}
+
+.wl_tp_inputs_container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.wl_tp_input {
+    border: 2px solid rgba(0, 0, 0, 0.12);
+    border-radius: 10px;
+    padding: 9px 8px;
+    width: 99px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    background: #fff;
+}
+
+.wl_tp_button_container {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.wl_tp_cancel_btn {
+    background: #fff;
+    border: 1.3px solid #dadada;
+    border-radius: 8px;
+    color: #232323;
+    font-weight: 600;
+    font-size: 16px;
+    width: 99px;
+    height: 40px;
+    padding: 0;
+    cursor: pointer;
+}
+
+.wl_tp_done_btn {
+    background-color: #fe2e0c;
+    border: none;
+    border-radius: 8px;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 16px;
+    width: 99px;
+    height: 40px;
+    padding: 0;
+    cursor: pointer;
+}
+
+.wl_tp_done_btn:active {
+    background: #e52b10;
+}
+
+hr.weekly_lesson_hr {
+    border: none;
+    border-top: 1.3px solid #ececec;
+    margin: 10px 0 15px 0;
+}
+
+hr.weekly_lesson_hr.large {
+    margin: 15px 0;
+}
+
+#classTabContent .dropdown-search {
+    width: 95% !important;
+    margin: 10px auto;
+    padding: 8px 12px;
+    border: 1.3px solid #ccc;
+    border-radius: 8px;
+    display: block;
+    font-size: 0.95rem;
+    outline: none;
+}
+
+#classTabContent .dropdown-search:focus {
+    border-color: #fe2e0c;
+    box-shadow: 0 0 0 2px rgba(254, 46, 12, 0.1);
+}
+
+#classTabContent .custom-time-pill {
+    width: 100% !important;
+}
+
+#classTabContent .custom-time-dropdown::-webkit-scrollbar {
+    width: 0.5rem;
+}
+
+#classTabContent .custom-time-dropdown::-webkit-scrollbar-track {
+    background-color: transparent;
+}

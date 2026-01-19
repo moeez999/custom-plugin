@@ -826,42 +826,4 @@
 })();
 </script>
 
-<!-- CSS for red highlights -->
-<style>
-.field-error {
-    border: 2px solid red !important;
-    box-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
-}
-
-#conferenceTabContent .dropdown-search {
-    width: 90%;
-    margin: 5px auto;
-    display: block;
-    padding: 5px 8px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    outline: none;
-    font-size: 0.9rem;
-}
-
-.conferenceParticipantsLists-container {
-    overflow: visible;
-    /* allow dropdowns to escape horizontally/vertically */
-}
-
-.conferenceParticipantsLists-container::-webkit-scrollbar {
-    width: 0px;
-    background: transparent;
-}
-
-.conferenceParticipantsLists-container::-webkit-scrollbar-thumb {
-    background: #d1d1d1;
-    border-radius: 2px;
-}
-
-.conferenceParticipantsLists-container::-webkit-scrollbar-thumb:hover {
-    background: #f7f7f7;
-}
-
-.main-conference-participants-container {}
-</style>
+<link rel="stylesheet" href="<?php echo $CFG->wwwroot; ?>/local/customplugin/css/calendar_admin_details_create_cohort_conference_tab.css">

@@ -115,3 +115,306 @@
     min-width: 0;
   }
 }
+
+.calendar_admin_details_create_cohort_add_time_tab_label {
+    display: block;
+    font-weight: 600;
+    margin: 10px 0 6px;
+    color: #222;
+}
+
+.input-error {
+    border: 2px solid red !important;
+    box-shadow: 0 0 4px rgba(255, 0, 0, 0.4);
+}
+
+#addTimeForm {
+    height: 535px;
+}
+
+.addtime-teacher-selected:hover {
+    border: 2px solid #232323;
+}
+
+.addtime-title-input:hover {
+    border: 2px solid #232323;
+}
+
+.calendar_admin_details_create_cohort_add_time_tab_row {
+    display: flex;
+    gap: 12px;
+
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+#addtimeTeacherList::-webkit-scrollbar {
+    width: 0.5rem;
+}
+
+#addtimeTeacherList::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+#addtimeTeacherList::-webkit-scrollbar-thumb {
+    background-color: #e6e6f0;
+    border-radius: 10px;
+}
+
+@media(max-width:520px) {
+    .calendar_admin_details_create_cohort_add_time_tab_row {
+        /* grid-template-columns: 1fr 130px; */
+    }
+}
+
+.calendar_admin_details_create_cohort_add_time_tab_date_btn {
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    background: #fff;
+    border: 1.5px solid #e7e7ef;
+    color: #222;
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .03);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.calendar_admin_details_create_cohort_add_time_tab_date_btn:hover {
+    border: 2px solid #232323;
+}
+
+#addTimeTabContent .custom-time-pill {
+    width: auto !important;
+    flex: none;
+}
+
+#addTimeTabContent .custom-time-pill .time-input {
+    width: 100%;
+    border: 0;
+    outline: none;
+    background: transparent;
+    font-size: 15px;
+    color: #222;
+    cursor: pointer;
+    margin: 0;
+    padding: 22px 16px !important;
+}
+
+#addTimeTabContent .custom-time-pill .time-input:hover {
+    border: 2px solid #232323 !important;
+}
+
+.custom-time-dropdown {
+    display: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 6px);
+    z-index: 10;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    max-height: 220px;
+    overflow: auto;
+    box-shadow: 0 12px 26px rgba(0, 0, 0, .12);
+}
+
+.custom-time-dropdown button {
+    width: 100%;
+    text-align: left;
+    padding: 9px 11px;
+    border: 0;
+    background: #fff;
+    cursor: pointer;
+}
+
+.custom-time-dropdown button:hover {
+    background: #f6f6fb;
+}
+
+.calendar_admin_details_create_cohort_add_time_tab_backdrop {
+    display: none;
+    position: fixed;
+    z-index: 3002;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.14);
+}
+
+.calendar_admin_details_create_cohort_add_time_tab_modal {
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 10px 36px 0 rgba(0, 0, 0, .16);
+    max-width: 300px;
+    max-width: 97vw;
+    padding: 26px 24px 24px 24px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: inherit;
+}
+
+.calendar_admin_details_create_cohort_add_time_tab_header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.calendar_admin_details_create_cohort_add_time_tab_navbtn {
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    cursor: pointer;
+}
+
+.calendar_admin_details_create_cohort_add_time_tab_month_label {
+    font-size: 1.18rem;
+    font-weight: 600;
+}
+
+.calendar_admin_details_create_cohort_add_time_tab_weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 36px);
+    grid-gap: 6px;
+    justify-content: center;
+    font-weight: bold;
+    color: #888;
+    margin-bottom: 6px;
+    text-align: center;
+    font-size: 1.01rem;
+}
+
+.calendar_admin_details_create_cohort_add_time_tab_weekdays > div {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.calendar_admin_details_create_cohort_add_time_tab_grid {
+    display: grid;
+    grid-template-columns: repeat(7, 36px);
+    grid-gap: 6px;
+    justify-content: center;
+}
+
+.calendar_admin_details_create_cohort_add_time_tab_grid > * {
+    width: 36px;
+    height: 36px;
+    background: #fff;
+}
+
+.calendar_admin_details_create_cohort_add_time_tab_day {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.01rem;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.13s;
+    background: #fff;
+    border: none;
+    padding: 0;
+    color: #222;
+}
+
+.calendar_admin_details_create_cohort_add_time_tab_day.inactive {
+    color: #c2c2c2;
+    background: #fff;
+    pointer-events: none;
+    cursor: default;
+}
+
+.calendar_admin_details_create_cohort_add_time_tab_day--selected,
+.calendar_admin_details_create_cohort_add_time_tab_day:hover {
+    background: #fe2e0c;
+    color: #fff;
+}
+
+.calendar_admin_details_create_cohort_add_time_tab_done {
+    width: 100%;
+    background: #fe2e0c;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding: 12px 0;
+    margin-top: 19px;
+    cursor: pointer;
+    transition: background 0.13s;
+}
+
+.calendar_admin_details_create_cohort_add_time_tab_done:active {
+    background: #e52b10;
+}
+
+#addTimeAllDay {
+    width: 22px;
+    height: 22px;
+    accent-color: #fe2e0c;
+    background-color: #fff;
+    border: 1.5px solid #ccc;
+    border-radius: 8px;
+    appearance: none;
+    cursor: pointer;
+    position: relative;
+    margin-right: 6px;
+    transition: all 0.2s ease;
+}
+
+#addTimeAllDay:checked {
+    background-color: #fe2e0c;
+    border-color: #fe2e0c;
+}
+
+#addTimeAllDay:checked::after {
+    content: "";
+    position: absolute;
+    left: 8px;
+    top: 4px;
+    width: 5px;
+    height: 10px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.addtime-submit-btn {
+    margin-top: 12px;
+    background: #fe2e0c;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 11px 0;
+    width: 98%;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 15px;
+    transition: all 0.25s ease;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    position: absolute;
+    bottom: 0
+}
+
+.addtime-submit-btn:hover {
+    background: #e52a05;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+}
+
+.addtime-submit-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}

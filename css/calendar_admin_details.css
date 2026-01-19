@@ -701,7 +701,7 @@ body {
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* Internet Explorer and Edge (legacy) */
   max-height: 72.5vh !important;
-  height: auto !important;
+  height: 72.5vh !important; /* Fixed height to enable scrolling */
 }
 
 .calender-hide-scrollbar::-webkit-scrollbar {

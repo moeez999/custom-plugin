@@ -1,182 +1,4 @@
-<style>
-#calendar_admin_agenda_content {
-    background: #ffffff;
-    padding: 0px 14px 7px 14px;
-    max-height: 75vh;
-    padding-top: 24px;
-    padding-bottom: 48px;
-    overflow-y: auto;
-    overflow-x: hidden;
-}
-
-.container-fluid .calendar_admin_agenda_bg {
-    border-top: 1.5px solid #e4dcdc;
-}
-
-#calendar_admin_agenda_content::-webkit-scrollbar {
-    width: 0px;
-}
-
-#calendar_admin_agenda_content::-webkit-scrollbar-track {
-    background: #f1f1f1;
-}
-
-#calendar_admin_agenda_content::-webkit-scrollbar-thumb {
-    background: #888;
-}
-
-#calendar_admin_agenda_content::-webkit-scrollbar-thumb:hover {
-    background: #555;
-}
-
-
-.calendar-meeting-items {
-    margin-top: 17px;
-}
-
-/* Remove excessive boldness, set left alignment, normal font weight */
-.calendar_admin_agenda_event_card {
-    border: 1.2px solid #ededed;
-    border-radius: 8px;
-    background: #fff;
-    padding: 16px 36px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    margin-bottom: 0;
-    font-family: 'Inter', Arial, sans-serif;
-    font-weight: 500;
-    max-width: 100%;
-    margin-left: 0;
-    margin-right: 0;
-    margin-top: 10px;
-}
-
-/* Event color classes - match main calendar */
-.calendar_admin_agenda_event_card.e-blue {
-    --event-border-color: #7c96ff;
-    border-color: var(--event-border-color);
-    background: color-mix(in srgb, #7c96ff 10%, #ffffff);
-}
-
-.calendar_admin_agenda_event_card.e-green {
-    --event-border-color: #2faa7f;
-    border-color: var(--event-border-color);
-    background: color-mix(in srgb, #2faa7f 10%, #ffffff);
-}
-
-.calendar_admin_agenda_event_card.e-purple {
-    --event-border-color: #b535ff;
-    border-color: rgba(181, 53, 255, 0.7) !important;
-    background: color-mix(in srgb, #b535ff 10%, #ffffff) !important;
-    border-bottom-color: rgba(181, 53, 255, 0.7) !important;
-}
-
-.calendar_admin_agenda_event_card.e-orange {
-    --event-border-color: #ff8a06;
-    border-color: rgba(255, 138, 6, 0.7) !important;
-    background: color-mix(in srgb, #ff8a06 10%, #ffffff) !important;
-    border-bottom-color: rgba(255, 138, 6, 0.7) !important;
-}
-
-.calendar_admin_agenda_event_card.e-timeoff {
-    --event-border-color: rgba(253, 216, 48, 0.7);
-    border-color: rgba(253, 216, 48, 0.7);
-    background: color-mix(in srgb, #fdd830 10%, #ffffff);
-}
-
-/* Hover effect: slightly darken the background for each color class */
-.calendar_admin_agenda_event_card:hover {
-    filter: brightness(0.96);
-    transition: filter 0.18s;
-}
-
-.calendar_admin_agenda_event_card.e-blue:hover {
-    background: color-mix(in srgb, #7c96ff 18%, #ffffff);
-}
-
-.calendar_admin_agenda_event_card.e-green:hover {
-    background: color-mix(in srgb, #2faa7f 18%, #ffffff);
-}
-
-.calendar_admin_agenda_event_card.e-purple:hover {
-    background: color-mix(in srgb, #b535ff 18%, #ffffff) !important;
-}
-
-.calendar_admin_agenda_event_card.e-orange:hover {
-    background: color-mix(in srgb, #ff8a06 18%, #ffffff) !important;
-}
-
-.calendar_admin_agenda_event_card.e-timeoff:hover {
-    background: color-mix(in srgb, #fdd830 18%, #ffffff);
-}
-
-.calendar_admin_agenda_title {
-    font-weight: 600 !important;
-    /* lighter bold */
-    color: #222;
-    font-size: 16px;
-    line-height: 1.2;
-}
-
-.calendar_admin_agenda_time {
-    /* font-weight: 500; */
-    color: #222;
-    min-width: 120px;
-    font-size: 14px;
-    letter-spacing: 0.01em;
-}
-
-.calendar_admin_agenda_daycol {
-
-    padding-top: 10px;
-    display: flex;
-
-    justify-content: center;
-
-    flex-direction: column;
-    align-items: center;
-}
-
-.calendar_admin_agenda_date {
-    font-weight: 600;
-    font-size: 18px;
-    color: #23272f;
-    margin-bottom: 2px;
-}
-
-.calendar_admin_agenda_day {
-    font-size: 15px;
-    color: #888;
-}
-
-.calendar_admin_agenda_hr {
-    border: none;
-    border-top: 1.5px solid #e4dcdc;
-    margin: 26px 0 0 0;
-}
-
-@media (max-width: 768px) {
-    .calendar_admin_agenda_event_card {
-        max-width: 98vw;
-        padding: 12px 8px;
-        font-size: 14px;
-    }
-
-    .calendar_admin_agenda_title {
-        font-size: 15px;
-    }
-
-    .calendar_admin_agenda_time {
-        font-size: 13px;
-        min-width: 75px;
-    }
-
-    .calendar_admin_agenda_date {
-        font-size: 1.1rem;
-    }
-}
-</style>
+<link rel="stylesheet" href="<?php echo $CFG->wwwroot; ?>/local/customplugin/css/calendar_admin_details_agenda_tab.css">
 
 <!-- Agenda Tab Content -->
 <div id="calendar_admin_agenda_content" style="display:none;">
@@ -301,8 +123,33 @@ function renderAgendaView() {
         const $eventsCol = $daySection.find(`#events-for-${dateStr}`);
 
         dayEvents.forEach(event => {
-            const startTime = typeof event.start === 'string' ? event.start : fmt12(event.start);
-            const endTime = typeof event.end === 'string' ? event.end : fmt12(event.end);
+            // Convert 24-hour format to 12-hour format for display
+            let startTime, endTime;
+            if (typeof event.start === 'string') {
+              // Check if it's already in 12-hour format (has AM/PM)
+              if (event.start.match(/\s*(AM|PM)/i)) {
+                startTime = event.start;
+              } else {
+                // Convert 24-hour format (HH:MM) to 12-hour format
+                const startMinutes = timeToMinutes(event.start);
+                startTime = fmt12(startMinutes);
+              }
+            } else {
+              startTime = fmt12(event.start);
+            }
+            
+            if (typeof event.end === 'string') {
+              // Check if it's already in 12-hour format (has AM/PM)
+              if (event.end.match(/\s*(AM|PM)/i)) {
+                endTime = event.end;
+              } else {
+                // Convert 24-hour format (HH:MM) to 12-hour format
+                const endMinutes = timeToMinutes(event.end);
+                endTime = fmt12(endMinutes);
+              }
+            } else {
+              endTime = fmt12(event.end);
+            }
 
             // Get teacher color if available
             let teacherColorStyle = '';
