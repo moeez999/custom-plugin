@@ -1140,21 +1140,4 @@
 })();
 </script>
 
-<!-- ✅ CSS for red highlights -->
-<style>
-.field-error {
-    border: 2px solid red !important;
-    box-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
-}
-
-#peerTalkTabContent .dropdown-search {
-    width: 90%;
-    margin: 5px auto;
-    display: block;
-    padding: 5px 8px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    outline: none;
-    font-size: 0.9rem;
-}
-</style>
+<link rel="stylesheet" href="<?php echo $CFG->wwwroot; ?>/local/customplugin/css/calendar_admin_details_create_cohort_peertalk_tab.css">

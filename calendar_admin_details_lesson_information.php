@@ -2589,14 +2589,40 @@ let closeAll;
     // ===== Cancel modal action (uses global loader + toast) =====
     $('#calendar_admin_cancel_confirm_btn').on('click', function() {
         const $btn = $(this);
+        
+        // Get reason (required)
+        const reason = $('#resched_reason_step3').val() ? $('#resched_reason_step3').val().trim() : '';
+        if (!reason) {
+            showToast('Cancel failed', 'Please select a reason for cancellation', 'Error');
+            return;
+        }
+        
+        // Get message (optional)
+        const message = $('#calendar_admin_cancel_message').val() ? $('#calendar_admin_cancel_message').val().trim() : '';
+        
+        // Get event data
+        if (!currentEventData) {
+            showToast('Cancel failed', 'No event data available', 'Error');
+            return;
+        }
+        
+        const eventId = currentEventData.eventid || currentEventData.id;
+        const googlemeetid = currentEventData.googlemeetid || currentEventData.googlemeetId;
+        
+        if (!eventId || !googlemeetid) {
+            showToast('Cancel failed', 'Missing event information', 'Error');
+            return;
+        }
+        
+        // Build payload according to update_one_on_one.php format
         const payload = {
-            reason: $('#resched_reason_step3').val() || '',
-            message: $('#calendar_admin_cancel_message').val() || '',
-            acknowledged: $('#calendar_admin_cancel_ack').is(':checked'),
-            selectedDate: $('#resched_date').val() || '',
-            eventId: currentEventData ? currentEventData.eventid : '',
-            teacherId: currentEventData ? currentEventData.teacherId : '',
-            status: 'cancelled'
+            scope: 'THIS_OCCURRENCE',
+            eventId: parseInt(eventId),
+            googlemeetid: parseInt(googlemeetid),
+            cancel: {
+                reason: reason,
+                message: message
+            }
         };
 
         console.log('=== CANCEL LESSON PAYLOAD ===');
@@ -2609,7 +2635,7 @@ let closeAll;
         const origHtml = $btn.html();
         $btn.prop('disabled', true).html('<span class="btn-spinner"></span> Cancelling...');
 
-        fetch('ajax/cancel_one2one.php', {
+        fetch(M.cfg.wwwroot + '/local/customplugin/ajax/update_one_on_one.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json; charset=utf-8'
@@ -2617,15 +2643,22 @@ let closeAll;
                 body: JSON.stringify(payload)
             })
             .then(res => res.json().catch(() => ({
-                status: 'error',
+                ok: false,
                 error: 'Invalid JSON'
             })))
             .then(json => {
                 if (window.hideGlobalLoader) window.hideGlobalLoader();
-                if (json && json.status === 'success') {
+                if (json && json.ok === true) {
                     // use existing toast helper for lesson info modal
-                    showToast('1:1 session cancelled', json.message || '', 'Session Cancelled');
+                    showToast('1:1 session cancelled', json.message || 'Event cancelled successfully', 'Session Cancelled');
                     setTimeout(closeAll, 500);
+                    
+                    // Refresh calendar
+                    if (window.refetchCustomPluginData) {
+                        window.refetchCustomPluginData('cancel');
+                    } else if (window.fetchCalendarEvents) {
+                        window.fetchCalendarEvents();
+                    }
                 } else {
                     const err = (json && (json.error || json.message)) || 'Cancel failed';
                     showToast('Cancel failed', err, 'Error');
@@ -2636,7 +2669,7 @@ let closeAll;
             .catch(err => {
                 if (window.hideGlobalLoader) window.hideGlobalLoader();
                 showToast('Cancel failed', err && err.message ? err.message : 'Request failed',
-                'Error');
+                    'Error');
                 $btn.prop('disabled', false).html(origHtml);
             });
     });

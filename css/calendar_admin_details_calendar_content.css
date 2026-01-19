@@ -322,6 +322,61 @@ body.filtering-enabled .time-label:hover {
   overflow: hidden;
 }
 
+/* Drag and Drop Styles */
+.event.draggable-event {
+  cursor: move;
+  user-select: none;
+}
+
+.event.draggable-event:hover {
+  box-shadow: 0 6px 16px rgba(25, 35, 60, 0.12);
+}
+
+.event.dragging {
+  opacity: 0.5;
+  transform: scale(0.95);
+  box-shadow: 0 8px 24px rgba(25, 35, 60, 0.2);
+  z-index: 10000 !important;
+}
+
+.day-inner.drag-over {
+  background-color: rgba(9, 93, 243, 0.05);
+  border: 2px dashed rgba(9, 93, 243, 0.3);
+  border-radius: 4px;
+}
+
+/* Faded event styling - apply grayscale but exclude icons and images */
+.event.faded-reschedule {
+  filter: grayscale(1);
+}
+
+/* Reset grayscale filter for all icons and images in faded events */
+.event.faded-reschedule .ev-status-icon,
+.event.faded-reschedule .ev-status-icon *,
+.event.faded-reschedule .ev-status-icon img,
+.event.faded-reschedule .ev-single,
+.event.faded-reschedule .ev-single *,
+.event.faded-reschedule .ev-single img,
+.event.faded-reschedule .ev-makeup,
+.event.faded-reschedule .ev-makeup *,
+.event.faded-reschedule .ev-makeup img,
+.event.faded-reschedule .ev-repeat,
+.event.faded-reschedule .ev-repeat *,
+.event.faded-reschedule .ev-repeat img,
+.event.faded-reschedule .ev-avatar,
+.event.faded-reschedule .ev-avatar *,
+.event.faded-reschedule img,
+.event.faded-reschedule [data-teacher-pic],
+.event.faded-reschedule [data-teacher-pic] *,
+.event.faded-reschedule [data-teacher-pic] img,
+.event.faded-reschedule .teacher-change-icon,
+.event.faded-reschedule .teacher-change-icon *,
+.event.faded-reschedule .teacher-change-icon img,
+.event.faded-reschedule .ev-midnight-icon,
+.event.faded-reschedule .ev-midnight-icon * {
+  filter: grayscale(0) !important;
+}
+
 .ev-top {
   display: flex;
   align-items: center;
@@ -585,6 +640,11 @@ body.filtering-enabled .time-label:hover {
 .event:hover {
   box-shadow: 0 10px 24px rgba(17, 24, 39, 0.18);
   filter: saturate(1.05);
+}
+
+/* Keep faded events faded on hover, but allow icons/images to remain in color */
+.event.faded-reschedule:hover {
+  filter: grayscale(1) saturate(1.05);
 }
 
 /* Toggle Filter Button Styles */

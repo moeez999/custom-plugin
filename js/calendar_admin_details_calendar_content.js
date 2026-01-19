@@ -75,7 +75,9 @@ window.teacherExtraSlots = window.teacherExtraSlots || {};
 // Status icon map and getActiveStatusMeta are now in js/event_icon_utils.js
 // Using: EventIconUtils.getActiveStatusMeta() and EventIconUtils.STATUS_ICON_MAP from event_icon_utils.js
 // Keep local reference for backward compatibility
-const STATUS_ICON_MAP = window.EventIconUtils ? window.EventIconUtils.STATUS_ICON_MAP : {};
+const STATUS_ICON_MAP = window.EventIconUtils
+  ? window.EventIconUtils.STATUS_ICON_MAP
+  : {};
 
 function getActiveStatusMeta(statuses) {
   if (window.EventIconUtils && window.EventIconUtils.getActiveStatusMeta) {
@@ -95,6 +97,117 @@ function getActiveStatusMeta(statuses) {
     return { ...STATUS_ICON_MAP.rescheduled, code, statusObj };
   }
   return null;
+}
+
+// Helper function to get history icon based on history type
+function getHistoryIcon(historyItem) {
+  if (!historyItem || !historyItem.type)
+    return { icon: "./img/ev-repeat.svg", label: "Updated" };
+
+  const type = String(historyItem.type).toLowerCase();
+
+  // Map history types to icons
+  const iconMap = {
+    rescheduled: { icon: "./img/makeup.svg", label: "Rescheduled" },
+    teacher_change: {
+      icon: "./img/single-lesson.svg",
+      label: "Teacher Changed",
+    },
+    time_change: { icon: "./img/ev-repeat.svg", label: "Time Changed" },
+    date_change: { icon: "./img/ev-repeat.svg", label: "Date Changed" },
+    cancelled: { icon: "./img/ev-repeat.svg", label: "Cancelled" },
+    completed: { icon: "./img/ev-repeat.svg", label: "Completed" },
+  };
+
+  return iconMap[type] || { icon: "./img/ev-repeat.svg", label: "Updated" };
+}
+
+// Helper function to format history item description
+function formatHistoryDescription(historyItem) {
+  if (!historyItem) return "";
+
+  const parts = [];
+
+  // Add time change info
+  if (historyItem.time && historyItem.time.from && historyItem.time.to) {
+    // Format time change (e.g., "19:00 - 07:00" → "7:00 PM - 7:00 AM")
+    const fromTime = historyItem.time.from;
+    const toTime = historyItem.time.to;
+
+    // Parse time strings (format: "HH:MM - HH:MM" or "HH:MM")
+    let fromStr = fromTime;
+    let toStr = toTime;
+
+    // If time contains " - ", split it
+    if (fromTime.includes(" - ")) {
+      const timeParts = fromTime.split(" - ");
+      fromStr = timeParts[0] || "";
+      toStr = timeParts[1] || "";
+    }
+
+    // Convert to 12-hour format for display
+    if (fromStr && toStr) {
+      const fromMinutes = timeToMinutes(fromStr.trim());
+      const toMinutes = timeToMinutes(toStr.trim());
+      if (!isNaN(fromMinutes) && !isNaN(toMinutes)) {
+        parts.push(`Time: ${fmt12(fromMinutes)} → ${fmt12(toMinutes)}`);
+      } else {
+        parts.push(`Time: ${fromStr} → ${toStr}`);
+      }
+    } else {
+      parts.push(`Time: ${fromTime} → ${toTime}`);
+    }
+  }
+
+  // Add status change info
+  if (historyItem.status) {
+    if (
+      typeof historyItem.status === "object" &&
+      historyItem.status.from &&
+      historyItem.status.to
+    ) {
+      if (historyItem.status.from !== historyItem.status.to) {
+        parts.push(
+          `Status: ${historyItem.status.from} → ${historyItem.status.to}`
+        );
+      }
+    } else if (typeof historyItem.status === "string") {
+      parts.push(`Status: ${historyItem.status}`);
+    }
+  }
+
+  // Add date if available
+  if (historyItem.changedAt) {
+    try {
+      // Parse date string (format: "2026-01-13 09:09")
+      const dateStr = historyItem.changedAt;
+      const [datePart, timePart] = dateStr.split(" ");
+      if (datePart && timePart) {
+        const [year, month, day] = datePart.split("-");
+        const [hour, minute] = timePart.split(":");
+        const date = new Date(
+          parseInt(year),
+          parseInt(month) - 1,
+          parseInt(day),
+          parseInt(hour),
+          parseInt(minute)
+        );
+        const formattedDate = date.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+        parts.push(formattedDate);
+      } else {
+        parts.push(dateStr);
+      }
+    } catch (e) {
+      parts.push(historyItem.changedAt);
+    }
+  }
+
+  return parts.join(" • ") || "Updated";
 }
 
 window.events = [];
@@ -459,7 +572,9 @@ $(function () {
 
         // Get date from timestamp or existing date
         // Using timestampToDate() from date_utils.js
-        const eventDate = ev.start_ts ? window.timestampToDate(ev.start_ts) : ev.date;
+        const eventDate = ev.start_ts
+          ? window.timestampToDate(ev.start_ts)
+          : ev.date;
 
         // Parse date to get day name
         const dateObj = new Date(eventDate);
@@ -1112,6 +1227,13 @@ $(function () {
         return; // Do nothing for availability/extra slot events
       }
 
+      // Allow dragging for draggable events - don't prevent default on mousedown
+      // The dragstart event will handle dragging, clicks are handled separately
+      if ($clicked.hasClass("draggable-event")) {
+        // Don't prevent default - allow native drag to work
+        return;
+      }
+
       e.preventDefault();
       e.stopPropagation();
 
@@ -1173,31 +1295,67 @@ $(function () {
             )
           : null;
 
-        const rescheduledCurrent =
-          currentClickedEvent.rescheduled?.current ||
+        const summaryCurrent =
+          currentClickedEvent.summary?.current ||
           statusWithDetails?.details?.current;
-        const rescheduledPrevious =
-          currentClickedEvent.rescheduled?.previous ||
+        const summaryPrevious =
+          currentClickedEvent.summary?.previous ||
           statusWithDetails?.details?.previous;
 
-        const prevTeacherId = rescheduledPrevious?.teacher;
-        const currTeacherId = rescheduledCurrent?.teacher;
+        const prevTeacherId =
+          summaryPrevious?.teacher?.id || summaryPrevious?.teacher;
+        const currTeacherId =
+          summaryCurrent?.teacher?.id || summaryCurrent?.teacher;
 
         const teacherChanged =
           prevTeacherId && currTeacherId && prevTeacherId !== currTeacherId;
 
+        // Check if time changed by comparing previous and current date/start/end
+        const timeChanged =
+          summaryPrevious &&
+          summaryCurrent &&
+          (summaryPrevious.date !== summaryCurrent.date ||
+            summaryPrevious.start !== summaryCurrent.start ||
+            summaryPrevious.end !== summaryCurrent.end ||
+            summaryPrevious.start_ts !== summaryCurrent.start_ts ||
+            summaryPrevious.end_ts !== summaryCurrent.end_ts);
+
         if (teacherChanged) {
           currentClickedEvent.isTeacherChanged = true;
 
-          // Ensure teacher pics are present for tooltip/icon
-          const currentPic = rescheduledCurrent?.teacher_pic || null;
-          const previousPic = rescheduledPrevious?.teacher_pic || null;
+          // Get teacher pics
+          let currentPic =
+            summaryCurrent?.teacher?.avatar ||
+            summaryCurrent?.teacher_pic ||
+            null;
+          let previousPic =
+            summaryPrevious?.teacher?.avatar ||
+            summaryPrevious?.teacher_pic ||
+            null;
 
-          if (currentClickedEvent.rescheduled?.current && currentPic) {
-            currentClickedEvent.rescheduled.current.teacher_pic = currentPic;
+          // When teacher changed, swap the images:
+          // - Previous (Teacher A) shows new teacher (Teacher B) image
+          // - Current (Teacher B) shows previous teacher (Teacher A) image
+          if (teacherChanged) {
+            // Swap: previous gets new teacher image, current gets previous teacher image
+            const tempPic = currentPic;
+            currentPic = previousPic; // Current (Teacher B) shows previous teacher (Teacher A) image
+            previousPic = tempPic; // Previous (Teacher A) shows new teacher (Teacher B) image
           }
-          if (currentClickedEvent.rescheduled?.previous && previousPic) {
-            currentClickedEvent.rescheduled.previous.teacher_pic = previousPic;
+
+          if (currentClickedEvent.summary?.current && currentPic) {
+            if (!currentClickedEvent.summary.current.teacher) {
+              currentClickedEvent.summary.current.teacher = {};
+            }
+            currentClickedEvent.summary.current.teacher.avatar = currentPic;
+            currentClickedEvent.summary.current.teacher_pic = currentPic;
+          }
+          if (currentClickedEvent.summary?.previous && previousPic) {
+            if (!currentClickedEvent.summary.previous.teacher) {
+              currentClickedEvent.summary.previous.teacher = {};
+            }
+            currentClickedEvent.summary.previous.teacher.avatar = previousPic;
+            currentClickedEvent.summary.previous.teacher_pic = previousPic;
           }
         }
         // Teacher time off: open Time Off modal
@@ -1750,6 +1908,7 @@ $(function () {
     let selectedTeacherName = "";
 
     if (teacherListItems.length > 0) {
+      debugger;
       teacherListItems.each(function () {
         const teacherId = $(this).data("userid");
         const teacherName = $(this).data("name");
@@ -2553,7 +2712,7 @@ $(function () {
             await window.fetchCalendarEvents();
           }
         } catch (fetchError) {
-          console.error('Error refreshing calendar:', fetchError);
+          console.error("Error refreshing calendar:", fetchError);
           // Hide loader on error
           if (window.hideGlobalLoader) window.hideGlobalLoader();
         }
@@ -2595,6 +2754,383 @@ $(function () {
       },
     });
   });
+
+  // ============================================================
+  // DRAG AND DROP FUNCTIONALITY
+  // ============================================================
+
+  let draggedEvent = null;
+  let dragStartY = 0;
+  let originalEventStart = 0;
+  let originalEventEnd = 0;
+  let originalEventDuration = 0;
+
+  // Helper function to convert minutes to time string (HH:MM format for API)
+  function minutesToHHMM(minutes) {
+    const h = Math.floor(minutes / 60) % 24;
+    const m = minutes % 60;
+    return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+  }
+
+  // Helper function to calculate time from Y position in day column
+  function calculateTimeFromY(y, dayInner) {
+    const dayInnerTop = dayInner.getBoundingClientRect().top;
+    const relativeY = y - dayInnerTop;
+    const minutesFromStart = Math.round(relativeY / PX_PER_MIN);
+    const newStartMinutes = START_H * 60 + minutesFromStart;
+    // Round to nearest 30-minute slot
+    const roundedMinutes = Math.round(newStartMinutes / SLOT_MIN) * SLOT_MIN;
+    return Math.max(
+      START_H * 60,
+      Math.min(END_H * 60 - SLOT_MIN, roundedMinutes)
+    );
+  }
+
+  // Drag start handler
+  $(document)
+    .off("dragstart", ".draggable-event")
+    .on("dragstart", ".draggable-event", function (e) {
+      const $event = $(this);
+      draggedEvent = $event;
+      dragStartY = e.originalEvent.clientY;
+      dragOccurred = false; // Reset flag at start of drag
+
+      // Store original event data
+      originalEventStart = parseInt($event.data("start"));
+      originalEventEnd = parseInt($event.data("end"));
+      originalEventDuration = originalEventEnd - originalEventStart;
+
+      // Add visual feedback
+      $event.addClass("dragging");
+
+      // Set drag data
+      e.originalEvent.dataTransfer.effectAllowed = "move";
+      e.originalEvent.dataTransfer.setData("text/html", this.outerHTML);
+
+      // Prevent default drag image
+      const dragImage = document.createElement("div");
+      dragImage.style.position = "absolute";
+      dragImage.style.top = "-1000px";
+      dragImage.innerHTML = this.outerHTML;
+      document.body.appendChild(dragImage);
+      e.originalEvent.dataTransfer.setDragImage(dragImage, 0, 0);
+      setTimeout(() => document.body.removeChild(dragImage), 0);
+    });
+
+  // Track if a drag occurred to prevent click handling
+  let dragOccurred = false;
+
+  // Drag end handler
+  $(document)
+    .off("dragend", ".draggable-event")
+    .on("dragend", ".draggable-event", function (e) {
+      const $event = $(this);
+      $event.removeClass("dragging");
+      $(".day-inner").removeClass("drag-over");
+      dragOccurred = true;
+      draggedEvent = null;
+
+      // Reset flag after a short delay to allow click handler to check it
+      setTimeout(() => {
+        dragOccurred = false;
+      }, 100);
+    });
+
+  // Drag over handler for day columns
+  $(document)
+    .off("dragover", ".day-inner")
+    .on("dragover", ".day-inner", function (e) {
+      if (!draggedEvent) return;
+      e.preventDefault();
+      e.originalEvent.dataTransfer.dropEffect = "move";
+      $(this).addClass("drag-over");
+    });
+
+  // Drag leave handler
+  $(document)
+    .off("dragleave", ".day-inner")
+    .on("dragleave", ".day-inner", function (e) {
+      // Only remove class if we're actually leaving the element
+      if (
+        !$(this).is(e.relatedTarget) &&
+        !$(this).has(e.relatedTarget).length
+      ) {
+        $(this).removeClass("drag-over");
+      }
+    });
+
+  // Drop handler
+  $(document)
+    .off("drop", ".day-inner")
+    .on("drop", ".day-inner", function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (!draggedEvent) return;
+
+      const $dayInner = $(this);
+      const $event = draggedEvent;
+
+      // Get drop position
+      const dropY = e.originalEvent.clientY;
+      const newStartMinutes = calculateTimeFromY(dropY, this);
+      const newEndMinutes = newStartMinutes + originalEventDuration;
+
+      // Get event data
+      const eventId = $event.data("event-id");
+      const googlemeetId = $event.data("googlemeet-id") || $event.data("cm-id");
+      const classType = $event.data("class-type");
+      const source = $event.data("source");
+      const teacherId = $event.data("teacher-id");
+      const newDate = $dayInner.data("date");
+      // Try both data-date and data-event-date attributes for old date
+      const oldDate = $event.data("event-date") || $event.data("date");
+
+      // Validate required data
+      if (!eventId) {
+        if (window.showToast) {
+          window.showToast("Cannot drag this event: missing event ID", "error");
+        }
+        return;
+      }
+
+      // Don't allow drop if date/time hasn't changed
+      const oldStartMinutes = originalEventStart;
+      if (newDate === oldDate && newStartMinutes === oldStartMinutes) {
+        $dayInner.removeClass("drag-over");
+        return;
+      }
+
+      // Format times for API (HH:MM format)
+      const newStartTime = minutesToHHMM(newStartMinutes);
+      const newEndTime = minutesToHHMM(newEndMinutes);
+      const oldStartTime = minutesToHHMM(oldStartMinutes);
+      const oldEndTime = minutesToHHMM(originalEventEnd);
+
+      // Determine which API endpoint to use
+      const isOne2One =
+        classType === "one2one_weekly" ||
+        classType === "one2one_single" ||
+        source === "one2one";
+
+      // Show loader
+      if (window.showGlobalLoader) window.showGlobalLoader();
+
+      // Prepare payload based on event type
+      let apiUrl, payload;
+
+      if (isOne2One) {
+        // Use update_one_on_one.php endpoint
+        apiUrl =
+          M.cfg.wwwroot + "/local/customplugin/ajax/update_one_on_one.php";
+
+        // Get student ID from event data
+        const studentIds = $event.data("student-ids");
+        const studentId = studentIds
+          ? typeof studentIds === "string"
+            ? parseInt(studentIds.split(",")[0])
+            : parseInt(studentIds[0])
+          : null;
+
+        if (!studentId || !teacherId) {
+          if (window.hideGlobalLoader) window.hideGlobalLoader();
+          if (window.showToast) {
+            window.showToast(
+              "Cannot drag this event: missing student or teacher ID",
+              "error"
+            );
+          }
+          return;
+        }
+
+        // Normalize dates to YYYY-MM-DD format (remove time component if present)
+        let normalizedOldDate = oldDate;
+        let normalizedNewDate = newDate;
+        if (normalizedOldDate && normalizedOldDate.includes("T")) {
+          normalizedOldDate = normalizedOldDate.split("T")[0];
+        }
+        if (normalizedNewDate && normalizedNewDate.includes("T")) {
+          normalizedNewDate = normalizedNewDate.split("T")[0];
+        }
+
+        // Determine what changed
+        const dateChanged = normalizedNewDate !== normalizedOldDate;
+        const timeChanged = newStartMinutes !== oldStartMinutes;
+
+        // Build payload according to update_one_on_one.php format
+        payload = {
+          scope: "THIS_OCCURRENCE",
+          eventId: parseInt(eventId),
+          googlemeetid: parseInt(googlemeetId || $event.data("cm-id")),
+          apply: {
+            time: timeChanged,
+            teacher: false,
+            status: false,
+            days: false,
+            period: false,
+            end: false,
+            date: dateChanged,
+          },
+        };
+
+        // Add anchorDate if date changed (original date in YYYY-MM-DD format)
+        if (dateChanged && normalizedOldDate) {
+          payload.anchorDate = normalizedOldDate;
+        }
+
+        // Add time data if time changed
+        // The API supports both current.start/end and time.start/end formats
+        // We'll use time.start/end as fallback (API will use it if current is empty)
+        if (timeChanged) {
+          payload.time = {
+            start: newStartTime,
+            end: newEndTime,
+          };
+          // Also provide current object for explicit time change
+          payload.current = {
+            start: newStartTime,
+            end: newEndTime,
+          };
+        }
+
+        // Add date data if date changed (in YYYY-MM-DD format)
+        if (dateChanged && normalizedNewDate) {
+          payload.date = {
+            new: normalizedNewDate,
+          };
+        }
+
+        console.log("📦 Drag-and-drop payload for 1:1 event:", {
+          eventId: payload.eventId,
+          googlemeetid: payload.googlemeetid,
+          dateChanged,
+          timeChanged,
+          oldDate: normalizedOldDate,
+          newDate: normalizedNewDate,
+          oldTime: oldStartTime,
+          newTime: newStartTime,
+          payload: payload,
+        });
+      } else {
+        // Use reschedule_groupclass.php endpoint
+        apiUrl =
+          M.cfg.wwwroot + "/local/customplugin/ajax/reschedule_groupclass.php";
+
+        if (!googlemeetId) {
+          if (window.hideGlobalLoader) window.hideGlobalLoader();
+          if (window.showToast) {
+            window.showToast(
+              "Cannot drag this event: missing Google Meet ID",
+              "error"
+            );
+          }
+          return;
+        }
+
+        payload = {
+          eventid: eventId,
+          googlemeetid: googlemeetId,
+          oldTeacherId: teacherId,
+          newTeacherId: teacherId, // Keep same teacher for now
+          oldDate: oldDate,
+          newDate: newDate,
+          oldStart: oldStartTime,
+          oldEnd: oldEndTime,
+          newStart: newStartTime,
+          newEnd: newEndTime,
+        };
+      }
+
+      // Make AJAX call
+      $.ajax({
+        url: apiUrl,
+        type: "POST",
+        data: JSON.stringify(payload),
+        contentType: "application/json",
+        success: async function (response) {
+          console.log("Drag and drop reschedule response:", response);
+
+          if (window.showToast) {
+            window.showToast("Event moved successfully!", "success");
+          }
+
+          // Refresh calendar
+          try {
+            if (window.refetchCustomPluginData) {
+              await window.refetchCustomPluginData("reschedule");
+            } else if (window.fetchCalendarEvents) {
+              await window.fetchCalendarEvents();
+            }
+          } catch (fetchError) {
+            console.error("Error refreshing calendar:", fetchError);
+            if (window.hideGlobalLoader) window.hideGlobalLoader();
+          }
+        },
+        error: function (xhr) {
+          console.error("Error rescheduling event:", xhr);
+          if (window.hideGlobalLoader) window.hideGlobalLoader();
+
+          let errorMessage = "Failed to move event";
+          if (xhr.responseJSON && xhr.responseJSON.error) {
+            errorMessage = xhr.responseJSON.error;
+          } else if (xhr.responseText) {
+            try {
+              const errorData = JSON.parse(xhr.responseText);
+              errorMessage = errorData.error || errorMessage;
+            } catch (e) {
+              // Use default error message
+            }
+          }
+
+          if (window.showToast) {
+            window.showToast(errorMessage, "error");
+          }
+        },
+      });
+
+      $dayInner.removeClass("drag-over");
+    });
+
+  // Click handler for draggable events (only fires if no drag occurred)
+  $(document)
+    .off("click.draggable-event", ".draggable-event")
+    .on("click.draggable-event", ".draggable-event", function (e) {
+      // Only handle click if no drag occurred
+      if (dragOccurred) {
+        return;
+      }
+
+      const $clicked = $(this);
+      const $day = $clicked.closest(".day-inner");
+      const dateStr = $day.data("date");
+      const teacherId = $clicked.data("teacher-id");
+      const eventStart = $clicked.data("start");
+      const eventEnd = $clicked.data("end");
+
+      // Find matching event from window.events array
+      const clickedEvent = window.events.find((ev) => {
+        const evDate = ev.date;
+        const evStart =
+          typeof ev.start === "string" ? minutes(ev.start) : ev.start;
+        const evEnd = typeof ev.end === "string" ? minutes(ev.end) : ev.end;
+        return (
+          evDate === dateStr && evStart === eventStart && evEnd === eventEnd
+        );
+      });
+
+      if (clickedEvent) {
+        currentClickedEvent = clickedEvent;
+        const classType = clickedEvent.classType;
+        const source = clickedEvent.source;
+
+        // Handle event click - open menu for group events
+        if (classType !== "one2one_weekly" && classType !== "one2one_single") {
+          if (typeof openMenuOptionsDropdown === "function") {
+            openMenuOptionsDropdown(e, this);
+          }
+        }
+      }
+    });
 
   /* ====== CLICK: empty slot -> open cohort modal ====== */
   $("#grid")
@@ -2732,7 +3268,7 @@ $(function () {
     currentWeekStart.setDate(currentWeekStart.getDate() - 7);
     // Make currentWeekStart available globally for fetchCalendarEvents
     window.currentWeekStart = currentWeekStart;
-    
+
     // First render the week layout to establish week dates
     renderWeek(true);
     // Then fetch fresh events for this week
@@ -2749,7 +3285,7 @@ $(function () {
     currentWeekStart.setDate(currentWeekStart.getDate() + 7);
     // Make currentWeekStart available globally for fetchCalendarEvents
     window.currentWeekStart = currentWeekStart;
-    
+
     // First render the week layout to establish week dates
     renderWeek(true);
     // Then fetch fresh events for this week
@@ -2766,11 +3302,11 @@ $(function () {
     currentWeekStart = window.mondayOf(new Date());
     // Make currentWeekStart available globally for fetchCalendarEvents
     window.currentWeekStart = currentWeekStart;
-    
+
     // Clear date filters when navigating to a new week to avoid hiding events
     // Time slot filters can remain as they're not week-specific
     clearDateFilter();
-    
+
     // First render the week layout to establish week dates
     renderWeek(true);
     // Then fetch fresh events for this week
@@ -2990,30 +3526,61 @@ $(function () {
           details.current.action === "reschedule_instant"
         ) {
           hasRescheduleInstant = true;
-          previousEvent = raw.rescheduled.previous;
-          currentEvent = raw.rescheduled.current;
+          previousEvent = raw.summary?.previous || raw.rescheduled?.previous;
+          currentEvent = raw.summary?.current || raw.rescheduled?.current;
         }
       }
 
       // If reschedule_instant with both previous and current, create two events
       if (hasRescheduleInstant && previousEvent && currentEvent) {
         // Convert times to minutes for comparison
-        const prevStart = typeof previousEvent.start === "string"
-          ? minutes(previousEvent.start)
-          : previousEvent.start;
-        const prevEnd = typeof previousEvent.end === "string"
-          ? minutes(previousEvent.end)
-          : previousEvent.end;
-        const currStart = typeof currentEvent.start === "string"
-          ? minutes(currentEvent.start)
-          : currentEvent.start;
-        const currEnd = typeof currentEvent.end === "string"
-          ? minutes(currentEvent.end)
-          : currentEvent.end;
-        
+        const prevStart =
+          typeof previousEvent.start === "string"
+            ? minutes(previousEvent.start)
+            : previousEvent.start;
+        const prevEnd =
+          typeof previousEvent.end === "string"
+            ? minutes(previousEvent.end)
+            : previousEvent.end;
+        const currStart =
+          typeof currentEvent.start === "string"
+            ? minutes(currentEvent.start)
+            : currentEvent.start;
+        const currEnd =
+          typeof currentEvent.end === "string"
+            ? minutes(currentEvent.end)
+            : currentEvent.end;
+
         // Check if time has changed (same start and end times)
-        const timeUnchanged = prevStart === currStart && prevEnd === currEnd && previousEvent.date === currentEvent.date;
-        
+        const timeUnchanged =
+          prevStart === currStart &&
+          prevEnd === currEnd &&
+          previousEvent.date === currentEvent.date;
+
+        // Check if teacher changed
+        const oldTeacherId = previousEvent.teacher;
+        const newTeacherId = currentEvent.teacher;
+        const teacherChanged =
+          oldTeacherId && newTeacherId && oldTeacherId !== newTeacherId;
+
+        // Get teacher images
+        const prevTeacherPic =
+          previousEvent.teacher_pic ||
+          previousEvent.teacherpic ||
+          previousEvent.teacher?.avatar ||
+          raw.rescheduled?.previous?.teacher_pic ||
+          raw.summary?.previous?.teacher_pic ||
+          raw.summary?.previous?.teacher?.avatar ||
+          null;
+        const currTeacherPic =
+          currentEvent.teacher_pic ||
+          currentEvent.teacherpic ||
+          currentEvent.teacher?.avatar ||
+          raw.rescheduled?.current?.teacher_pic ||
+          raw.summary?.current?.teacher_pic ||
+          raw.summary?.current?.teacher?.avatar ||
+          null;
+
         // Create faded previous event
         const prevIdx = weekDates.indexOf(previousEvent.date);
         if (prevIdx !== -1) {
@@ -3024,6 +3591,28 @@ $(function () {
           ePrev.teacherId = previousEvent.teacher || raw.teacherId;
           ePrev.isFadedReschedule = true; // Mark as faded
           ePrev.isReschedulePrevious = true;
+
+          // When teacher changed: previous event (Teacher A) shows NEW teacher (Teacher B) image
+          if (teacherChanged && currTeacherPic) {
+            ePrev.avatar = currTeacherPic;
+            // Update summary/rescheduled data to reflect swapped image
+            if (ePrev.summary && ePrev.summary.previous) {
+              ePrev.summary.previous.teacher_pic = ePrev.avatar;
+              ePrev.summary.previous.teacherpic = ePrev.avatar;
+              if (ePrev.summary.previous.teacher) {
+                ePrev.summary.previous.teacher.avatar = ePrev.avatar;
+              }
+            }
+            if (ePrev.rescheduled && ePrev.rescheduled.previous) {
+              ePrev.rescheduled.previous.teacher_pic = ePrev.avatar;
+              ePrev.rescheduled.previous.teacherpic = ePrev.avatar;
+            }
+          } else {
+            // No teacher change, use previous teacher's image
+            if (prevTeacherPic) {
+              ePrev.avatar = prevTeacherPic;
+            }
+          }
 
           // Handle midnight-crossing for previous event
           if (ePrev.end < ePrev.start) {
@@ -3058,10 +3647,37 @@ $(function () {
             eCurr.isRescheduleCurrent = true;
 
             // Check if teacher changed
-            const oldTeacherId = previousEvent.teacher;
-            const newTeacherId = currentEvent.teacher;
-            if (oldTeacherId !== newTeacherId) {
+            if (teacherChanged) {
               eCurr.isTeacherChanged = true;
+
+              // Ensure current teacher's avatar is set first
+              if (!eCurr.avatar && currTeacherPic) {
+                eCurr.avatar = currTeacherPic;
+              }
+
+              // When teacher changed: current event (Teacher B) shows PREVIOUS teacher (Teacher A) image
+              if (prevTeacherPic) {
+                // Ensure current teacher's avatar is set in summary before swapping
+                if (currTeacherPic && eCurr.summary && eCurr.summary.current) {
+                  if (!eCurr.summary.current.teacher) {
+                    eCurr.summary.current.teacher = {};
+                  }
+                  if (!eCurr.summary.current.teacher.avatar) {
+                    eCurr.summary.current.teacher.avatar = currTeacherPic;
+                  }
+                }
+
+                eCurr.avatar = prevTeacherPic;
+                // Update summary/rescheduled data to reflect swapped image
+                if (eCurr.summary && eCurr.summary.current) {
+                  eCurr.summary.current.teacher_pic = prevTeacherPic;
+                  eCurr.summary.current.teacherpic = prevTeacherPic;
+                }
+                if (eCurr.rescheduled && eCurr.rescheduled.current) {
+                  eCurr.rescheduled.current.teacher_pic = prevTeacherPic;
+                  eCurr.rescheduled.current.teacherpic = prevTeacherPic;
+                }
+              }
             }
 
             // Handle midnight-crossing for current event
@@ -3292,18 +3908,26 @@ $(function () {
         // Status and type icons are now rendered using EventIconUtils
         // Using: EventIconUtils.renderStatusIcons() and EventIconUtils.renderTypeIcon() from event_icon_utils.js
         const statusMeta = getActiveStatusMeta(ev.statuses);
-        let statusIconHtml = '';
-        if (window.EventIconUtils && typeof window.EventIconUtils.renderStatusIcons === 'function') {
+        let statusIconHtml = "";
+        if (
+          window.EventIconUtils &&
+          typeof window.EventIconUtils.renderStatusIcons === "function"
+        ) {
           try {
-            statusIconHtml = window.EventIconUtils.renderStatusIcons(ev, statusMeta, {
-              hideForRescheduleCurrent: true,
-              position: 'absolute',
-              top: '6px',
-              right: '6px',
-              zIndex: 2
-            }, currentWeekStart);
+            statusIconHtml = window.EventIconUtils.renderStatusIcons(
+              ev,
+              statusMeta,
+              {
+                hideForRescheduleCurrent: true,
+                position: "absolute",
+                top: "6px",
+                right: "6px",
+                zIndex: 2,
+              },
+              currentWeekStart
+            );
           } catch (e) {
-            console.warn('EventIconUtils.renderStatusIcons error:', e);
+            console.warn("EventIconUtils.renderStatusIcons error:", e);
             // Fallback on error
             if (ev.isRescheduleCurrent && !ev.isTeacherChanged) {
               statusIconHtml = "";
@@ -3331,8 +3955,16 @@ $(function () {
             statusMeta.code === "cancel_no_makeup");
         const fadedClass =
           ev.isFadedReschedule || isCancelled ? " faded-reschedule" : "";
-        const fadedStyle =
-          ev.isFadedReschedule || isCancelled ? "filter: grayscale(1);" : "";
+        // Don't apply grayscale filter inline - CSS will handle it while excluding icons/images
+        const fadedStyle = "";
+
+        // Determine if event should be draggable (exclude availability and extra_slot events)
+        const isDraggable =
+          ev.classType !== "availability" &&
+          ev.classType !== "extra_slot" &&
+          ev.source !== "availability" &&
+          ev.source !== "extra_slot" &&
+          !ev.isFadedReschedule; // Don't allow dragging faded reschedule events
 
         // Build event HTML - hide details for short events
         const $ev = $(`
@@ -3340,13 +3972,15 @@ $(function () {
             ev.color || "e-blue"
           } ${teacherColorClass} ${classTypeClass}${
           ev.isMidnightCrossing ? " midnight-crossing" : ""
-        }${
-          isShortEvent ? " short-event" : ""
-        }${fadedClass}" style="${combinedStyle}${fadedStyle}" data-start="${
-          ev.start
-        }" data-end="${ev.end}" data-date="${ev.date || ""}" data-event-date="${
+        }${isShortEvent ? " short-event" : ""}${fadedClass}${
+          isDraggable ? " draggable-event" : ""
+        }" style="${combinedStyle}${fadedStyle}${
+          isDraggable ? " cursor: move;" : ""
+        }" data-start="${ev.start}" data-end="${ev.end}" data-date="${
           ev.date || ""
-        }" data-title="${(ev.title || "").replace(/"/g, "&quot;")}" ${
+        }" data-event-date="${ev.date || ""}" data-title="${(
+          ev.title || ""
+        ).replace(/"/g, "&quot;")}" ${
           ev.teacherId ? `data-teacher-id="${ev.teacherId}"` : ""
         }${ev.pairedId ? ` data-paired-id="${ev.pairedId}"` : ""}${
           ev.part ? ` data-part="${ev.part}"` : ""
@@ -3383,12 +4017,12 @@ $(function () {
             : ""
         }${ev.eventid ? ` data-event-id="${ev.eventid}"` : ""}${
           ev.cmid ? ` data-cm-id="${ev.cmid}"` : ""
-        }${ev.classType ? ` data-class-type="${ev.classType}"` : ""}${
-          ev.source ? ` data-source="${ev.source}"` : ""
-        }
+        }${ev.googlemeetid ? ` data-googlemeet-id="${ev.googlemeetid}"` : ""}${
+          ev.classType ? ` data-class-type="${ev.classType}"` : ""
+        }${ev.source ? ` data-source="${ev.source}"` : ""}
         ${ev.repeat !== undefined ? ` data-repeat="${ev.repeat}"` : ""}${
           statusMeta ? ` data-status-code="${statusMeta.code}"` : ""
-        }>
+        }${isDraggable ? ` draggable="true"` : ""}>
             ${
               isShortEvent &&
               ev.classType !== "availability" &&
@@ -3405,7 +4039,19 @@ $(function () {
                       ? `<span class=\"ev-makeup\" title=\"Make-up Class\"><img src=\"./img/makeup.svg\" alt=\"\"></span>`
                       : `<span class=\"ev-repeat\" title=\"Repeats\"><img src=\"./img/ev-repeat.svg\" alt=\"\"></span>`
                   }
-                  <span>${fmt12(ev.start)} – ${fmt12(ev.end)}</span>
+                  <span>${fmt12(
+                    typeof ev.start === "string"
+                      ? minutes(ev.start)
+                      : typeof ev.start === "number"
+                      ? ev.start
+                      : 0
+                  )} – ${fmt12(
+                    typeof ev.end === "string"
+                      ? minutes(ev.end)
+                      : typeof ev.end === "number"
+                      ? ev.end
+                      : 0
+                  )}</span>
                   ${statusIconHtml}
                   ${
                     ev.isMidnightCrossing
@@ -3484,12 +4130,20 @@ $(function () {
                     ev.classType !== "availability" &&
                     ev.classType !== "extra_slot"
                       ? `<div class=\"ev-when\">${fmt12(
-                          ev.start 
-                            ? (typeof ev.start === "string" ? minutes(ev.start) : (typeof ev.start === "number" ? ev.start : 0))
+                          ev.start
+                            ? typeof ev.start === "string"
+                              ? minutes(ev.start)
+                              : typeof ev.start === "number"
+                              ? ev.start
+                              : 0
                             : 0
                         )} – ${fmt12(
-                          ev.end 
-                            ? (typeof ev.end === "string" ? minutes(ev.end) : (typeof ev.end === "number" ? ev.end : 0))
+                          ev.end
+                            ? typeof ev.end === "string"
+                              ? minutes(ev.end)
+                              : typeof ev.end === "number"
+                              ? ev.end
+                              : 0
                             : 0
                         )}</div>`
                       : ""
@@ -3510,6 +4164,41 @@ $(function () {
                               : ev.studentnames
                             : ev.title || ""
                         }</div>`
+                      : ""
+                  }
+                  ${
+                    // Add history section if history exists and event is not too short
+                    !isShortEvent &&
+                    ev.history &&
+                    Array.isArray(ev.history) &&
+                    ev.history.length > 0 &&
+                    ev.classType !== "availability" &&
+                    ev.classType !== "extra_slot"
+                      ? `<div class="ev-history" style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(0,0,0,0.1);">
+                          <div style="font-size:11px;font-weight:600;color:#666;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;">History</div>
+                          <div style="display:flex;flex-direction:column;gap:4px;">
+                            ${ev.history
+                              .slice(0, 4)
+                              .map((hist, idx) => {
+                                const histIcon = getHistoryIcon(hist);
+                                const histDesc = formatHistoryDescription(hist);
+                                return `
+                                <div class="ev-history-item" style="display:flex;align-items:center;gap:6px;font-size:11px;color:#666;">
+                                  <img src="${histIcon.icon}" alt="${histIcon.label}" style="width:14px;height:14px;opacity:0.7;flex-shrink:0;">
+                                  <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${histDesc}">${histDesc}</span>
+                                </div>
+                              `;
+                              })
+                              .join("")}
+                            ${
+                              ev.history.length > 4
+                                ? `<div style="font-size:10px;color:#999;font-style:italic;">+${
+                                    ev.history.length - 4
+                                  } more</div>`
+                                : ""
+                            }
+                          </div>
+                        </div>`
                       : ""
                   }
                 `
@@ -3616,7 +4305,7 @@ $(function () {
             });
           });
         }
-
+        debugger;
         // Add hover tooltip for teacher change icon
         // Updated selector: data attributes are now on inner span, not on .ev-status-icon
         const teacherChangeIcon = $ev.find("[data-teacher-pic]");
@@ -3651,7 +4340,7 @@ $(function () {
 
             // Position tooltip above the icon, centered horizontally, with small gap
             let top = iconRect.top - tooltipHeight - gap;
-            let left = iconRect.left + (iconRect.width / 2) - (tooltipWidth / 2);
+            let left = iconRect.left + iconRect.width / 2 - tooltipWidth / 2;
 
             // Adjust if tooltip goes off screen horizontally
             if (left < 10) {
@@ -3704,24 +4393,23 @@ $(function () {
         }
 
         // Add hover tooltip for makeup events
-        if (
-          ev.isRescheduleCurrent &&
-          !ev.isTeacherChanged &&
-          ev.rescheduled &&
-          ev.rescheduled.previous
-        ) {
+        const summaryPrevious =
+          ev.summary?.previous || ev.rescheduled?.previous;
+        if (ev.isRescheduleCurrent && !ev.isTeacherChanged && summaryPrevious) {
+          // Get previous time from summary or rescheduled
+          const prevStart = summaryPrevious.start_time || summaryPrevious.start;
+          const prevEnd = summaryPrevious.end_time || summaryPrevious.end;
+
           const $makeupTooltip = $(`
             <div class="notification-card makeup-tooltip-card">
               <div class="notification-content">
                 <h3 class="notification-title">Makeup session detail</h3>
                 <p class="notification-body">Old timing : ${fmt12(
-                  typeof ev.rescheduled.previous.start === "string"
-                    ? minutes(ev.rescheduled.previous.start)
-                    : ev.rescheduled.previous.start
+                  typeof prevStart === "string"
+                    ? minutes(prevStart)
+                    : prevStart || 0
                 )} – ${fmt12(
-            typeof ev.rescheduled.previous.end === "string"
-              ? minutes(ev.rescheduled.previous.end)
-              : ev.rescheduled.previous.end
+            typeof prevEnd === "string" ? minutes(prevEnd) : prevEnd || 0
           )}<br>New timing : ${fmt12(ev.start)} – ${fmt12(ev.end)}</p>
               </div>
               <svg class="notification-arrow" width="18" height="12" viewBox="0 0 18 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -3744,7 +4432,7 @@ $(function () {
 
             // Position tooltip above the event, centered horizontally, with small gap
             let top = eventRect.top - tooltipHeight - gap;
-            let left = eventRect.left + (eventRect.width / 2) - (tooltipWidth / 2);
+            let left = eventRect.left + eventRect.width / 2 - tooltipWidth / 2;
 
             // Adjust if tooltip goes off screen horizontally
             if (left < 10) {
@@ -3833,11 +4521,11 @@ $(function () {
   let selectedDateFilters = []; // array of YYYY-MM-DD
   let selectedTimeSlotFilters = new Set(); // minutes
   let filteringEnabled = false; // toggle state for filters - initially disabled
-  
+
   // Make these variables globally accessible for applyEventTypeFilter
   window.selectedDateFilters = selectedDateFilters;
   window.selectedTimeSlotFilters = selectedTimeSlotFilters;
-  
+
   function applyFilters() {
     $(".event").hide();
 
@@ -3846,11 +4534,13 @@ $(function () {
 
     // Get checked event type filters
     const checkedFilters = [];
-    $('.events-filter-popover input.ef-input').not('#ef_select_all').each(function() {
-      if ($(this).is(':checked')) {
-        checkedFilters.push($(this).data('value'));
-      }
-    });
+    $(".events-filter-popover input.ef-input")
+      .not("#ef_select_all")
+      .each(function () {
+        if ($(this).is(":checked")) {
+          checkedFilters.push($(this).data("value"));
+        }
+      });
     const hasEventTypeFilter = checkedFilters.length > 0;
 
     $(".event").each(function () {
@@ -3881,64 +4571,76 @@ $(function () {
       // Check event type filter if any are selected
       let eventTypeMatch = true;
       if (hasEventTypeFilter) {
-        const classType = $event.data('class-type') || '';
-        const source = $event.data('source') || '';
-        const selectedTeachers = window.calendarFilterState ? window.calendarFilterState.getSelectedTeachers() : [];
+        const classType = $event.data("class-type") || "";
+        const source = $event.data("source") || "";
+        const selectedTeachers = window.calendarFilterState
+          ? window.calendarFilterState.getSelectedTeachers()
+          : [];
         const isSingleTeacher = selectedTeachers.length === 1;
 
         eventTypeMatch = false;
 
-        if (checkedFilters.includes('cohorts')) {
-          if (!classType || (
-            classType !== 'one2one_weekly' &&
-            classType !== 'one2one_single' &&
-            classType !== 'peertalk' &&
-            classType !== 'conference' &&
-            classType !== 'teacher_timeoff' &&
-            classType !== 'availability' &&
-            classType !== 'extra_slot' &&
-            source !== 'peertalk' &&
-            source !== 'conference' &&
-            source !== 'teacher_timeoff' &&
-            source !== 'availability' &&
-            source !== 'extra_slot'
-          )) {
+        if (checkedFilters.includes("cohorts")) {
+          if (
+            !classType ||
+            (classType !== "one2one_weekly" &&
+              classType !== "one2one_single" &&
+              classType !== "peertalk" &&
+              classType !== "conference" &&
+              classType !== "teacher_timeoff" &&
+              classType !== "availability" &&
+              classType !== "extra_slot" &&
+              source !== "peertalk" &&
+              source !== "conference" &&
+              source !== "teacher_timeoff" &&
+              source !== "availability" &&
+              source !== "extra_slot")
+          ) {
             eventTypeMatch = true;
           }
         }
 
-        if (checkedFilters.includes('one1')) {
-          if (classType === 'one2one_weekly' || classType === 'one2one_single') {
+        if (checkedFilters.includes("one1")) {
+          if (
+            classType === "one2one_weekly" ||
+            classType === "one2one_single"
+          ) {
             eventTypeMatch = true;
           }
         }
 
-        if (checkedFilters.includes('peertalk')) {
-          if (classType === 'peertalk' || source === 'peertalk') {
+        if (checkedFilters.includes("peertalk")) {
+          if (classType === "peertalk" || source === "peertalk") {
             eventTypeMatch = true;
           }
         }
 
-        if (checkedFilters.includes('conference')) {
-          if (classType === 'conference' || source === 'conference') {
+        if (checkedFilters.includes("conference")) {
+          if (classType === "conference" || source === "conference") {
             eventTypeMatch = true;
           }
         }
 
-        if (checkedFilters.includes('timeoff')) {
-          if (classType === 'teacher_timeoff' || source === 'teacher_timeoff') {
+        if (checkedFilters.includes("timeoff")) {
+          if (classType === "teacher_timeoff" || source === "teacher_timeoff") {
             eventTypeMatch = true;
           }
         }
 
-        if (checkedFilters.includes('extraslots')) {
-          if (!isSingleTeacher && (classType === 'extra_slot' || source === 'extra_slot')) {
+        if (checkedFilters.includes("extraslots")) {
+          if (
+            !isSingleTeacher &&
+            (classType === "extra_slot" || source === "extra_slot")
+          ) {
             eventTypeMatch = true;
           }
         }
 
-        if (checkedFilters.includes('availability')) {
-          if (!isSingleTeacher && (classType === 'availability' || source === 'availability')) {
+        if (checkedFilters.includes("availability")) {
+          if (
+            !isSingleTeacher &&
+            (classType === "availability" || source === "availability")
+          ) {
             eventTypeMatch = true;
           }
         }
@@ -3947,20 +4649,22 @@ $(function () {
       // Show event only if it matches all active filters
       if (dateMatch && timeMatch && eventTypeMatch) $event.show();
     });
-    
+
     // Also update white slots if single teacher
-    const selectedTeachers = window.calendarFilterState ? window.calendarFilterState.getSelectedTeachers() : [];
+    const selectedTeachers = window.calendarFilterState
+      ? window.calendarFilterState.getSelectedTeachers()
+      : [];
     const isSingleTeacher = selectedTeachers.length === 1;
-    if (isSingleTeacher && typeof applyEventTypeFilter === 'function') {
+    if (isSingleTeacher && typeof applyEventTypeFilter === "function") {
       // applyEventTypeFilter will handle white slots
       setTimeout(() => {
-        if (typeof applyEventTypeFilter === 'function') {
+        if (typeof applyEventTypeFilter === "function") {
           applyEventTypeFilter();
         }
       }, 0);
     }
   }
-  
+
   // Expose applyFilters globally
   window.applyFilters = applyFilters;
 
@@ -3993,7 +4697,7 @@ $(function () {
     $("#head .day-h").removeClass("date-filter-active");
     applyFilters();
     // Also trigger event type filter to update
-    if (typeof applyEventTypeFilter === 'function') {
+    if (typeof applyEventTypeFilter === "function") {
       applyEventTypeFilter();
     }
   }
@@ -4056,7 +4760,7 @@ $(function () {
     $(".time-row").removeClass("time-slot-filter-active");
     applyFilters();
     // Also trigger event type filter to update
-    if (typeof applyEventTypeFilter === 'function') {
+    if (typeof applyEventTypeFilter === "function") {
       applyEventTypeFilter();
     }
   }
@@ -4079,11 +4783,11 @@ $(function () {
       selectedDateFilters.push(fullDate);
       $dayHeader.addClass("date-filter-active");
     }
-    
+
     window.selectedDateFilters = selectedDateFilters;
     applyFilters();
     // Also trigger event type filter to update
-    if (typeof applyEventTypeFilter === 'function') {
+    if (typeof applyEventTypeFilter === "function") {
       applyEventTypeFilter();
     }
   });
@@ -4156,11 +4860,11 @@ $(function () {
       selectedTimeSlotFilters.add(timeMinutes);
       $hourBlock.addClass("time-slot-filter-active");
     }
-    
+
     window.selectedTimeSlotFilters = selectedTimeSlotFilters;
     applyFilters();
     // Also trigger event type filter to update
-    if (typeof applyEventTypeFilter === 'function') {
+    if (typeof applyEventTypeFilter === "function") {
       applyEventTypeFilter();
     }
   });
@@ -4211,9 +4915,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // Elements
   const teacherTrigger = document.getElementById("teacher-search-trigger");
   const teacherWidget = document.getElementById("search-teacher");
-  const teacherFieldset = teacherWidget ? teacherWidget.querySelector(
-    ".teacher-list-form fieldset"
-  ) : null;
+  const teacherFieldset = teacherWidget
+    ? teacherWidget.querySelector(".teacher-list-form fieldset")
+    : null;
   const teacherDisplayText = document.getElementById("teacher-display-text");
   const teacherPillsContainer = document.getElementById("teacher-pills");
   const teacherSearchInput = document.getElementById("teacher-search-input");
@@ -4234,9 +4938,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const studentTrigger = document.getElementById("student-search-trigger");
   const studentWidget = document.getElementById("search-student");
-  const studentFieldset = studentWidget ? studentWidget.querySelector(
-    ".student-list-form fieldset"
-  ) : null;
+  const studentFieldset = studentWidget
+    ? studentWidget.querySelector(".student-list-form fieldset")
+    : null;
   const studentDisplayText = document.getElementById("student-display-text");
   const studentPillsContainer = document.getElementById("student-pills");
   const studentSearchInput = document.getElementById("student-search-input");
@@ -4285,7 +4989,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Using: showGlobalLoader() and hideGlobalLoader() from loader_utils.js
   // If loader_utils.js is not loaded, fallback to local implementation
   if (!window.showGlobalLoader || !window.hideGlobalLoader) {
-    console.warn('loader_utils.js not loaded, using fallback implementation');
+    console.warn("loader_utils.js not loaded, using fallback implementation");
     let __loaderShownAt = 0;
     let __loaderHideTimer = null;
     const __LOADER_MIN_MS = 3000;
@@ -4488,9 +5192,9 @@ document.addEventListener("DOMContentLoaded", () => {
         </svg>
       </button>
     `;
-      dropdownPill
-        .querySelector(".pill-close-btn")
-        .addEventListener("click", (e) => {
+      const closeBtn = dropdownPill.querySelector(".pill-close-btn");
+      if (closeBtn) {
+        closeBtn.addEventListener("click", (e) => {
           e.stopPropagation();
 
           // Remove from selected array
@@ -4517,6 +5221,7 @@ document.addEventListener("DOMContentLoaded", () => {
             onTeacherFilterChange();
           });
         });
+      }
       selectedTeachersContainer.appendChild(dropdownPill);
     });
 
@@ -4663,9 +5368,9 @@ document.addEventListener("DOMContentLoaded", () => {
             </svg>
           </button>
         `;
-        dropdownPill
-          .querySelector(".pill-close-btn")
-          .addEventListener("click", async (e) => {
+        const closeBtn = dropdownPill.querySelector(".pill-close-btn");
+        if (closeBtn) {
+          closeBtn.addEventListener("click", async (e) => {
             e.stopPropagation();
             selectedCohortIds = selectedCohortIds.filter((x) => x !== id);
             const checkbox = opt.querySelector(".cohort-checkbox");
@@ -4690,6 +5395,7 @@ document.addEventListener("DOMContentLoaded", () => {
               }
             }, 100);
           });
+        }
         targetContainer.appendChild(dropdownPill);
       }
     });
@@ -5232,9 +5938,9 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
 
       // Handle remove click
-      dropdownPill
-        .querySelector(".pill-close-btn")
-        .addEventListener("click", (e) => {
+      const closeBtn = dropdownPill.querySelector(".pill-close-btn");
+      if (closeBtn) {
+        closeBtn.addEventListener("click", (e) => {
           e.stopPropagation();
           selectedStudentIds = selectedStudentIds.filter((x) => x !== id);
           const checkbox = opt.querySelector(".student-checkbox");
@@ -5256,6 +5962,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
           }, 100);
         });
+      }
 
       selectedStudentsContainer.appendChild(dropdownPill);
     });
@@ -5673,8 +6380,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Helper function to fetch events data for auto-selection (doesn't update UI)
-  async function fetchEventsForTeachers(teacherIds) {
-    if (!teacherIds || !teacherIds.length) return [];
+  async function fetchEventsForTeachers(teacherId) {
+    if (!teacherId) return [];
 
     const rangeEl = document.getElementById("calendar-range");
     if (!rangeEl) return [];
@@ -5693,22 +6400,40 @@ document.addEventListener("DOMContentLoaded", () => {
     const startDate = new Date(`${monthName} ${startDay}, ${year}`);
     const endDate = new Date(`${monthName} ${endDay}, ${year}`);
 
-    // Using formatYMD() from date_utils.js
-    const params = new URLSearchParams();
-    params.set("start", window.formatYMD(startDate));
-    params.set("end", window.formatYMD(endDate));
-    params.set("teacherids", teacherIds.join(","));
+    // Format dates as YYYY-MM-DD using formatYMD() from date_utils.js
+    const formattedStartDate = window.formatYMD(startDate);
+    const formattedEndDate = window.formatYMD(endDate);
+
+    // Build request payload
+    const allEvents = [];
 
     try {
-      const response = await fetch(
-        `ajax/calendar_admin_get_events.php?${params.toString()}`,
-        { credentials: "same-origin" }
-      );
+      // Send request for each teacher
+      for (const teacherId of teacherIds) {
+        const payload = {
+          teacherId: teacherId,
+          startDate: formattedStartDate,
+          endDate: formattedEndDate,
+        };
 
-      if (!response.ok) return [];
+        const response = await fetch(`ajax/get_user_events.php`, {
+          method: "POST",
+          credentials: "same-origin",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        });
 
-      const data = await response.json();
-      return data.ok && Array.isArray(data.events) ? data.events : [];
+        if (!response.ok) continue;
+
+        const data = await response.json();
+        if (data.ok && Array.isArray(data.events)) {
+          allEvents.push(...data.events);
+        }
+      }
+
+      return allEvents;
     } catch (err) {
       console.error("Failed to fetch events for auto-selection:", err);
       return [];
@@ -6032,7 +6757,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 (function () {
-  const API_EVENTS = "ajax/calendar_admin_get_events.php";
+  const API_EVENTS = "ajax/get_user_events.php";
 
   // ---------------- Week range helpers ----------------
 
@@ -6444,24 +7169,24 @@ document.addEventListener("DOMContentLoaded", () => {
   // ---------------- API call ----------------
 
   async function fetchCalendarEvents(skipLoaderShow = false) {
-    const teacherids = getSelectedTeacherIds();
+    const teacherid = getSelectedTeacherIds();
     const cohortids = getSelectedCohortIds();
     const studentids = getSelectedStudentIds();
 
     // Use currentWeekStart if available, otherwise fall back to currentStart
-    const weekStart = window.currentWeekStart || currentStart || getWeekStart(new Date());
+    const weekStart =
+      window.currentWeekStart || currentStart || getWeekStart(new Date());
     const weekEnd = getWeekEnd(weekStart);
 
-    const params = new URLSearchParams();
-    params.set("start", window.formatYMD(weekStart));
-    params.set("end", window.formatYMD(weekEnd));
+    // Build JSON payload
+    const payload = {
+      startDate: window.formatYMD(weekStart),
+      endDate: window.formatYMD(weekEnd),
+    };
 
-    if (teacherids && teacherids.length > 0)
-      params.set("teacherids", teacherids.join(","));
-    if (cohortids && cohortids.length > 0)
-      params.set("cohortids", cohortids.join(","));
-    if (studentids && studentids.length > 0)
-      params.set("studentids", studentids.join(","));
+    if (teacherid && teacherid.length > 0) payload.teacherId = teacherid;
+    if (cohortids && cohortids.length > 0) payload.cohortIds = cohortids;
+    if (studentids && studentids.length > 0) payload.studentIds = studentids;
 
     // Show loader immediately unless told to skip (when called from refetchCustomPluginData)
     if (!skipLoaderShow) {
@@ -6486,15 +7211,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-      const response = await fetch(`${API_EVENTS}?${params.toString()}`, {
+      const response = await fetch(API_EVENTS, {
+        method: "POST",
         credentials: "same-origin",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
-        console.error(
-          "calendar_admin_get_events.php HTTP error",
-          response.status
-        );
+        console.error("get_user_events.php HTTP error", response.status);
         // Don't return early - let finally block handle loader hiding
         return;
       }
@@ -6506,7 +7233,7 @@ document.addEventListener("DOMContentLoaded", () => {
         updateWhiteSlotRules(
           data.teacher_availability || {},
           data.teacher_extra_slots || {},
-          teacherids
+          teacherid
         );
       } else {
         whiteSlotRules = [];
@@ -6525,7 +7252,122 @@ document.addEventListener("DOMContentLoaded", () => {
       // Merge regular events, peertalk events, conference events, teacher time off, availability, and extra slots
       let allEvents = [];
       if (data.ok && Array.isArray(data.events)) {
-        allEvents = [...data.events];
+        // Process events with new nested structure
+        allEvents = data.events.map((item) => {
+          if (item.event && item.summary) {
+            // New nested format (1:1 lessons - both single and weekly)
+            const eventData = item.event;
+            const summary = item.summary.current || item.summary;
+
+            // Validate required fields
+            if (!eventData.eventdate || !eventData.start_time) {
+              console.warn("Event missing required fields:", eventData);
+              return item; // Return original item if invalid
+            }
+
+            // Calculate end time from start_time + duration_minutes
+            // This ensures correct end time even if end_time in API is incorrect
+            let endTime = eventData.end_time || null;
+            if (eventData.duration_minutes) {
+              const durationMinutes = parseInt(eventData.duration_minutes, 10);
+              if (!isNaN(durationMinutes) && durationMinutes > 0) {
+                // Convert start_time to minutes from midnight
+                const startMinutes = timeToMinutes(eventData.start_time);
+                if (!isNaN(startMinutes)) {
+                  // Calculate end time in minutes from midnight
+                  const endMinutes = startMinutes + durationMinutes;
+                  // Convert back to HH:MM format
+                  endTime = minutesToTime(endMinutes);
+                }
+              }
+            }
+
+            // Fallback to end_time if duration calculation didn't work
+            if (!endTime) {
+              endTime = eventData.end_time;
+            }
+
+            // Final validation
+            if (!endTime) {
+              console.warn(
+                "Event missing end_time and duration_minutes:",
+                eventData
+              );
+              return item; // Return original item if invalid
+            }
+
+            // Build start and end times in ISO format
+            const startISO = `${eventData.eventdate}T${eventData.start_time}`;
+            const endISO = `${eventData.eventdate}T${endTime}`;
+
+            // Map classType: "weekly" to "one2one_weekly", "single" to "one2one_single"
+            let classType = "1:1";
+            let class_type = "one2one_single";
+            if (eventData.classType === "weekly") {
+              classType = "one2one_weekly";
+              class_type = "one2one_weekly";
+            } else if (eventData.classType === "single") {
+              classType = "one2one_single";
+              class_type = "one2one_single";
+            }
+
+            // Build student arrays for compatibility
+            const studentids = eventData.student
+              ? [Number(eventData.student.id)]
+              : [];
+            const studentnames = eventData.student
+              ? [eventData.student.name]
+              : [];
+            const studentavatar =
+              eventData.student && eventData.student.avatar
+                ? [eventData.student.avatar]
+                : [];
+
+            // Build title
+            let title = "";
+            if (summary && summary.teacher && eventData.student) {
+              title = `${summary.teacher.name} - ${eventData.student.name}`;
+            } else if (eventData.student) {
+              title = eventData.student.name;
+            } else if (summary && summary.teacher) {
+              title = summary.teacher.name;
+            }
+
+            return {
+              eventid: eventData.eventid,
+              start: startISO,
+              end: endISO,
+              date: eventData.eventdate, // Add date field for compatibility
+              title: title,
+              teacherids:
+                summary && summary.teacher ? [Number(summary.teacher.id)] : [],
+              teacherid:
+                summary && summary.teacher ? Number(summary.teacher.id) : null,
+              teacher_id:
+                summary && summary.teacher ? Number(summary.teacher.id) : null,
+              studentid: eventData.student
+                ? Number(eventData.student.id)
+                : null,
+              student: eventData.student || null,
+              studentids: studentids,
+              studentnames: studentnames,
+              studentavatar: studentavatar,
+              status: summary ? summary.status : null,
+              classType: classType,
+              class_type: class_type,
+              googlemeetid: eventData.googlemeetid,
+              duration_minutes: eventData.duration_minutes,
+              teacher: summary && summary.teacher ? summary.teacher : null,
+              history:
+                item.history && item.history.timeline
+                  ? item.history.timeline
+                  : [], // Include history timeline
+              summary: item.summary || null, // Include summary with current and previous
+            };
+          }
+          // Existing flat format - return as is
+          return item;
+        });
       }
       if (data.ok && Array.isArray(data.peertalk)) {
         console.log("Adding peertalk events:", data.peertalk);
@@ -6564,13 +7406,13 @@ document.addEventListener("DOMContentLoaded", () => {
       if (data.ok) {
         const availabilityEvents = buildAvailabilityEvents(
           data.teacher_availability || {},
-          teacherids,
+          teacherid,
           currentStart,
           currentEnd
         );
         const extraSlotEvents = buildExtraSlotEvents(
           data.teacher_extra_slots || {},
-          teacherids,
+          teacherid,
           currentStart,
           currentEnd
         );
@@ -6578,7 +7420,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       // Optimization: Use a map for teacher ID lookups
-      const teacherIdSet = teacherids ? new Set(teacherids) : null;
+      const teacherIdSet = teacherid ? new Set([teacherid]) : null;
       window.events = [];
       for (let i = 0; i < allEvents.length; i++) {
         const ev = allEvents[i];
@@ -6692,7 +7534,12 @@ document.addEventListener("DOMContentLoaded", () => {
               : ev.repeat || false,
           meetingurl: ev.meetingurl || "",
           viewurl: ev.viewurl || ev.meetingurl || "",
-          avatar: ev.avatar || "",
+          avatar:
+            ev.avatar ||
+            ev.summary?.current?.teacher?.avatar ||
+            ev.summary?.current?.teacher_pic ||
+            ev.rescheduled?.current?.teacher_pic ||
+            "",
           teacherId:
             typeof teacherId !== "undefined" && teacherId !== null
               ? teacherId
@@ -6705,10 +7552,15 @@ document.addEventListener("DOMContentLoaded", () => {
           classType:
             ev.classType ||
             ev.class_type ||
+            ev.summary?.current?.class_type ||
             ev.rescheduled?.class_type ||
             ev.source ||
             "",
-          source: ev.source || ev.rescheduled?.class_type || "event",
+          source:
+            ev.source ||
+            ev.summary?.current?.class_type ||
+            ev.rescheduled?.class_type ||
+            "event",
           studentnames: ev.studentnames || [],
           studentids: ev.studentids || [],
           studentavatar: ev.studentavatar || [],
@@ -6732,21 +7584,44 @@ document.addEventListener("DOMContentLoaded", () => {
           statuses: ev.statuses || [],
           rescheduled:
             typeof ev.rescheduled !== "undefined" ? ev.rescheduled : null,
+          summary: ev.summary || null, // Include summary with current and previous
           faded: false,
           availabilityId: ev.availabilityId || null,
-          // Include previous teacher picture for teacher change icon
-          previousTeacherPic: ev.previousTeacherPic || ev.rescheduled?.previous_teacher_picture || null,
-          previous_teacher_picture: ev.previous_teacher_picture || ev.rescheduled?.previous_teacher_picture || null,
+          // Include history timeline if available
+          history: ev.history && Array.isArray(ev.history) ? ev.history : [],
         };
 
-        // Ensure teacherId is set from reschedule current teacher if missing
-        if (!eventObj.teacherId && eventObj.rescheduled?.current?.teacher) {
-          eventObj.teacherId = eventObj.rescheduled.current.teacher;
+        // Ensure teacherId is set from summary current teacher if missing
+        if (!eventObj.teacherId) {
+          if (eventObj.summary?.current?.teacher?.id) {
+            eventObj.teacherId = eventObj.summary.current.teacher.id;
+          } else if (eventObj.summary?.current?.teacher) {
+            eventObj.teacherId = eventObj.summary.current.teacher;
+          } else if (eventObj.rescheduled?.current?.teacher) {
+            eventObj.teacherId = eventObj.rescheduled.current.teacher;
+          }
+        }
+
+        // Ensure avatar is set from summary current teacher if missing
+        if (!eventObj.avatar) {
+          if (eventObj.summary?.current?.teacher?.avatar) {
+            eventObj.avatar = eventObj.summary.current.teacher.avatar;
+          } else if (eventObj.summary?.current?.teacher_pic) {
+            eventObj.avatar = eventObj.summary.current.teacher_pic;
+          } else if (eventObj.rescheduled?.current?.teacher_pic) {
+            eventObj.avatar = eventObj.rescheduled.current.teacher_pic;
+          }
         }
 
         // Mark teacher change for rescheduled 1:1 events so badge shows
-        const prevTid = eventObj.rescheduled?.previous?.teacher;
-        const currTid = eventObj.rescheduled?.current?.teacher;
+        const prevTid =
+          eventObj.summary?.previous?.teacher?.id ||
+          eventObj.summary?.previous?.teacher ||
+          eventObj.rescheduled?.previous?.teacher;
+        const currTid =
+          eventObj.summary?.current?.teacher?.id ||
+          eventObj.summary?.current?.teacher ||
+          eventObj.rescheduled?.current?.teacher;
         if (prevTid && currTid && prevTid !== currTid) {
           eventObj.isTeacherChanged = true;
         }
@@ -6761,26 +7636,52 @@ document.addEventListener("DOMContentLoaded", () => {
           );
           if (statusObj && statusObj.previous) {
             // Convert times to minutes for comparison
-            const prevStart = typeof statusObj.previous.start === "string"
-              ? minutes(statusObj.previous.start)
-              : statusObj.previous.start;
-            const prevEnd = typeof statusObj.previous.end === "string"
-              ? minutes(statusObj.previous.end)
-              : statusObj.previous.end;
-            const currStart = typeof eventObj.start === "string"
-              ? minutes(eventObj.start)
-              : eventObj.start;
-            const currEnd = typeof eventObj.end === "string"
-              ? minutes(eventObj.end)
-              : eventObj.end;
-            
+            const prevStart =
+              typeof statusObj.previous.start === "string"
+                ? minutes(statusObj.previous.start)
+                : statusObj.previous.start;
+            const prevEnd =
+              typeof statusObj.previous.end === "string"
+                ? minutes(statusObj.previous.end)
+                : statusObj.previous.end;
+            const currStart =
+              typeof eventObj.start === "string"
+                ? minutes(eventObj.start)
+                : eventObj.start;
+            const currEnd =
+              typeof eventObj.end === "string"
+                ? minutes(eventObj.end)
+                : eventObj.end;
+
             // Check if time has changed (same start, end, and date)
-            const timeUnchanged = prevStart === currStart && 
-                                 prevEnd === currEnd && 
-                                 statusObj.previous.date === eventObj.date;
-            
+            const timeUnchanged =
+              prevStart === currStart &&
+              prevEnd === currEnd &&
+              statusObj.previous.date === eventObj.date;
+
+            // Check if teacher changed
+            const prevTeacherId = statusObj.previous.teacher;
+            const currTeacherId =
+              eventObj.teacherId || statusObj.current?.teacher;
+            const teacherChanged =
+              prevTeacherId && currTeacherId && prevTeacherId !== currTeacherId;
+
+            // Get teacher images
+            const prevTeacherPic =
+              statusObj.previous.teacher_pic ||
+              statusObj.previous.teacherpic ||
+              statusObj.previous?.teacher?.avatar ||
+              eventObj.summary?.previous?.teacher?.avatar ||
+              eventObj.avatar ||
+              null;
+            const currTeacherPic =
+              statusObj.current?.teacher_pic ||
+              statusObj.current?.teacherpic ||
+              eventObj.avatar ||
+              null;
+
             // Add faded previous event
-            window.events.push({
+            const prevEvent = {
               ...eventObj,
               date: statusObj.previous.date,
               start: prevStart,
@@ -6790,19 +7691,109 @@ document.addEventListener("DOMContentLoaded", () => {
                 ? eventObj.title + " (Previous)"
                 : "Previous Event",
               teacherId: statusObj.previous.teacher || eventObj.teacherId,
-              avatar: ev.previous_teacher_picture || eventObj.avatar,
+              avatar:
+                statusObj.previous?.teacher?.avatar ||
+                statusObj.previous.teacher_pic ||
+                statusObj.previous.teacherpic ||
+                eventObj.summary?.previous?.teacher?.avatar ||
+                eventObj.avatar,
               teachernames: [ev.previous_teachername || ""],
-            });
-            
+            };
+
+            // When teacher changed: previous event (Teacher A) shows NEW teacher (Teacher B) image
+            if (teacherChanged && currTeacherPic) {
+              prevEvent.avatar = currTeacherPic;
+              // Update summary/rescheduled data to reflect swapped image
+              if (prevEvent.summary && prevEvent.summary.previous) {
+                prevEvent.summary.previous.teacher_pic = prevEvent.avatar;
+                prevEvent.summary.previous.teacherpic = prevEvent.avatar;
+                if (prevEvent.summary.previous.teacher) {
+                  prevEvent.summary.previous.teacher.avatar = prevEvent.avatar;
+                }
+              }
+            } else if (!prevEvent.avatar && prevTeacherPic) {
+              // If no teacher change, use previous teacher's image for previous event
+              prevEvent.avatar = prevTeacherPic;
+            }
+
+            window.events.push(prevEvent);
+
             // Only add main event if time has changed
             if (timeUnchanged) {
               shouldAddMainEvent = false;
             }
           }
         }
-        
+
         // Only add main event if time has changed (or if not a reschedule_instant)
         if (shouldAddMainEvent) {
+          // If both time and teacher changed: current event shows new time/date + PREVIOUS teacher image
+          if (Array.isArray(ev.statuses)) {
+            const statusObj = ev.statuses.find(
+              (s) => s.code === "reschedule_instant" && (s.previous || null)
+            );
+            if (statusObj && statusObj.previous) {
+              const prevTeacherId = statusObj.previous.teacher;
+              const currTeacherId =
+                eventObj.teacherId || statusObj.current?.teacher;
+              const teacherChanged =
+                prevTeacherId &&
+                currTeacherId &&
+                prevTeacherId !== currTeacherId;
+
+              const prevStart =
+                typeof statusObj.previous.start === "string"
+                  ? minutes(statusObj.previous.start)
+                  : statusObj.previous.start;
+              const prevEnd =
+                typeof statusObj.previous.end === "string"
+                  ? minutes(statusObj.previous.end)
+                  : statusObj.previous.end;
+              const currStart =
+                typeof eventObj.start === "string"
+                  ? minutes(eventObj.start)
+                  : eventObj.start;
+              const currEnd =
+                typeof eventObj.end === "string"
+                  ? minutes(eventObj.end)
+                  : eventObj.end;
+
+              // When teacher changed: current event (Teacher B) shows PREVIOUS teacher (Teacher A) image
+              if (teacherChanged) {
+                const prevTeacherPic =
+                  statusObj.previous.teacher_pic ||
+                  statusObj.previous.teacherpic ||
+                  statusObj.previous?.teacher?.avatar ||
+                  eventObj.summary?.previous?.teacher?.avatar ||
+                  null;
+                const currTeacherPic =
+                  statusObj.current?.teacher_pic ||
+                  statusObj.current?.teacherpic ||
+                  statusObj.current?.teacher?.avatar ||
+                  eventObj.avatar ||
+                  null;
+
+                // Store current teacher's avatar before swapping
+                if (currTeacherPic && !eventObj.avatar) {
+                  eventObj.avatar = currTeacherPic;
+                }
+
+                // Swap: show previous teacher's image in avatar field
+                if (prevTeacherPic) {
+                  eventObj.avatar = prevTeacherPic;
+                  // Update summary/rescheduled data
+                  if (eventObj.summary && eventObj.summary.current) {
+                    eventObj.summary.current.teacher_pic = prevTeacherPic;
+                    eventObj.summary.current.teacherpic = prevTeacherPic;
+                  }
+                  if (eventObj.rescheduled && eventObj.rescheduled.current) {
+                    eventObj.rescheduled.current.teacher_pic = prevTeacherPic;
+                    eventObj.rescheduled.current.teacherpic = prevTeacherPic;
+                  }
+                }
+              }
+            }
+          }
           window.events.push(eventObj);
         }
       }
@@ -6811,12 +7802,12 @@ document.addEventListener("DOMContentLoaded", () => {
       if (typeof renderWeek === "function") {
         renderWeek(false);
       }
-      
+
       // Apply filters after rendering to ensure events are properly shown/hidden
       if (typeof applyFilters === "function") {
         applyFilters();
       }
-      
+
       // ✅ NEW: Refresh agenda view after events are populated
       if (typeof window.refreshAgendaView === "function") {
         window.refreshAgendaView();
@@ -7079,11 +8070,168 @@ document.addEventListener("DOMContentLoaded", () => {
     shiftWeek(1);
   });
 
-  // ====== TEACHER CHANGE TOOLTIP HANDLER ======
+  // ====== STATUS ICON HISTORY TOOLTIP HANDLER ======
   document.addEventListener("mouseover", function (e) {
     const statusIcon = e.target.closest(".ev-status-icon[data-tooltip-id]");
     if (statusIcon) {
       const tooltipId = statusIcon.getAttribute("data-tooltip-id");
+      const eventId = statusIcon.getAttribute("data-event-id");
+
+      // Check if this is a history tooltip (not teacher change tooltip)
+      if (tooltipId && tooltipId.startsWith("status-history-tooltip-")) {
+        // Find the event object to get history
+        const eventElement = statusIcon.closest(".event");
+        if (!eventElement) return;
+
+        // Get event data from window.events
+        let eventData = null;
+        let history = [];
+
+        // Try to get eventId from the status icon or event element
+        const evtId =
+          eventId ||
+          $(eventElement).data("eventid") ||
+          $(eventElement).attr("data-eventid");
+
+        if (window.events && evtId) {
+          eventData = window.events.find(
+            (ev) =>
+              ev.eventid == evtId ||
+              ev.id === evtId ||
+              String(ev.eventid) === String(evtId)
+          );
+        }
+
+        // If not found by eventId, try to get from element data attributes
+        if (!eventData && eventElement) {
+          const $event = $(eventElement);
+          const eventDate = $event.closest(".day-inner").data("date");
+          const eventStart = $event.data("start") || $event.attr("data-start");
+          const eventEnd = $event.data("end") || $event.attr("data-end");
+
+          if (eventDate && window.events) {
+            // Try to match by date and time
+            eventData = window.events.find((ev) => {
+              if (ev.date !== eventDate) return false;
+              if (eventStart && ev.start != eventStart) return false;
+              if (eventEnd && ev.end != eventEnd) return false;
+              return true;
+            });
+          }
+        }
+
+        // Get history from event data
+        if (eventData) {
+          if (Array.isArray(eventData.history)) {
+            history = eventData.history;
+          } else if (
+            eventData.history &&
+            Array.isArray(eventData.history.timeline)
+          ) {
+            history = eventData.history.timeline;
+          }
+        }
+
+        if (history.length > 0) {
+          // Create or update tooltip
+          let tooltip = document.getElementById(tooltipId);
+          if (!tooltip) {
+            tooltip = document.createElement("div");
+            tooltip.id = tooltipId;
+            tooltip.className = "status-history-tooltip";
+            document.body.appendChild(tooltip);
+          }
+
+          // Format history items (show at least 4, up to 10)
+          const historyToShow = history.slice(
+            0,
+            Math.max(4, Math.min(10, history.length))
+          );
+          const historyHtml = historyToShow
+            .map((hist, idx) => {
+              const histIcon = getHistoryIcon(hist);
+              const histDesc = formatHistoryDescription(hist);
+              return `
+              <div class="status-history-item" style="display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:${
+                idx < historyToShow.length - 1 ? "1px solid #f0f1f5" : "none"
+              };">
+                <img src="${histIcon.icon}" alt="${
+                histIcon.label
+              }" style="width:14px;height:14px;opacity:0.7;flex-shrink:0;margin-top:2px;">
+                <div style="flex:1;font-size:12px;color:#4b5563;line-height:1.4;">
+                  <div style="font-weight:500;color:#111827;margin-bottom:2px;">${
+                    histIcon.label
+                  }</div>
+                  <div style="font-size:11px;color:#6b7280;">${
+                    histDesc || "No details"
+                  }</div>
+                </div>
+              </div>
+            `;
+            })
+            .join("");
+
+          const moreCount =
+            history.length > historyToShow.length
+              ? history.length - historyToShow.length
+              : 0;
+
+          tooltip.innerHTML = `
+            <div style="background:#fff;border:1px solid #e1e3ec;border-radius:8px;padding:12px;min-width:280px;max-width:360px;box-shadow:0 8px 24px rgba(17,24,39,0.15),0 2px 8px rgba(17,24,39,0.08);">
+              <div style="font-size:13px;font-weight:600;color:#111827;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #f0f1f5;">Event History</div>
+              <div style="max-height:300px;overflow-y:auto;">
+                ${historyHtml}
+                ${
+                  moreCount > 0
+                    ? `<div style="font-size:11px;color:#9ca3af;text-align:center;padding-top:8px;font-style:italic;">+${moreCount} more</div>`
+                    : ""
+                }
+              </div>
+            </div>
+          `;
+
+          // Position tooltip
+          const iconRect = statusIcon.getBoundingClientRect();
+          const eventRect = eventElement.getBoundingClientRect();
+          const tooltipRect = tooltip.getBoundingClientRect();
+
+          let left, top;
+          const gap = 8;
+
+          if (eventRect) {
+            // Position tooltip above the event, aligned with icon horizontally
+            left =
+              iconRect.left +
+              iconRect.width / 2 -
+              (tooltipRect.width || 280) / 2;
+            top = eventRect.top - (tooltipRect.height || 200) - gap;
+          } else {
+            // Fallback: position above icon
+            left =
+              iconRect.left +
+              iconRect.width / 2 -
+              (tooltipRect.width || 280) / 2;
+            top = iconRect.top - (tooltipRect.height || 200) - gap;
+          }
+
+          // Keep within viewport with safety margin
+          if (left < 10) left = 10;
+          if (left + (tooltipRect.width || 280) > window.innerWidth - 10)
+            left = window.innerWidth - (tooltipRect.width || 280) - 10;
+          if (top < 10) top = iconRect.bottom + gap; // Show below if no room above
+          if (top + (tooltipRect.height || 200) > window.innerHeight - 10)
+            top = window.innerHeight - (tooltipRect.height || 200) - 10;
+
+          tooltip.style.left = left + "px";
+          tooltip.style.top = top + "px";
+          tooltip.style.display = "block";
+          tooltip.style.position = "fixed";
+          tooltip.style.zIndex = "10000";
+        }
+        return;
+      }
+
+      // Existing teacher change tooltip logic
       const tooltip = document.getElementById(tooltipId);
       if (tooltip) {
         const iconRect = statusIcon.getBoundingClientRect();
@@ -7128,7 +8276,25 @@ document.addEventListener("DOMContentLoaded", () => {
       const tooltipId = statusIcon.getAttribute("data-tooltip-id");
       const tooltip = document.getElementById(tooltipId);
       if (tooltip) {
-        tooltip.style.display = "none";
+        // Check if mouse is moving to tooltip
+        const relatedTarget = e.relatedTarget;
+        if (!relatedTarget || !tooltip.contains(relatedTarget)) {
+          tooltip.style.display = "none";
+        }
+      }
+    }
+
+    // Also hide history tooltip when mouse leaves it
+    const historyTooltip = e.target.closest(".status-history-tooltip");
+    if (historyTooltip) {
+      const relatedTarget = e.relatedTarget;
+      if (!relatedTarget || !historyTooltip.contains(relatedTarget)) {
+        const statusIcon = document.querySelector(
+          `.ev-status-icon[data-tooltip-id="${historyTooltip.id}"]`
+        );
+        if (!statusIcon || !statusIcon.matches(":hover")) {
+          historyTooltip.style.display = "none";
+        }
       }
     }
   });
@@ -7138,6 +8304,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.target.closest(".teacher-change-tooltip")) {
       const tooltip = e.target.closest(".teacher-change-tooltip");
       tooltip.style.display = "";
+    }
+    // Keep history tooltip open when hovering over it
+    if (e.target.closest(".status-history-tooltip")) {
+      const tooltip = e.target.closest(".status-history-tooltip");
+      tooltip.style.display = "block";
     }
   });
 

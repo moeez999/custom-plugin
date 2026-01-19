@@ -6,10 +6,7 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
  -->
-<style>
-:root {
-    --gc-border: #ececf3;
-    --gc-muted: #6f7380;
+<link rel="stylesheet" href="<?php echo $CFG->wwwroot; ?>/local/customplugin/css/calendar_admin_details_setup_availablity_details_google_calendar.css">
     --gc-green: #d9f6ef;
     --gc-red: #fe2e0c;
     --gc-black: #121212;
@@ -177,13 +174,6 @@ body {
         flex-direction: column;
         align-items: flex-start;
     }
-
-    .calendar_admin_details_setup_availability_google_calendar_disconnect {
-        align-self: stretch;
-        text-align: center;
-    }
-}
-</style>
 
 <div class=" calendar_admin_details_setup_availability_google_calendar_wrap">
     <h1 class="calendar_admin_details_setup_availability_google_calendar_title">Google Calendar settings</h1>

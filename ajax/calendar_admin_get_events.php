@@ -1203,12 +1203,12 @@ $events[] = [
 try {
     // If a specific 1:1 googlemeet is selected, ONLY load that 1:1 meet's events.
     if ($one2onegmid) {
-        $add_one2one_events();
+        //$add_one2one_events();
         
     } else {
         // Normal behaviour: load both group + 1:1 events.
         $add_group_events();
-        $add_one2one_events();
+        //$add_one2one_events();
     }
 
     // Final strict filter pass (intersection safety net)

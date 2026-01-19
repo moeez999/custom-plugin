@@ -1,1127 +1,4 @@
-<style>
-/* ====== WEEKLY LESSON MODAL STYLES ====== */
-.calendar_admin_details_create_cohort_schedule_btn_manage {
-    width: 100%;
-    background-color: #fe2e0c;
-    color: white;
-    padding: 15px 0;
-    border: none;
-    font-weight: bold;
-    font-size: 1.11rem;
-    margin-top: 13px;
-    border-radius: 9px;
-    cursor: pointer;
-    letter-spacing: .5px;
-    box-shadow: 0 3px 13px 0 rgba(254, 46, 12, .07);
-    position: sticky;
-    bottom: 0;
-    z-index: 5;
-}
-
-.weekly_lesson_modal_container {
-    border-radius: 13px;
-    border: 1.5px solid #dadada;
-    padding: 10px 18px 12px 18px;
-}
-
-.time-dropdown div:hover {
-    background: #f6f6f6;
-    color: #fe2e0c;
-}
-
-#weekly_lesson_timepicker_start_manage {
-    width: auto;
-}
-
-#weekly_lesson_timepicker_end_manage {
-    width: auto;
-}
-
-.weekly_lesson_modal_container {
-    width: 100%;
-    font-size: 1.03rem;
-}
-
-.weekly_lesson_close_btn {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    font-size: 23px;
-    cursor: pointer;
-    color: #232323;
-    background: none;
-    border: none;
-}
-
-.weekly_lesson_stepper_manage {
-    border: none;
-    background: #f3f3f3;
-    border-radius: 50%;
-    width: 36px;
-    height: 36px;
-    font-size: 1.27rem;
-    font-weight: 600;
-    color: #232323;
-    cursor: pointer;
-    transition: background 0.13s;
-}
-
-.weekly_lesson_stepper_manage:active {
-    background: #ececec;
-}
-
-.weekly_lesson_dropdown_wrapper {
-    position: relative;
-}
-
-.weekly_lesson_dropdown_btn {
-    display: flex;
-    align-items: center;
-    background: #fff;
-    border: 1.3px solid #dadada;
-    border-radius: 11px;
-    padding: 8px 18px;
-    font-size: 1.01rem;
-    cursor: pointer;
-    min-width: 120px;
-    font-weight: 600;
-    margin-left: 10px;
-}
-
-.weekly_lesson_dropdown_btn svg {
-    margin-left: 7px;
-}
-
-.weekly_lesson_dropdown_list_manage {
-    display: none;
-    position: absolute;
-    top: 110%;
-    left: 0;
-    width: 160px;
-    background: #fff;
-    border: 1.5px solid #dadada;
-    border-radius: 13px;
-    box-shadow: 0 4px 18px #0001;
-    z-index: 110;
-}
-
-.weekly_lesson_option_manage {
-    padding: 13px 18px;
-    font-size: 1rem;
-    border-radius: 9px;
-    cursor: pointer;
-    transition: background 0.15s;
-    font-weight: 500;
-    color: #232323;
-}
-
-.weekly_lesson_option_manage:hover {
-    background: #f6f6f6;
-    color: #fe2e0c;
-}
-
-.weekly_lesson_date_btn {
-    background: #f9f9f9;
-    border: none;
-    border-radius: 7px;
-    font-size: 1.01rem;
-    font-weight: 500;
-    border: 1.3px solid #dadada;
-    border-radius: 8px;
-    color: #232323;
-    padding: 8px 14px;
-    cursor: pointer;
-    opacity: 0.6;
-}
-
-.weekly_lesson_date_btn:hover {
-    border: 2px solid #232323;
-}
-
-.weekly_lesson_date_btn.enabled {
-    background: #fff;
-    color: #232323;
-    border: 1.3px solid #dadada;
-    opacity: 1;
-}
-
-.weekly_lesson_occurrence_counter {
-    display: inline-flex;
-    align-items: center;
-}
-
-.weekly_lesson_occurrence_counter button {
-    margin: 0 5px;
-}
-
-/* ---- Weekly day widgets ---- */
-.weekly_lesson_widget_row {
-    display: flex;
-    gap: 9px;
-    margin-top: 10px;
-    align-items: flex-start;
-    flex-wrap: nowrap;
-}
-
-.weekly_lesson_scroll_widget_manage {
-    box-sizing: border-box;
-    width: 41px;
-    min-height: 41px;
-    background-color: #f2f2f2;
-    border: 1px solid rgba(0, 0, 0, 0.12);
-    border-radius: 104.61px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    user-select: none;
-    cursor: pointer;
-    opacity: 0.55;
-    transition: opacity .15s, box-shadow .15s, transform .06s;
-}
-
-.weekly_lesson_scroll_widget_manage:active {
-    transform: translateY(1px);
-}
-
-.weekly_lesson_scroll_widget_manage.selected {
-    opacity: 1;
-    box-shadow: 0 2px 10px #0001;
-    padding: 14px 0px;
-    border: 1px solid #fe2e0c;
-}
-
-.weekly_lesson_widget_text_manage {
-    color: #121212;
-    font-family: "Poppins", sans-serif;
-    font-weight: 500;
-    font-size: 14px;
-    line-height: 21px;
-}
-
-.weekly_lesson_widget_divider_manage {
-    width: 25px;
-    border-top: 0.5px solid rgba(0, 0, 0, 0.2);
-    display: none;
-}
-
-.weekly_lesson_scroll_widget_manage.selected .weekly_lesson_widget_divider_manage {
-    display: block;
-}
-
-.weekly_lesson_widget_button_manage {
-    box-sizing: border-box;
-    width: 25px;
-    height: 25px;
-    background-color: #ffffff;
-    border-radius: 50%;
-    display: none;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    border: none;
-}
-
-.weekly_lesson_scroll_widget_manage.selected .weekly_lesson_widget_button_manage {
-    display: flex;
-}
-
-.weekly_lesson_widget_arrow_manage {
-    width: 0;
-    height: 0;
-    border-left: 6px solid transparent;
-    border-right: 6px solid transparent;
-    border-top: 6px solid #000000;
-}
-
-.weekly_lesson_widget_time_manage {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    gap: 2px;
-    text-align: center;
-    font-family: "Poppins", sans-serif;
-}
-
-.weekly_lesson_scroll_widget_manage.selected .weekly_lesson_widget_time_manage.has-time {
-    display: flex;
-}
-
-.weekly_lesson_widget_hour_minute_manage {
-    color: #000;
-    font-weight: 500;
-    font-size: 11px;
-    line-height: 14px;
-}
-
-.weekly_lesson_widget_period_manage {
-    color: #ff2500;
-    font-weight: 500;
-    font-size: 11px;
-    line-height: 14px;
-}
-
-.weekly_lesson_widget_dash_manage {
-    font-size: 11px;
-    line-height: 14px;
-    color: #000;
-    opacity: .8;
-}
-
-.weekly_lesson_widget_button_manage.has-time {
-    display: none !important;
-}
-
-.weekly_lesson_widget_button_manage .weekly_lesson_dot {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 28px;
-    height: 18px;
-    padding: 0 6px;
-    border-radius: 999px;
-    background: #ff2500;
-    color: #fff;
-    font-family: "Poppins", sans-serif;
-    font-weight: 600;
-    font-size: 10px;
-    line-height: 18px;
-    margin-left: 4px;
-}
-
-.weekly_lesson_btn {
-    border-radius: 8px;
-    padding: 12px 0;
-    width: 100%;
-    font-size: 1.09rem;
-    font-weight: bold;
-    transition: background .14s, color .14s, border .14s;
-    border: none;
-    box-shadow: 0 2px 8px #0001;
-    letter-spacing: 0.01em;
-    margin-top: 10px;
-    outline: none;
-    cursor: pointer;
-}
-
-/* ====== Time Picker for Weekly ====== */
-.weekly_lesson_timepicker_modal_backdrop_manage {
-    display: none;
-    position: fixed;
-    z-index: 9999;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.14);
-}
-
-.weekly_lesson_timepicker_modal {
-    background: #fff;
-    border-radius: 15px;
-    box-shadow: 0 10px 36px 0 rgba(0, 0, 0, .16);
-    max-width: 300px;
-    max-width: 97vw;
-    padding: 26px 24px 24px 24px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-family: inherit;
-}
-
-.weekly_lesson_timepicker_card_title {
-    color: #000000;
-    font-family: "Poppins", sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    margin: 0 0 16px 0;
-}
-
-.weekly_lesson_timepicker_inputs_container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 16px;
-}
-
-.weekly_lesson_timepicker_input {
-    border: 2px solid rgba(0, 0, 0, 0.12);
-    border-radius: 10px;
-    padding: 9px 8px;
-    width: 99px;
-    height: 40px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 14px;
-    background: #fff;
-}
-
-.weekly_lesson_timepicker_button_container {
-    display: flex;
-    justify-content: flex-end;
-    gap: 8px;
-}
-
-.weekly_lesson_timepicker_cancel_btn_manage {
-    background: #fff;
-    border: 1.3px solid #dadada;
-    border-radius: 8px;
-    color: #232323;
-    font-weight: 600;
-    font-size: 16px;
-    width: 99px;
-    height: 40px;
-    padding: 0;
-    cursor: pointer;
-}
-
-.weekly_lesson_timepicker_done_btn_manage {
-    background-color: #fe2e0c;
-    border: none;
-    border-radius: 8px;
-    color: #ffffff;
-    font-weight: 600;
-    font-size: 16px;
-    width: 99px;
-    height: 40px;
-    padding: 0;
-    cursor: pointer;
-}
-
-.weekly_lesson_timepicker_done_btn_manage:active {
-    background: #e52b10;
-}
-
-hr.weekly_lesson_hr {
-    border: none;
-    border-top: 1.3px solid #ececec;
-    margin: 10px 0 15px 0;
-}
-
-hr.weekly_lesson_hr.large {
-    margin: 15px 0;
-}
-
-.single-lesson-dropdown-card {
-    background-color: #ffffff;
-    border: 2px solid rgba(0, 0, 0, 0.12);
-    border-radius: 8px;
-    box-shadow: 0px 8px 32px 0px rgba(18, 17, 23, 0.15),
-        0px 16px 48px 0px rgba(18, 17, 23, 0.15);
-    padding: 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    width: 100%;
-    position: absolute;
-    z-index: 10;
-    height: 300px;
-    overflow-y: auto;
-}
-
-.single-lesson-dropdown-card::-webkit-scrollbar {
-    width: 4px;
-    background: transparent;
-}
-
-.single-lesson-dropdown-card::-webkit-scrollbar-thumb {
-    background-color: #d1d1d1;
-    border-radius: 2px;
-}
-
-.single-lesson-dropdown-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background-color: #ffffff;
-    border-radius: 10px;
-    padding: 16px 32px;
-}
-
-.single-lesson-dropdown-item__date {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    flex-shrink: 0;
-}
-
-.single-lesson-dropdown-date-month {
-    font-family: 'Figtree', sans-serif;
-    font-weight: 600;
-    font-size: 14px;
-    line-height: 20px;
-    color: #121117;
-    text-align: center;
-}
-
-.single-lesson-dropdown-date-day {
-    font-family: 'Figtree', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    color: #121117;
-    text-align: center;
-}
-
-.single-lesson-dropdown-item__details {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    flex-grow: 1;
-}
-
-.single-lesson-dropdown-details-time {
-    margin: 0;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    color: #121117;
-}
-
-.single-lesson-dropdown-details-info {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-.single-lesson-dropdown-info-text {
-    font-family: 'Poppins', sans-serif;
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 20px;
-    color: #4d4c5c;
-}
-
-.single-lesson-dropdown-info-dot {
-    width: 4px;
-    height: 4px;
-    background-color: #4d4c5c;
-    border-radius: 50%;
-    flex-shrink: 0;
-}
-
-@media (max-width: 480px) {
-    .single-lesson-dropdown-item {
-        padding: 12px 16px;
-    }
-}
-
-.weekly-single-lesson-container {
-    background-color: #ffffff;
-    border: 2px solid rgba(0, 0, 0, 0.12);
-    border-radius: 8px;
-    box-shadow: 0px 8px 32px 0px rgba(18, 17, 23, 0.15),
-        0px 16px 48px 0px rgba(18, 17, 23, 0.15);
-    padding: 14px;
-    width: 100%;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    height: 290px;
-    overflow-y: auto;
-}
-
-.weekly-single-lesson-container::-webkit-scrollbar {
-    width: 4px;
-    background: transparent;
-}
-
-.weekly-single-lesson-container::-webkit-scrollbar-thumb {
-    background: #d6d6d6;
-    border-radius: 2px;
-    border: 1px solid transparent;
-}
-
-.weekly-single-lesson-item {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    padding: 16px 15px;
-}
-
-.weekly-single-lesson-icon {
-    width: 24px;
-    height: 24px;
-    flex-shrink: 0;
-}
-
-.weekly-single-lesson-details {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.weekly-single-lesson-time {
-    color: #121117;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 15px;
-    line-height: 24px;
-    margin: 0;
-}
-
-.weekly-single-lesson-description {
-    color: #4d4c5c;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 20px;
-    letter-spacing: 0.07px;
-    margin: 0;
-}
-
-#manageclassTabContent .dropdown-search {
-    width: 95% !important;
-    margin: 10px auto;
-    padding: 8px 12px;
-    border: 1.3px solid #ccc;
-    border-radius: 8px;
-    display: block;
-    font-size: 0.95rem;
-    outline: none;
-}
-
-#manageclassTabContent .dropdown-search:focus {
-    border-color: #fe2e0c;
-    box-shadow: 0 0 0 2px rgba(254, 46, 12, 0.1);
-}
-
-#manageclassTabContent .custom-time-pill {
-    width: 100% !important;
-}
-
-#manageclassTabContent .custom-time-dropdown::-webkit-scrollbar {
-    width: 0.5rem;
-}
-
-#manageclassTabContent .custom-time-dropdown::-webkit-scrollbar-track {
-    background-color: transparent;
-}
-
-/* ====== DROPDOWN MANAGEMENT ====== */
-.dropdown-container {
-    position: relative;
-    padding: 14px 18px;
-    border: 2px solid #ececec;
-    border-radius: 12px;
-    background: #fff;
-    font-size: 1.08rem;
-    color: #232323;
-
-    cursor: pointer;
-    margin-bottom: 0;
-    position: relative;
-    box-sizing: border-box;
-    transition: border 0.15s;
-    margin-bottom: 14px;
-}
-
-.dropdown-display {
-    cursor: pointer;
-}
-
-.dropdown-content {
-    display: none;
-    position: absolute;
-    z-index: 100;
-    width: 100%;
-    background: white;
-    border: 1px solid #dadada;
-    border-radius: 8px;
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
-    max-height: 300px;
-    overflow-y: auto;
-    top: 110%;
-    /* 👇 Center it relative to parent */
-    left: 50%;
-    transform: translateX(-50%);
-
-}
-
-
-.dropdown-content.active {
-    display: block;
-}
-
-.dropdown-backdrop {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 99;
-    background: transparent;
-}
-
-.dropdown-backdrop.active {
-    display: block;
-}
-
-/* Disabled dropdown states */
-.one2one-student-dropdown-wrapper.disabled {
-    opacity: 0.5;
-    pointer-events: none;
-    cursor: not-allowed;
-}
-
-.one2one-add-student-card.disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    background-color: #f5f5f5;
-}
-
-/* Loader overlay */
-.loader-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.6);
-    z-index: 9999;
-    align-items: center;
-    justify-content: center;
-}
-
-.loader-overlay.active {
-    display: flex;
-}
-
-/* CSS Loader - Replaces loader.png */
-.loader {
-    width: 50px;
-    aspect-ratio: 1;
-    display: grid;
-    border-radius: 50%;
-    background:
-        linear-gradient(0deg ,rgb(0 0 0/50%) 30%,#0000 0 70%,rgb(0 0 0/100%) 0) 50%/8% 100%,
-        linear-gradient(90deg,rgb(0 0 0/25%) 30%,#0000 0 70%,rgb(0 0 0/75% ) 0) 50%/100% 8%;
-    background-repeat: no-repeat;
-    animation: l23 1s infinite steps(12);
-}
-.loader::before,
-.loader::after {
-   content: "";
-   grid-area: 1/1;
-   border-radius: 50%;
-   background: inherit;
-   opacity: 0.915;
-   transform: rotate(30deg);
-}
-.loader::after {
-   opacity: 0.83;
-   transform: rotate(60deg);
-}
-@keyframes l23 {
-  100% {transform: rotate(1turn)}
-}
-
-/* Disabled button state */
-.calendar_admin_details_create_cohort_schedule_btn_manage:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    background-color: #cccccc;
-}
-
-/* ====== MANAGE 1:1 UPDATE SCOPE MODAL ====== */
-.manage-update-scope-modal-backdrop {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 10000;
-    align-items: center;
-    justify-content: center;
-}
-
-.manage-update-scope-modal-backdrop.active {
-    display: flex;
-}
-
-.manage-update-scope-modal {
-    background: #fff;
-    border-radius: 12px;
-    padding: 24px;
-    width: 90%;
-    max-width: 340px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-}
-
-.manage-update-scope-title {
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 18px;
-    line-height: 27px;
-    color: #000;
-    margin: 0 0 20px 0;
-}
-
-.manage-update-scope-options {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-bottom: 24px;
-}
-
-.manage-update-scope-option {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    cursor: pointer;
-    padding: 4px 0;
-}
-
-.manage-update-scope-option input[type="radio"] {
-    appearance: none;
-    width: 24px;
-    height: 24px;
-    border: 2px solid #dadada;
-    border-radius: 50%;
-    outline: none;
-    cursor: pointer;
-    position: relative;
-    flex-shrink: 0;
-}
-
-.manage-update-scope-option input[type="radio"]:checked {
-    border-color: #fe2e0c;
-}
-
-.manage-update-scope-option input[type="radio"]:checked::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 12px;
-    height: 12px;
-    background: #fe2e0c;
-    border-radius: 50%;
-}
-
-.manage-update-scope-option label {
-    font-family: 'Poppins', sans-serif;
-    font-weight: 400;
-    font-size: 15px;
-    line-height: 22px;
-    color: #232323;
-    cursor: pointer;
-    user-select: none;
-}
-
-.manage-update-scope-buttons {
-    display: flex;
-    gap: 12px;
-    justify-content: flex-end;
-}
-
-.manage-update-scope-cancel-btn,
-.manage-update-scope-ok-btn {
-    border: none;
-    border-radius: 8px;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    padding: 10px 24px;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.manage-update-scope-cancel-btn {
-    background: #fff;
-    border: 1.3px solid #dadada;
-    color: #232323;
-}
-
-.manage-update-scope-cancel-btn:hover {
-    background: #f5f5f5;
-}
-
-.manage-update-scope-ok-btn {
-    background: #fe2e0c;
-    color: #fff;
-    min-width: 80px;
-}
-
-.manage-update-scope-ok-btn:hover {
-    background: #e52b10;
-}
-
-/* ====== RESCHEDULE LESSON MODAL ====== */
-.reschedule-lesson-modal-backdrop {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 10000;
-    align-items: center;
-    justify-content: center;
-}
-
-.reschedule-lesson-modal-backdrop.active {
-    display: flex;
-}
-
-.reschedule-lesson-modal {
-    background: #fff;
-    border-radius: 8px;
-    padding: 12px;
-    width: 90%;
-    max-width: 520px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-    max-height: 90vh;
-    overflow-y: auto;
-}
-
-.reschedule-lesson-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 16px;
-}
-
-.reschedule-lesson-back-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.reschedule-lesson-close-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 8px;
-    font-size: 24px;
-    line-height: 1;
-    color: #232323;
-}
-
-.reschedule-lesson-title {
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 24px;
-    line-height: 36px;
-    color: #000;
-    margin: 0 0 8px 0;
-}
-
-.reschedule-lesson-badge {
-    display: inline-block;
-    background: #f0f0f0;
-    border-radius: 6px;
-    padding: 4px 12px;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 500;
-    font-size: 13px;
-    color: #666;
-    margin-bottom: 20px;
-}
-
-.reschedule-lesson-card {
-    background: #f8f8f8;
-    border: 1px solid #e0e0e0;
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 20px;
-}
-
-.reschedule-lesson-card-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 12px;
-}
-
-.reschedule-lesson-avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-.reschedule-lesson-info {
-    flex: 1;
-}
-
-.reschedule-lesson-date {
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    color: #000;
-    margin: 0 0 2px 0;
-}
-
-.reschedule-lesson-time {
-    font-family: 'Poppins', sans-serif;
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 20px;
-    color: #666;
-    margin: 0;
-}
-
-.reschedule-lesson-meta {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
-
-.reschedule-lesson-student {
-    font-family: 'Poppins', sans-serif;
-    font-weight: 400;
-    font-size: 14px;
-    color: #666;
-}
-
-.reschedule-lesson-count {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 400;
-    font-size: 14px;
-    color: #666;
-}
-
-.reschedule-lesson-label {
-    font-family: 'Poppins', sans-serif;
-    font-weight: 500;
-    font-size: 14px;
-    line-height: 21px;
-    color: #000;
-    margin: 0 0 8px 0;
-}
-
-.reschedule-lesson-dropdown {
-    position: relative;
-    margin-bottom: 20px;
-}
-
-.reschedule-lesson-dropdown-btn {
-    width: 100%;
-    background: #fff;
-    border: 1.5px solid #dadada;
-    border-radius: 8px;
-    padding: 12px 16px;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 400;
-    font-size: 15px;
-    color: #999;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    transition: border-color 0.2s;
-}
-
-.reschedule-lesson-dropdown-btn:hover,
-.reschedule-lesson-dropdown-btn.active {
-    border-color: #fe2e0c;
-}
-
-.reschedule-lesson-dropdown-list {
-    display: none;
-    position: absolute;
-    top: calc(100% + 4px);
-    left: 0;
-    right: 0;
-    background: #fff;
-    border: 1.5px solid #dadada;
-    border-radius: 10px;
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
-    max-height: 200px;
-    overflow-y: auto;
-    z-index: 10;
-}
-
-.reschedule-lesson-dropdown-list.active {
-    display: block;
-}
-
-.reschedule-lesson-dropdown-item {
-    padding: 12px 16px;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 400;
-    font-size: 14px;
-    color: #232323;
-    cursor: pointer;
-    transition: background 0.15s;
-}
-
-.reschedule-lesson-dropdown-item:hover {
-    background: #f6f6f6;
-}
-
-.reschedule-lesson-textarea {
-    width: 100%;
-    background: #fff;
-    border: 1.5px solid #dadada;
-    border-radius: 8px;
-    padding: 12px 16px;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 400;
-    font-size: 14px;
-    color: #232323;
-    resize: vertical;
-    min-height: 100px;
-    transition: border-color 0.2s;
-    box-sizing: border-box;
-}
-
-.reschedule-lesson-textarea:focus {
-    outline: none;
-    border-color: #fe2e0c;
-}
-
-.reschedule-lesson-textarea::placeholder {
-    color: #999;
-}
-
-.reschedule-lesson-confirm-btn {
-    width: 100%;
-    background: #fe2e0c;
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    padding: 14px;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background 0.2s;
-    margin-top: 20px;
-}
-
-.reschedule-lesson-confirm-btn:hover {
-    background: #e52b10;
-}
-
-.reschedule-lesson-confirm-btn:disabled {
-    background: #cccccc;
-    cursor: not-allowed;
-}
-</style>
+<link rel="stylesheet" href="<?php echo $CFG->wwwroot; ?>/local/customplugin/css/calendar_admin_details_create_cohort_manage_class_tab.css">
 
 <div class="calendar_admin_details_create_cohort_content tab-content" id="manageclassTabContent" style="display:none;">
 
@@ -2437,7 +1314,8 @@ function populateWeeklyModalWithData(googleMeet, selectedDay, activityIndex, sta
             startDateEl.textContent = window.formatDate(dateObj);
             startDateEl.dataset.fullDate = clickedEventDate;
             window.weeklyLessonStartDate = dateObj;
-            console.log('Set start date to clicked event date:', clickedEventDate, '→ formatted:', window.formatDate(dateObj));
+            console.log('Set start date to clicked event date:', clickedEventDate, '→ formatted:', window.formatDate(
+                dateObj));
         } else if (startDateStr) {
             // Fallback to start date from googleMeet if no clicked event date
             const startDate = window.parseUnixTimestamp(startDateStr);
@@ -2517,7 +1395,8 @@ function populateWeeklyModalWithData(googleMeet, selectedDay, activityIndex, sta
             // Parse the date in UTC to avoid timezone issues
             const dateObj = new Date(clickedEventDate + 'T00:00:00Z');
             clickedDayOfWeek = dateObj.getUTCDay();
-            console.log('Clicked event date:', clickedEventDate, '→ UTC day of week:', clickedDayOfWeek, '→ Date object:', dateObj);
+            console.log('Clicked event date:', clickedEventDate, '→ UTC day of week:', clickedDayOfWeek,
+                '→ Date object:', dateObj);
         }
 
         // Apply active days - only select the clicked day if available, otherwise all days
@@ -2537,7 +1416,7 @@ function populateWeeklyModalWithData(googleMeet, selectedDay, activityIndex, sta
                     const end24h = convert12hTo24h(endTime);
 
                     if (!window.weeklyLessonDayTimes) window.weeklyLessonDayTimes = {};
-                    
+
                     // Store the clicked event's date for this specific day
                     window.weeklyLessonDayTimes[clickedDayOfWeek] = {
                         start: start24h,
@@ -2547,7 +1426,8 @@ function populateWeeklyModalWithData(googleMeet, selectedDay, activityIndex, sta
                     };
 
                     renderWidgetTimeManage(clickedDayOfWeek, start24h, end24h);
-                    console.log('Selected only clicked day:', clickedDayOfWeek, '(', dayName, ')', 'with date:', clickedEventDate);
+                    console.log('Selected only clicked day:', clickedDayOfWeek, '(', dayName, ')', 'with date:',
+                        clickedEventDate);
                 } else {
                     console.warn('Clicked day', dayName, 'is not in the weekly lesson pattern');
                     // Fallback to all days if clicked day is not in pattern
@@ -2751,7 +1631,8 @@ document.addEventListener('DOMContentLoaded', function() {
             // For weekly lessons, show the modal first before submitting
             if (lessonType === 'weekly') {
                 // Only show the scope modal the first time; afterwards submit directly
-                if (!window.weeklyReadyToSubmit) {
+                // Also check if we're already waiting for modal input to prevent double-showing
+                if (!window.weeklyReadyToSubmit && !window.pendingWeeklySubmission) {
                     // Store the data for later submission
                     window.pendingWeeklySubmission = {
                         teacherId,
@@ -2764,6 +1645,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     $('#manageUpdateScopeModalBackdrop').classList.add('active');
                     return;
                 }
+                // If weeklyReadyToSubmit is true, continue to submission (don't show modal again)
             }
 
             // For single lessons, check if reschedule values are already stored
@@ -3152,39 +2034,51 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (button) {
                         button.classList.remove('has-time');
                     }
-                    
+
                     // When a day is selected, calculate and store its date
                     const dayMap = {
-                        Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6
+                        Sun: 0,
+                        Mon: 1,
+                        Tue: 2,
+                        Wed: 3,
+                        Thu: 4,
+                        Fri: 5,
+                        Sat: 6
                     };
                     const dayName = Object.keys(dayMap).find(k => dayMap[k] === key);
-                    
+
                     if (dayName) {
                         // Get the date to use as base - prefer clicked event date, then start date
                         const currentEventData = window.currentEventData || null;
                         const clickedEventDate = currentEventData?.date || null;
-                        const clickedDayOfWeek = clickedEventDate ? new Date(clickedEventDate + 'T00:00:00Z').getUTCDay() : null;
-                        const startDateEl = document.getElementById('weeklyLessonStartDateTextManage');
+                        const clickedDayOfWeek = clickedEventDate ? new Date(clickedEventDate +
+                            'T00:00:00Z').getUTCDay() : null;
+                        const startDateEl = document.getElementById(
+                            'weeklyLessonStartDateTextManage');
                         const startDate = startDateEl?.dataset?.fullDate || null;
-                        
+
                         // Calculate date for this day
                         let dayDate = null;
                         if (clickedEventDate) {
                             if (key === clickedDayOfWeek) {
                                 // This is the clicked day - use clicked event date directly
                                 dayDate = clickedEventDate;
-                                console.log('Selected clicked day - using clicked event date:', dayDate);
+                                console.log('Selected clicked day - using clicked event date:',
+                                    dayDate);
                             } else {
                                 // This is a different day - calculate from clicked event date
                                 dayDate = calculateDateForDay(dayName, clickedEventDate);
-                                console.log('Selected different day - calculated date from clicked event:', clickedEventDate, '→', dayDate);
+                                console.log(
+                                    'Selected different day - calculated date from clicked event:',
+                                    clickedEventDate, '→', dayDate);
                             }
                         } else if (startDate) {
                             // Fallback to start date
                             dayDate = calculateDateForDay(dayName, startDate);
-                            console.log('Calculated date from start date:', startDate, '→', dayDate);
+                            console.log('Calculated date from start date:', startDate, '→',
+                            dayDate);
                         }
-                        
+
                         if (dayDate) {
                             // Initialize or update the day times entry
                             if (!window.weeklyLessonDayTimes) window.weeklyLessonDayTimes = {};
@@ -3285,6 +2179,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Handle pending submission (when Update button was clicked)
             if (window.pendingWeeklySubmission) {
+                // Set the ready flag FIRST before clearing pending
+                // This ensures the main handler knows to proceed without showing modal again
+                window.weeklyReadyToSubmit = true;
+                
                 const {
                     selectedElement
                 } = window.pendingWeeklySubmission;
@@ -3301,17 +2199,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Log the payload
                 console.log('Update 1:1 class payload (manage):', payload);
 
-                // TODO: Submit the payload to your backend
-                // fetch('your-api-endpoint', { method: 'POST', body: JSON.stringify(payload) })
-
+                // Clear the pending submission
                 window.pendingWeeklySubmission = null;
 
-                // We already have the scope choice; immediately submit the update payload
-                // by re-triggering the main click handler with the guard flag set.
-                window.weeklyReadyToSubmit = true;
-                const submitButton = document.querySelector(
-                    '.calendar_admin_details_create_cohort_schedule_btn_manage');
-                if (submitButton) submitButton.click();
+                // Close modal
+                modalBackdrop.classList.remove('active');
+
+                // Trigger submission by clicking the button again
+                // The flag window.weeklyReadyToSubmit = true will prevent modal from showing again
+                setTimeout(() => {
+                    const submitButton = document.querySelector(
+                        '.calendar_admin_details_create_cohort_schedule_btn_manage');
+                    if (submitButton) {
+                        submitButton.click();
+                    }
+                }, 50);
+                
+                return; // Exit early to prevent modal from closing again below
             }
 
             // Close modal
@@ -4160,23 +3064,26 @@ document.addEventListener('DOMContentLoaded', function() {
             // If updating only this event (not all events), we need to determine which specific day to update
             let clickedDayOfWeek = null;
             let dayToUpdateForThisEvent = null;
-            
+
             if (clickedEventDate && !isAllEvents) {
                 const dateObj = new Date(clickedEventDate + 'T00:00:00Z');
                 clickedDayOfWeek = dateObj.getUTCDay();
-                console.log('Updating only this event - clicked day:', clickedDayOfWeek, 'date:', clickedEventDate);
-                
+                console.log('Updating only this event - clicked day:', clickedDayOfWeek, 'date:',
+                    clickedEventDate);
+
                 // Determine which day to update:
                 // 1. If user has selected days, use the first selected day
                 // 2. If no days selected, use the clicked day (we'll add it back below)
                 if (dayWidgets.length > 0) {
                     // User has selected days - use the first selected day
                     dayToUpdateForThisEvent = parseInt(dayWidgets[0].dataset.key, 10);
-                    console.log('User selected day(s) - will update only day:', dayToUpdateForThisEvent);
+                    console.log('User selected day(s) - will update only day:',
+                        dayToUpdateForThisEvent);
                 } else {
                     // No days selected - will use clicked day
                     dayToUpdateForThisEvent = clickedDayOfWeek;
-                    console.log('No days selected - will use clicked day:', dayToUpdateForThisEvent);
+                    console.log('No days selected - will use clicked day:',
+                    dayToUpdateForThisEvent);
                 }
             }
 
@@ -4191,8 +3098,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
 
                 // If updating only this event, only include the day to update (first selected day or clicked day)
-                if (!isAllEvents && dayToUpdateForThisEvent !== null && dayKey !== dayToUpdateForThisEvent) {
-                    console.log('Skipping day', dayText, 'because we are updating only day', dayToUpdateForThisEvent);
+                if (!isAllEvents && dayToUpdateForThisEvent !== null && dayKey !==
+                    dayToUpdateForThisEvent) {
+                    console.log('Skipping day', dayText, 'because we are updating only day',
+                        dayToUpdateForThisEvent);
                     return; // Skip this day
                 }
 
@@ -4209,9 +3118,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (startTime && endTime) {
                     // Calculate date for this day
                     let dayDate = null;
-                    
+
                     // Get stored date from weeklyLessonDayTimes if available
-                    if (window.weeklyLessonDayTimes && window.weeklyLessonDayTimes[dayKey] && window.weeklyLessonDayTimes[dayKey].date) {
+                    if (window.weeklyLessonDayTimes && window.weeklyLessonDayTimes[
+                        dayKey] && window.weeklyLessonDayTimes[dayKey].date) {
                         dayDate = window.weeklyLessonDayTimes[dayKey].date;
                         console.log('Using stored date for day', dayText, ':', dayDate);
                     } else if (isAllEvents) {
@@ -4227,11 +3137,14 @@ document.addEventListener('DOMContentLoaded', function() {
                             if (dayKey === clickedDayOfWeek) {
                                 // Same day as clicked - use clicked event date
                                 dayDate = clickedEventDate;
-                                console.log('Using clicked event date for clicked day:', dayDate);
+                                console.log('Using clicked event date for clicked day:',
+                                    dayDate);
                             } else {
                                 // Different day - calculate date for this day from clicked event date
                                 dayDate = calculateDateForDay(dayText, clickedEventDate);
-                                console.log('Calculated date for changed day', dayText, 'from clicked date:', clickedEventDate, '→', dayDate);
+                                console.log('Calculated date for changed day', dayText,
+                                    'from clicked date:', clickedEventDate, '→', dayDate
+                                    );
                             }
                         } else if (baseDate) {
                             dayDate = calculateDateForDay(dayText, baseDate);
@@ -4246,24 +3159,33 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                 }
             });
-            
+
             // If updating "this event only" and no days were selected, add the clicked day back with default times
-            if (!isAllEvents && selectedDays.length === 0 && clickedDayOfWeek !== null && clickedEventDate) {
+            if (!isAllEvents && selectedDays.length === 0 && clickedDayOfWeek !== null &&
+                clickedEventDate) {
                 // Find the widget for the clicked day to get its time, or use default times
                 const clickedDayWidget = document.querySelector(
                     `.weekly_lesson_scroll_widget_manage[data-key="${clickedDayOfWeek}"]`
                 );
-                
-                const dayMap = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
+
+                const dayMap = {
+                    Sun: 0,
+                    Mon: 1,
+                    Tue: 2,
+                    Wed: 3,
+                    Thu: 4,
+                    Fri: 5,
+                    Sat: 6
+                };
                 const dayName = Object.keys(dayMap).find(k => dayMap[k] === clickedDayOfWeek);
-                
+
                 if (dayName) {
                     const fullDayName = dayThreeLetterMap[dayName] || dayName;
                     let startTime = '';
                     let endTime = '';
                     let startPeriod = '';
                     let endPeriod = '';
-                    
+
                     if (clickedDayWidget) {
                         // Try to get times from the widget
                         startTime = clickedDayWidget.querySelector(
@@ -4271,14 +3193,16 @@ document.addEventListener('DOMContentLoaded', function() {
                         endTime = clickedDayWidget.querySelector(
                             '.weekly_lesson_widget_hour_minute_manage.end')?.textContent || '';
                         startPeriod = clickedDayWidget.querySelector(
-                            '.weekly_lesson_widget_period_manage.start-period')?.textContent || '';
+                                '.weekly_lesson_widget_period_manage.start-period')?.textContent ||
+                            '';
                         endPeriod = clickedDayWidget.querySelector(
                             '.weekly_lesson_widget_period_manage.end-period')?.textContent || '';
                     }
-                    
+
                     // If no times found, try to get from weeklyLessonDayTimes
                     if (!startTime || !endTime) {
-                        if (window.weeklyLessonDayTimes && window.weeklyLessonDayTimes[clickedDayOfWeek]) {
+                        if (window.weeklyLessonDayTimes && window.weeklyLessonDayTimes[
+                                clickedDayOfWeek]) {
                             const dayTimes = window.weeklyLessonDayTimes[clickedDayOfWeek];
                             const start12h = convert24hTo12h(dayTimes.start || '09:00');
                             const end12h = convert24hTo12h(dayTimes.end || '10:00');
@@ -4296,24 +3220,26 @@ document.addEventListener('DOMContentLoaded', function() {
                             endPeriod = 'AM';
                         }
                     }
-                    
+
                     selectedDays.push({
                         day: fullDayName,
                         date: clickedEventDate,
                         start: `${startTime} ${startPeriod}`,
                         end: `${endTime} ${endPeriod}`
                     });
-                    console.log('Added clicked day back to payload:', fullDayName, clickedEventDate, startTime, endTime);
+                    console.log('Added clicked day back to payload:', fullDayName, clickedEventDate,
+                        startTime, endTime);
                 }
             }
-            
+
             // Validate that we have at least one day
             if (selectedDays.length === 0) {
                 showToastManage('❌ Please select at least one day for the weekly lesson.');
                 return;
             }
-            
-            console.log('Selected days for payload:', selectedDays, 'isAllEvents:', isAllEvents, 'clickedDayOfWeek:', clickedDayOfWeek);
+
+            console.log('Selected days for payload:', selectedDays, 'isAllEvents:', isAllEvents,
+                'clickedDayOfWeek:', clickedDayOfWeek);
             // Reset change-teacher UI so previous selections do not bleed into new events
             const changeTeacherCheckbox = document.getElementById('changeTeacherCheckbox');
             if (changeTeacherCheckbox) {
@@ -4362,19 +3288,190 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('📤 Final Form Data:', formData);
         console.log('📋 New Data (Updated fields only):', formData.newData);
 
+        // Build payload in the format expected by update_one_on_one.php
+        // Determine scope based on update scope selection
+        let scope = 'THIS_OCCURRENCE';
+        if (window.weeklyUpdateScope === 'all' || window.allEvents) {
+            scope = 'THIS_AND_FOLLOWING';
+        } else if (window.weeklyUpdateScope === 'following') {
+            scope = 'THIS_AND_FOLLOWING';
+        }
+
+        // Get googlemeetid (cmid)
+        const googlemeetid = parseInt(cmid || formData.cmid || 0);
+
+        // Get original values for comparison
+        // Normalize date to YYYY-MM-DD format
+        let originalDate = originalEventData?.date || null;
+        if (originalDate && originalDate.includes('T')) {
+            // If date includes time, extract just the date part
+            originalDate = originalDate.split('T')[0];
+        }
+        const originalTeacherId = originalEventData?.teacherId || formData.teacherId || null;
+        const originalStart = originalEventData?.start || null;
+        const originalEnd = originalEventData?.end || null;
+
+        // Determine what changed by comparing original vs new values
+        let timeChanged = false;
+        let newStartTime = null;
+        let newEndTime = null;
+        
+        if (formData.lessonType === 'single' && formData.singleLesson) {
+            // Single lesson: check if time changed
+            const timeStr = formData.singleLesson.time || '';
+            if (timeStr) {
+                const time24h = convert12hTo24h(timeStr);
+                if (time24h) {
+                    const [startHour, startMin] = time24h.split(':').map(Number);
+                    const duration = formData.singleLesson.duration || 60;
+                    const endMin = startMin + duration;
+                    const endHour = startHour + Math.floor(endMin / 60);
+                    const endMinFinal = endMin % 60;
+                    
+                    newStartTime = `${String(startHour).padStart(2, '0')}:${String(startMin).padStart(2, '0')}`;
+                    newEndTime = `${String(endHour).padStart(2, '0')}:${String(endMinFinal).padStart(2, '0')}`;
+                    
+                    // Compare with original times (convert original to 24h if needed)
+                    if (originalStart && originalEnd) {
+                        const origStart24h = originalStart.includes(' ') ? convert12hTo24h(originalStart) : originalStart;
+                        const origEnd24h = originalEnd.includes(' ') ? convert12hTo24h(originalEnd) : originalEnd;
+                        timeChanged = (origStart24h !== newStartTime || origEnd24h !== newEndTime);
+                    } else {
+                        timeChanged = true; // No original time, so it's a change
+                    }
+                }
+            }
+        } else if (formData.lessonType === 'weekly' && formData.weeklyLesson && formData.weeklyLesson.days && formData.weeklyLesson.days.length > 0) {
+            // Weekly lesson: get time from first day
+            const firstDay = formData.weeklyLesson.days[0];
+            if (firstDay.start && firstDay.end) {
+                const start24h = convert12hTo24h(firstDay.start);
+                const end24h = convert12hTo24h(firstDay.end);
+                if (start24h && end24h) {
+                    newStartTime = start24h;
+                    newEndTime = end24h;
+                    
+                    // Compare with original times
+                    if (originalStart && originalEnd) {
+                        const origStart24h = originalStart.includes(' ') ? convert12hTo24h(originalStart) : originalStart;
+                        const origEnd24h = originalEnd.includes(' ') ? convert12hTo24h(originalEnd) : originalEnd;
+                        timeChanged = (origStart24h !== newStartTime || origEnd24h !== newEndTime);
+                    } else {
+                        timeChanged = true;
+                    }
+                }
+            }
+        }
+
+        const teacherChanged = formData.changeTeacher && formData.newTeacherId && 
+            parseInt(formData.newTeacherId) !== parseInt(originalTeacherId);
+        
+        console.log('👤 Teacher change detection:', {
+            changeTeacher: formData.changeTeacher,
+            newTeacherId: formData.newTeacherId,
+            originalTeacherId,
+            teacherChanged
+        });
+        
+        // Detect date change for both single and weekly lessons
+        let dateChanged = false;
+        let newDate = null;
+        
+        if (formData.lessonType === 'single' && formData.singleLesson && formData.singleLesson.date) {
+            newDate = formData.singleLesson.date;
+            // Normalize date to YYYY-MM-DD format
+            if (newDate && newDate.includes('T')) {
+                newDate = newDate.split('T')[0];
+            }
+            dateChanged = newDate !== originalDate;
+            console.log('📅 Date change detection (single):', {
+                originalDate,
+                newDate,
+                dateChanged
+            });
+        } else if (formData.lessonType === 'weekly' && formData.weeklyLesson && 
+                   formData.weeklyLesson.days && formData.weeklyLesson.days.length > 0) {
+            // For weekly lessons, check if the first selected day's date is different from original
+            const firstDay = formData.weeklyLesson.days[0];
+            if (firstDay.date) {
+                newDate = firstDay.date;
+                // Normalize date to YYYY-MM-DD format
+                if (newDate && newDate.includes('T')) {
+                    newDate = newDate.split('T')[0];
+                }
+                dateChanged = newDate !== originalDate;
+                console.log('📅 Date change detection (weekly):', {
+                    originalDate,
+                    newDate,
+                    firstDayDate: firstDay.date,
+                    dateChanged
+                });
+            }
+        }
+
+        // Build payload
         const payload = {
-            data: formData,
-            eventId: formData.eventId
+            scope: scope,
+            eventId: parseInt(eventId || formData.eventId || 0),
+            googlemeetid: googlemeetid,
+            apply: {
+                time: timeChanged,
+                teacher: teacherChanged,
+                status: false,
+                days: false,
+                period: false,
+                end: false,
+                date: dateChanged
+            }
         };
 
-        console.log('📦 Sending Payload with Event ID:', payload.eventId, '| Full Payload:',
-            payload);
+        // Add anchorDate if date changed (original date)
+        // Normalize anchorDate to YYYY-MM-DD format
+        if (dateChanged && originalDate) {
+            let normalizedAnchorDate = originalDate;
+            if (normalizedAnchorDate && normalizedAnchorDate.includes('T')) {
+                normalizedAnchorDate = normalizedAnchorDate.split('T')[0];
+            }
+            payload.anchorDate = normalizedAnchorDate;
+            console.log('📌 Setting anchorDate:', payload.anchorDate);
+        }
+
+        // Add time data if time changed
+        if (timeChanged && newStartTime && newEndTime) {
+            payload.time = {
+                start: newStartTime,
+                end: newEndTime
+            };
+        }
+
+        // Add teacher data if teacher changed
+        if (teacherChanged && originalTeacherId && formData.newTeacherId) {
+            payload.teacher = {
+                old: parseInt(originalTeacherId),
+                new: parseInt(formData.newTeacherId)
+            };
+        }
+
+        // Add date data if date changed
+        // Normalize newDate to YYYY-MM-DD format
+        if (dateChanged && newDate) {
+            let normalizedNewDate = newDate;
+            if (normalizedNewDate && normalizedNewDate.includes('T')) {
+                normalizedNewDate = normalizedNewDate.split('T')[0];
+            }
+            payload.date = {
+                new: normalizedNewDate
+            };
+            console.log('📅 Setting date.new:', payload.date.new);
+        }
+
+        console.log('📦 Sending Payload:', payload);
 
         // Show loader
         if (loaderOverlay) loaderOverlay.classList.add('active');
 
         try {
-            const response = await fetch('ajax/update_one2one.php', {
+            const response = await fetch('ajax/update_one_on_one.php', {
                 method: 'POST',
                 credentials: 'same-origin',
                 headers: {
@@ -4386,11 +3483,15 @@ document.addEventListener('DOMContentLoaded', function() {
             const result = await response.json();
             console.log('Update Response:', result);
 
-            if (!result.success) {
+            // Check for error - API returns 'ok' field, not 'success'
+            if (!result.ok) {
                 // Hide loader on error
                 if (loaderOverlay) loaderOverlay.classList.remove('active');
                 if (window.hideGlobalLoader) window.hideGlobalLoader();
-                showToastManage('❌ Error: ' + result.message);
+                
+                // Handle error message - check multiple possible error fields
+                const errorMessage = result.message || result.error || result.msg || 'An unknown error occurred';
+                showToastManage('❌ Error: ' + errorMessage);
                 return;
             }
 
@@ -4399,7 +3500,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Keep loader visible during calendar refresh
             // Switch from overlay loader to global loader for calendar fetch
             if (loaderOverlay) loaderOverlay.classList.remove('active');
-            
+
             // Show global loader for calendar fetch
             if (window.showGlobalLoader) {
                 window.showGlobalLoader();

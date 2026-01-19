@@ -1,0 +1,148 @@
+:root {
+    --calendar_admin_details_lesson_availability_lesson_booking-card-radius: 8px;
+    --calendar_admin_details_lesson_availability_lesson_booking-border: #ececf3;
+    --calendar_admin_details_lesson_availability_lesson_booking-muted: #6b6f7b;
+    --calendar_admin_details_lesson_availability_lesson_booking-heading: #131416;
+    --calendar_admin_details_lesson_availability_lesson_booking-red: #fe2e0c;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    background: #f7f7fb;
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: #111;
+}
+
+.calendar_admin_details_lesson_availability_lesson_booking_section {
+    padding: 28px 12px;
+}
+
+.calendar_admin_details_lesson_availability_lesson_booking_title {
+    font-weight: 600;
+    letter-spacing: -.2px;
+    color: var(--calendar_admin_details_lesson_availability_lesson_booking-heading);
+    margin-bottom: 20px;
+    font-size: clamp(22px, 2.4vw, 30px);
+}
+
+.calendar_admin_details_lesson_availability_lesson_booking_card {
+    background: #fff;
+
+    padding: 18px 0;
+}
+
+.calendar_admin_details_lesson_availability_lesson_booking_label {
+    font-weight: 700;
+    color: #1b1c1f;
+    margin-bottom: 6px;
+    font-size: clamp(16px, 1.8vw, 18px);
+}
+
+.calendar_admin_details_lesson_availability_lesson_booking_tip {
+    color: var(--calendar_admin_details_lesson_availability_lesson_booking-muted);
+    max-width: 62ch;
+    line-height: 1.5;
+}
+
+.calendar_admin_details_lesson_availability_lesson_booking_control {
+    background: #fff;
+    border: 1px solid var(--calendar_admin_details_lesson_availability_lesson_booking-border);
+    border-radius: var(--calendar_admin_details_lesson_availability_lesson_booking-card-radius);
+    padding: 18px;
+    height: 100%;
+}
+
+.calendar_admin_details_lesson_availability_lesson_booking_control_title {
+    color: #26272b;
+    margin-bottom: 10px;
+}
+
+/* ======= Custom SELECT (matches your screenshot) ======= */
+.calendar_admin_details_lesson_availability_lesson_booking_select {
+    position: relative;
+    width: 100%;
+}
+
+.calendar_admin_details_lesson_availability_lesson_booking_selectbtn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 2px solid #ececf3;
+    background: #fff;
+    padding: 14px 16px;
+    border-radius: 5px;
+    color: #111;
+    line-height: 1.1;
+    /* box-shadow:0 3px 0 rgba(0,0,0,.20); */
+    cursor: pointer;
+}
+
+.calendar_admin_details_lesson_availability_lesson_booking_selectbtn:focus-visible {
+    outline: 0;
+    box-shadow: 0 0 0 .18rem rgba(0, 0, 0, .06), 0 3px 0 rgba(0, 0, 0, .20);
+}
+
+.calendar_admin_details_lesson_availability_lesson_booking_caret {
+    margin-left: 12px;
+    flex: 0 0 auto;
+}
+
+.calendar_admin_details_lesson_availability_lesson_booking_menu {
+    position: absolute;
+    left: 0;
+    top: calc(100% + 10px);
+    width: 100%;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 14px;
+    padding: 10px 0;
+    z-index: 2005;
+    display: none;
+    box-shadow: 0 16px 42px rgba(0, 0, 0, .18), 0 6px 18px rgba(0, 0, 0, .10);
+}
+
+.calendar_admin_details_lesson_availability_lesson_booking_select.open>.calendar_admin_details_lesson_availability_lesson_booking_menu {
+    display: block;
+}
+
+.calendar_admin_details_lesson_availability_lesson_booking_item {
+    padding: 16px 22px;
+    /* font-weight:600; */
+    color: #111;
+    cursor: pointer;
+    white-space: normal;
+}
+
+.calendar_admin_details_lesson_availability_lesson_booking_item:hover {
+    background: #f5f6fb;
+}
+
+.calendar_admin_details_lesson_availability_lesson_booking_item[aria-selected="true"] {
+    background: #f1f4ff;
+}
+
+.calendar_admin_details_lesson_availability_lesson_booking_row+.calendar_admin_details_lesson_availability_lesson_booking_row {
+    margin-top: 28px;
+}
+
+.calendar_admin_details_lesson_availability_lesson_booking_savebtn {
+    background: var(--calendar_admin_details_lesson_availability_lesson_booking-red);
+    border: none;
+    border-radius: 10px;
+    padding: 12px 36px;
+    font-weight: 700;
+    color: #fff;
+    font-size: 1.05rem;
+    border: 2px solid #000;
+    /* box-shadow:0 2px 0 0 #000 inset; */
+    transition: background .2s ease;
+}
+
+.calendar_admin_details_lesson_availability_lesson_booking_savebtn:hover {
+    background: #e53935;
+}

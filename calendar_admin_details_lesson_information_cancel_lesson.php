@@ -141,10 +141,121 @@
     if (e.target === this) $cancel.fadeOut(100);
   });
 
-  // Confirm cancel (demo: just close)
+  // Confirm cancel - send to update_one_on_one.php
   $(document).on('click', '#calendar_admin_details_lesson_information_confirm_cancel', function(){
-    // TODO: replace with your submit/AJAX
-    $cancel.fadeOut(120);
+    const $modal = $('#calendar_admin_details_lesson_information_cancel_backdrop');
+    const $select = $modal.find('.calendar_admin_details_lesson_information_select');
+    const $textarea = $modal.find('.calendar_admin_details_lesson_information_textarea_long');
+    
+    // Get reason (required)
+    const reason = $select.val() ? $select.val().trim() : '';
+    if (!reason) {
+      alert('Please select a reason for cancellation');
+      return;
+    }
+    
+    // Get message (optional)
+    const message = $textarea.val() ? $textarea.val().trim() : '';
+    
+    // Get event data from current clicked event
+    const eventData = window.getCurrentClickedEvent ? window.getCurrentClickedEvent() : null;
+    if (!eventData) {
+      console.error('No event data available for cancellation');
+      alert('Error: No event data found');
+      return;
+    }
+    
+    const eventId = eventData.eventid || eventData.id;
+    const googlemeetid = eventData.googlemeetid || eventData.googlemeetId;
+    
+    if (!eventId || !googlemeetid) {
+      console.error('Missing eventId or googlemeetid', { eventId, googlemeetid });
+      alert('Error: Missing event information');
+      return;
+    }
+    
+    // Build payload according to update_one_on_one.php format
+    const payload = {
+      scope: 'THIS_OCCURRENCE',
+      eventId: parseInt(eventId),
+      googlemeetid: parseInt(googlemeetid),
+      cancel: {
+        reason: reason,
+        message: message
+      }
+    };
+    
+    console.log('Cancellation payload:', payload);
+    
+    // Show loader
+    if (window.showGlobalLoader) window.showGlobalLoader();
+    
+    // Disable button to prevent double submission
+    const $btn = $(this);
+    $btn.prop('disabled', true);
+    
+    // Send AJAX request
+    $.ajax({
+      url: M.cfg.wwwroot + '/local/customplugin/ajax/update_one_on_one.php',
+      type: 'POST',
+      data: JSON.stringify(payload),
+      contentType: 'application/json',
+      success: function(response) {
+        console.log('Cancellation response:', response);
+        
+        if (response.ok) {
+          // Show success message
+          if (window.showToast) {
+            window.showToast('Event cancelled successfully', 'success');
+          } else {
+            alert('Event cancelled successfully');
+          }
+          
+          // Close modal
+          $cancel.fadeOut(120);
+          
+          // Refresh calendar
+          if (window.refetchCustomPluginData) {
+            window.refetchCustomPluginData('cancel');
+          } else if (window.fetchCalendarEvents) {
+            window.fetchCalendarEvents();
+          }
+        } else {
+          // Show error
+          const errorMsg = response.error || 'Failed to cancel event';
+          if (window.showToast) {
+            window.showToast(errorMsg, 'error');
+          } else {
+            alert(errorMsg);
+          }
+          $btn.prop('disabled', false);
+        }
+      },
+      error: function(xhr) {
+        console.error('Cancellation error:', xhr);
+        let errorMsg = 'Failed to cancel event';
+        if (xhr.responseJSON && xhr.responseJSON.error) {
+          errorMsg = xhr.responseJSON.error;
+        } else if (xhr.responseText) {
+          try {
+            const errorData = JSON.parse(xhr.responseText);
+            errorMsg = errorData.error || errorMsg;
+          } catch (e) {
+            // Use default error message
+          }
+        }
+        
+        if (window.showToast) {
+          window.showToast(errorMsg, 'error');
+        } else {
+          alert(errorMsg);
+        }
+        $btn.prop('disabled', false);
+      },
+      complete: function() {
+        if (window.hideGlobalLoader) window.hideGlobalLoader();
+      }
+    });
   });
 
   // Esc to close

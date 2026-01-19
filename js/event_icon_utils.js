@@ -65,7 +65,18 @@
      * @returns {{code: string, icon: string, label: string, statusObj: Object}|null}
      */
     function getActiveStatusMeta(statuses) {
-        if (!Array.isArray(statuses) || statuses.length === 0) return null;
+        // If no explicit statuses, fall back to a default "scheduled" icon
+        if (!Array.isArray(statuses) || statuses.length === 0) {
+            const fallback = STATUS_ICON_MAP.scheduled;
+            if (fallback) {
+                return {
+                    ...fallback,
+                    code: 'scheduled',
+                    statusObj: null
+                };
+            }
+            return null;
+        }
 
         // Filter active statuses first (same logic as original)
         const activeStatuses = statuses.filter((s) => s && s.isactive);
@@ -175,9 +186,14 @@
             </span>`;
         }
 
-        // Standard single status icon
+        // Standard single status icon with history tooltip support
+        // Add data attribute for history if available
+        const hasHistory = event.history && Array.isArray(event.history) && event.history.length > 0;
+        const tooltipId = hasHistory ? `status-history-tooltip-${Date.now()}-${Math.random().toString(36).substr(2, 9)}` : '';
+        
         return `<span class="ev-status-icon" title="${statusMeta.label}" aria-label="${statusMeta.label}" 
-            style="position:${position}; top:${top}; right:${right}; display:inline-flex; align-items:center; justify-content:center; pointer-events:none; z-index:${zIndex};">
+            style="position:${position}; top:${top}; right:${right}; display:inline-flex; align-items:center; justify-content:center; pointer-events:auto; cursor:${hasHistory ? 'help' : 'default'}; z-index:${zIndex};"
+            ${hasHistory ? `data-tooltip-id="${tooltipId}" data-event-id="${event.eventid || ''}"` : ''}>
             <img src="${statusMeta.icon}" alt="${statusMeta.label}" style="width:16px; height:16px;">
         </span>`;
     }
@@ -236,25 +252,28 @@
         let prevTeacherName = null;
         let newTeacherName = null;
 
-        const resCurrent = event.rescheduled?.current;
-        const resPrev = event.rescheduled?.previous;
+        // Use summary first, fallback to rescheduled for backward compatibility
+        const summaryCurrent = event.summary?.current;
+        const summaryPrevious = event.summary?.previous;
+        const resCurrent = summaryCurrent || event.rescheduled?.current;
+        const resPrev = summaryPrevious || event.rescheduled?.previous;
 
         // Get PREVIOUS teacher picture (the one it was reassigned FROM)
-        // Check multiple possible property names for previous teacher picture
-        if (resPrev?.teacher_pic) {
+        // Check summary first, then rescheduled, then other sources
+        if (summaryPrevious?.teacher?.avatar) {
+            teacherPic = summaryPrevious.teacher.avatar;
+        } else if (summaryPrevious?.teacher_pic) {
+            teacherPic = summaryPrevious.teacher_pic;
+        } else if (summaryPrevious?.teacherpic) {
+            teacherPic = summaryPrevious.teacherpic;
+        } else if (resPrev?.teacher_pic) {
             teacherPic = resPrev.teacher_pic;
         } else if (resPrev?.teacherpic) {
             teacherPic = resPrev.teacherpic;
-        } else if (event.rescheduled?.previous_teacher_picture) {
-            teacherPic = event.rescheduled.previous_teacher_picture;
         } else if (statusMeta?.statusObj?.details?.previous?.teacher_pic) {
             teacherPic = statusMeta.statusObj.details.previous.teacher_pic;
-        } else if (event.previousTeacherPic) {
-            teacherPic = event.previousTeacherPic;
         } else if (event.previousTeacherAvatar) {
             teacherPic = event.previousTeacherAvatar;
-        } else if (event.previous_teacher_picture) {
-            teacherPic = event.previous_teacher_picture;
         }
 
         if (!teacherPic) {
@@ -262,13 +281,16 @@
         }
 
         // Get new teacher name
-        newTeacherName = resCurrent?.teacher_name ||
+        newTeacherName = summaryCurrent?.teacher?.name ||
+            resCurrent?.teacher_name ||
             resCurrent?.teachername ||
             statusMeta?.statusObj?.details?.current?.teacher_name ||
             (Array.isArray(event.teachernames) ? event.teachernames[0] : event.teachernames || "New Teacher");
 
         // Get previous teacher name
-        if (resPrev) {
+        if (summaryPrevious?.teacher?.name) {
+            prevTeacherName = summaryPrevious.teacher.name;
+        } else if (resPrev) {
             prevTeacherName = resPrev.teacher_name || resPrev.teachername || "Previous Teacher";
         } else if (statusMeta?.statusObj?.details?.previous) {
             prevTeacherName = statusMeta.statusObj.details.previous.teacher_name || 
