@@ -1,5 +1,5 @@
 <!-- Modal Overlay -->
-<div id="trialModalOverlay" class="modal-overlay" style="display: flex">
+<div id="trialModalOverlay" class="modal-overlay">
   <div class="modal-window">
     <!-- STEP 1 -->
     <div id="step1" class="modal-content book_trial_step1">

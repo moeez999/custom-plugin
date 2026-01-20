@@ -6,7 +6,7 @@ $(function(){
     $overlay.css('display','flex');
     $('#step1').show();
     $('#step2, #step3').hide();
-    $('.modal-window').css({ width:'380px', maxHeight:'95vh' });
+    // $('.modal-window').css({ width:'380px', maxHeight:'95vh' });
   });
 
   // Close
