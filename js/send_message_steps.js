@@ -56,7 +56,11 @@ $(function() {
 
   // Show more tutors
   $(document).on('click', '#send_message_more', function() {
-    $('#send_message_modal').fadeOut();
+    document.getElementById('send_message_modal').style.display = 'none';
+
+    document.querySelectorAll('.send_message_step').forEach(function (el) {
+      el.style.display = 'none';
+    });
     // TODO: show tutor list
   });
 
