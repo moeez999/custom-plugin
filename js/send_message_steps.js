@@ -84,5 +84,11 @@ $(function() {
         $(this).addClass('active');
     });
 
+  // step 5
+  // review read more
+  $('.reveal-review').on('click', function () {
+    $(this).addClass('d-none');
+    $("#"+$(this).data('target')).removeClass('d-none');
+  });
 });
 

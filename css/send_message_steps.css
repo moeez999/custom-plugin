@@ -28,8 +28,8 @@
   max-width:none;
   max-height:none;
   border-radius:0 !important;
-  padding:24px;
   overflow-y:auto;
+  padding-block: 67px 105px;
 }
 .send_message_close {
     position: absolute;
@@ -277,33 +277,68 @@
   font-family: 'Figtree', sans-serif; 
 }
 /* Step 5 Checkout */
-.send_message_checkout { display:flex; gap:24px; }
+.send_message_checkout {
+    display: flex;
+    gap: 64px;
+    padding-inline: 208px;
+    max-width: 1392px;
+    margin: 0 auto;
+  }
+.checkout_left {
+  padding: 24px;
+  border: 1px solid #DCDCE5;
+  max-width: 400px;
+  width: 100%;
+}
+.checkout_right{
+  max-width: 512px;
+  width: 100%;
+}
 .checkout_left, .checkout_right {
-  flex:1; background:#fff; border-radius:8px;
-  padding:16px; box-sizing:border-box;
+  background:#fff; border-radius:8px;
 }
 .teacher_card {
   display:flex; align-items:center; gap:12px; margin-bottom:12px;
 }
-.tc_avatar { width:48px; height:48px; border-radius:50%; object-fit:cover; }
-.tc_lang { font-size:12px; color:#666; }
-.tc_name { font-size:16px; margin:0; }
-.tc_rating { margin-left:auto; display:flex; align-items:center; font-size:14px; }
-.tc_rating span { margin-left:4px; color:#666; }
-.tc_badges { margin-bottom:12px; }
-.badge { display:inline-block; padding:2px 6px; font-size:12px; color:#fff; border-radius:4px; margin-right:8px; }
-.badge.verified { background:#2563eb; }
-.badge.professional { background:#10b981; }
-.lesson_info p { margin:0 0 8px; }
-.lesson_info ul { margin:0 0 12px 16px; }
-.order_summary h4 { margin:0 0 8px; }
-.order_line, .order_total { display:flex; justify-content:space-between; margin-bottom:8px; }
-.order_total strong { font-size:16px; }
-.tooltip {
-  display:inline-block; width:16px; height:16px; border-radius:50%;
-  background:#ddd; color:#666; text-align:center; line-height:16px;
-  font-size:12px; cursor:help; margin-left:4px;
+.super_heading {
+  font-size: 26px;
+  font-weight: 600;
+  text-align: left;
 }
+.payment-selector {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 18px;
+    border: 2px solid #dcdce5;
+    border-radius: 8px;
+    background-color: #ffffff;
+    cursor: pointer;
+}
+.card-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.card-icon {
+   width: 48px;
+    height: 24px;
+}
+.card-details {
+    font-family: 'Figtree', sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 24px;
+}
+.card-details {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.dropdown-icon {
+
+}
+
 .promo_code { display:inline-block; margin-top:8px; font-size:14px; color:#2563eb; text-decoration:none; }
 .info_box { border-radius:8px; padding:12px; margin-top:12px; font-size:14px; }
 .info_switch { display:flex; align-items:center; background:#d1fae5; }
@@ -316,16 +351,39 @@
 }
 .card_icon { width:40px; }
 .confirm_button {
-  width:100%; padding:12px; background:#f53d2d; border:none;
+  width:100%; padding:12px; background:#FF2500; border:none;
   border-radius:8px; color:#fff; font-size:16px; cursor:pointer;
+  border: 2px solid #121117;
   margin-bottom:12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 18px;
 }
-.review_carousel { border:1px solid #ddd; border-radius:8px; padding:12px; }
-.review_rating { display:flex; align-items:center; font-size:14px; margin-bottom:8px; }
-.review_rating span { margin-left:4px; color:#666; }
-.review_nav { float:right; }
-.review_nav button { background:none; border:none; font-size:16px; cursor:pointer; }
-.review_card { display:flex; align-items:flex-start; gap:12px; margin-top:12px; }
-.review_avatar { width:40px; height:40px; border-radius:50%; object-fit:cover; }
-.review_card p { flex:1; font-size:14px; margin:0; }
-.review_author { font-size:12px; color:#666; text-align:right; margin-top:8px; }
+.confirm_button:hover {
+  background: rgba(255, 88, 60, 1) !important;
+}
+
+.checkout-review-box {
+  border-top: 5px solid #F4F4F8;
+}
+
+.checkout-review-window {
+  border-radius: 8px;
+  border: 1px solid #DCDCE5;
+  padding: 17px;
+}
+
+.arrowz {
+  cursor: pointer;
+  width: 58px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pointer {
+  cursor: pointer;
+}
+/* .arrowz:hover {
+  background: #f5f5f5;
+} */

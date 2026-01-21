@@ -28,7 +28,7 @@
       padding: 27px 80px;
     }
     .what-would-you-like-to-do-modal {
-        display: none !important;
+        /* display: none !important; */
     }
     /* ---------- Filter Dropdowns ---------- */
     .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
