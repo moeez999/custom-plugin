@@ -1,10 +1,10 @@
 <!-- Modal -->
 <div id="send_message_modal" class="send_message_overlay" style="display: none">
-  <div class="send_message_container fullscreen">
+  <div class="send_message_container">
     <span id="send_message_close" class="send_message_close">&times;</span>
 
     <!-- Step 1 -->
-    <div class="send_message_step send_message_step1" data-step="1">
+    <div class="send_message_step send_message_step1" style="display: none" data-step="1">
       <img src="https://randomuser.me/api/portraits/women/4.jpg" alt="Tutor Avatar" class="send_message_avatar"/>
       <h2 class="send_message_title mb-0">Contact Daniela</h2>
       <p class="send_message_subtitle mt-1">Introduce yourself to the tutor, share your learning goals and ask any questions</p>
@@ -28,7 +28,7 @@
     </div>
 
     <!-- Step 2 -->
-    <div class="send_message_step send_message_step2" data-step="2">
+    <div class="send_message_step send_message_step2" style="display: none" data-step="2">
       <img src="https://randomuser.me/api/portraits/women/4.jpg" alt="Tutor Avatar" class="send_message_avatar"/>
       <h2 class="send_message_title mb-3">Message sent</h2>
       <p class="send_message_subtitle" style="margin-bottom:25px !important;">Excited to start your learning journey? <br>
@@ -39,7 +39,7 @@
     </div>
 
     <!-- Step 3 -->
-    <div class="send_message_step send_message_step3" data-step="3">
+    <div class="send_message_step send_message_step3" style="display: none" data-step="3">
       <div class="send_message_header3">
         <img src="https://randomuser.me/api/portraits/women/4.jpg" alt="Tutor Avatar" class="send_message_avatar3"/>
         <div style="text-align: left">
@@ -147,7 +147,7 @@
     </div>
 
      <!-- Step 4 -->
-    <div class="send_message_step send_message_step4" data-step="4">
+    <div class="send_message_step send_message_step4" style="display: none" data-step="4">
       <h2 class="send_message_title text-left" style="margin-block: 24px;">How would you like to pay?</h2>
       <div class="send_message_step_4_to_5 choose-payment-meth">
         <svg width="20" height="16" viewBox="0 0 20 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -168,7 +168,7 @@
      </div>
 
     <!-- Step 5 -->
-    <div class="send_message_step send_message_step5" data-step="5">
+    <div class="send_message_step send_message_step5" style="display: none" data-step="5">
       <div class="send_message_checkout">
         <div class="checkout_left">
           <div class="profile-details-container">

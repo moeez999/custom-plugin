@@ -169,7 +169,7 @@
     }
   }
 </style>
-<div style="max-width: 1600px;
+<div style="max-width: 1280px;
     margin: 0 auto;" class="poppins">
 <h2 class="find-groups-main-title">Find Online English Study Groups for Students</h2>
 <p class="find-groups-sub-heading" style="margin-top: 4px;">Looking for a group to practice English with? Latingles is the leading online language learning platform worldwide. Choose from thousands of student groups led by experienced teachers to improve your English together.</p>

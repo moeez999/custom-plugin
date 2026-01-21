@@ -2,56 +2,61 @@ $(function() {
   // Open modal -> Step 1
   $(document).on('click', '#send_message_btn', function(e) {
     e.preventDefault();
-    $('.send_message_container').removeClass('fullscreen');
     $('#send_message_modal .send_message_step')
       .removeClass('active')
       .filter('.send_message_step1').addClass('active');
-    $('#send_message_modal').fadeIn(200);
+      $('.send_message_step1').fadeIn();
+      $('#send_message_modal').fadeIn();
   });
 
   // Close (×)
   $(document).on('click', '#send_message_close', function() {
-    $('#send_message_modal').fadeOut(200);
+    document.getElementById('send_message_modal').style.display = 'none';
+
+    document.querySelectorAll('.send_message_step').forEach(function (el) {
+      el.style.display = 'none';
+    });
+    $('.send_message_container').removeClass('fullscreen');
   });
 
   // Step 1 -> Step 2
   $(document).on('click', '#send_message_submit', function() {
-    $('.send_message_step1').fadeOut(200, function() {
-      $('.send_message_step2').fadeIn(200).addClass('active');
+    $('.send_message_step1').fadeOut(0, function() {
+      $('.send_message_step2').fadeIn().addClass('active');
     }).removeClass('active');
   });
 
   // Step 2 -> Step 3
   $(document).on('click', '#send_message_book', function() {
-    $('.send_message_step2').fadeOut(200, function() {
-      $('.send_message_step3').fadeIn(200).addClass('active');
+    $('.send_message_step2').fadeOut(0, function() {
+      $('.send_message_step3').fadeIn().addClass('active');
     }).removeClass('active');
   });
   
   // Step 3 -> Step 4
    $(document).on('click', '#send_message_book_c', function() {
-    $('.send_message_step3').fadeOut(200, function() {
-      $('.send_message_step4').fadeIn(200).addClass('active');
+    $('.send_message_step3').fadeOut(0, function() {
+      $('.send_message_step4').fadeIn().addClass('active');
     }).removeClass('active');
   });
   // Step 4 -> Step 5 (fullscreen)
   $(document).on('click', '.send_message_step_4_to_5', function() {
-    $('.send_message_step4').fadeOut(200, function() {
+    $('.send_message_step4').fadeOut(0, function() {
       $('.send_message_container')
         .addClass('fullscreen');
-      $('.send_message_step5').fadeIn(200).addClass('active');
+      $('.send_message_step5').fadeIn().addClass('active');
     }).removeClass('active');
   });
 
   // Confirm subscription
   $(document).on('click', '#send_message_confirm', function() {
     alert('Subscribed!');
-    $('#send_message_modal').fadeOut(200);
+    $('#send_message_modal').fadeOut();
   });
 
   // Show more tutors
   $(document).on('click', '#send_message_more', function() {
-    $('#send_message_modal').fadeOut(200);
+    $('#send_message_modal').fadeOut();
     // TODO: show tutor list
   });
 

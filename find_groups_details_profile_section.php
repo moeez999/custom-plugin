@@ -139,7 +139,7 @@
   <!-- =========================
        SECTION
        ========================= -->
-  <section id="find_groups_details_available_section" style="margin-top: 24px; max-width: 1600px;
+  <section id="find_groups_details_available_section" style="margin-top: 24px; max-width: 1280px;
     margin: 0 auto;" class="poppins">
     <div id="find_groups_details_available_wrap">
 

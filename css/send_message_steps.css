@@ -12,7 +12,6 @@
   background:#fff; border-radius:12px;
   padding:24px; box-shadow:0 8px 24px rgba(0,0,0,0.1);
   text-align:center;
-  transition: all .3s ease;
 }
 .send_message_container:has(.send_message_step4.active){
   width: 520px !important;

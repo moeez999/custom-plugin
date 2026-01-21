@@ -5,6 +5,15 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <!--  -->
 <div class="tutors_listing_page">
+   <!-- video popup -->
+    <div id="videoPopup" class="video-popup">
+      <div class="video-wrapper">
+        <span class="video-close">&times;</span>
+        <video controls>
+          <source src="video.mp4" type="video/mp4">
+        </video>
+      </div>
+    </div>
 
   <h2 style="margin-bottom: 4px; color: var(--dark-text); font-size: 24px; font-weight: 600">Online English tutors & teachers for private lessons</h2>
   <p style= "margin-bottom: 40px;  color: var(--dark-text)">Looking for an online English tutor? Latingles is the leading online language learning platform worldwide. You can choose from 28566 English teachers with an average</p>
@@ -254,41 +263,201 @@
           <li><img src="img/avatarr.svg"> <span>30 active students • 1,260 lessons</span></li>
           <li><img src="img/translation.svg"><span> English (Native)</span></li>
         </ul>
-        <span class="bio" id="teacher_card_bio_1">Hi! I’m Daniela, an experienced English teacher with over a decade of helping students master the language. I’m passionate about creating!
-        </span>
-        <span class="see-more" data-target="1" id="teacher_card_see_1">See More...</span></p>
-        <div id="teacher_additional_1" class="hidden">
-          <span class="bio" >Hi! I’m Daniela, an experienced English teacher with over a decade of helping students master the language. I’m passionate about creating engaging lessons tailored to each learner’s needs. 
+        <div id="teacher_additional_1" class="clamp-4">
+          <span class="bio" id="teacher_card_bio_1">Hi! I’m Daniela, an experienced English teacher with over a decade of helping students master the language. I’m passionate about creating engaging lessons tailored to each learner’s needs. 
           </span>
-          <h4 class="mt-3 font-semibold text-[20px]">Why Choose English Group Classes (Bilingual)</h4>
-          <div class="find_groups_details_available_review_card mt-3 p-3">
-            <div class="flex items-start gap-3">
-                <img src="https://images.unsplash.com/photo-1502685104226-ee32379fefbe?q=80&amp;w=256&amp;auto=format&amp;fit=crop" alt="Efren" class="w-12 h-12 rounded-md object-cover">
-                <div class="flex-1 min-w-0">
-                  <div class="">
-                    <div class="">Efren</div>
-                    <div class="text-[12px] text-[color:var(--fgda-muted)]">September 14, 2024</div>
+          <div class="">
+            <!-- <span class="bio" >Hi! I’m Daniela, an experienced English teacher with over a decade of helping students master the language. I’m passionate about creating engaging lessons tailored to each learner’s needs. 
+            </span> -->
+            <h4 class="mt-3 font-semibold text-[20px]">Why Choose English Group Classes (Bilingual)</h4>
+            <div class="find_groups_details_available_review_card mt-3 p-3">
+              <div class="flex items-start gap-3">
+                  <img src="https://images.unsplash.com/photo-1502685104226-ee32379fefbe?q=80&amp;w=256&amp;auto=format&amp;fit=crop" alt="Efren" class="w-12 h-12 rounded-md object-cover">
+                  <div class="flex-1 min-w-0">
+                    <div class="">
+                      <div class="">Efren</div>
+                      <div class="text-[12px] text-[color:var(--fgda-muted)]">September 14, 2024</div>
+                    </div>
+              </div>
+            </div>
+            <!-- Stars -->
+                  <div class="flex gap-1" style="margin-top: 12px;">
+                    <svg class="find_groups_details_available_star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21 12 17.27Z"></path></svg>
+                    <svg class="find_groups_details_available_star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21 12 17.27Z"></path></svg>
+                    <svg class="find_groups_details_available_star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21 12 17.27Z"></path></svg>
+                    <svg class="find_groups_details_available_star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21 12 17.27Z"></path></svg>
+                    <svg class="find_groups_details_available_star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21 12 17.27Z"></path></svg>
                   </div>
+                  <p class="text-[14px] leading-6 text-[color:var(--text-muted)]" style="margin-top: 12px;">
+                    He is an excellent teacher with incredible patience and effective teaching methods.
+                    The classes are comprehensive, engaging, and dynamic. I truly enjoy learning English with him!
+                  </p>
+            </div>
+            <div class="mt-4 text-left">
+                <a href="#" style="font-weight: 500;color: #000000; text-decoration: underline" id="teacher_card_hide_1" data-target="1" class="hideit find_groups_details_available_toggle_link underline decoration-transparent hover:decoration-inherit">Hide Details</a>
             </div>
           </div>
-          <!-- Stars -->
-                <div class="flex gap-1" style="margin-top: 12px;">
-                  <svg class="find_groups_details_available_star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21 12 17.27Z"></path></svg>
-                  <svg class="find_groups_details_available_star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21 12 17.27Z"></path></svg>
-                  <svg class="find_groups_details_available_star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21 12 17.27Z"></path></svg>
-                  <svg class="find_groups_details_available_star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21 12 17.27Z"></path></svg>
-                  <svg class="find_groups_details_available_star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21 12 17.27Z"></path></svg>
-                </div>
-                <p class="text-[14px] leading-6 text-[color:var(--text-muted)]" style="margin-top: 12px;">
-                  He is an excellent teacher with incredible patience and effective teaching methods.
-                  The classes are comprehensive, engaging, and dynamic. I truly enjoy learning English with him!
-                </p>
-          </div>
-          <div class="mt-4 text-left">
-              <a href="#" style="font-weight: 500;color: #000000; text-decoration: underline" id="teacher_card_hide_1" data-target="1" class="hideit find_groups_details_available_toggle_link underline decoration-transparent hover:decoration-inherit">Hide Details</a>
+        </div>
+         <span class="see-more" data-target="1" id="teacher_card_see_1">See More...</span></p>
+      </div>
+      <div class="action-panel">
+        <button class="btn-primary" id="openTrialModal">Book trial lesson US$0</button>
+        <button class="btn-outline" id="send_message_btn">Send a Message</button>
+      </div>
+      <!-- absolute elements-->
+      <button class="favorite">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-[20px] h-[20px]" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 1 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78Z"></path>
+        </svg>
+      </button>
+      <div class="stats">
+        <div class="ratings"><div style="display: flex;
+          gap: 4px;
+          align-items: center;"><img src="img/starr.svg"> 4.7 </div><span class="small-text">17 reviews</span></div>
+        <div class="ratings">858<span class="small-text">lessons</small></div>
+        <div class="ratings">US$8<span class="small-text">50-min lesson</small></div>
+        </div>
+      </div>
+      <div class="schedule-panel" id="schedule-panel">
+        <div class="schedule-preview" style="background-image: url('img/daniela.svg');"><span class="play-icon">
+          <svg id="video-pay-button" xmlns="http://www.w3.org/2000/svg" class="w-[30px] h-[30px]" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>
+        </span>
+      </div>
+      <button class="schedule-btn">View full schedule</button>
+    </div>
+  </section>
+    <section class="teacherSection" style="margin-top: 32px;">
+    <div class="teacher-card" id="teacher_card_1">
+      <div class="teacher-avatar" style="position: relative"> 
+        <img src="img/images/josh.jpg" alt="Josh" />
+        <div class="teacher-avatar-box gray"></div>
+      </div>
+      <div class="teacher-details">
+        <div class="teacher-header">
+          <a href="my_lessons_tutor_profile.php">
+            <h3 style="height: 36px;
+    display: flex !important;
+    align-items: center;" class="teacher-name gap-2 d-flex items-center"><span>Daniela</span> <img src="img/badge.svg"></h3>
+          </a>
+        </div>
+        <ul class="meta-list">
+          <li><img src="img/hatt.svg"><span style="margin-left: -2px;">English</span></li>
+          <li><img src="img/avatarr.svg"> <span>30 active students • 1,260 lessons</span></li>
+          <li><img src="img/translation.svg"><span> English (Native)</span></li>
+        </ul>
+        <div id="teacher_additional_1" class="clamp-4">
+          <span class="bio" id="teacher_card_bio_1">Hi! I’m Daniela, an experienced English teacher with over a decade of helping students master the language. I’m passionate about creating engaging lessons tailored to each learner’s needs. 
+          </span>
+          <div class="">
+            <!-- <span class="bio" >Hi! I’m Daniela, an experienced English teacher with over a decade of helping students master the language. I’m passionate about creating engaging lessons tailored to each learner’s needs. 
+            </span> -->
+            <h4 class="mt-3 font-semibold text-[20px]">Why Choose English Group Classes (Bilingual)</h4>
+            <div class="find_groups_details_available_review_card mt-3 p-3">
+              <div class="flex items-start gap-3">
+                  <img src="https://images.unsplash.com/photo-1502685104226-ee32379fefbe?q=80&amp;w=256&amp;auto=format&amp;fit=crop" alt="Efren" class="w-12 h-12 rounded-md object-cover">
+                  <div class="flex-1 min-w-0">
+                    <div class="">
+                      <div class="">Efren</div>
+                      <div class="text-[12px] text-[color:var(--fgda-muted)]">September 14, 2024</div>
+                    </div>
+              </div>
+            </div>
+            <!-- Stars -->
+                  <div class="flex gap-1" style="margin-top: 12px;">
+                    <svg class="find_groups_details_available_star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21 12 17.27Z"></path></svg>
+                    <svg class="find_groups_details_available_star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21 12 17.27Z"></path></svg>
+                    <svg class="find_groups_details_available_star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21 12 17.27Z"></path></svg>
+                    <svg class="find_groups_details_available_star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21 12 17.27Z"></path></svg>
+                    <svg class="find_groups_details_available_star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21 12 17.27Z"></path></svg>
+                  </div>
+                  <p class="text-[14px] leading-6 text-[color:var(--text-muted)]" style="margin-top: 12px;">
+                    He is an excellent teacher with incredible patience and effective teaching methods.
+                    The classes are comprehensive, engaging, and dynamic. I truly enjoy learning English with him!
+                  </p>
+            </div>
+            <div class="mt-4 text-left">
+                <a href="#" style="font-weight: 500;color: #000000; text-decoration: underline" id="teacher_card_hide_1" data-target="1" class="hideit find_groups_details_available_toggle_link underline decoration-transparent hover:decoration-inherit">Hide Details</a>
+            </div>
           </div>
         </div>
+         <span class="see-more" data-target="1" id="teacher_card_see_1">See More...</span></p>
+      </div>
+      <div class="action-panel">
+        <button class="btn-primary" id="openTrialModal">Book trial lesson US$0</button>
+        <button class="btn-outline" id="send_message_btn">Send a Message</button>
+      </div>
+      <!-- absolute elements-->
+      <button class="favorite">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-[20px] h-[20px]" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 1 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78Z"></path>
+        </svg>
+      </button>
+      <div class="stats">
+        <div class="ratings"><div style="display: flex;
+          gap: 4px;
+          align-items: center;"><img src="img/starr.svg"> 4.7 </div><span class="small-text">17 reviews</span></div>
+        <div class="ratings">858<span class="small-text">lessons</small></div>
+        <div class="ratings">US$8<span class="small-text">50-min lesson</small></div>
+        </div>
+      </div>
+      <div class="schedule-panel"></div>
+  </section>
 
+  <section class="teacherSection" style="margin-top: 32px;">
+       <div class="teacher-card" id="teacher_card_1">
+          <div class="teacher-avatar" style="position: relative"> 
+            <img src="img/images/josh.jpg" alt="Josh" />
+            <div class="teacher-avatar-box gray"></div>
+          </div>
+          <div class="teacher-details">
+            <div class="teacher-header">
+              <a href="my_lessons_tutor_profile.php">
+                <h3 style="height: 36px;
+        display: flex !important;
+        align-items: center;" class="teacher-name gap-2 d-flex items-center"><span>Daniela</span> <img src="img/badge.svg"></h3>
+          </a>
+        </div>
+        <ul class="meta-list">
+          <li><img src="img/hatt.svg"><span style="margin-left: -2px;">English</span></li>
+          <li><img src="img/avatarr.svg"> <span>30 active students • 1,260 lessons</span></li>
+          <li><img src="img/translation.svg"><span> English (Native)</span></li>
+        </ul>
+        <div id="teacher_additional_1" class="clamp-4">
+          <span class="bio" id="teacher_card_bio_1">Hi! I’m Daniela, an experienced English teacher with over a decade of helping students master the language. I’m passionate about creating engaging lessons tailored to each learner’s needs. 
+          </span>
+          <div class="">
+            <!-- <span class="bio" >Hi! I’m Daniela, an experienced English teacher with over a decade of helping students master the language. I’m passionate about creating engaging lessons tailored to each learner’s needs. 
+            </span> -->
+            <h4 class="mt-3 font-semibold text-[20px]">Why Choose English Group Classes (Bilingual)</h4>
+            <div class="find_groups_details_available_review_card mt-3 p-3">
+              <div class="flex items-start gap-3">
+                  <img src="https://images.unsplash.com/photo-1502685104226-ee32379fefbe?q=80&amp;w=256&amp;auto=format&amp;fit=crop" alt="Efren" class="w-12 h-12 rounded-md object-cover">
+                  <div class="flex-1 min-w-0">
+                    <div class="">
+                      <div class="">Efren</div>
+                      <div class="text-[12px] text-[color:var(--fgda-muted)]">September 14, 2024</div>
+                    </div>
+              </div>
+            </div>
+            <!-- Stars -->
+                  <div class="flex gap-1" style="margin-top: 12px;">
+                    <svg class="find_groups_details_available_star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21 12 17.27Z"></path></svg>
+                    <svg class="find_groups_details_available_star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21 12 17.27Z"></path></svg>
+                    <svg class="find_groups_details_available_star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21 12 17.27Z"></path></svg>
+                    <svg class="find_groups_details_available_star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21 12 17.27Z"></path></svg>
+                    <svg class="find_groups_details_available_star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21 12 17.27Z"></path></svg>
+                  </div>
+                  <p class="text-[14px] leading-6 text-[color:var(--text-muted)]" style="margin-top: 12px;">
+                    He is an excellent teacher with incredible patience and effective teaching methods.
+                    The classes are comprehensive, engaging, and dynamic. I truly enjoy learning English with him!
+                  </p>
+            </div>
+            <div class="mt-4 text-left">
+                <a href="#" style="font-weight: 500;color: #000000; text-decoration: underline" id="teacher_card_hide_1" data-target="1" class="hideit find_groups_details_available_toggle_link underline decoration-transparent hover:decoration-inherit">Hide Details</a>
+            </div>
+          </div>
+        </div>
+         <span class="see-more" data-target="1" id="teacher_card_see_1">See More...</span></p>
       </div>
       <div class="action-panel">
         <button class="btn-primary" id="openTrialModal">Book trial lesson US$0</button>
@@ -309,167 +478,10 @@
         </div>
       </div>
       <div class="schedule-panel">
-        <div class="schedule-preview" style="background-image: url('img/daniela.svg');"><span class="play-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-[30px] h-[30px]" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>
-        </span>
-      </div>
-      <button class="schedule-btn">View full schedule</button>
-    </div>
+     </div>
   </section>
-  <section class="teacherSection" style="margin-top: 32px;">
-    <div class="teacher-card" id="teacher_card_2">
-      <div class="teacher-avatar" style="position: relative"> 
-        <img src="img/images/josh.jpg" alt="Josh" />
-        <div class="teacher-avatar-box gray"></div>
-      </div>
-      <div class="teacher-details">
-        <div class="teacher-header">
-          <a href="my_lessons_tutor_profile.php">
-            <h3 class="teacher-name gap-2 d-flex items-center"><span>Daniela</span> <img src="img/badge.svg"></h3>
-          </a>
-        </div>
-        <ul class="meta-list">
-          <li><img src="img/hatt.svg"><span style="margin-left: -2px;">English</span></li>
-          <li><img src="img/avatarr.svg"> <span>30 active students • 1,260 lessons</span></li>
-          <li><img src="img/translation.svg"><span> English (Native)</span></li>
-        </ul>
-        <span class="bio" >Hi! I’m Daniela, an experienced English teacher with over a decade of helping students master the language. I’m passionate about creating engaging lessons tailored to each learner’s needs. 
-        </span>
-        <span class="see-more" data-target="2" id="teacher_card_see_2">See More...</span></p>
-        <div id="teacher_additional_2" class="hidden">
-          <h4 class="mt-3 font-semibold text-[20px]">Why Choose English Group Classes (Bilingual)</h4>
-          <div class="find_groups_details_available_review_card mt-3 p-3">
-            <div class="flex items-start gap-3">
-                <img src="https://images.unsplash.com/photo-1502685104226-ee32379fefbe?q=80&amp;w=256&amp;auto=format&amp;fit=crop" alt="Efren" class="w-12 h-12 rounded-md object-cover">
-                <div class="flex-1 min-w-0">
-                  <div class="">
-                    <div class="">Efren</div>
-                    <div class="text-[12px] text-[color:var(--fgda-muted)]">September 14, 2024</div>
-                  </div>
-            </div>
-          </div>
-          <!-- Stars -->
-                <div class="flex gap-1" style="margin-top: 12px;">
-                  <svg class="find_groups_details_available_star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21 12 17.27Z"></path></svg>
-                  <svg class="find_groups_details_available_star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21 12 17.27Z"></path></svg>
-                  <svg class="find_groups_details_available_star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21 12 17.27Z"></path></svg>
-                  <svg class="find_groups_details_available_star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21 12 17.27Z"></path></svg>
-                  <svg class="find_groups_details_available_star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21 12 17.27Z"></path></svg>
-                </div>
-                <p class="text-[14px] leading-6 text-[color:var(--text-muted)]" style="margin-top: 12px;">
-                  He is an excellent teacher with incredible patience and effective teaching methods.
-                  The classes are comprehensive, engaging, and dynamic. I truly enjoy learning English with him!
-                </p>
-          </div>
-          <div class="mt-4 text-left">
-              <a href="#" style="font-weight: 500;color: #000000; text-decoration: underline" id="teacher_card_hide_2" data-target="2" class="hideit find_groups_details_available_toggle_link underline decoration-transparent hover:decoration-inherit">Hide Details</a>
-          </div>
-        </div>
 
-      </div>
-      <div class="action-panel">
-        <button class="btn-primary" id="openTrialModal">Book trial lesson US$0</button>
-        <button class="btn-outline" id="send_message_btn">Send a Message</button>
-      </div>
-      <!-- absolute elements-->
-      <button class="favorite">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-[20px] h-[20px]" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 1 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78Z"></path>
-        </svg>
-      </button>
-      <div class="stats">
-        <div class="ratings"><div style="display: flex;
-          gap: 4px;
-          align-items: center;"><img src="img/starr.svg"> 4.7 </div><span class="small-text">17 reviews</span></div>
-        <div class="ratings">858<span class="small-text">lessons</small></div>
-        <div class="ratings">US$8<span class="small-text">50-min lesson</small></div>
-        </div>
-      </div>
-      <div class="schedule-panel">
-        <div class="schedule-preview" style="background-image: url('img/daniela.svg');"><span class="play-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-[30px] h-[30px]" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>
-        </span>
-      </div>
-      <button class="schedule-btn">View full schedule</button>
-    </div>
-  </section>
-  <section class="teacherSection" style="margin-top: 32px;">
-    <div class="teacher-card" id="teacher_card_3">
-      <div class="teacher-avatar" style="position: relative"> 
-        <img src="img/images/josh.jpg" alt="Josh" />
-        <div class="teacher-avatar-box gray"></div>
-      </div>
-      <div class="teacher-details">
-        <div class="teacher-header">
-          <a href="my_lessons_tutor_profile.php">
-            <h3 class="teacher-name gap-2 d-flex items-center"><span>Daniela</span> <img src="img/badge.svg"></h3>
-          </a>
-        </div>
-        <ul class="meta-list">
-          <li><img src="img/hatt.svg"><span style="margin-left: -2px;">English</span></li>
-          <li><img src="img/avatarr.svg"> <span>30 active students • 1,260 lessons</span></li>
-          <li><img src="img/translation.svg"><span> English (Native)</span></li>
-        </ul>
-        <span class="bio" >Hi! I’m Daniela, an experienced English teacher with over a decade of helping students master the language. I’m passionate about creating engaging lessons tailored to each learner’s needs. 
-        </span>
-        <span class="see-more" data-target="3" id="teacher_card_see_3">See More...</span></p>
-        <div id="teacher_additional_3" class="hidden">
-          <h4 class="mt-3 font-semibold text-[20px]">Why Choose English Group Classes (Bilingual)</h4>
-          <div class="find_groups_details_available_review_card mt-3 p-3">
-            <div class="flex items-start gap-3">
-                <img src="https://images.unsplash.com/photo-1502685104226-ee32379fefbe?q=80&amp;w=256&amp;auto=format&amp;fit=crop" alt="Efren" class="w-12 h-12 rounded-md object-cover">
-                <div class="flex-1 min-w-0">
-                  <div class="">
-                    <div class="">Efren</div>
-                    <div class="text-[12px] text-[color:var(--fgda-muted)]">September 14, 2024</div>
-                  </div>
-            </div>
-          </div>
-       
-                <div class="flex gap-1" style="margin-top: 12px;">
-                  <svg class="find_groups_details_available_star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21 12 17.27Z"></path></svg>
-                  <svg class="find_groups_details_available_star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21 12 17.27Z"></path></svg>
-                  <svg class="find_groups_details_available_star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21 12 17.27Z"></path></svg>
-                  <svg class="find_groups_details_available_star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21 12 17.27Z"></path></svg>
-                  <svg class="find_groups_details_available_star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21 12 17.27Z"></path></svg>
-                </div>
-                <p class="text-[14px] leading-6 text-[color:var(--text-muted)]" style="margin-top: 12px;">
-                  He is an excellent teacher with incredible patience and effective teaching methods.
-                  The classes are comprehensive, engaging, and dynamic. I truly enjoy learning English with him!
-                </p>
-          </div>
-          <div class="mt-4 text-left">
-              <a href="#" style="font-weight: 500;color: #000000; text-decoration: underline" id="teacher_card_hide_3" data-target="3" class="hideit find_groups_details_available_toggle_link underline decoration-transparent hover:decoration-inherit">Hide Details</a>
-          </div>
-        </div>
 
-      </div>
-      <div class="action-panel">
-        <button class="btn-primary" id="openTrialModal">Book trial lesson US$0</button>
-        <button class="btn-outline" id="send_message_btn">Send a Message</button>
-      </div>
- 
-      <button class="favorite">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-[20px] h-[20px]" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 1 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78Z"></path>
-        </svg>
-      </button>
-      <div class="stats">
-        <div class="ratings"><div style="display: flex;
-          gap: 4px;
-          align-items: center;"><img src="img/starr.svg"> 4.7 </div><span class="small-text">17 reviews</span></div>
-        <div class="ratings">858<span class="small-text">lessons</small></div>
-        <div class="ratings">US$8<span class="small-text">50-min lesson</small></div>
-        </div>
-      </div>
-      <div class="schedule-panel">
-        <div class="schedule-preview" style="background-image: url('img/daniela.svg');"><span class="play-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-[30px] h-[30px]" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>
-        </span>
-      </div>
-      <button class="schedule-btn">View full schedule</button>
-    </div>
-  </section>
 
 
 

@@ -43,10 +43,35 @@
     });
 
       // Teacher hover
-      $('#teacherSection .teacher-card').hover(
-      function() { $('#teacherSection .schedule-panel').addClass('visible'); },
-      function() { $('#teacherSection .schedule-panel').removeClass('visible'); }
+    $('.teacherSection .teacher-card').hover(
+        function () {
+          const $schedule = $('#schedule-panel');
+          const $section = $(this).closest('.teacherSection');
+          const index = $section.index('.teacherSection');
+
+
+          if (index !== 0) {
+            // NOT the first teacherSection
+            $schedule.css({
+              transform: 'translateY(calc(+'+100*index+'% + '+32*index+'px))'
+            });
+          } else {
+            // First teacherSection (optional reset)
+            $schedule.css({
+              transform: 'translateY(0)'
+            });
+          }
+        },
+      function () {
+        const $schedule = $('#schedule-panel');
+
+        // Reset on mouse leave
+        $schedule.css({
+         transform: 'translateY(0)'
+        });
+      }
     );
+
     
 
     
@@ -157,17 +182,12 @@
 
 // see more and hide functionality
 $(document).on('click', '.see-more', function () {
-  debugger;
   const index = $(this).data('target'); // 1
 
   const $targetDiv = $('#teacher_additional_' + index);
   const $teacherCard = $('#teacher_card_' + index);
-  const $teacherCardBio = $('#teacher_card_bio_' + index);
 
-  $targetDiv
-    .removeClass('hidden');
-  $teacherCardBio
-    .addClass('hidden');   
+  $targetDiv.addClass('expanded');
 
   $(this).hide();
   
@@ -181,15 +201,11 @@ $(document).on('click', '.see-more', function () {
 
 $(document).on('click', '.hideit', function () {
   const index = $(this).data('target'); // 1
-    debugger;
+
   const $targetDiv = $('#teacher_additional_' + index);
   const $teacherCard = $('#teacher_card_' + index);
-  const $teacherCardBio = $('#teacher_card_bio_' + index);
-  $teacherCardBio
-      .removeClass('hidden');   
 
-  $targetDiv
-    .addClass('hidden');
+  $targetDiv.removeClass('expanded');
  $teacherCard
     .removeClass('height-auto');
   $teacherCard
@@ -201,5 +217,19 @@ $(document).on('click', '.hideit', function () {
   $('#teacher_card_see_'+index).show();
 });
 
+// video play
+      $(document).on('click', '#video-pay-button', function () {
+        $('#videoPopup').fadeIn(200);
+      });
+
+      $(document).on('click', '.video-close, #videoPopup', function (e) {
+        // if ($(e.target).closest('.video-wrapper').length) return;
+
+        const video = $('#videoPopup video').get(0);
+        video.pause();
+        video.currentTime = 0;
+
+        $('#videoPopup').fadeOut(200);
+      });
 
   });
