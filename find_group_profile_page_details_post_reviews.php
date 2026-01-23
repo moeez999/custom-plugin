@@ -56,7 +56,7 @@
 <!-- 5) Thank-You Modal -->
 <div id="my_lessons_tutor_profile_details_post_review_thankyou_modal">
   <div class="my_lessons_tutor_profile_details_post_review_thankyou_content">
-    <button class="my_lessons_tutor_profile_details_post_review_close">&times;</button>
+    <button class="my_lessons_tutor_profile_details_post_review_close" style="margin-left: auto;">&times;</button>
     <h2>Thank you!</h2>
     <p>Your review will be published on the tutor’s profile</p>
   </div>

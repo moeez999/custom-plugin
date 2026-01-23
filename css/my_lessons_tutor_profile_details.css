@@ -734,3 +734,66 @@
 }
 
 /* what my students say */
+
+/* video popup */
+     .video-popup {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      z-index: 9999;
+    }
+
+    .video-wrapper {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80vw;
+      max-width: 900px;
+      aspect-ratio: 16 / 9;
+      background: #000;
+       border-radius: 3%;
+    }
+
+    .video-wrapper video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 3%;
+    }
+
+    .video-close {
+      position: absolute;
+      top: 0px;
+      right: 14px;
+      color: #fff;
+      font-size: 28px;
+      cursor: pointer;
+      z-index: 999;
+    }
+/* video */
+
+/* default icon */
+    .save_list {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: #111;
+      cursor: pointer;
+    }
+    .save_list svg path {
+      fill: none;
+      stroke: #000;
+    }
+
+    /* saved state */
+    .save_list.is-saved {
+      color: #121117;
+    }
+
+    .save_list.is-saved svg path {
+      fill: currentColor;
+      stroke: #111;
+    }

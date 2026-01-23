@@ -20,6 +20,7 @@ $(function(){
   // Step1 → Step2
   $('.book_trial_step1 .duration-option').on('click', function(){
     $overlay.css('display','none');
+    debugger;
     $('.send_message_step3').fadeIn().addClass('active');
     $('#send_message_modal').fadeIn();
   });

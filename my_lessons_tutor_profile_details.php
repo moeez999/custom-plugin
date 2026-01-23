@@ -1,14 +1,23 @@
     <link rel="stylesheet" href="css/my_lessons_tutor_profile_details.css">
     <link rel="stylesheet" href="css/my_lessons_tutor_profile_details_reviews.css">
-    <link rel="stylesheet" href="css/my_lessons_tutor_profile_details_show_more.css">
+    <!-- <link rel="stylesheet" href="css/my_lessons_tutor_profile_details_show_more.css"> -->
     <link rel="stylesheet" href="css/my_lessons_tutor_profile_details_post_reviews.css">
-    <link rel="stylesheet" href="css/my_lessons_tutor_profile_details_book_trial_lesson.css">
+    <link rel="stylesheet" href="css/book_trail_lessons.css">
+    <link rel="stylesheet" href="css/send_message_steps.css">
     <link rel="stylesheet" href="css/my_lesson_tutor_profile_details_send_message.css">
        <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <div id="my_lessons_tutor_profile_container">
-
+      <!-- video popup -->
+    <div id="videoPopup" class="video-popup">
+      <div class="video-wrapper">
+        <span class="video-close">&times;</span>
+        <video controls>
+          <source src="video.mp4" type="video/mp4">
+        </video>
+      </div>
+    </div>
     <!-- LEFT COLUMN -->
     <div id="my_lessons_tutor_profile_left">
 
@@ -630,7 +639,7 @@
       <div class="my_lessons_tutor_profile_card">
         <div class="my_lessons_tutor_profile_card_media">
           <img src="img/danielaa.svg" alt="Lesson preview" class="my_lessons_tutor_profile_card_img" style="border-radius: 8px;">
-          <div class="my_lessons_tutor_profile_card_play">
+          <div id="video-pay-button" class="my_lessons_tutor_profile_card_play">
             <svg style="margin-right: -3px;" width="16" height="20" viewBox="0 0 16 20" fill="none" xmlns="http://www.w3.org/2000/svg">
               <mask id="path-1-inside-1_22337_27594" fill="white">
               <path d="M0 0H16V20H0V0Z"></path>
@@ -662,7 +671,7 @@
         </div>
         <div class="my_lessons_tutor_profile_card_actions">
 
-          <button  id="my_lessons_tutor_profile_details_book_trial_lesson_btn" class="my_lessons_tutor_profile_btn my_lessons_tutor_profile_btn_primary" style="display: flex; align-items: center; justify-content: center;">
+          <button  id="openTrialModal" class="my_lessons_tutor_profile_btn my_lessons_tutor_profile_btn_primary" style="display: flex; align-items: center; justify-content: center;">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path fill-rule="evenodd" clip-rule="evenodd" d="M14 10L15 2L2 14H11L10 22L22 10H14Z" fill="white"/>
           </svg>
@@ -718,15 +727,14 @@
  <?php require_once('my_lessons_tutor_profile_details_reviews.php');?>
  <?php require_once('my_lessons_tutor_profile_details_show_more.php');?>
  <?php require_once('my_lessons_tutor_profile_details_post_reviews.php');?>
- <?php require_once('my_lessons_tutor_profile_details_book_trail_lesson.php');?>
- <?php require_once('my_lessons_tutor_profile_details_send_message.php');?>
+ <?php require_once('book_trail_lessons.php'); ?>
+
+  <?php require_once('send_message_steps.php'); ?>
 
 
   <script src="js/my_lessons_tutor_profile_details.js"></script>
   <script src="js/my_lessons_tutor_profile_details_reviews.js"></script>
   <script src="js/my_lessons_tutor_profile_details_show_more.js"></script>
   <script src="js/my_lessons_tutor_profile_details_post_reviews.js"></script>
-  <script src="js/my_lessons_tutor_profile_details_book_trial_lesson.js"></script>
-  <script src="js/my_lessons_tutor_profile_details_send_message.js"></script>
-
-  
+  <script src="js/book_trail_lessons.js"></script>
+<script src="js/send_message_steps.js"></script>

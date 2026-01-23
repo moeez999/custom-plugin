@@ -86,6 +86,23 @@
              .slideToggle(200);
       });
   });
+  
+  $(function () {
+    // video play
+      $(document).on('click', '#video-pay-button', function () {
+        $('#videoPopup').fadeIn(200);
+      });
+
+      $(document).on('click', '.video-close, #videoPopup', function (e) {
+        // if ($(e.target).closest('.video-wrapper').length) return;
+
+        const video = $('#videoPopup video').get(0);
+        video.pause();
+        video.currentTime = 0;
+
+        $('#videoPopup').fadeOut(200);
+      });
+  });
 
 $(function () {
   const wrap = document.querySelector('.my_lessons_tutor_profile_tiles_wrapper');
@@ -100,4 +117,14 @@ $(function () {
   });
 });
 
+$(function () {
+  $(document).on('click', '.save_list', function () {
+    const $btn = $(this);
+    const $text = $btn.find('span');
+
+    const isSaved = $btn.toggleClass('is-saved').hasClass('is-saved');
+
+    $text.text(isSaved ? 'Saved' : 'Save to my list');
+  });
+});
 
