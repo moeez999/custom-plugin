@@ -87,16 +87,17 @@
       });
   });
 
+$(function () {
+  const wrap = document.querySelector('.my_lessons_tutor_profile_tiles_wrapper');
+  const scrollAmount = 240;
 
-  $(function(){
-    var $wrap = $('.my_lessons_tutor_profile_tiles_wrapper');
-    var scrollAmount = 240; // approx tile width + gap
-
-    $('#my_lessons_tutor_profile_tiles_next').on('click', function(){
-      $wrap.animate({ scrollLeft: '+=' + scrollAmount }, 300);
-    });
-    $('#my_lessons_tutor_profile_tiles_prev').on('click', function(){
-      $wrap.animate({ scrollLeft: '-=' + scrollAmount }, 300);
-    });
+  $('#my_lessons_tutor_profile_tiles_next').on('click', function () {
+    wrap.scrollBy({ left: scrollAmount, behavior: 'smooth' });
   });
+
+  $('#my_lessons_tutor_profile_tiles_prev').on('click', function () {
+    wrap.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+  });
+});
+
 

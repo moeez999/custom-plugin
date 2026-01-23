@@ -59,6 +59,7 @@
   gap: 16px;
   font-size: 16px;
 }
+#my_lessons_tutor_profile_tiles h2,
 #my_lesson_tutor_profile_my_specialities h2,
 #my_lesson_tutor_profile_resume h2,
 .my_lessons_tutor_profile_about h2,
@@ -391,7 +392,7 @@
 .my_lesson_tutor_profile_resume_item {
   display: flex;
   align-items: flex-start;
-  margin-bottom: 13px;
+  margin-bottom: 16px;
 }
 .my_lesson_tutor_profile_resume_year {
   width: 94px;
@@ -466,18 +467,16 @@
 }
 #my_lessons_tutor_profile_tiles {
   margin: 40px auto;
-  color: #1d1d1f;
 }
 #my_lessons_tutor_profile_tiles h2 {
-  font-size: 1.5rem;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 .my_lessons_tutor_profile_tiles_container {
   position: relative;
 }
 .my_lessons_tutor_profile_tiles_wrapper {
   display: flex;
-  gap: 24px;
+  gap: 16px;
   overflow-x: auto;
   scroll-behavior: smooth;
   padding-bottom: 8px;
@@ -486,66 +485,88 @@
   display: none;
 }
 .my_lessons_tutor_profile_tiles_item {
-  flex: 0 0 180px;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  padding: 16px;
+    height: 315px;
+    width: 160px;
 }
 .my_lessons_tutor_profile_tiles_imgwrap {
   position: relative;
-  width: 100%;
-  padding-top: 100%;
-  border-radius: 8px;
+  width: 160px;
+  height: 160px;
+  /* padding-top: 100%; */
+  border-radius: 4px;
   overflow: hidden;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
+  border: 1px solid #1211170F;
+}
+.my_lessons_tutor_profile_tiles_detailz {
+  position: absolute;
+  top: 130px; left: 11px;
 }
 .my_lessons_tutor_profile_tiles_img {
   position: absolute;
   top:0; left:0;
   width:100%; height:100%;
   object-fit:cover;
+  
 }
 .my_lessons_tutor_profile_tiles_flag {
-  position: absolute;
-  bottom: 8px; right: 8px;
-  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .my_lessons_tutor_profile_tiles_name {
-  margin: 0 0 4px;
-  font-size: 1.1rem;
+   font-size: 14px;
   font-weight: 600;
+  color: #fff;
 }
 .my_lessons_tutor_profile_tiles_rating {
-  font-size: 1rem;
-  margin-bottom: 8px;
+  font-family: 'Figtree', sans-serif; 
+  font-size: 14px;
+  color: var(--text);
+
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+}
+#rating-no {
+   color: var(--text);
+  margin-left: 2px;
+  font-weight: 600;
 }
 .my_lessons_tutor_profile_tiles_rating span {
   font-weight: 400;
-  color: #6e6e73;
+  color: var(--text-muted);
   margin-left: 4px;
 }
 .my_lessons_tutor_profile_tiles_desc {
-  font-size: 0.95rem;
+ font-size: 14px;
   line-height: 1.4;
-  margin-bottom: 12px;
-  color: #3c3c43;
+  margin-bottom: 4px;
+  font-weight: 400;
 }
-.my_lessons_tutor_profile_tiles_price {
-  font-size: 1rem;
+.my_lessons_tutor_profile_tiles_price p {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+.my_lessons_tutor_profile_tiles_price div{
+  font-size: 20px;
   font-weight: 600;
+}
+.my_lessons_tutor_profile_tiles_nav:hover {
+  background: #f2f4f7;
 }
 .my_lessons_tutor_profile_tiles_nav {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 36px; height: 36px;
-  border: 1px solid #ccc;
+  width: 52px; height: 52px;
+  border: 2.38px solid var(--dark-text);
   background: #fff;
-  border-radius: 50%;
-  font-size: 1.2rem;
-  line-height: 34px;
-  text-align: center;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   z-index: 1;
 }

@@ -510,73 +510,108 @@
 
 
 <section id="my_lessons_tutor_profile_tiles">
-  <h2>You might also like</h2>
+  <h2 style="font-weight: 600;">You might also like</h2>
   <div class="my_lessons_tutor_profile_tiles_container">
-    <button id="my_lessons_tutor_profile_tiles_prev" class="my_lessons_tutor_profile_tiles_nav">‹</button>
+    <button id="my_lessons_tutor_profile_tiles_prev" class="my_lessons_tutor_profile_tiles_nav">
+      <img src="img/slider-arrow.svg" style="transform: rotate(180deg)">
+    </button>
     <div class="my_lessons_tutor_profile_tiles_wrapper">
       <!-- Tile 1 -->
       <div class="my_lessons_tutor_profile_tiles_item">
         <div class="my_lessons_tutor_profile_tiles_imgwrap">
-          <img src="https://i.imgur.com/UaBcQ4Q.jpg" alt="Gladys" class="my_lessons_tutor_profile_tiles_img">
-          <div class="my_lessons_tutor_profile_tiles_flag">🇱🇧</div>
+          <img src="img/person1.svg" alt="Gladys" class="my_lessons_tutor_profile_tiles_img">
+          <div class="d-flex gap-2 my_lessons_tutor_profile_tiles_detailz items-center">
+            <h3 class="my_lessons_tutor_profile_tiles_name">Gladys</h3>
+            <div class="my_lessons_tutor_profile_tiles_flag"><img src="img/flag1.svg"></div>
+          </div>
         </div>
-        <h3 class="my_lessons_tutor_profile_tiles_name">Gladys</h3>
-        <div class="my_lessons_tutor_profile_tiles_rating">★ 5 <span>(11)</span></div>
+        <div class="my_lessons_tutor_profile_tiles_rating"><img src="img/starrr.svg">  <span id="rating-no"> 5</span> <span>(11)</span></div>
         <p class="my_lessons_tutor_profile_tiles_desc">
           Certified English Tutor with 10+ Years’ Experience Making
         </p>
         <div class="my_lessons_tutor_profile_tiles_price">
-          <strong>US$8</strong> / lesson
+          <!-- <strong>US$8</strong> / lesson -->
+           <div>US$8</div>
+           <p> / lesson</p>
         </div>
       </div>
       <!-- Tile 2 -->
       <div class="my_lessons_tutor_profile_tiles_item">
         <div class="my_lessons_tutor_profile_tiles_imgwrap">
-          <img src="https://i.imgur.com/4f4QX9W.jpg" alt="Angel" class="my_lessons_tutor_profile_tiles_img">
-          <div class="my_lessons_tutor_profile_tiles_flag">🇮🇩</div>
+          <img src="img/person2.svg" alt="Angel" class="my_lessons_tutor_profile_tiles_img">
+          <div class="d-flex gap-2 my_lessons_tutor_profile_tiles_detailz">
+            <h3 class="my_lessons_tutor_profile_tiles_name">Angel</h3>
+            <div class="my_lessons_tutor_profile_tiles_flag"><img src="img/flag2.svg"></div>
+          </div>
         </div>
-        <h3 class="my_lessons_tutor_profile_tiles_name">Angel</h3>
-        <div class="my_lessons_tutor_profile_tiles_rating">★ 4.9 <span>(49)</span></div>
+        <div class="my_lessons_tutor_profile_tiles_rating"><img src="img/starrr.svg">  <span id="rating-no"> 4.9</span> <span>(49)</span></div>
         <p class="my_lessons_tutor_profile_tiles_desc">
           Certified tutor with 7 years of experience of teaching English and
         </p>
         <div class="my_lessons_tutor_profile_tiles_price">
-          <strong>US$5</strong> / lesson
+           <div>US$5</div>
+           <p> / lesson</p>
         </div>
       </div>
       <!-- Tile 3 -->
       <div class="my_lessons_tutor_profile_tiles_item">
         <div class="my_lessons_tutor_profile_tiles_imgwrap">
-          <img src="https://i.imgur.com/PEY6K6U.jpg" alt="Kristin" class="my_lessons_tutor_profile_tiles_img">
-          <div class="my_lessons_tutor_profile_tiles_flag">🇱🇧</div>
+          <img src="img/person3.svg" alt="Kristin" class="my_lessons_tutor_profile_tiles_img">
+          <div class="d-flex gap-2 my_lessons_tutor_profile_tiles_detailz">
+            <h3 class="my_lessons_tutor_profile_tiles_name">Kristin</h3>
+            <div class="my_lessons_tutor_profile_tiles_flag"><img src="img/flag3.svg"></div>
+          </div>
         </div>
-        <h3 class="my_lessons_tutor_profile_tiles_name">Kristin</h3>
-        <div class="my_lessons_tutor_profile_tiles_rating">★ 5 <span>(44)</span></div>
+        <div class="my_lessons_tutor_profile_tiles_rating"><img src="img/starrr.svg">  <span id="rating-no"> 5</span> <span>(44)</span></div>
         <p class="my_lessons_tutor_profile_tiles_desc">
           Certified English Tutor with 5 years of experience
         </p>
         <div class="my_lessons_tutor_profile_tiles_price">
-          <strong>US$8</strong> / lesson
+           <div>US$8</div>
+           <p> / lesson</p>
         </div>
       </div>
       <!-- Tile 4 -->
       <div class="my_lessons_tutor_profile_tiles_item">
         <div class="my_lessons_tutor_profile_tiles_imgwrap">
-          <img src="https://i.imgur.com/jnG5YQv.jpg" alt="Ronald" class="my_lessons_tutor_profile_tiles_img">
-          <div class="my_lessons_tutor_profile_tiles_flag">🇪🇬</div>
+          <img src="img/person4.svg" alt="Ronald" class="my_lessons_tutor_profile_tiles_img">
+          <div class="d-flex gap-2 my_lessons_tutor_profile_tiles_detailz">
+            <h3 class="my_lessons_tutor_profile_tiles_name">Ronald</h3>
+            <div class="my_lessons_tutor_profile_tiles_flag"><img src="img/flag1.svg"></div>
+          </div>
         </div>
-        <h3 class="my_lessons_tutor_profile_tiles_name">Ronald</h3>
-        <div class="my_lessons_tutor_profile_tiles_rating">★ 5 <span>(33)</span></div>
+        <div class="my_lessons_tutor_profile_tiles_rating"><img src="img/starrr.svg">  <span id="rating-no"> 5</span> <span>(33)</span></div>
         <p class="my_lessons_tutor_profile_tiles_desc">
           certified English teacher with 5 years of experien
         </p>
         <div class="my_lessons_tutor_profile_tiles_price">
-          <strong>US$20</strong> / lesson
+           <div>US$10</div>
+           <p> / lesson</p>
+        </div>
+      </div>
+      <!-- Tile 5 -->
+      <div class="my_lessons_tutor_profile_tiles_item">
+        <div class="my_lessons_tutor_profile_tiles_imgwrap">
+          <img src="img/person1.svg" alt="Ronald" class="my_lessons_tutor_profile_tiles_img">
+          <div class="d-flex gap-2 my_lessons_tutor_profile_tiles_detailz">
+            <h3 class="my_lessons_tutor_profile_tiles_name">Gladys</h3>
+            <div class="my_lessons_tutor_profile_tiles_flag"><img src="img/flag2.svg"></div>
+          </div>
+        </div>
+        <div class="my_lessons_tutor_profile_tiles_rating"><img src="img/starrr.svg"> <span id="rating-no"> 5</span> <span>(33)</span></div>
+        <p class="my_lessons_tutor_profile_tiles_desc">
+          certified English teacher with 5 years of experien
+        </p>
+        <div class="my_lessons_tutor_profile_tiles_price">
+           <div>US$20</div>
+           <p> / lesson</p>
         </div>
       </div>
       <!-- … add more tiles if you like … -->
     </div>
-    <button id="my_lessons_tutor_profile_tiles_next" class="my_lessons_tutor_profile_tiles_nav">›</button>
+    <button id="my_lessons_tutor_profile_tiles_next" class="my_lessons_tutor_profile_tiles_nav">
+      <img src="img/slider-arrow.svg">
+    </button>
   </div>
 </section>
 
