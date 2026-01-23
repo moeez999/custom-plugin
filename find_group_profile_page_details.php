@@ -334,7 +334,7 @@
 
 <!-- speciality -->
   <section id="my_lesson_tutor_profile_my_specialities" style="margin-top: 40px;">
-  <h2 class="group-profile-heading">My specialties</h2>
+  <h2 class="group-profile-heading mb-3">My specialties</h2>
 
   <div class="my_lesson_tutor_profile_my_specialities_item">
     <div class="my_lesson_tutor_profile_my_specialities_header">

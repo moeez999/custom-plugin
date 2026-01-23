@@ -31,10 +31,16 @@
         e.stopPropagation();
         $('#my_lessons_tutor_profile_timezone_dropdown').toggle();
       });
-      $('#my_lessons_tutor_profile_timezone_dropdown li').click(function(){
-        $('#my_lessons_tutor_profile_timezone_label').text($(this).text());
+     $('#my_lessons_tutor_profile_timezone_dropdown li').click(function () {
+        const timezoneName = $(this).find('.timezonez').text();
+        const gmtOffset = $(this).find('span').last().text();
+
+        $('#my_lessons_tutor_profile_timezone_name').text(timezoneName);
+        $('#my_lessons_tutor_profile_timezone_gmt').text('GMT ' + gmtOffset);
+
         $('#my_lessons_tutor_profile_timezone_dropdown').hide();
       });
+
       $(document).click(()=>$('#my_lessons_tutor_profile_timezone_dropdown').hide());
 
       // Slot selection
@@ -43,6 +49,14 @@
         $('.my_lessons_tutor_profile_times a').removeClass('selected');
         $(this).addClass('selected');
       });
+
+      // show full schedule
+      $('#view-full-schedule').click(function () {
+          $('#slot-box').removeClass("hide-slots");
+          $(this).addClass("d-none");
+      });
+
+
     });
 
 
