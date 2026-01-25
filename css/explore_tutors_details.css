@@ -1,72 +1,218 @@
 
+  @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+  @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+  @import url("https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
     /* ---------- Variables ---------- */
     :root {
-      --border: #d0d5dd;
+      --border: #DCDCE5;
       --border-focus: #2563eb;
       --bg: #ffffff;
       --bg-hover: #f2f4f7;
-      --text: #101828;
-      --text-muted: #667085;
+      --text: #121117;
+      --dark-text: #000;
+      --text-muted-light: #DCDCE5;
+      --text-muted: #4D4C5C;
       --text-section: #1d2939;
-      --accent: #f53d2d;
+      --accent: #FF2500;
       --input-bg: #f9fafb;
     }
 
     body {
-      font-family: 'Inter', sans-serif;
-      background: #f8f9fb;
-      margin: 20px;
+      font-family: "Poppins", sans-serif;
+      /* font-family: "Noto Sans", sans-serif; */
+      background: #f8f9fb;  
+      margin: 0;
       color: var(--text);
     }
+    .wrapper-course:has(.tutors_listing_page){
+      padding: 27px 80px;
+    }
+    .tutors_listing_page {
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+    /* video popup */
+     .video-popup {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      z-index: 9999;
+    }
 
+    .video-wrapper {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80vw;
+      max-width: 900px;
+      aspect-ratio: 16 / 9;
+      background: #000;
+       border-radius: 3%;
+    }
+
+    .video-wrapper video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 3%;
+    }
+
+    .video-close {
+      position: absolute;
+      top: 0px;
+      right: 14px;
+      color: #fff;
+      font-size: 28px;
+      cursor: pointer;
+      z-index: 999;
+    }
+/* video */
+    .what-would-you-like-to-do-modal {
+        /* display: none !important; */
+    }
     /* ---------- Filter Dropdowns ---------- */
-    .filters { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px; }
-    .filter { position: relative; min-width: 200px; }
+    .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+    .filter { position: relative; min-width: 200px;flex: 1; height: 61px; cursor: pointer;}
+    .filter-button:hover {
+      border: 2px solid var(--dark-text);
+    }
     .filter-button {
-      width: 100%; border: 1px solid var(--border); border-radius: 8px;
-      background: var(--bg); padding: 12px; cursor: pointer;
+      width: 100%; border: 2px solid var(--border); border-radius: 8px;
+      background: var(--bg); cursor: pointer;
+      height: 61px; display: flex;  padding: 10px 18px;
+      align-items: center; justify-content: space-between;
     }
     .filter-button.open { border-color: var(--border-focus); }
-    .filter-button .label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
+    .filter-button .label { display: block; font-size: 12px; color: var(--text); }
     .filter-button .selection { display: flex; justify-content: space-between; align-items: center; }
     .filter-button .value { font-size: 16px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .filter-button .icon { font-size: 14px; color: var(--text-muted); }
+    .filter-button .icon { font-size: 14px; color: var(--text-muted); display: flex;
+    align-items: center; }
 
     .dropdown_filters {
       position: absolute; top: calc(100% + 4px); left: 0; min-width: 300px;
-      background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+      background: var(--bg); border: 2px solid var(--border); border-radius: 8px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.1); display: none; z-index: 1000;
-      padding-bottom: 12px;
     }
     .dropdown_filters.open { display: block; }
-
-    .search-wrapper { position: relative; margin: 12px; }
+    /* availability dropdown  */
+    .available_dropdown.dropdown_filters {
+      scrollbar-width: none;
+      padding: 16px;
+    }
+    .find_groups_details_titlelg {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--dark-text);
+    }
+    .find_groups_details_sectiontitle {
+      font-size: 14px;
+      color: var(--text-muted);
+      font-weight: 400;
+      margin-bottom: 4px;
+    }
+    .daysAvailable button{
+      min-height: 40px;
+      padding-block: 0;
+      display: flex;
+      height: 40px;
+      padding-inline: 18px;
+    }
+    .find_groups_details_chip {
+      border: 2px solid var(--text-muted-light);
+      background: #fff;
+      border-radius: 8px;
+      padding: 8px 18px;
+      min-height: 64px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      height: 68px;
+      transition: background .15s, border-color .15s, box-shadow .15s;
+    }
+    .find_groups_details_chip:hover{background:#f8f9fc;}
+    .find_groups_details_chip--active{
+      background:var(--find_groups_details-active-soft);
+      border-color:#c9d6ff;box-shadow:inset 0 0 0 1px #c9d6ff;
+    }
+    .duration.find_groups_details_chip_label {
+      font-size: 14px;
+      font-weight: 400;
+    }
+    span.find_groups_details_chip_label {
+      font-weight: 600;
+      font-size: 14px;
+    }
+    /* availability dropdown  */
+    .search-wrapper { position: relative; margin: 18px 18px 3px 18px; }
     .search-wrapper input {
-      width: 100%; padding: 10px 12px 10px 36px; border: 1px solid var(--border);
-      border-radius: 6px; background: var(--input-bg); font-size: 14px;
+      width: 100%;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      /* background: var(--input-bg); */
+      font-size: 14px;
+      height: 53px;
+      display: flex;
+      align-items: center;
+      padding-right: 18px;
+      padding-left: 48px;
+      padding-block: 0;
+      font-size: 16px;
+      box-shadow: none;
     }
     .search-wrapper .search-icon {
-      position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+      position: absolute; left: 17px; top: 49%; transform: translateY(-50%);
       font-size: 16px; color: var(--text-muted);
     }
 
     .dropdown_filters ul { list-style: none; margin: 0; padding: 0; }
     .dropdown_filters li.section-label {
-      padding: 8px 12px; font-size: 14px; font-weight: 600; color: var(--text-section);
+      padding: 8px 16px;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      height: 40px;
+      display: flex;
+      align-items: center;
     }
     .dropdown_filters li.item {
       display: flex; justify-content: space-between; align-items: center;
-      padding: 10px 12px; cursor: pointer; font-size: 16px;
+      padding-inline: 18px; cursor: pointer; font-size: 16px; height: 60px;
+    }
+    .nobd.dropdown_filters {
+      padding-block: 13px;
+    }
+    .nobd.dropdown_filters li.item {
+      margin-inline: 14px;
+      padding-inline: 12px;
+      border-radius: 10px;
     }
     .dropdown_filters li.item + li.item { border-top: 1px solid #f2f4f7; }
+    .nobd.dropdown_filters li.item + li.item { border-top: 0px solid #f2f4f7; }
     .dropdown_filters li.item:hover { background: var(--bg-hover); }
 
     .checkbox {
       width: 20px; height: 20px; border: 1px solid var(--border);
       border-radius: 4px; display: flex; align-items: center; justify-content: center;
+      position: relative;
     }
     .checkbox.selected { background: var(--accent); border: none; }
-    .checkbox.selected::after { content: "\2713"; color: #fff; font-size: 14px; }
+    .checkbox.selected::after { 
+      content: "";
+      position: absolute;
+      width: 6px;
+      height: 12px;
+      border-right: 2px solid #fff;
+      border-bottom: 2px solid #fff;
+      transform: rotate(45deg);
+      top: 2px;
+      left: 7px;
+     }
 
     /* Availability */
     .segment-group { margin: 0 12px 12px; }
@@ -89,10 +235,41 @@
       background: var(--accent); color: #fff; border-color: var(--accent);
     }
 
+    /* Slider new*/
+    .find_groups_details_range_wrap {
+      padding: 6px 6px 14px 6px;
+    }
+    .find_groups_details_range_track {
+      position: relative;
+      height: 4px;
+      border-radius: 9999px;
+    }
+    .find_groups_details_range_fill {
+      position: absolute;
+      height: 4px;
+      border-radius: 9999px;
+      background: var(--text);
+      left: 0;
+      right: 0;
+      transform: translateZ(0);
+    }
+    .find_groups_details_range_thumb {
+      position: absolute;
+      top: 50%;
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: #fff;
+      border: 2px solid var(--dark-text);
+      transform: translate(-50%, -50%);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, .1);
+      cursor: grab;
+      touch-action: none;
+    }
     /* Slider */
-    .slider-dropdown { padding: 12px; }
+    .slider-dropdown { padding: 20px 18px 18px 18px; }
     .slider-dropdown .range-label {
-      text-align: center; font-size: 16px; font-weight: 600; margin-bottom: 12px;
+      text-align: center; font-size: 16px; font-weight: 600; margin-bottom: 20px;
     }
     .slider-container {
       position: relative; height: 40px; margin: 0 12px;
@@ -112,88 +289,223 @@
     }
 
     /* ---------- Teachers Section ---------- */
-    #teacherSection { margin-top: 32px; display: flex; gap: 16px; }
-    #teacherSection .card-wrapper { display: none; }
-    #teacherSection .teacher-card {
-      flex: 0 0 70%; display: flex; background: var(--bg);
-      border: 2px solid var(--border); border-radius: 8px;
-      padding: 16px; position: relative;
-      height: 320px;
+    .teacherSection { margin-top: 16px; display: flex; }
+    .teacherSection .card-wrapper { display: none; }
+    .teacherSection .teacher-card:hover {
+      border: 2px solid var(--dark-text);
     }
-    #teacherSection .teacher-avatar img {
-      width: 140px; height: 140px; border-radius: 8px;
+    .teacherSection .teacher-card {
+      display: flex; background: var(--bg);
+      border-radius: 20px;
+      border: 1px solid #0000001F;
+      padding: 24px; position: relative;
+      height: 306px;
+      box-shadow: 0px 9.38px 21.56px 0px #00000008, 0px 88.13px 52.5px 0px #00000005, 0px 156.56px 62.81px 0px #00000000,0px 244.69px 68.44px 0px #00000000;
+      cursor: pointer;
+    }
+    .find_groups_details_available_review_card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
+      }
+    .find_groups_details_available_star {
+      width: 18px;
+      height: 18px;
+    }
+    /* Collapsed state */
+    .clamp-4 {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;   /* max 4 lines */
+      overflow: hidden;
+    }
+
+    /* Expanded state */
+    .clamp-4.expanded {
+      -webkit-line-clamp: unset;
+      overflow: visible;
+    }
+    @media(max-width: 1300px) {
+      .clamp-4 {
+        -webkit-line-clamp: 1;
+      }
+    }
+    .teacherSection .teacher-avatar img {
+      min-width: 160px; height: 160px; border-radius: 4px;
       object-fit: cover;
+      border: 1px solid #1211170F;
     }
-    #teacherSection .teacher-details {
+    .teacherSection .teacher-details {
       flex: 1; margin-left: 16px;
-      display: flex; flex-direction: column;
+    
     }
-    #teacherSection .teacher-header {
+    .teacherSection .teacher-header {
       display: flex; align-items: center; justify-content: space-between;
     }
-    #teacherSection .teacher-name { font-size: 20px; margin: 0; }
-    #teacherSection .verified { color: var(--accent); }
-    #teacherSection .favorite {
+    .teacherSection .teacher-name { font-size: 20px; margin: 0; font-weight: 500; }
+    .teacherSection .verified { color: var(--accent); }
+    .teacherSection .favorite {
       background: none; border: none; font-size: 24px; cursor: pointer;
       color: var(--text-muted);
+      position: absolute;
+      top: 20px;
+      right: 21px;
     }
-    #teacherSection .meta-list {
+    .teacherSection .meta-list {
       list-style: none; padding: 0; margin: 12px 0;
       font-size: 14px; color: var(--text-muted);
     }
-    #teacherSection .meta-list li {
-      display: flex; align-items: center; gap: 8px; margin-bottom: 4px;
+    .teacherSection .meta-list li {
+      display: flex; align-items: center; gap: 16px; margin-bottom: 8px;
+      font-size: 16px; color: var(--text-muted);
     }
-    #teacherSection .bio {
-      font-size: 14px; line-height: 1.5; margin-bottom: 16px;
+    .teacherSection .bio {
+      font-size: 16px;  margin-bottom: 16px;
       overflow: hidden; max-height: 4.5em;
     }
-    #teacherSection .see-more {
-      font-size: 14px; color: var(--accent); text-decoration: none;
+    .hideit:hover,
+    .teacherSection .see-more:hover {
+      color: var(--accent) !important;
     }
-    #teacherSection .action-panel {
-      flex: 0 0 30%; display: flex; flex-direction: column; gap: 12px;
+    .teacherSection .see-more {
+      font-size: 16px; color: var(--text); text-decoration: underline; font-weight: 500;
     }
-    #teacherSection .rating {
-      display: flex; align-items: baseline; gap: 4px;
-      font-size: 18px; font-weight: 600;
+    .teacherSection .teacher-list-active .action-panel {
+      top: 68% !important;
     }
-    #teacherSection .rating small {
-      font-size: 12px; color: var(--text-muted);
+    .teacher-avatar-box.green {
+      background: #09A64D;
     }
-    #teacherSection .stats {
-      display: flex; justify-content: space-between;
-      font-size: 16px; font-weight: 600;
+    .teacher-avatar-box.gray {
+      background: #B8B8B8;
     }
-    #teacherSection .stats small {
+    .teacher-avatar-box {
+      border: 1px solid #000000;
+      border-radius: 4px;
+      height: 24px;
+      width: 24px;
+      z-index: 2;
+      position: absolute;
+      right: 7px;
+      top: 129px;
+    }
+    .teacherSection .action-panel {
+      display: flex; flex-direction: column; gap: 12px; min-width: 284px;
+      margin-left: 44px;
+      position: relative;
+      top: 56%;
+      height: 150px;
+    }
+    .teacherSection .ratings {
+      font-size: 21px; font-weight: 500;
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .teacherSection .small-text {
+      font-size: 14px; color: var(--text-muted);
+    }
+    .teacherSection .stats {
+      position: absolute;
+      font-size: 16px;
+      font-weight: 600;
+      top: 80px;
+      right: 24px;
+      display: flex;
+      gap: 16px;
+    }
+    .teacherSection .stats small {
       display: block; font-size: 12px; font-weight: 400;
       color: var(--text-muted);
     }
-    #teacherSection .btn-primary,
-    #teacherSection .btn-outline {
-      padding: 12px; font-size: 16px; border-radius: 6px;
+    .teacherSection .btn-primary,
+    .teacherSection .btn-outline {
+      padding: 12px; font-size: 16px; border-radius: 8px;
       cursor: pointer; width: 100%;
+      height: 49px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--text);
+      font-size: 18px; font-weight: 600;
     }
-    #teacherSection .btn-primary { background: var(--accent); color: #fff; border: none; }
-    #teacherSection .btn-outline { background: none; border: 1px solid var(--accent); color: var(--text); }
-    #teacherSection .schedule-panel {
-      flex: 0 0 30%; display: none; flex-direction: column;
-      border: 2px solid var(--border); border-radius: 8px;
+    .teacherSection .btn-primary:hover {  background: rgba(255, 88, 60, 1) !important; }
+    .teacherSection .btn-primary { background: var(--accent); color: #fff; }
+    .teacherSection .btn-outline { background: none; color: var(--text); }
+    .teacherSection .btn-outline:hover { background:#f8f9fc}
+    .teacherSection .schedule-panel {
+      display: none; flex-direction: column;
+      border-radius: 8px;
       background: var(--bg);
+      max-width: 364px;
+      min-width: 364px;
+      margin-left: 34px;
+      display: flex;
+      transition: transform 0.9s ease;
+      /* visibility: hidden; */
     }
-    #teacherSection .schedule-panel.visible { display: flex; }
-    #teacherSection .schedule-preview {
+    .teacherSection .schedule-panel.visible { visibility: visible !important;}
+    .teacherSection .schedule-preview {
       position: relative; width: 100%; padding-top: 56.25%;
-      background: #eee center/cover url('https://via.placeholder.com/300x200');
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
+      height: 240px;
+      border-radius: 10px;
     }
-    #teacherSection .play-icon {
-      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-      font-size: 32px; background: var(--accent); color: #fff;
-      border-radius: 50%; width: 48px; height: 48px;
-      display: flex; align-items: center; justify-content: center;
+    .teacherSection .play-icon {
+      position: absolute;
+      font-size: 24px;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      bottom: 17px;
+      right: 13px;
+      cursor: pointer;
     }
-    #teacherSection .schedule-btn {
-      margin: 16px; padding: 12px; background: var(--bg);
-      border: 1px solid var(--border); border-radius: 6px;
-      font-size: 16px; cursor: pointer;
+    .teacherSection .schedule-btn:hover {
+       background:#f8f9fc;
     }
+    .teacherSection .schedule-btn {
+      margin-top: 16px;
+      padding-inline: 12px;
+      background: var(--bg);
+      border-radius: 8px;
+      font-size: 18px;
+      cursor: pointer;
+      border: 2px solid var(--dark-text);
+      font-weight: 600;
+      height: 49px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+        
+    .top-search {
+      width: 269px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      border: 2px solid #DCDCE5;
+      border-radius: 8px;
+      box-shadow: none;
+      font-size: 14px;
+      color: var(--text);
+      padding-left: 50px;
+    }
+    .top-search-icon {
+       position: absolute; left: 17px; top: 49%; transform: translateY(-50%);
+    }
+    .height-auto {
+      height: auto !important;
+    }
+    .hidden {
+      display: none;
+    }
+    

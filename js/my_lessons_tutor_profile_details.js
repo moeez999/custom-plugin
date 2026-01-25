@@ -31,10 +31,16 @@
         e.stopPropagation();
         $('#my_lessons_tutor_profile_timezone_dropdown').toggle();
       });
-      $('#my_lessons_tutor_profile_timezone_dropdown li').click(function(){
-        $('#my_lessons_tutor_profile_timezone_label').text($(this).text());
+     $('#my_lessons_tutor_profile_timezone_dropdown li').click(function () {
+        const timezoneName = $(this).find('.timezonez').text();
+        const gmtOffset = $(this).find('span').last().text();
+
+        $('#my_lessons_tutor_profile_timezone_name').text(timezoneName);
+        $('#my_lessons_tutor_profile_timezone_gmt').text('GMT ' + gmtOffset);
+
         $('#my_lessons_tutor_profile_timezone_dropdown').hide();
       });
+
       $(document).click(()=>$('#my_lessons_tutor_profile_timezone_dropdown').hide());
 
       // Slot selection
@@ -43,6 +49,14 @@
         $('.my_lessons_tutor_profile_times a').removeClass('selected');
         $(this).addClass('selected');
       });
+
+      // show full schedule
+      $('#view-full-schedule').click(function () {
+          $('#slot-box').removeClass("hide-slots");
+          $(this).addClass("d-none");
+      });
+
+
     });
 
 
@@ -72,17 +86,45 @@
              .slideToggle(200);
       });
   });
+  
+  $(function () {
+    // video play
+      $(document).on('click', '#video-pay-button', function () {
+        $('#videoPopup').fadeIn(200);
+      });
 
+      $(document).on('click', '.video-close, #videoPopup', function (e) {
+        // if ($(e.target).closest('.video-wrapper').length) return;
 
-  $(function(){
-    var $wrap = $('.my_lessons_tutor_profile_tiles_wrapper');
-    var scrollAmount = 240; // approx tile width + gap
+        const video = $('#videoPopup video').get(0);
+        video.pause();
+        video.currentTime = 0;
 
-    $('#my_lessons_tutor_profile_tiles_next').on('click', function(){
-      $wrap.animate({ scrollLeft: '+=' + scrollAmount }, 300);
-    });
-    $('#my_lessons_tutor_profile_tiles_prev').on('click', function(){
-      $wrap.animate({ scrollLeft: '-=' + scrollAmount }, 300);
-    });
+        $('#videoPopup').fadeOut(200);
+      });
   });
+
+$(function () {
+  const wrap = document.querySelector('.my_lessons_tutor_profile_tiles_wrapper');
+  const scrollAmount = 240;
+
+  $('#my_lessons_tutor_profile_tiles_next').on('click', function () {
+    wrap.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+  });
+
+  $('#my_lessons_tutor_profile_tiles_prev').on('click', function () {
+    wrap.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+  });
+});
+
+$(function () {
+  $(document).on('click', '.save_list', function () {
+    const $btn = $(this);
+    const $text = $btn.find('span');
+
+    const isSaved = $btn.toggleClass('is-saved').hasClass('is-saved');
+
+    $text.text(isSaved ? 'Saved' : 'Save to my list');
+  });
+});
 

@@ -6,7 +6,7 @@ $(function(){
     $overlay.css('display','flex');
     $('#step1').show();
     $('#step2, #step3').hide();
-    $('.modal-window').css({ width:'380px', maxHeight:'95vh' });
+    // $('.modal-window').css({ width:'380px', maxHeight:'95vh' });
   });
 
   // Close
@@ -19,11 +19,10 @@ $(function(){
 
   // Step1 → Step2
   $('.book_trial_step1 .duration-option').on('click', function(){
-    var d = $(this).data('duration');
-    $('#step1').hide();
-    $('#step2').show();
-    $('.book_trial_step2 .duration-tab').removeClass('active')
-      .filter('[data-duration="'+d+'"]').addClass('active');
+    $overlay.css('display','none');
+    debugger;
+    $('.send_message_step3').fadeIn().addClass('active');
+    $('#send_message_modal').fadeIn();
   });
 
   // Back Step2 → Step1

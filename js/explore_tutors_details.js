@@ -42,25 +42,194 @@
       $(this).toggleClass('selected');
     });
 
-    $('.range-min, .range-max').on('input change', updateTrack);
-    // tag your Price filter-button with data-type so updateTrack can find it:
-    $('.filter-button').filter(function() {
-      return $(this).find('.label').text().trim() === 'Price per Month';
-    }).attr('data-type','price');
-
-    updateTrack();
-
-
-
       // Teacher hover
-      $('#teacherSection .teacher-card').hover(
-      function() { $('#teacherSection .schedule-panel').addClass('visible'); },
-      function() { $('#teacherSection .schedule-panel').removeClass('visible'); }
-      );
+    $('.teacherSection .teacher-card').hover(
+        function () {
+          const $schedule = $('#schedule-panel');
+          const $section = $(this).closest('.teacherSection');
+          const index = $section.index('.teacherSection');
 
 
+          if (index !== 0) {
+            // NOT the first teacherSection
+            $schedule.css({
+              transform: 'translateY(calc(+'+100*index+'% + '+32*index+'px))'
+            });
+          } else {
+            // First teacherSection (optional reset)
+            $schedule.css({
+              transform: 'translateY(0)'
+            });
+          }
+        },
+      function () {
+        const $schedule = $('#schedule-panel');
+
+        // Reset on mouse leave
+        $schedule.css({
+         transform: 'translateY(0)'
+        });
+      }
+    );
+
+    
+
+    
+    //  slider logic
+     /* ====== STATE ====== */
+  const find_groups_details_state = {
+    priceCfg: { min: 1, max: 40, step: 1 },
+    priceRange: { min: 1, max: 40 }
+  };
+
+  /* ====== ELEMENTS ====== */
+  const $priceField = $('#find_groups_details_value_price');
+  const $priceRead  = $('#find_groups_details_price_readout');
+  const $priceTrack = $('#find_groups_details_price_track');
+  const $priceFill  = $('#find_groups_details_price_fill');
+  const $thumbMin   = $('#find_groups_details_price_thumb_min');
+  const $thumbMax   = $('#find_groups_details_price_thumb_max');
+
+  /* ====== UTILS ====== */
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+
+  function valueToPercent(val){
+    const { min, max } = find_groups_details_state.priceCfg;
+    return ((val - min) / (max - min)) * 100;
+  }
+
+  function percentToValue(pct){
+    const { min, max, step } = find_groups_details_state.priceCfg;
+    if (!isFinite(pct)) return min;
+    const raw = min + (pct / 100) * (max - min);
+    return Math.round(raw / step) * step;
+  }
+
+  /* ====== UI UPDATE ====== */
+  function updatePriceUI(){
+    let { min, max } = find_groups_details_state.priceRange;
+    const { max: cfgMax } = find_groups_details_state.priceCfg;
+
+    if (!isFinite(min) || !isFinite(max)) return;
+    if (min > max) [min, max] = [max, min];
+
+    const leftPct  = valueToPercent(min);
+    const rightPct = valueToPercent(max);
+
+    $thumbMin.css('left', `${leftPct}%`);
+    $thumbMax.css('left', `${rightPct}%`);
+
+    $priceFill.css({
+      left: `${Math.min(leftPct, rightPct)}%`,
+      width: `${Math.abs(rightPct - leftPct)}%`
+    });
+
+    const maxLabel = max === cfgMax ? `${max}+` : max;
+
+    $priceRead.text(`$${min} – $${maxLabel}`);
+    $priceField
+      .text(`${min} to ${maxLabel}`)
+      .attr('title', `${min} to ${maxLabel}`);
+  }
+
+  /* ====== DRAG HANDLER ====== */
+  function bindThumb($thumb, type){
+    $thumb.on('pointerdown', function(e){
+      e.preventDefault();
+      this.setPointerCapture(e.pointerId);
+
+      const rect = $priceTrack[0].getBoundingClientRect();
+      if (!rect.width) return;
+
+      const move = ev => {
+        const x   = clamp(ev.clientX, rect.left, rect.right);
+        const pct = ((x - rect.left) / rect.width) * 100;
+        let val   = percentToValue(pct);
+
+        if (type === 'min') {
+          val = clamp(val,
+            find_groups_details_state.priceCfg.min,
+            find_groups_details_state.priceRange.max
+          );
+          find_groups_details_state.priceRange.min = val;
+        } else {
+          val = clamp(val,
+            find_groups_details_state.priceRange.min,
+            find_groups_details_state.priceCfg.max
+          );
+          find_groups_details_state.priceRange.max = val;
+        }
+
+        updatePriceUI();
+      };
+
+      const up = () => {
+        $(window).off('pointermove', move);
+        $(window).off('pointerup', up);
+      };
+
+      $(window).on('pointermove', move);
+      $(window).on('pointerup', up);
+    });
+  }
+
+  bindThumb($thumbMin, 'min');
+  bindThumb($thumbMax, 'max');
+
+  /* ====== INIT ====== */
+  updatePriceUI();
 
 
+// see more and hide functionality
+$(document).on('click', '.see-more', function () {
+  const index = $(this).data('target'); // 1
 
+  const $targetDiv = $('#teacher_additional_' + index);
+  const $teacherCard = $('#teacher_card_' + index);
+
+  $targetDiv.addClass('expanded');
+
+  $(this).hide();
+  
+  $teacherCard
+    .addClass('height-auto');
+  $teacherCard
+    .addClass('teacher-list-active');
+
+  $('#teacher_card_hide_'+index).show();
+});
+
+$(document).on('click', '.hideit', function () {
+  const index = $(this).data('target'); // 1
+
+  const $targetDiv = $('#teacher_additional_' + index);
+  const $teacherCard = $('#teacher_card_' + index);
+
+  $targetDiv.removeClass('expanded');
+ $teacherCard
+    .removeClass('height-auto');
+  $teacherCard
+    .removeClass('teacher-list-active');
+
+  $(this).hide();
+
+  
+  $('#teacher_card_see_'+index).show();
+});
+
+// video play
+      $(document).on('click', '#video-pay-button', function () {
+        $('#videoPopup').fadeIn(200);
+      });
+
+      $(document).on('click', '.video-close, #videoPopup', function (e) {
+        // if ($(e.target).closest('.video-wrapper').length) return;
+
+        const video = $('#videoPopup video').get(0);
+        video.pause();
+        video.currentTime = 0;
+
+        $('#videoPopup').fadeOut(200);
+      });
 
   });

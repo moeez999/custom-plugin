@@ -3,26 +3,26 @@
   <div class="modal-window">
     <!-- STEP 1 -->
     <div id="step1" class="modal-content book_trial_step1">
+      <span id="step1Close" class="step-close">&times;</span>
       <div class="step-header">
-        <span id="step1Close" class="step-close">&times;</span>
-        <h2 class="step-title">Choose Your Trial Lesson Duration</h2>
+        <h2 class="step-title text-left">Choose Your Trial Lesson Duration</h2>
       </div>
       <div class="step-body">
         <div class="duration-option" data-duration="25">
-          <span class="opt-icon">&#127891;</span>
+          <span class="opt-icon"><img src="img/board.svg"></span>
           <div class="opt-text">
             <h3>25 minute trial lesson</h3>
             <p>Get to know the tutor, discuss your goals and learning plan.</p>
           </div>
-          <span class="opt-arrow">&rsaquo;</span>
+          <span class="opt-arrow"><img src="img/right-arrow-c.svg" style="min-width: 24px; height: 24px;"></span>
         </div>
         <div class="duration-option" data-duration="50">
-          <span class="opt-icon">&#9889;</span>
+          <span class="opt-icon"><img src="img/darkflash.svg"></span>
           <div class="opt-text">
             <h3>50 minute trial lesson</h3>
             <p>Get everything that’s in a 25-min lesson plus start learning.</p>
           </div>
-          <span class="opt-arrow">&rsaquo;</span>
+          <span class="opt-arrow"><img src="img/right-arrow-c.svg" style="min-width: 24px; height: 24px;"></span>
         </div>
       </div>
     </div>

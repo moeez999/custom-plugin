@@ -9,13 +9,23 @@
 .modal-window {
   background:#fff;
   border-radius:8px;
-  width:380px;
-  max-width:95%;
-  max-height:95vh;
+  /* width:380px; */
+  /* max-width:95%; */
+  /* max-height:95vh; */
   box-shadow:0 8px 24px rgba(0,0,0,0.2);
   animation:fadeIn 200ms ease-out;
   overflow:hidden;
   display:flex; flex-direction:column;
+  box-shadow:
+  0px 8px 32px 0px #12111726,
+  0px 16px 48px 0px #12111726;
+
+}
+.book_trial_step1 {
+  padding: 56px 24px;
+  position: relative;
+  width: 456px;
+  height: 505px;
 }
 @keyframes fadeIn {
   from{opacity:0;transform:translateY(-10px);}
@@ -25,30 +35,35 @@
 /* 1) Step 1 */
 .book_trial_step1 .step-header {
   display:flex; align-items:center;
-  padding:12px 16px; border-bottom:1px solid #eee;
 }
 .book_trial_step1 .step-title {
-  flex:1; margin:0; font-size:18px; text-align:center;
+  flex:1; margin:0; font-size:28px; font-weight: 600;
 }
 .book_trial_step1 .step-close {
-  font-size:20px; cursor:pointer; user-select:none;
+  font-size:27px; cursor:pointer; user-select:none;
+  position: absolute;
+  top: 6px;
+  right: 16px;
 }
 .book_trial_step1 .step-body {
-  padding-bottom:16px;
+  
   /* optional scroll if content overflows */
 }
 .book_trial_step1 .duration-option {
   display:flex; align-items:center;
-  border:1px solid #ddd; border-radius:6px;
-  padding:12px; margin:16px;
+   border-radius:9px;
+  padding:16px; margin-block:16px;
   cursor:pointer; transition:background .15s;
+  border: 2px solid #0000001F;
+  height: 104px;
 }
 .book_trial_step1 .duration-option:hover {
-  background:#f9f9f9;
+  border: 2px solid var(--dark-text);
 }
-.book_trial_step1 .opt-icon { font-size:24px; margin-right:12px; }
-.book_trial_step1 .opt-text h3 { margin:0 0 4px; font-size:16px; }
-.book_trial_step1 .opt-text p  { margin:0; font-size:14px; color:#555; }
+.book_trial_step1 .opt-icon { font-size:24px; margin-right:14px; }
+.book_trial_step1 .opt-icon img {height: 24px; min-width: 24px;}
+.book_trial_step1 .opt-text h3 { margin:0 0 4px; font-size:16px; font-weight: 500; color: var(--dark-text); }
+.book_trial_step1 .opt-text p  { margin:0; font-size:14px; color:#555; color: var(--dark-text);}
 .book_trial_step1 .opt-arrow    { margin-left:auto; font-size:20px; }
 
 /* 2) Step 2 */

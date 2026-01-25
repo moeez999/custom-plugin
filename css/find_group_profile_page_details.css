@@ -106,12 +106,13 @@
       list-style:none; padding:0; margin:0; flex:1;
     }
     .my_lessons_tutor_profile_bars li {
-      display:flex; align-items:center; margin-bottom:6px;
+      display:flex; align-items:center; margin-bottom:2px;
     }
     .my_lessons_tutor_profile_bar_label { width:16px; font-size:0.85rem; }
     .my_lessons_tutor_profile_bar_bg {
       flex:1; height:8px; background:#eee; margin:0 8px;
       position:relative;
+      border: 2px solid #121117
     }
     .my_lessons_tutor_profile_bar_fill {
       height:100%; background:#1d1d1f;
@@ -259,8 +260,7 @@
   #my_lesson_tutor_profile_my_specialities {
     /* max-width: 800px; */
     margin: 40px 0;
-    
-    color: #1d1d1f;
+    color: #121117
   }
   .my_lesson_tutor_profile_my_specialities_content,
   .speciality-item{
@@ -290,7 +290,6 @@
   }
   .my_lesson_tutor_profile_my_specialities_header span {
     font-size: 1rem;
-    color: #1d1d1f;
   }
   .my_lesson_tutor_profile_my_specialities_item.active,
   .my_lesson_tutor_profile_my_specialities_arrow {
@@ -314,8 +313,6 @@
 
   #my_lessons_tutor_profile_tiles {
     margin: 40px auto;
-    
-    color: #1d1d1f;
   }
   #my_lessons_tutor_profile_tiles h2 {
     font-size: 1.5rem;
