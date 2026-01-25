@@ -732,15 +732,32 @@ try {
         }
 
         $ev->duration = (int)(($newend - $newstart) / 60);
+
+        // --------------------------------------------------
+        // Update googlemeet_events record
+        // --------------------------------------------------
+        $eventrecord = $DB->get_record(
+            'googlemeet_events',
+            ['id' => $eventid],
+            '*',
+            MUST_EXIST
+        );
+
+        // eventdate is stored as timestamp (same type as $oldstart)
+        $eventrecord->eventdate    = $newstart;
+        $eventrecord->duration    = (string)$ev->duration * 60;
+        $eventrecord->timemodified = time();
+
+        $DB->update_record('googlemeet_events', $eventrecord);
     }
 
     // -------------------------
     // FINAL UPDATE
     // -------------------------
-    if ($apply_date || $apply_time) {
-        $ev->eventdate    = $newstart ?? $oldstart;
-        $ev->timemodified = time();
-        $DB->update_record('googlemeet_events', $ev);
+    if ($apply_date) {
+        // $ev->eventdate    = $newstart ?? $oldstart;
+        // $ev->timemodified = time();
+        // $DB->update_record('googlemeet_events', $ev);
 
         if (!$apply_status) {
             $set_event_status(
