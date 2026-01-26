@@ -233,8 +233,8 @@ try {
     // Helper functions (status/teacher/snapshot)
     // -----------------------------
     $ensure_event_status = function(int $eid, int $gid) use ($DB, $USER) {
-        if (!$DB->record_exists('local_gm_event_status', ['eventid' => $eid])) {
-            $DB->insert_record('local_gm_event_status', (object)[
+        if (!$DB->record_exists('local_gm_event_status_one_on_one', ['eventid' => $eid])) {
+            $DB->insert_record('local_gm_event_status_one_on_one', (object)[
                 'eventid'      => $eid,
                 'googlemeetid' => $gid,
                 'status'       => 'scheduled',
@@ -252,9 +252,9 @@ try {
 
     $set_event_status = function(int $eid, int $gid, string $newstatus, string $scope, ?string $reason) use ($DB, $USER, $ensure_event_status) {
         $ensure_event_status($eid, $gid);
-        $cur = $DB->get_record('local_gm_event_status', ['eventid' => $eid], '*', MUST_EXIST);
+        $cur = $DB->get_record('local_gm_event_status_one_on_one', ['eventid' => $eid], '*', MUST_EXIST);
 
-        $DB->insert_record('local_gm_event_status_history', (object)[
+        $DB->insert_record('local_gm_event_status_one_on_one_history', (object)[
             'eventid' => $eid,
             'googlemeetid' => $gid,
             'oldstatus' => (string)$cur->status,
@@ -269,7 +269,7 @@ try {
         $cur->reason = $reason;
         $cur->lastupdated = time();
         $cur->updatedby = $USER->id;
-        $DB->update_record('local_gm_event_status', $cur);
+        $DB->update_record('local_gm_event_status_one_on_one', $cur);
     };
 
    $assign_teacher = function(int $eid, int $gid, array $teacher, string $scope) use ($DB, $USER) {
@@ -334,7 +334,7 @@ try {
     // -------------------------
     // Status marker
     // -------------------------
-    $DB->insert_record('local_gm_event_status_history', (object)[
+    $DB->insert_record('local_gm_event_status_one_on_one_history', (object)[
         'eventid'      => $eid,
         'googlemeetid' => $gid,
         'oldstatus'    => 'scheduled',
@@ -389,7 +389,7 @@ try {
         );
 
         if ($message !== '') {
-            $DB->insert_record('local_gm_event_status_history', (object)[
+            $DB->insert_record('local_gm_event_status_one_on_one_history', (object)[
                 'eventid'      => $eventid,
                 'googlemeetid' => $googlemeetid,
                 'oldstatus'    => 'cancelled',

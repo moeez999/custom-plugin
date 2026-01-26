@@ -22,9 +22,17 @@ header('Content-Type: application/json');
 
 $courseid  = 24;
 
+
+//     $raw  = file_get_contents('php://input');
+// $data = json_decode($raw, true);
+
 $teacherid = required_param('teacherid', PARAM_INT);
 $studentid = required_param('studentid', PARAM_INT);
 $classtype = optional_param('classtype', 'single', PARAM_ALPHA); // 'single' | 'weekly'
+
+// $teacherid = isset($data['teacherid']) ? (int)$data['teacherid'] : 0;
+// $studentid = isset($data['studentid']) ? (int)$data['studentid'] : 0;
+// $classtype = isset($data['classtype']) ? trim((string)$data['classtype']) : 'single';
 
 if (!$teacherid || !$studentid) {
     echo json_encode(['ok' => false, 'error' => 'teacherid and studentid are required']);
@@ -277,7 +285,7 @@ try {
             foreach ($eventsForOutput as $e) {
                 $startTs = (int)$e->eventdate;
                 // ASSUMPTION: duration stored in MINUTES.
-                $endTs   = $startTs + ((int)$e->duration * 60);
+                $endTs   = $startTs + ((int)$e->duration);
 
                 $eventsOut[] = [
                     'id'               => (int)$e->id,
@@ -290,7 +298,7 @@ try {
 
                     'start_ts'         => $startTs,
                     'end_ts'           => $endTs,
-                    'duration_minutes' => (int)$e->duration,
+                    'duration_minutes' => (int) round($e->duration / 60),
                     'start_iso'        => $fmt_iso($startTs),
                     'end_iso'          => $fmt_iso($endTs),
                     'start_display'    => $fmt_disp($startTs),

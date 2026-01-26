@@ -105,38 +105,56 @@
     const newStartTime = minutesToHHMM(newStartMinutes);
     const newEndTime = minutesToHHMM(newEndMinutes);
 
+    // Build payload with exact structure matching provided examples
     const payload = {
       scope: "THIS_OCCURRENCE",
       eventId: parseInt(eventId, 10),
       googlemeetid: parseInt(googlemeetid, 10),
       apply: {
-        time: timeChanged,
+        time: false,
         teacher: false,
         status: false,
         days: false,
         period: false,
         end: false,
-        date: dateChanged,
-      },
+        date: false
+      }
     };
 
-    if (dateChanged && oldDate) {
-      payload.anchorDate = oldDate;
-    }
+    // Determine if this is ONLY time change or time + date change
+    const isOnlyTimeChange = timeChanged && !dateChanged;
+    const hasMultipleChanges = timeChanged && dateChanged;
 
+    // Add time data
     if (timeChanged) {
-      payload.time = {
-        start: newStartTime,
-        end: newEndTime,
-      };
-      payload.current = {
-        start: newStartTime,
-        end: newEndTime,
-      };
+      payload.apply.time = true;
+      
+      // If ONLY time changes, use "current" object
+      // If time changes WITH date, use "time" object
+      if (isOnlyTimeChange) {
+        payload.current = {
+          start: newStartTime,
+          end: newEndTime
+        };
+      } else {
+        payload.time = {
+          start: newStartTime,
+          end: newEndTime
+        };
+      }
     }
 
+    // Add date data
     if (dateChanged && newDate) {
-      payload.date = { new: newDate };
+      payload.apply.date = true;
+      payload.date = { 
+        new: newDate 
+      };
+      
+      // Add anchorDate (original date) when date changes
+      if (oldDate) {
+        payload.anchorDate = oldDate;
+      }
     }
 
     return payload;

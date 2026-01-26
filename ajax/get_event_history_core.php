@@ -60,7 +60,7 @@ function get_single_event_history(
     // --------------------------------------------------
     // Current status / teacher
     // --------------------------------------------------
-    $currentstatus  = $DB->get_record('local_gm_event_status', ['eventid' => $eventid], '*', IGNORE_MISSING);
+    $currentstatus  = $DB->get_record('local_gm_event_status_one_on_one', ['eventid' => $eventid], '*', IGNORE_MISSING);
     $currentteacher = $DB->get_record('local_gm_teacher_assignment', ['eventid' => $eventid], '*', IGNORE_MISSING);
 
     $resolvedTeacherId = $currentteacher->teacherid ?? $fallbackTeacherId;

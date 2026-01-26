@@ -644,6 +644,7 @@ echo $studentsItemsHtml;
 <script src="js/one2one_form_state_manager.js"></script>
 <script src="js/one2one_form_populator.js"></script>
 <script src="js/one2one_form_reset.js"></script>
+<script src="js/one2one_update_payload_builder.js"></script>
 
 <script>
 // ====== TOAST NOTIFICATION FUNCTION ======
@@ -3424,78 +3425,81 @@ document.addEventListener('DOMContentLoaded', function() {
         // Get googlemeetid (cmid)
         const googlemeetid = parseInt(cmid || formData.cmid || 0);
 
-        // Get original values for comparison
-        // Normalize date to YYYY-MM-DD format
-        let originalDate = originalEventData?.date || null;
-        if (originalDate && originalDate.includes('T')) {
-            // If date includes time, extract just the date part
-            originalDate = originalDate.split('T')[0];
-        }
-        const originalTeacherId = originalEventData?.teacherId || formData.teacherId || null;
-        const originalStart = originalEventData?.start || null;
-        const originalEnd = originalEventData?.end || null;
+        // ===== USE UTILITY FUNCTIONS FOR CHANGE DETECTION =====
+        // Extract normalized event data from API response structure
+        const normalizedOriginalEvent = window.One2OneUpdatePayloadBuilder?.extractEventData(originalEventData) || {
+            eventId: originalEventData?.eventid || originalEventData?.id || originalEventData?.eventId || null,
+            googlemeetid: originalEventData?.googlemeetid || originalEventData?.googlemeetId || originalEventData?.cmid || null,
+            date: originalEventData?.date || null,
+            start: originalEventData?.start || null,
+            end: originalEventData?.end || null,
+            teacherId: originalEventData?.teacherId || formData.teacherId || null
+        };
 
-        // Determine what changed by comparing original vs new values
-        let timeChanged = false;
-        let newStartTime = null;
-        let newEndTime = null;
+        // Detect changes using utility functions
+        let timeChange = { timeChanged: false, newStartTime: null, newEndTime: null };
+        let dateChange = { dateChanged: false, newDate: null };
+        let teacherChanged = false;
 
-        if (formData.lessonType === 'single' && formData.singleLesson) {
-            // Single lesson: check if time changed
-            const timeStr = formData.singleLesson.time || '';
-            if (timeStr) {
-                const time24h = convert12hTo24h(timeStr);
-                if (time24h) {
-                    const [startHour, startMin] = time24h.split(':').map(Number);
-                    const duration = formData.singleLesson.duration || 60;
-                    const endMin = startMin + duration;
-                    const endHour = startHour + Math.floor(endMin / 60);
-                    const endMinFinal = endMin % 60;
+        if (window.One2OneUpdatePayloadBuilder) {
+            // Use utility functions for change detection
+            if (formData.lessonType === 'single') {
+                timeChange = window.One2OneUpdatePayloadBuilder.detectSingleLessonTimeChange(formData, normalizedOriginalEvent);
+                dateChange = window.One2OneUpdatePayloadBuilder.detectSingleLessonDateChange(formData, normalizedOriginalEvent);
+            } else if (formData.lessonType === 'weekly') {
+                timeChange = window.One2OneUpdatePayloadBuilder.detectWeeklyLessonTimeChange(formData, normalizedOriginalEvent, scope);
+                dateChange = window.One2OneUpdatePayloadBuilder.detectWeeklyLessonDateChange(formData, normalizedOriginalEvent, scope);
+            }
+            
+            teacherChanged = window.One2OneUpdatePayloadBuilder.detectTeacherChange(formData, normalizedOriginalEvent);
+        } else {
+            // Fallback to inline logic if utility not available
+            console.warn('One2OneUpdatePayloadBuilder not available, using fallback logic');
+            const originalDate = normalizedOriginalEvent.date;
+            const originalTeacherId = normalizedOriginalEvent.teacherId;
+            const originalStart = normalizedOriginalEvent.start;
+            const originalEnd = normalizedOriginalEvent.end;
 
-                    newStartTime =
-                        `${String(startHour).padStart(2, '0')}:${String(startMin).padStart(2, '0')}`;
-                    newEndTime =
-                        `${String(endHour).padStart(2, '0')}:${String(endMinFinal).padStart(2, '0')}`;
-
-                    // Compare with original times (convert original to 24h if needed)
-                    if (originalStart && originalEnd) {
-                        const origStart24h = originalStart.includes(' ') ? convert12hTo24h(
-                            originalStart) : originalStart;
-                        const origEnd24h = originalEnd.includes(' ') ? convert12hTo24h(
-                            originalEnd) : originalEnd;
-                        timeChanged = (origStart24h !== newStartTime || origEnd24h !== newEndTime);
-                    } else {
-                        timeChanged = true; // No original time, so it's a change
+            // Fallback inline detection (simplified)
+            if (formData.lessonType === 'single' && formData.singleLesson) {
+                const timeStr = formData.singleLesson.time || '';
+                if (timeStr) {
+                    const time24h = convert12hTo24h(timeStr);
+                    if (time24h) {
+                        const [startHour, startMin] = time24h.split(':').map(Number);
+                        const duration = formData.singleLesson.duration || 60;
+                        const endMin = startMin + duration;
+                        const endHour = startHour + Math.floor(endMin / 60);
+                        const endMinFinal = endMin % 60;
+                        timeChange.newStartTime = `${String(startHour).padStart(2, '0')}:${String(startMin).padStart(2, '0')}`;
+                        timeChange.newEndTime = `${String(endHour).padStart(2, '0')}:${String(endMinFinal).padStart(2, '0')}`;
+                        if (originalStart && originalEnd) {
+                            const origStart24h = originalStart.includes(' ') ? convert12hTo24h(originalStart) : originalStart;
+                            const origEnd24h = originalEnd.includes(' ') ? convert12hTo24h(originalEnd) : originalEnd;
+                            timeChange.timeChanged = (origStart24h !== timeChange.newStartTime || origEnd24h !== timeChange.newEndTime);
+                        } else {
+                            timeChange.timeChanged = true;
+                        }
                     }
                 }
-            }
-        } else if (formData.lessonType === 'weekly' && formData.weeklyLesson && formData
-            .weeklyLesson.days && formData.weeklyLesson.days.length > 0) {
-            // Weekly lesson: get time from first day
-            const firstDay = formData.weeklyLesson.days[0];
-            if (firstDay.start && firstDay.end) {
-                const start24h = convert12hTo24h(firstDay.start);
-                const end24h = convert12hTo24h(firstDay.end);
-                if (start24h && end24h) {
-                    newStartTime = start24h;
-                    newEndTime = end24h;
-
-                    // Compare with original times
-                    if (originalStart && originalEnd) {
-                        const origStart24h = originalStart.includes(' ') ? convert12hTo24h(
-                            originalStart) : originalStart;
-                        const origEnd24h = originalEnd.includes(' ') ? convert12hTo24h(
-                            originalEnd) : originalEnd;
-                        timeChanged = (origStart24h !== newStartTime || origEnd24h !== newEndTime);
-                    } else {
-                        timeChanged = true;
-                    }
+                if (formData.singleLesson.date) {
+                    dateChange.newDate = formData.singleLesson.date.includes('T') ? formData.singleLesson.date.split('T')[0] : formData.singleLesson.date;
+                    dateChange.dateChanged = dateChange.newDate !== (originalDate?.includes('T') ? originalDate.split('T')[0] : originalDate);
                 }
             }
+
+            teacherChanged = formData.changeTeacher && formData.newTeacherId &&
+                parseInt(formData.newTeacherId) !== parseInt(originalTeacherId);
         }
 
-        const teacherChanged = formData.changeTeacher && formData.newTeacherId &&
-            parseInt(formData.newTeacherId) !== parseInt(originalTeacherId);
+        // Extract values for use below
+        const timeChanged = timeChange.timeChanged;
+        const newStartTime = timeChange.newStartTime;
+        const newEndTime = timeChange.newEndTime;
+        const dateChanged = dateChange.dateChanged;
+        const newDate = dateChange.newDate;
+        const originalDate = normalizedOriginalEvent.date;
+        const originalTeacherId = normalizedOriginalEvent.teacherId;
 
         console.log('👤 Teacher change detection:', {
             changeTeacher: formData.changeTeacher,
@@ -3504,65 +3508,216 @@ document.addEventListener('DOMContentLoaded', function() {
             teacherChanged
         });
 
-        // Detect date change for both single and weekly lessons
-        // IMPORTANT:
-        // - For THIS_AND_FOLLOWING scope with only time changes, skip date detection
-        // - If ONLY the teacher changed (no time change), do NOT treat date as changed
-        let dateChanged = false;
-        let newDate = null;
+        console.log('📅 Date change detection:', {
+            originalDate,
+            newDate,
+            dateChanged,
+            lessonType: formData.lessonType
+        });
 
-        // For THIS_AND_FOLLOWING with time-only changes, skip date change detection entirely
-        // Only check for date changes if:
-        // 1. Scope is THIS_OCCURRENCE, OR
-        // 2. User explicitly changed the date (not just time)
-        const teacherOnlyChange = teacherChanged && !timeChanged;
-        const shouldCheckDate = !teacherOnlyChange && (scope === 'THIS_OCCURRENCE' ||
-            (scope === 'THIS_AND_FOLLOWING' && !timeChanged));
+        console.log('⏰ Time change detection:', {
+            timeChanged,
+            newStartTime,
+            newEndTime,
+            originalStart: normalizedOriginalEvent.start,
+            originalEnd: normalizedOriginalEvent.end
+        });
 
-        if (shouldCheckDate) {
-            if (formData.lessonType === 'single' && formData.singleLesson && formData.singleLesson
-                .date) {
-                newDate = formData.singleLesson.date;
-                // Normalize date to YYYY-MM-DD format
-                if (newDate && newDate.includes('T')) {
-                    newDate = newDate.split('T')[0];
+        // ===== SESSION STORAGE HELPERS FOR THIS_OCCURRENCE =====
+        const SESSION_STORAGE_KEY = 'one2one_update_payload';
+        
+        /**
+         * Get stored payload from sessionStorage
+         */
+        function getStoredPayload() {
+            try {
+                const stored = sessionStorage.getItem(SESSION_STORAGE_KEY);
+                if (stored) {
+                    return JSON.parse(stored);
                 }
-                dateChanged = newDate !== originalDate;
-                console.log('📅 Date change detection (single):', {
-                    originalDate,
-                    newDate,
-                    dateChanged
-                });
-            } else if (formData.lessonType === 'weekly' && formData.weeklyLesson &&
-                formData.weeklyLesson.days && formData.weeklyLesson.days.length > 0) {
-                // For weekly lessons, only check date if scope is THIS_OCCURRENCE
-                // For THIS_AND_FOLLOWING, we don't check date changes when only time is changing
-                if (scope === 'THIS_OCCURRENCE') {
-                    const firstDay = formData.weeklyLesson.days[0];
-                    if (firstDay.date) {
-                        newDate = firstDay.date;
-                        // Normalize date to YYYY-MM-DD format
-                        if (newDate && newDate.includes('T')) {
-                            newDate = newDate.split('T')[0];
-                        }
-                        dateChanged = newDate !== originalDate;
-                        console.log('📅 Date change detection (weekly):', {
-                            originalDate,
-                            newDate,
-                            firstDayDate: firstDay.date,
-                            dateChanged
-                        });
-                    }
+            } catch (e) {
+                console.warn('Failed to parse stored payload:', e);
+            }
+            return null;
+        }
+
+        /**
+         * Store payload in sessionStorage
+         */
+        function storePayload(payload) {
+            try {
+                sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(payload));
+                console.log('💾 Stored payload in sessionStorage:', payload);
+            } catch (e) {
+                console.warn('Failed to store payload:', e);
+            }
+        }
+
+        /**
+         * Initialize session storage with base payload when form opens
+         */
+        function initializeStoredPayload(eventId, googlemeetid, originalDate, originalTeacherId) {
+            if (scope !== 'THIS_OCCURRENCE') {
+                return; // Only use session storage for THIS_OCCURRENCE
+            }
+
+            const basePayload = {
+                scope: 'THIS_OCCURRENCE',
+                eventId: parseInt(eventId || 0),
+                googlemeetid: parseInt(googlemeetid || 0),
+                apply: {
+                    time: false,
+                    teacher: false,
+                    status: false,
+                    days: false,
+                    period: false,
+                    end: false,
+                    date: false
+                }
+            };
+
+            // Add anchorDate if we have original date
+            if (originalDate) {
+                let normalizedAnchorDate = originalDate;
+                if (normalizedAnchorDate && normalizedAnchorDate.includes('T')) {
+                    normalizedAnchorDate = normalizedAnchorDate.split('T')[0];
+                }
+                basePayload.anchorDate = normalizedAnchorDate;
+            }
+
+            storePayload(basePayload);
+        }
+
+        /**
+         * Merge new payload with stored payload
+         */
+        function mergeWithStoredPayload(newPayload) {
+            if (scope !== 'THIS_OCCURRENCE') {
+                return newPayload; // Don't merge for THIS_AND_FOLLOWING
+            }
+
+            const stored = getStoredPayload();
+            if (!stored) {
+                console.log('📦 No stored payload found, using new payload only');
+                return newPayload;
+            }
+
+            // Safety check: ensure we're merging payloads for the same event
+            if (stored.eventId && newPayload.eventId && stored.eventId !== newPayload.eventId) {
+                console.warn('⚠️ Event ID mismatch! Stored:', stored.eventId, 'New:', newPayload.eventId);
+                console.warn('⚠️ Clearing stored payload and using new payload only');
+                clearStoredPayload();
+                return newPayload;
+            }
+
+            // Merge apply flags (OR operation - if either is true, keep true)
+            const mergedApply = {
+                time: newPayload.apply?.time || stored.apply?.time || false,
+                teacher: newPayload.apply?.teacher || stored.apply?.teacher || false,
+                status: newPayload.apply?.status || stored.apply?.status || false,
+                days: newPayload.apply?.days || stored.apply?.days || false,
+                period: newPayload.apply?.period || stored.apply?.period || false,
+                end: newPayload.apply?.end || stored.apply?.end || false,
+                date: newPayload.apply?.date || stored.apply?.date || false
+            };
+
+            // Merge payload - new values override stored values
+            const merged = {
+                scope: newPayload.scope || stored.scope,
+                eventId: newPayload.eventId || stored.eventId,
+                googlemeetid: newPayload.googlemeetid || stored.googlemeetid,
+                apply: mergedApply
+            };
+
+            // Merge anchorDate (prefer new, fallback to stored)
+            if (newPayload.anchorDate) {
+                merged.anchorDate = newPayload.anchorDate;
+            } else if (stored.anchorDate) {
+                merged.anchorDate = stored.anchorDate;
+            }
+
+            // Merge time data (new overrides stored)
+            // Priority: newPayload.time > newPayload.current > stored.time > stored.current
+            if (newPayload.time) {
+                merged.time = newPayload.time;
+                // Remove current if time exists (time takes precedence when multiple changes)
+                delete merged.current;
+            } else if (newPayload.current) {
+                // Only keep current if no other changes exist
+                const hasOtherChanges = mergedApply.teacher || mergedApply.date;
+                if (!hasOtherChanges) {
+                    merged.current = newPayload.current;
                 } else {
-                    // For THIS_AND_FOLLOWING, don't check date changes
-                    dateChanged = false;
-                    console.log('📅 Skipping date change detection for THIS_AND_FOLLOWING scope');
+                    // Convert current to time if other changes exist
+                    merged.time = newPayload.current;
+                }
+            } else if (stored.time) {
+                merged.time = stored.time;
+                delete merged.current;
+            } else if (stored.current) {
+                // Only keep current if no other changes exist
+                const hasOtherChanges = mergedApply.teacher || mergedApply.date;
+                if (!hasOtherChanges) {
+                    merged.current = stored.current;
+                } else {
+                    // Convert current to time if other changes exist
+                    merged.time = stored.current;
                 }
             }
-        } else {
-            // THIS_AND_FOLLOWING with time-only change - explicitly no date change
-            dateChanged = false;
-            console.log('📅 THIS_AND_FOLLOWING time-only change - skipping date detection');
+
+            // Merge teacher data (new overrides stored)
+            if (newPayload.teacher) {
+                merged.teacher = newPayload.teacher;
+            } else if (stored.teacher) {
+                merged.teacher = stored.teacher;
+            }
+
+            // Merge date data (new overrides stored)
+            if (newPayload.date) {
+                merged.date = newPayload.date;
+            } else if (stored.date) {
+                merged.date = stored.date;
+            }
+
+            console.log('🔄 Merged payload:', {
+                stored: stored,
+                new: newPayload,
+                merged: merged
+            });
+
+            return merged;
+        }
+
+        /**
+         * Clear stored payload (call after successful update or when closing form)
+         */
+        function clearStoredPayload() {
+            try {
+                sessionStorage.removeItem(SESSION_STORAGE_KEY);
+                console.log('🗑️ Cleared stored payload from sessionStorage');
+            } catch (e) {
+                console.warn('Failed to clear stored payload:', e);
+            }
+        }
+
+        // Initialize session storage when form opens (only for THIS_OCCURRENCE)
+        if (scope === 'THIS_OCCURRENCE') {
+            const payloadEventId = parseInt(eventId || formData.eventId || 0);
+            
+            // Check if this is a different event - if so, clear old stored payload
+            const stored = getStoredPayload();
+            if (stored && stored.eventId && stored.eventId !== payloadEventId) {
+                console.log('🔄 New event detected, clearing old stored payload');
+                clearStoredPayload();
+            }
+            
+            // Initialize or re-initialize for this event
+            initializeStoredPayload(payloadEventId, googlemeetid, originalDate, originalTeacherId);
+        }
+
+        // Make clearStoredPayload available globally for cleanup
+        if (typeof window !== 'undefined') {
+            window.clearOne2OneStoredPayload = clearStoredPayload;
         }
 
         // Build payload - use new format for THIS_AND_FOLLOWING, old format for THIS_OCCURRENCE
@@ -3782,7 +3937,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
         } else {
-            // Old payload format for THIS_OCCURRENCE
+            // THIS_OCCURRENCE payload format - use utility function if available
             const payloadEventId = parseInt(eventId || formData.eventId || 0);
 
             // Validate that we have a valid event ID
@@ -3794,60 +3949,95 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            payload = {
-                scope: scope,
-                eventId: payloadEventId,
-                googlemeetid: googlemeetid,
-                apply: {
-                    time: timeChanged,
-                    teacher: teacherChanged,
-                    status: false,
-                    days: false,
-                    period: false,
-                    end: false,
-                    date: dateChanged
-                }
-            };
+            // Use utility function to build payload if available
+            if (window.One2OneUpdatePayloadBuilder && window.One2OneUpdatePayloadBuilder.buildThisOccurrencePayload) {
+                payload = window.One2OneUpdatePayloadBuilder.buildThisOccurrencePayload({
+                    eventId: payloadEventId,
+                    googlemeetid: googlemeetid,
+                    timeChanged: timeChanged,
+                    teacherChanged: teacherChanged,
+                    dateChanged: dateChanged,
+                    newStartTime: newStartTime,
+                    newEndTime: newEndTime,
+                    originalTeacherId: originalTeacherId,
+                    newTeacherId: formData.newTeacherId,
+                    newDate: newDate,
+                    originalDate: originalDate
+                });
+            } else {
+                // Fallback: Build payload manually
+                payload = {
+                    scope: 'THIS_OCCURRENCE',
+                    eventId: payloadEventId,
+                    googlemeetid: googlemeetid,
+                    apply: {
+                        time: false,
+                        teacher: false,
+                        status: false,
+                        days: false,
+                        period: false,
+                        end: false,
+                        date: false
+                    }
+                };
 
-            // Add anchorDate if date changed
-            if (dateChanged && originalDate) {
-                let normalizedAnchorDate = originalDate;
-                if (normalizedAnchorDate && normalizedAnchorDate.includes('T')) {
-                    normalizedAnchorDate = normalizedAnchorDate.split('T')[0];
+                // Determine if this is ONLY time change or time + other changes
+                const isOnlyTimeChange = timeChanged && !teacherChanged && !dateChanged;
+
+                // Add time data
+                if (timeChanged && newStartTime && newEndTime) {
+                    payload.apply.time = true;
+                    if (isOnlyTimeChange) {
+                        payload.current = { start: newStartTime, end: newEndTime };
+                    } else {
+                        payload.time = { start: newStartTime, end: newEndTime };
+                    }
                 }
-                payload.anchorDate = normalizedAnchorDate;
+
+                // Add teacher data
+                if (teacherChanged && originalTeacherId && formData.newTeacherId) {
+                    payload.apply.teacher = true;
+                    payload.teacher = {
+                        old: parseInt(originalTeacherId),
+                        new: parseInt(formData.newTeacherId)
+                    };
+                }
+
+                // Add date data
+                if (dateChanged && newDate) {
+                    payload.apply.date = true;
+                    const normalizedNewDate = newDate.includes('T') ? newDate.split('T')[0] : newDate;
+                    payload.date = { new: normalizedNewDate };
+                    if (originalDate) {
+                        const normalizedAnchorDate = originalDate.includes('T') ? originalDate.split('T')[0] : originalDate;
+                        payload.anchorDate = normalizedAnchorDate;
+                    }
+                }
             }
 
-            // Add time data if time changed
-            if (timeChanged && newStartTime && newEndTime) {
-                payload.time = {
-                    start: newStartTime,
-                    end: newEndTime
-                };
-                // Also add current object for explicit time change
-                payload.current = {
-                    start: newStartTime,
-                    end: newEndTime
-                };
-            }
-
-            // Add teacher data if teacher changed
-            if (teacherChanged && originalTeacherId && formData.newTeacherId) {
-                payload.teacher = {
-                    old: parseInt(originalTeacherId),
-                    new: parseInt(formData.newTeacherId)
-                };
-            }
-
-            // Add date data if date changed
-            if (dateChanged && newDate) {
-                let normalizedNewDate = newDate;
-                if (normalizedNewDate && normalizedNewDate.includes('T')) {
-                    normalizedNewDate = normalizedNewDate.split('T')[0];
+            // Merge with stored payload for THIS_OCCURRENCE to accumulate changes
+            payload = mergeWithStoredPayload(payload);
+            
+            // After merging, determine if we should use "current" or "time" based on final state
+            const finalHasMultipleChanges = (payload.apply?.time ? 1 : 0) + 
+                                          (payload.apply?.teacher ? 1 : 0) + 
+                                          (payload.apply?.date ? 1 : 0) > 1;
+            
+            // Final cleanup: ensure correct structure based on number of changes
+            if (payload.apply?.time) {
+                if (finalHasMultipleChanges) {
+                    // Multiple changes: use "time" object, remove "current" if exists
+                    if (payload.current && !payload.time) {
+                        payload.time = payload.current;
+                    }
+                    delete payload.current;
+                } else {
+                    // Only time change: use "current" object, remove "time" if exists
+                    if (payload.time && !payload.current) {
+                        payload.current = payload.time;
+                    }
+                    delete payload.time;
                 }
-                payload.date = {
-                    new: normalizedNewDate
-                };
             }
         }
 
@@ -3890,6 +4080,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     `✅ Updated successfully! (${actionCount} action(s): ${actionTypes})`);
             } else {
                 showToastManage('✅ Session updated successfully!');
+            }
+
+            // Update session storage with the merged payload after successful update
+            if (scope === 'THIS_OCCURRENCE') {
+                storePayload(payload);
+                console.log('💾 Updated session storage with merged payload after successful update');
             }
 
             // Keep loader visible during calendar refresh
