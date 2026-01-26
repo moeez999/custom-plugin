@@ -678,7 +678,7 @@
           <span style="margin-left: 8px;" class="find_groups_details_available_btn_book"> Book trial lesson</span>
           </button>
 
-          <button class="my_lessons_tutor_profile_btn my_lessons_tutor_profile_btn_outline" id="open_step1" style="display: flex; align-items: center; justify-content: center;">
+          <button class="my_lessons_tutor_profile_btn my_lessons_tutor_profile_btn_outline" id="open-message-popup" style="display: flex; align-items: center; justify-content: center;">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
               <rect width="20" height="20" fill="url(#pattern0_22337_27599)"/>
               <defs>
@@ -728,8 +728,8 @@
  <?php require_once('my_lessons_tutor_profile_details_show_more.php');?>
  <?php require_once('my_lessons_tutor_profile_details_post_reviews.php');?>
  <?php require_once('book_trail_lessons.php'); ?>
-
-  <?php require_once('send_message_steps.php'); ?>
+ <?php require_once('send_message_steps.php'); ?>
+ <?php require_once('my_lessons_details_my_lessons_content_message_tutor.php');?>
 
 
   <script src="js/my_lessons_tutor_profile_details.js"></script>

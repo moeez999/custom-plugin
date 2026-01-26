@@ -233,3 +233,59 @@ $(document).on('click', '.hideit', function () {
       });
 
   });
+
+    $(function () {
+
+    const totalPages = 10;
+    const maxVisible = 3;
+    const $pagination = $("#pagination");
+
+    const getPage = () =>
+        +new URLSearchParams(location.search).get("page") || 1;
+
+    const setPage = page => {
+        history.pushState({}, "", `?page=${page}`);
+        render(page);
+    };
+
+    function render(page) {
+        let html = [];
+
+        const start = Math.max(1, page - 1);
+        const end = Math.min(totalPages, start + maxVisible - 1);
+
+        html.push(`<a class="first ${page === 1 ? 'disabled' : ''}" data-p="${page - 1}"><svg class="min-w-[40px]" width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M15.9141 20.9932L27.9141 20.9932L27.9141 18.9932L15.9141 18.9932L21.2071 13.7002L19.7931 12.2862L12.0861 19.9932L19.7931 27.7002L21.2071 26.2862L15.9141 20.9932Z" fill="#121117"></path>
+            </svg></a>`);
+
+        if (start > 1) {
+            html.push(`<a data-p="1">1</a>`);
+            if (start > 2) html.push(`<span class="ellipsis">...</span>`);
+        }
+
+        for (let i = start; i <= end; i++) {
+            html.push(`<a data-p="${i}" class="${i === page ? 'active' : ''}">${i}</a>`);
+        }
+
+        if (end < totalPages) {
+            if (end < totalPages - 1) html.push(`<span class="ellipsis">...</span>`);
+            html.push(`<a data-p="${totalPages}">${totalPages}</a>`);
+        }
+
+        html.push(`<a class="last ${page === totalPages ? 'disabled' : ''}" data-p="${page + 1}"><svg style="transform: rotate(180deg)" class="min-w-[40px]" width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M15.9141 20.9932L27.9141 20.9932L27.9141 18.9932L15.9141 18.9932L21.2071 13.7002L19.7931 12.2862L12.0861 19.9932L19.7931 27.7002L21.2071 26.2862L15.9141 20.9932Z" fill="#121117"></path>
+            </svg></a>`);
+
+        $pagination.html(html.join(""));
+      }
+
+      // Init
+      render(getPage());
+
+      // Events
+      $pagination.on("click", "a", function () {
+          const page = +$(this).data("p");
+          if (page) setPage(page);
+      });
+
+   });

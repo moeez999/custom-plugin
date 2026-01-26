@@ -131,8 +131,61 @@
       cursor: pointer;
       z-index: 999;
     }
+  /* pagination */
+  .pagination {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    font-family: Arial, sans-serif;
+  }
 
+  .pagination a:not(a.first):not(a.last) {
+    border: 1px solid #ccc;
+  }
+  .pagination a,
+  .pagination span {
+      width: 40px;
+      height: 40px;
+      line-height: 40px;
+      text-align: center;
+      border-radius: 4px;
+      color: #000;
+      text-decoration: none;
+      cursor: pointer;
+      
+      user-select: none;
+  }
+
+  .pagination a:not(a.first):not(a.last):not(a.active):hover {
+      background: #f0f0f0;
+  }
+  .pagination a.active:hover {
+      background: rgba(255, 88, 60, 1) !important;
+  }
+
+  .pagination a.first {margin-right: 10px;}
+  .pagination a.last {margin-left: 10px;}
+
+  .pagination .active {
+      background: #ff2500;
+      color: #fff;
+      cursor: default;
+  }
+
+  .pagination .disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+  }
+
+  .pagination .ellipsis {
+      border: none;
+      cursor: default;
+  }
+
+  /* pagination */
   </style>
+  
+  
 </head>
 <body class="bg-white text-[color:var(--fgda-text)]">
 
@@ -579,16 +632,6 @@
 
         <!-- ===== RIGHT: image mirrors left ===== -->
         <aside id="find_groups_details_available_right_rail" style="max-height: 306px;">
-          <div id="find_groups_details_available_video_card" class="relative rounded-[10px] overflow-hidden shadow-[0_8px_32px_rgba(18,17,23,.10)]" style="height:306px">
-            <img id="find_groups_details_available_video_img"
-                 src="https://images.unsplash.com/photo-1544006659-f0b21884ce1d?q=80&w=1600&auto=format&fit=crop"
-                 class="w-full h-[350px] object-cover" alt="profile large">
-            <button id="find_groups_details_available_btn_play"
-                    class="absolute right-5 bottom-5 w-[54px] h-[54px] rounded-full bg-[var(--fgda-peach)] text-white flex items-center justify-center"
-                    aria-label="Play">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-[30px] h-[30px]" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-            </button>
-          </div>
         </aside>
 
       </div>
@@ -793,21 +836,31 @@
 
         <!-- ===== RIGHT: image mirrors left ===== -->
         <aside id="find_groups_details_available_right_rail" style="max-height: 306px;">
-          <div id="find_groups_details_available_video_card" class="relative rounded-[10px] overflow-hidden shadow-[0_8px_32px_rgba(18,17,23,.10)]" style="height:306px">
-            <img id="find_groups_details_available_video_img"
-                 src="https://images.unsplash.com/photo-1544006659-f0b21884ce1d?q=80&w=1600&auto=format&fit=crop"
-                 class="w-full h-[350px] object-cover" alt="profile large">
-            <button id="find_groups_details_available_btn_play"
-                    class="absolute right-5 bottom-5 w-[54px] h-[54px] rounded-full bg-[var(--fgda-peach)] text-white flex items-center justify-center"
-                    aria-label="Play">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-[30px] h-[30px]" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-            </button>
-          </div>
         </aside>
 
       </div>
 
     </div>
+
+    <!-- pagination -->
+    <div class="flex justify-center max-w-[884px] pagination mt-4" id="pagination">
+      <a class="first disabled" data-p="0" style="margin-right: 10px;">
+        <svg class="min-w-[40px]" width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M15.9141 20.9932L27.9141 20.9932L27.9141 18.9932L15.9141 18.9932L21.2071 13.7002L19.7931 12.2862L12.0861 19.9932L19.7931 27.7002L21.2071 26.2862L15.9141 20.9932Z" fill="#121117"></path>
+        </svg>
+      </a>
+      <a data-p="1" class="active">1</a>
+      <a data-p="2" class="">2</a>
+      <a data-p="3" class="">3</a>
+      <span class="ellipsis">...</span>
+      <a data-p="10">10</a>
+      <a class="last" data-p="2">
+        <svg style="transform: rotate(180deg)" class="min-w-[40px]" width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M15.9141 20.9932L27.9141 20.9932L27.9141 18.9932L15.9141 18.9932L21.2071 13.7002L19.7931 12.2862L12.0861 19.9932L19.7931 27.7002L21.2071 26.2862L15.9141 20.9932Z" fill="#121117"></path>
+        </svg>
+      </a>
+    </div>
+
   </section>
     <!-- video popup -->
     <div id="videoPopup" class="video-popup">
@@ -967,6 +1020,97 @@
       });
   </script>
 
+  <!-- pagination -->
+  <script>
+    $(function () {
+
+    const totalPages = 10;
+    const maxVisible = 3;
+    const $pagination = $("#pagination");
+
+    const getPage = () =>
+        +new URLSearchParams(location.search).get("page") || 1;
+
+    const setPage = page => {
+        history.pushState({}, "", `?page=${page}`);
+        render(page);
+    };
+
+    function render(page) {
+        let html = [];
+
+        const start = Math.max(1, page - 1);
+        const end = Math.min(totalPages, start + maxVisible - 1);
+
+        html.push(`<a class="first ${page === 1 ? 'disabled' : ''}" data-p="${page - 1}"><svg class="min-w-[40px]" width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M15.9141 20.9932L27.9141 20.9932L27.9141 18.9932L15.9141 18.9932L21.2071 13.7002L19.7931 12.2862L12.0861 19.9932L19.7931 27.7002L21.2071 26.2862L15.9141 20.9932Z" fill="#121117"></path>
+            </svg></a>`);
+
+        if (start > 1) {
+            html.push(`<a data-p="1">1</a>`);
+            if (start > 2) html.push(`<span class="ellipsis">...</span>`);
+        }
+
+        for (let i = start; i <= end; i++) {
+            html.push(`<a data-p="${i}" class="${i === page ? 'active' : ''}">${i}</a>`);
+        }
+
+        if (end < totalPages) {
+            if (end < totalPages - 1) html.push(`<span class="ellipsis">...</span>`);
+            html.push(`<a data-p="${totalPages}">${totalPages}</a>`);
+        }
+
+        html.push(`<a class="last ${page === totalPages ? 'disabled' : ''}" data-p="${page + 1}"><svg style="transform: rotate(180deg)" class="min-w-[40px]" width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M15.9141 20.9932L27.9141 20.9932L27.9141 18.9932L15.9141 18.9932L21.2071 13.7002L19.7931 12.2862L12.0861 19.9932L19.7931 27.7002L21.2071 26.2862L15.9141 20.9932Z" fill="#121117"></path>
+            </svg></a>`);
+
+        $pagination.html(html.join(""));
+      }
+
+      // Init
+      render(getPage());
+
+      // Events
+      $pagination.on("click", "a", function () {
+          const page = +$(this).data("p");
+          if (page) setPage(page);
+      });
+
+   });
+
+   </script>
+  <!-- pagination -->
+  
+
+<script>
+  $(function () {
+  const $rightRail = $('#find_groups_details_available_right_rail');
+  const CARD_GAP = 32; // px between cards
+
+  $('.find_groups_details_available_card').hover(
+    function () {
+      const index = $(this).index('.find_groups_details_available_card');
+
+      const translateY =
+        index === 0
+          ? 0
+          : `calc(${index * 100}% + ${index * CARD_GAP}px + ${index * 44}px)`;
+
+      $rightRail.css({
+        transform: `translateY(${translateY})`,
+        transition: 'transform 0.7s ease'
+      });
+    },
+    function () {
+      // Reset on mouse leave
+      $rightRail.css({
+        transform: 'translateY(0)'
+      });
+    }
+  );
+});
+
+</script>
 
 
 <?php require_once("find_groups_book_trail_lesson.php");?>
