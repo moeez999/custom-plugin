@@ -5,7 +5,7 @@ const START_H = 0,
   SLOT_MIN = 30;
 const SLOT_H =
   parseInt(
-    getComputedStyle(document.documentElement).getPropertyValue("--slot-h")
+    getComputedStyle(document.documentElement).getPropertyValue("--slot-h"),
   ) || 36;
 const PX_PER_MIN = SLOT_H / SLOT_MIN;
 const STACK_OFFSET = 18,
@@ -13,56 +13,46 @@ const STACK_OFFSET = 18,
 const REVEAL_FRONT =
   parseInt(
     getComputedStyle(document.documentElement).getPropertyValue(
-      "--reveal-front"
-    )
+      "--reveal-front",
+    ),
   ) || 12;
 const REVEAL_MID =
   parseInt(
-    getComputedStyle(document.documentElement).getPropertyValue("--reveal-mid")
+    getComputedStyle(document.documentElement).getPropertyValue("--reveal-mid"),
   ) || 8;
 
 let role = localStorage.getItem("role");
 let teacherId = localStorage.getItem("teacherId");
-// Helper function to get teacher color based on teacher ID (unlimited colors)
-function getTeacherColorIndex(teacherId) {
-  if (!teacherId) return 1;
-  // Use modulo 10 to map to predefined colors 1-10
-  return Math.abs(teacherId) % 10 || 10;
+
+// Helper function to get teacher color index based on teacher ID
+function getTeacherColorIndex(tid) {
+  if (
+    window.TeacherUtils &&
+    typeof window.TeacherUtils.getColorIndex === "function"
+  ) {
+    return window.TeacherUtils.getColorIndex(tid);
+  }
+  if (!tid) return 1;
+  const n = parseInt(tid, 10);
+  if (!n || Number.isNaN(n)) return 1;
+  const mod = Math.abs(n) % 10;
+  return mod === 0 ? 10 : mod;
 }
 
 // Helper function to generate unique vibrant color for any teacher ID
-function getTeacherColor(teacherId) {
-  if (!teacherId) return "#FF1744"; // Default vibrant red
-
-  // === Step-by-step reveal for PeerTalk and Conference modals ===
-  // Assumes: .cohort-column, .teacher-column, .student-column, .modal-next-btn selectors
-  function setupStepReveal(modalSelector) {
-    const $modal = $(modalSelector);
-    $modal.find(".student-column").hide();
-    $modal.find(".cohort-column, .teacher-column").show();
-    $modal
-      .find(".modal-next-btn")
-      .off("click")
-      .on("click", function () {
-        $modal.find(".student-column").slideDown();
-        $(this).prop("disabled", true); // Optionally disable after click
-      });
+function getTeacherColor(tid) {
+  if (
+    window.TeacherUtils &&
+    typeof window.TeacherUtils.getColor === "function"
+  ) {
+    return window.TeacherUtils.getColor(tid);
   }
-
-  // Call this after modal is opened/populated
-  // For PeerTalk modal:
-  setupStepReveal("#peerTalkModal");
-  // For Conference modal:
-  setupStepReveal("#conferenceModal");
-  // ...existing code...
-
-  // Generate unique hue based on teacher ID using golden angle for optimal color distribution
-  const hue = Math.round((Math.abs(teacherId) * 137.508) % 360); // Golden angle: 137.508°
-
-  // Maximum saturation and optimal lightness for ultra-vibrant colors
-  const saturation = 100; // Always 100% for maximum vibrancy
-  const lightness = 50; // Fixed at 50% for optimal brightness and color purity
-
+  if (!tid) return "#FF1744";
+  const n = parseInt(tid, 10);
+  if (!n || Number.isNaN(n)) return "#FF1744";
+  const hue = Math.round((Math.abs(n) * 137.508) % 360);
+  const saturation = 100;
+  const lightness = 50;
   return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
 }
 
@@ -101,113 +91,25 @@ function getActiveStatusMeta(statuses) {
 
 // Helper function to get history icon based on history type
 function getHistoryIcon(historyItem) {
-  if (!historyItem || !historyItem.type)
-    return { icon: "./img/ev-repeat.svg", label: "Updated" };
-
-  const type = String(historyItem.type).toLowerCase();
-
-  // Map history types to icons
-  const iconMap = {
-    rescheduled: { icon: "./img/makeup.svg", label: "Rescheduled" },
-    teacher_change: {
-      icon: "./img/single-lesson.svg",
-      label: "Teacher Changed",
-    },
-    time_change: { icon: "./img/ev-repeat.svg", label: "Time Changed" },
-    date_change: { icon: "./img/ev-repeat.svg", label: "Date Changed" },
-    cancelled: { icon: "./img/ev-repeat.svg", label: "Cancelled" },
-    completed: { icon: "./img/ev-repeat.svg", label: "Completed" },
-  };
-
-  return iconMap[type] || { icon: "./img/ev-repeat.svg", label: "Updated" };
+  if (
+    window.HistoryUtils &&
+    typeof window.HistoryUtils.getIcon === "function"
+  ) {
+    return window.HistoryUtils.getIcon(historyItem);
+  }
+  // Fallback minimal icon if utils not loaded
+  return { icon: "./img/ev-repeat.svg", label: "Updated" };
 }
 
 // Helper function to format history item description
 function formatHistoryDescription(historyItem) {
-  if (!historyItem) return "";
-
-  const parts = [];
-
-  // Add time change info
-  if (historyItem.time && historyItem.time.from && historyItem.time.to) {
-    // Format time change (e.g., "19:00 - 07:00" → "7:00 PM - 7:00 AM")
-    const fromTime = historyItem.time.from;
-    const toTime = historyItem.time.to;
-
-    // Parse time strings (format: "HH:MM - HH:MM" or "HH:MM")
-    let fromStr = fromTime;
-    let toStr = toTime;
-
-    // If time contains " - ", split it
-    if (fromTime.includes(" - ")) {
-      const timeParts = fromTime.split(" - ");
-      fromStr = timeParts[0] || "";
-      toStr = timeParts[1] || "";
-    }
-
-    // Convert to 12-hour format for display
-    if (fromStr && toStr) {
-      const fromMinutes = timeToMinutes(fromStr.trim());
-      const toMinutes = timeToMinutes(toStr.trim());
-      if (!isNaN(fromMinutes) && !isNaN(toMinutes)) {
-        parts.push(`Time: ${fmt12(fromMinutes)} → ${fmt12(toMinutes)}`);
-      } else {
-        parts.push(`Time: ${fromStr} → ${toStr}`);
-      }
-    } else {
-      parts.push(`Time: ${fromTime} → ${toTime}`);
-    }
+  if (
+    window.HistoryUtils &&
+    typeof window.HistoryUtils.formatDescription === "function"
+  ) {
+    return window.HistoryUtils.formatDescription(historyItem);
   }
-
-  // Add status change info
-  if (historyItem.status) {
-    if (
-      typeof historyItem.status === "object" &&
-      historyItem.status.from &&
-      historyItem.status.to
-    ) {
-      if (historyItem.status.from !== historyItem.status.to) {
-        parts.push(
-          `Status: ${historyItem.status.from} → ${historyItem.status.to}`
-        );
-      }
-    } else if (typeof historyItem.status === "string") {
-      parts.push(`Status: ${historyItem.status}`);
-    }
-  }
-
-  // Add date if available
-  if (historyItem.changedAt) {
-    try {
-      // Parse date string (format: "2026-01-13 09:09")
-      const dateStr = historyItem.changedAt;
-      const [datePart, timePart] = dateStr.split(" ");
-      if (datePart && timePart) {
-        const [year, month, day] = datePart.split("-");
-        const [hour, minute] = timePart.split(":");
-        const date = new Date(
-          parseInt(year),
-          parseInt(month) - 1,
-          parseInt(day),
-          parseInt(hour),
-          parseInt(minute)
-        );
-        const formattedDate = date.toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-        });
-        parts.push(formattedDate);
-      } else {
-        parts.push(dateStr);
-      }
-    } catch (e) {
-      parts.push(historyItem.changedAt);
-    }
-  }
-
-  return parts.join(" • ") || "Updated";
+  return "";
 }
 
 window.events = [];
@@ -291,7 +193,7 @@ $(function () {
       setTimeout(() => {
         const teacherIdInt = parseInt(savedTeacherId, 10);
         const $teacherItem = $("#teacher1DropdownList").find(
-          `.teacher-option[data-userid="${teacherIdInt}"]`
+          `.teacher-option[data-userid="${teacherIdInt}"]`,
         );
         if ($teacherItem.length) {
           console.log("Auto-selecting teacher in create cohort:", teacherIdInt);
@@ -315,12 +217,12 @@ $(function () {
       if (tabId === "classTabContent") {
         // 1:1 Class tab uses calendar_admin_details_create_cohort_class_tab_item
         $teacherItem = $(`#${tabId}`).find(
-          `.calendar_admin_details_create_cohort_class_tab_item[data-userid="${teacherIdInt}"]`
+          `.calendar_admin_details_create_cohort_class_tab_item[data-userid="${teacherIdInt}"]`,
         );
       } else if (tabId === "manageclassTabContent") {
         // Manage Class tab uses calendar_admin_details_create_cohort_manage_class_tab_item
         $teacherItem = $(`#${tabId}`).find(
-          `.calendar_admin_details_create_cohort_manage_class_tab_item[data-userid="${teacherIdInt}"]`
+          `.calendar_admin_details_create_cohort_manage_class_tab_item[data-userid="${teacherIdInt}"]`,
         );
       } else if (
         tabId === "addTimeTabContent" ||
@@ -328,7 +230,7 @@ $(function () {
       ) {
         // Add time tabs use addtime-teacher-item
         $teacherItem = $(`#${tabId}`).find(
-          `.addtime-teacher-item[data-userid="${teacherIdInt}"]`
+          `.addtime-teacher-item[data-userid="${teacherIdInt}"]`,
         );
       }
 
@@ -354,7 +256,7 @@ $(function () {
       } else if (tabName === "class") {
         autoSelectTeacherInTab("classTabContent");
       }
-    }
+    },
   );
 
   // Check if coming back from setup availability page and auto-select teacher
@@ -364,7 +266,7 @@ $(function () {
       sessionStorage.removeItem("autoSelectTeacher");
       // Trigger auto-select for the teacher dropdown
       const $teacherOption = $(
-        `#teacher1DropdownList li.teacher-option[data-userid="${autoSelectTeacherId}"]`
+        `#teacher1DropdownList li.teacher-option[data-userid="${autoSelectTeacherId}"]`,
       );
       if ($teacherOption.length) {
         setTimeout(() => {
@@ -389,7 +291,7 @@ $(function () {
       });
 
       console.log(
-        `Found ${recurrenceEvents.length} peertalk events with eventid ${eventData.eventid}`
+        `Found ${recurrenceEvents.length} peertalk events with eventid ${eventData.eventid}`,
       );
     }
 
@@ -470,13 +372,13 @@ $(function () {
         // Click each cohort item to trigger the existing selection logic
         eventData.cohortids.forEach(function (cohortId) {
           const $cohortItem = $(
-            `#peertalkCohortsList li.peertalk_cohort_item[data-id="${cohortId}"]`
+            `#peertalkCohortsList li.peertalk_cohort_item[data-id="${cohortId}"]`,
           );
           if ($cohortItem.length > 0) {
             console.log(
               "Clicking cohort:",
               cohortId,
-              $cohortItem.text().trim()
+              $cohortItem.text().trim(),
             );
             $cohortItem.trigger("click");
           }
@@ -490,13 +392,13 @@ $(function () {
       setTimeout(function () {
         // Click the teacher item to trigger the existing selection logic
         const $teacherItem = $(
-          `#peertalkTeachersList li.peertalk_teacher_item[data-userid="${eventData.teacherId}"]`
+          `#peertalkTeachersList li.peertalk_teacher_item[data-userid="${eventData.teacherId}"]`,
         );
         if ($teacherItem.length > 0) {
           console.log(
             "Clicking teacher:",
             eventData.teacherId,
-            $teacherItem.find(".teacher_name").text().trim()
+            $teacherItem.find(".teacher_name").text().trim(),
           );
           $teacherItem.trigger("click");
         }
@@ -513,7 +415,7 @@ $(function () {
         "Event times - Start:",
         eventData.start,
         "End:",
-        eventData.end
+        eventData.end,
       );
       // These are already in minutes since midnight, so we can use them directly
       // Note: The calendar might have already converted them, so we check the type
@@ -530,7 +432,7 @@ $(function () {
         "Converted times - Start mins:",
         startMins,
         "End mins:",
-        endMins
+        endMins,
       );
     }
 
@@ -597,7 +499,7 @@ $(function () {
             ev.end
           } (type: ${typeof ev.end}), start_ts: ${ev.start_ts}, end_ts: ${
             ev.end_ts
-          }`
+          }`,
         );
 
         // Check if start/end are already in HH:MM format (string)
@@ -683,7 +585,7 @@ $(function () {
           const period = hours >= 12 ? "PM" : "AM";
           const hours12 = hours % 12 || 12;
           return `${String(hours12).padStart(2, "0")}:${String(
-            minutes
+            minutes,
           ).padStart(2, "0")} ${period}`;
         }
 
@@ -710,7 +612,7 @@ $(function () {
 
         // Update button HTML while preserving the arrow
         $repeatBtn.html(
-          repeatText + '<span style="float:right; font-size:1rem;">▼</span>'
+          repeatText + '<span style="float:right; font-size:1rem;">▼</span>',
         );
 
         console.log("Updated repeat button to:", repeatText);
@@ -767,7 +669,7 @@ $(function () {
     ) {
       console.log(
         "Populating custom recurrence modal with:",
-        window.peerTalkRecurrenceData
+        window.peerTalkRecurrenceData,
       );
 
       // Open the custom recurrence modal
@@ -883,7 +785,7 @@ $(function () {
         let $timeContainer = $widget.find(".scroll-widget__time");
         if ($timeContainer.length === 0) {
           $timeContainer = $(
-            '<div class="scroll-widget__time has-time"></div>'
+            '<div class="scroll-widget__time has-time"></div>',
           );
           $widget.find(".scroll-widget__divider").after($timeContainer);
         } else {
@@ -934,7 +836,7 @@ $(function () {
     $("#customrec_occ_val").text(`${recurrenceArray.length} occurrences`);
 
     console.log(
-      `Populated custom recurrence modal with ${recurrenceArray.length} occurrences`
+      `Populated custom recurrence modal with ${recurrenceArray.length} occurrences`,
     );
   }
 
@@ -956,7 +858,7 @@ $(function () {
       });
 
       console.log(
-        `Found ${recurrenceEvents.length} conference events with eventid ${eventData.eventid}`
+        `Found ${recurrenceEvents.length} conference events with eventid ${eventData.eventid}`,
       );
     }
 
@@ -1046,13 +948,13 @@ $(function () {
         eventData.cohortids.forEach(function (cohortId, index) {
           setTimeout(function () {
             const $cohortItem = $(
-              `#conferenceCohortsList li.conference_cohort_item[data-id="${cohortId}"]`
+              `#conferenceCohortsList li.conference_cohort_item[data-id="${cohortId}"]`,
             );
             if ($cohortItem.length > 0) {
               console.log(
                 "Clicking conference cohort:",
                 cohortId,
-                $cohortItem.text().trim()
+                $cohortItem.text().trim(),
               );
               $cohortItem.trigger("click");
             } else {
@@ -1072,13 +974,13 @@ $(function () {
         eventData.studentids.forEach(function (studentId, index) {
           setTimeout(function () {
             const $studentItem = $(
-              `#conferenceStudentsList li.conference_student_item[data-userid="${studentId}"]`
+              `#conferenceStudentsList li.conference_student_item[data-userid="${studentId}"]`,
             );
             if ($studentItem.length > 0) {
               console.log(
                 "Clicking conference student:",
                 studentId,
-                $studentItem.text().trim()
+                $studentItem.text().trim(),
               );
               $studentItem.trigger("click");
             } else {
@@ -1096,24 +998,24 @@ $(function () {
       setTimeout(function () {
         // Try both teacher lists (view 1 and view 2)
         const $teacherItem1 = $(
-          `#conferenceTeachersList li.conference_teacher_item[data-id="${eventData.teacherId}"]`
+          `#conferenceTeachersList li.conference_teacher_item[data-id="${eventData.teacherId}"]`,
         );
         const $teacherItem2 = $(
-          `#conferenceTeachersList2 li.conference_teacher_item[data-id="${eventData.teacherId}"]`
+          `#conferenceTeachersList2 li.conference_teacher_item[data-id="${eventData.teacherId}"]`,
         );
 
         if ($teacherItem1.length > 0) {
           console.log(
             "Clicking conference teacher (view 1):",
             eventData.teacherId,
-            $teacherItem1.text().trim()
+            $teacherItem1.text().trim(),
           );
           $teacherItem1.trigger("click");
         } else if ($teacherItem2.length > 0) {
           console.log(
             "Clicking conference teacher (view 2):",
             eventData.teacherId,
-            $teacherItem2.text().trim()
+            $teacherItem2.text().trim(),
           );
           $teacherItem2.trigger("click");
         } else {
@@ -1137,7 +1039,7 @@ $(function () {
         "Converted times - Start mins:",
         startMins,
         "End mins:",
-        endMins
+        endMins,
       );
     }
 
@@ -1163,7 +1065,7 @@ $(function () {
     // Populate timezone if available
     if (eventData.timezone) {
       const $timezoneSelected = $(
-        "#eventTimezoneDropdown_conference_tab_selected"
+        "#eventTimezoneDropdown_conference_tab_selected",
       );
       if ($timezoneSelected.length > 0) {
         $timezoneSelected.text(eventData.timezone);
@@ -1192,7 +1094,7 @@ $(function () {
 
       console.log(
         "Custom recurrence array for conference:",
-        customRecurrenceArray
+        customRecurrenceArray,
       );
       // Store for later use if needed
       window.conferenceRecurrenceData = customRecurrenceArray;
@@ -1285,13 +1187,13 @@ $(function () {
           "source:",
           source,
           "Full event:",
-          currentClickedEvent
+          currentClickedEvent,
         );
 
         // Mark teacher-changed reschedules (use the clicked event context)
         const statusWithDetails = Array.isArray(currentClickedEvent.statuses)
           ? currentClickedEvent.statuses.find(
-              (s) => s.details && (s.details.current || s.details.previous)
+              (s) => s.details && (s.details.current || s.details.previous),
             )
           : null;
 
@@ -1333,16 +1235,6 @@ $(function () {
             summaryPrevious?.teacher_pic ||
             null;
 
-          // When teacher changed, swap the images:
-          // - Previous (Teacher A) shows new teacher (Teacher B) image
-          // - Current (Teacher B) shows previous teacher (Teacher A) image
-          if (teacherChanged) {
-            // Swap: previous gets new teacher image, current gets previous teacher image
-            const tempPic = currentPic;
-            currentPic = previousPic; // Current (Teacher B) shows previous teacher (Teacher A) image
-            previousPic = tempPic; // Previous (Teacher A) shows new teacher (Teacher B) image
-          }
-
           if (currentClickedEvent.summary?.current && currentPic) {
             if (!currentClickedEvent.summary.current.teacher) {
               currentClickedEvent.summary.current.teacher = {};
@@ -1368,13 +1260,13 @@ $(function () {
 
         // Check if event is cancelled (cancel or cancel_no_makeup) - show reason modal
         const activeStatus = getActiveStatusMeta(
-          currentClickedEvent.statuses || []
+          currentClickedEvent.statuses || [],
         );
         console.log(
           "Active status for clicked event:",
           activeStatus,
           "Statuses:",
-          currentClickedEvent.statuses
+          currentClickedEvent.statuses,
         );
 
         if (
@@ -1384,7 +1276,7 @@ $(function () {
         ) {
           console.log(
             "Opening Reason of Cancellation modal for cancelled event",
-            currentClickedEvent
+            currentClickedEvent,
           );
           if (typeof window.openReasonOfCancellationModal === "function") {
             window.openReasonOfCancellationModal(currentClickedEvent);
@@ -1404,7 +1296,7 @@ $(function () {
         else if (classType === "conference" || source === "conference") {
           console.log(
             "Opening conference modal for event:",
-            currentClickedEvent
+            currentClickedEvent,
           );
           // Open conference modal with event data
           openConferenceModalWithData(currentClickedEvent);
@@ -1430,7 +1322,7 @@ $(function () {
     if (!dropdown || !menuContainer) return;
 
     const activeStatus = getActiveStatusMeta(
-      (currentClickedEvent && currentClickedEvent.statuses) || []
+      (currentClickedEvent && currentClickedEvent.statuses) || [],
     );
     const isCancelRescheduleLater =
       activeStatus && activeStatus.code === "cancel_reschedule_later";
@@ -1454,7 +1346,7 @@ $(function () {
 
     // Build / toggle the dedicated panel for make-up vs no-make-up actions
     let crlPanel = menuContainer.querySelector(
-      ".cancel-reschedule-later-panel"
+      ".cancel-reschedule-later-panel",
     );
 
     if (!crlPanel) {
@@ -1659,7 +1551,7 @@ $(function () {
       // Wait for modal to fully load, then select teacher from first teacher dropdown
       setTimeout(() => {
         const $teacherItem = $("#teacher1DropdownList").find(
-          `.teacher-option[data-userid="${teacherIdToSelect}"]`
+          `.teacher-option[data-userid="${teacherIdToSelect}"]`,
         );
         if ($teacherItem.length) {
           console.log("Found teacher in dropdown:", $teacherItem.text().trim());
@@ -1668,7 +1560,7 @@ $(function () {
         } else {
           console.warn(
             "Teacher not found in teacher1DropdownList:",
-            teacherIdToSelect
+            teacherIdToSelect,
           );
         }
       }, 200);
@@ -1681,7 +1573,7 @@ $(function () {
         "Event time:",
         fmt12(eventData.start),
         "-",
-        fmt12(eventData.end)
+        fmt12(eventData.end),
       );
     }
 
@@ -1887,7 +1779,7 @@ $(function () {
       });
     } else {
       $cohortList.append(
-        '<li style="pointer-events:none;opacity:.6;">No cohorts found</li>'
+        '<li style="pointer-events:none;opacity:.6;">No cohorts found</li>',
       );
     }
 
@@ -1908,7 +1800,6 @@ $(function () {
     let selectedTeacherName = "";
 
     if (teacherListItems.length > 0) {
-      debugger;
       teacherListItems.each(function () {
         const teacherId = $(this).data("userid");
         const teacherName = $(this).data("name");
@@ -1939,7 +1830,7 @@ $(function () {
       });
     } else {
       $teacherList.append(
-        '<li style="pointer-events:none;opacity:.6;">No teachers found</li>'
+        '<li style="pointer-events:none;opacity:.6;">No teachers found</li>',
       );
     }
 
@@ -2042,7 +1933,7 @@ $(function () {
       console.log("Selected student:", selectedStudentId, selectedStudentName);
     } else {
       $studentList.append(
-        '<li style="pointer-events:none;opacity:.6;">No students available</li>'
+        '<li style="pointer-events:none;opacity:.6;">No students available</li>',
       );
       $studentBtn.text("Select Student");
     }
@@ -2075,7 +1966,7 @@ $(function () {
       eventData.googlemeetid,
       ", classType:",
       eventData.classType,
-      ")"
+      ")",
     );
 
     // === 6. Set Event Date (format like manage cohort: "Feb 4, 2025") ===
@@ -2310,7 +2201,7 @@ $(function () {
         selectedDate = new Date(
           parseInt(parts[0]),
           parseInt(parts[1]) - 1,
-          parseInt(parts[2])
+          parseInt(parts[2]),
         );
       }
     }
@@ -2725,7 +2616,7 @@ $(function () {
         if (window.showToast) {
           window.showToast(
             "Something went wrong while updating session.",
-            "error"
+            "error",
           );
         } else {
           let toast = document.createElement("div");
@@ -2782,7 +2673,7 @@ $(function () {
     const roundedMinutes = Math.round(newStartMinutes / SLOT_MIN) * SLOT_MIN;
     return Math.max(
       START_H * 60,
-      Math.min(END_H * 60 - SLOT_MIN, roundedMinutes)
+      Math.min(END_H * 60 - SLOT_MIN, roundedMinutes),
     );
   }
 
@@ -2937,7 +2828,7 @@ $(function () {
           if (window.showToast) {
             window.showToast(
               "Cannot drag this event: missing student or teacher ID",
-              "error"
+              "error",
             );
           }
           return;
@@ -2953,51 +2844,58 @@ $(function () {
           normalizedNewDate = normalizedNewDate.split("T")[0];
         }
 
-        // Determine what changed
-        const dateChanged = normalizedNewDate !== normalizedOldDate;
-        const timeChanged = newStartMinutes !== oldStartMinutes;
+        // Build payload via centralized 1:1 API helper (fallback to inline if missing)
+        if (
+          window.One2OneApi &&
+          typeof window.One2OneApi.buildRescheduleFromDrag === "function"
+        ) {
+          payload = window.One2OneApi.buildRescheduleFromDrag({
+            eventId: parseInt(eventId, 10),
+            googlemeetid: parseInt(googlemeetId || $event.data("cm-id"), 10),
+            oldDate: normalizedOldDate,
+            newDate: normalizedNewDate,
+            oldStartMinutes,
+            oldEndMinutes: originalEventEnd,
+            newStartMinutes,
+            newEndMinutes,
+          });
+        } else {
+          const dateChanged = normalizedNewDate !== normalizedOldDate;
+          const timeChanged = newStartMinutes !== oldStartMinutes;
 
-        // Build payload according to update_one_on_one.php format
-        payload = {
-          scope: "THIS_OCCURRENCE",
-          eventId: parseInt(eventId),
-          googlemeetid: parseInt(googlemeetId || $event.data("cm-id")),
-          apply: {
-            time: timeChanged,
-            teacher: false,
-            status: false,
-            days: false,
-            period: false,
-            end: false,
-            date: dateChanged,
-          },
-        };
-
-        // Add anchorDate if date changed (original date in YYYY-MM-DD format)
-        if (dateChanged && normalizedOldDate) {
-          payload.anchorDate = normalizedOldDate;
-        }
-
-        // Add time data if time changed
-        // The API supports both current.start/end and time.start/end formats
-        // We'll use time.start/end as fallback (API will use it if current is empty)
-        if (timeChanged) {
-          payload.time = {
-            start: newStartTime,
-            end: newEndTime,
+          payload = {
+            scope: "THIS_OCCURRENCE",
+            eventId: parseInt(eventId, 10),
+            googlemeetid: parseInt(googlemeetId || $event.data("cm-id"), 10),
+            apply: {
+              time: timeChanged,
+              teacher: false,
+              status: false,
+              days: false,
+              period: false,
+              end: false,
+              date: dateChanged,
+            },
           };
-          // Also provide current object for explicit time change
-          payload.current = {
-            start: newStartTime,
-            end: newEndTime,
-          };
-        }
 
-        // Add date data if date changed (in YYYY-MM-DD format)
-        if (dateChanged && normalizedNewDate) {
-          payload.date = {
-            new: normalizedNewDate,
-          };
+          if (dateChanged && normalizedOldDate) {
+            payload.anchorDate = normalizedOldDate;
+          }
+
+          if (timeChanged) {
+            payload.time = {
+              start: newStartTime,
+              end: newEndTime,
+            };
+            payload.current = {
+              start: newStartTime,
+              end: newEndTime,
+            };
+          }
+
+          if (dateChanged && normalizedNewDate) {
+            payload.date = { new: normalizedNewDate };
+          }
         }
 
         console.log("📦 Drag-and-drop payload for 1:1 event:", {
@@ -3021,7 +2919,7 @@ $(function () {
           if (window.showToast) {
             window.showToast(
               "Cannot drag this event: missing Google Meet ID",
-              "error"
+              "error",
             );
           }
           return;
@@ -3247,7 +3145,7 @@ $(function () {
       // Only remove highlight if clicking backdrop or close button, not modal content
       if (
         $(e.target).is(
-          "#calendar_admin_details_create_cohort_modal_backdrop"
+          "#calendar_admin_details_create_cohort_modal_backdrop",
         ) ||
         $(e.target).closest(".modal-close").length
       ) {
@@ -3255,7 +3153,7 @@ $(function () {
         window._lastCohortSlot = null;
         window._lastCohortSlotInfo = null;
       }
-    }
+    },
   );
 
   // First render
@@ -3592,26 +3490,27 @@ $(function () {
           ePrev.isFadedReschedule = true; // Mark as faded
           ePrev.isReschedulePrevious = true;
 
-          // When teacher changed: previous event (Teacher A) shows NEW teacher (Teacher B) image
-          if (teacherChanged && currTeacherPic) {
-            ePrev.avatar = currTeacherPic;
-            // Update summary/rescheduled data to reflect swapped image
-            if (ePrev.summary && ePrev.summary.previous) {
-              ePrev.summary.previous.teacher_pic = ePrev.avatar;
-              ePrev.summary.previous.teacherpic = ePrev.avatar;
-              if (ePrev.summary.previous.teacher) {
-                ePrev.summary.previous.teacher.avatar = ePrev.avatar;
-              }
-            }
-            if (ePrev.rescheduled && ePrev.rescheduled.previous) {
-              ePrev.rescheduled.previous.teacher_pic = ePrev.avatar;
-              ePrev.rescheduled.previous.teacherpic = ePrev.avatar;
-            }
-          } else {
-            // No teacher change, use previous teacher's image
+          // When teacher changed, previous event keeps previous teacher image
+          if (teacherChanged) {
             if (prevTeacherPic) {
               ePrev.avatar = prevTeacherPic;
+              if (ePrev.summary && ePrev.summary.previous) {
+                ePrev.summary.previous.teacher_pic = ePrev.avatar;
+                ePrev.summary.previous.teacherpic = ePrev.avatar;
+                if (ePrev.summary.previous.teacher) {
+                  ePrev.summary.previous.teacher.avatar = ePrev.avatar;
+                }
+              }
+              if (ePrev.rescheduled && ePrev.rescheduled.previous) {
+                ePrev.rescheduled.previous.teacher_pic = ePrev.avatar;
+                ePrev.rescheduled.previous.teacherpic = ePrev.avatar;
+              }
+            } else if (!ePrev.avatar && currTeacherPic) {
+              ePrev.avatar = currTeacherPic;
             }
+          } else if (prevTeacherPic) {
+            // No teacher change, use previous teacher's image
+            ePrev.avatar = prevTeacherPic;
           }
 
           // Handle midnight-crossing for previous event
@@ -3655,27 +3554,31 @@ $(function () {
                 eCurr.avatar = currTeacherPic;
               }
 
-              // When teacher changed: current event (Teacher B) shows PREVIOUS teacher (Teacher A) image
-              if (prevTeacherPic) {
-                // Ensure current teacher's avatar is set in summary before swapping
-                if (currTeacherPic && eCurr.summary && eCurr.summary.current) {
-                  if (!eCurr.summary.current.teacher) {
-                    eCurr.summary.current.teacher = {};
-                  }
-                  if (!eCurr.summary.current.teacher.avatar) {
-                    eCurr.summary.current.teacher.avatar = currTeacherPic;
-                  }
+              // When teacher changed, current event keeps current teacher image
+              if (currTeacherPic && eCurr.summary && eCurr.summary.current) {
+                if (!eCurr.summary.current.teacher) {
+                  eCurr.summary.current.teacher = {};
                 }
-
-                eCurr.avatar = prevTeacherPic;
-                // Update summary/rescheduled data to reflect swapped image
-                if (eCurr.summary && eCurr.summary.current) {
-                  eCurr.summary.current.teacher_pic = prevTeacherPic;
-                  eCurr.summary.current.teacherpic = prevTeacherPic;
+                if (!eCurr.summary.current.teacher.avatar) {
+                  eCurr.summary.current.teacher.avatar = currTeacherPic;
                 }
-                if (eCurr.rescheduled && eCurr.rescheduled.current) {
-                  eCurr.rescheduled.current.teacher_pic = prevTeacherPic;
-                  eCurr.rescheduled.current.teacherpic = prevTeacherPic;
+                if (!eCurr.summary.current.teacher_pic) {
+                  eCurr.summary.current.teacher_pic = currTeacherPic;
+                }
+                if (!eCurr.summary.current.teacherpic) {
+                  eCurr.summary.current.teacherpic = currTeacherPic;
+                }
+              }
+              if (
+                currTeacherPic &&
+                eCurr.rescheduled &&
+                eCurr.rescheduled.current
+              ) {
+                if (!eCurr.rescheduled.current.teacher_pic) {
+                  eCurr.rescheduled.current.teacher_pic = currTeacherPic;
+                }
+                if (!eCurr.rescheduled.current.teacherpic) {
+                  eCurr.rescheduled.current.teacherpic = currTeacherPic;
                 }
               }
             }
@@ -3801,7 +3704,7 @@ $(function () {
 
           const overlapping = perDay[di]
             .filter(
-              (other) => !(other.end <= ev.start || other.start >= ev.end)
+              (other) => !(other.end <= ev.start || other.start >= ev.end),
             )
             .sort((a, b) => a.start - b.start || a.end - b.end);
 
@@ -3924,7 +3827,7 @@ $(function () {
                 right: "6px",
                 zIndex: 2,
               },
-              currentWeekStart
+              currentWeekStart,
             );
           } catch (e) {
             console.warn("EventIconUtils.renderStatusIcons error:", e);
@@ -3971,55 +3874,57 @@ $(function () {
           <div class="event ${
             ev.color || "e-blue"
           } ${teacherColorClass} ${classTypeClass}${
-          ev.isMidnightCrossing ? " midnight-crossing" : ""
-        }${isShortEvent ? " short-event" : ""}${fadedClass}${
-          isDraggable ? " draggable-event" : ""
-        }" style="${combinedStyle}${fadedStyle}${
-          isDraggable ? " cursor: move;" : ""
-        }" data-start="${ev.start}" data-end="${ev.end}" data-date="${
-          ev.date || ""
-        }" data-event-date="${ev.date || ""}" data-title="${(
-          ev.title || ""
-        ).replace(/"/g, "&quot;")}" ${
-          ev.teacherId ? `data-teacher-id="${ev.teacherId}"` : ""
-        }${ev.pairedId ? ` data-paired-id="${ev.pairedId}"` : ""}${
-          ev.part ? ` data-part="${ev.part}"` : ""
-        }${
-          ev.studentids &&
-          (Array.isArray(ev.studentids)
-            ? ev.studentids.length > 0
-            : ev.studentids)
-            ? ` data-student-ids="${
-                Array.isArray(ev.studentids)
-                  ? ev.studentids.join(",")
-                  : ev.studentids
-              }"`
-            : ""
-        }${
-          ev.studentnames &&
-          (Array.isArray(ev.studentnames)
-            ? ev.studentnames.length > 0
-            : ev.studentnames)
-            ? ` data-student-names="${
-                Array.isArray(ev.studentnames)
-                  ? ev.studentnames.join(",")
-                  : ev.studentnames
-              }"`
-            : ""
-        }${ev.avatar ? ` data-avatar="${ev.avatar}"` : ""}${
-          ev.cohortids &&
-          (Array.isArray(ev.cohortids) ? ev.cohortids.length > 0 : ev.cohortids)
-            ? ` data-cohort-ids="${
-                Array.isArray(ev.cohortids)
-                  ? ev.cohortids.join(",")
-                  : ev.cohortids
-              }"`
-            : ""
-        }${ev.eventid ? ` data-event-id="${ev.eventid}"` : ""}${
-          ev.cmid ? ` data-cm-id="${ev.cmid}"` : ""
-        }${ev.googlemeetid ? ` data-googlemeet-id="${ev.googlemeetid}"` : ""}${
-          ev.classType ? ` data-class-type="${ev.classType}"` : ""
-        }${ev.source ? ` data-source="${ev.source}"` : ""}
+            ev.isMidnightCrossing ? " midnight-crossing" : ""
+          }${isShortEvent ? " short-event" : ""}${fadedClass}${
+            isDraggable ? " draggable-event" : ""
+          }" style="${combinedStyle}${fadedStyle}${
+            isDraggable ? " cursor: move;" : ""
+          }" data-start="${ev.start}" data-end="${ev.end}" data-date="${
+            ev.date || ""
+          }" data-event-date="${ev.date || ""}" data-title="${(
+            ev.title || ""
+          ).replace(/"/g, "&quot;")}" ${
+            ev.teacherId ? `data-teacher-id="${ev.teacherId}"` : ""
+          }${ev.pairedId ? ` data-paired-id="${ev.pairedId}"` : ""}${
+            ev.part ? ` data-part="${ev.part}"` : ""
+          }${
+            ev.studentids &&
+            (Array.isArray(ev.studentids)
+              ? ev.studentids.length > 0
+              : ev.studentids)
+              ? ` data-student-ids="${
+                  Array.isArray(ev.studentids)
+                    ? ev.studentids.join(",")
+                    : ev.studentids
+                }"`
+              : ""
+          }${
+            ev.studentnames &&
+            (Array.isArray(ev.studentnames)
+              ? ev.studentnames.length > 0
+              : ev.studentnames)
+              ? ` data-student-names="${
+                  Array.isArray(ev.studentnames)
+                    ? ev.studentnames.join(",")
+                    : ev.studentnames
+                }"`
+              : ""
+          }${ev.avatar ? ` data-avatar="${ev.avatar}"` : ""}${
+            ev.cohortids &&
+            (Array.isArray(ev.cohortids)
+              ? ev.cohortids.length > 0
+              : ev.cohortids)
+              ? ` data-cohort-ids="${
+                  Array.isArray(ev.cohortids)
+                    ? ev.cohortids.join(",")
+                    : ev.cohortids
+                }"`
+              : ""
+          }${ev.eventid ? ` data-event-id="${ev.eventid}"` : ""}${
+            ev.cmid ? ` data-cm-id="${ev.cmid}"` : ""
+          }${ev.googlemeetid ? ` data-googlemeet-id="${ev.googlemeetid}"` : ""}${
+            ev.classType ? ` data-class-type="${ev.classType}"` : ""
+          }${ev.source ? ` data-source="${ev.source}"` : ""}
         ${ev.repeat !== undefined ? ` data-repeat="${ev.repeat}"` : ""}${
           statusMeta ? ` data-status-code="${statusMeta.code}"` : ""
         }${isDraggable ? ` draggable="true"` : ""}>
@@ -4034,23 +3939,23 @@ $(function () {
                     ev.classType === "one2one_single"
                       ? `<span class=\"ev-single\" title=\"Single Session\"><img src=\"./img/single-lesson.svg\" alt=\"\"></span>`
                       : isTimeOffEvent
-                      ? ""
-                      : ev.isRescheduleCurrent && !ev.isTeacherChanged
-                      ? `<span class=\"ev-makeup\" title=\"Make-up Class\"><img src=\"./img/makeup.svg\" alt=\"\"></span>`
-                      : `<span class=\"ev-repeat\" title=\"Repeats\"><img src=\"./img/ev-repeat.svg\" alt=\"\"></span>`
+                        ? ""
+                        : ev.isRescheduleCurrent && !ev.isTeacherChanged
+                          ? `<span class=\"ev-makeup\" title=\"Make-up Class\"><img src=\"./img/makeup.svg\" alt=\"\"></span>`
+                          : `<span class=\"ev-repeat\" title=\"Repeats\"><img src=\"./img/ev-repeat.svg\" alt=\"\"></span>`
                   }
                   <span>${fmt12(
                     typeof ev.start === "string"
                       ? minutes(ev.start)
                       : typeof ev.start === "number"
-                      ? ev.start
-                      : 0
+                        ? ev.start
+                        : 0,
                   )} – ${fmt12(
                     typeof ev.end === "string"
                       ? minutes(ev.end)
                       : typeof ev.end === "number"
-                      ? ev.end
-                      : 0
+                        ? ev.end
+                        : 0,
                   )}</span>
                   ${statusIconHtml}
                   ${
@@ -4095,15 +4000,15 @@ $(function () {
                             isTimeOffEvent
                               ? ""
                               : ev.isRescheduleCurrent &&
-                                !ev.isTeacherChanged &&
-                                ev.repeat
-                              ? `<span class=\"ev-repeat\" title=\"Repeats\"><img src=\"./img/ev-repeat.svg\" alt=\"\"></span><span class=\"ev-makeup\" title=\"Make-up Class\"><img src=\"./img/makeup.svg\" alt=\"\"></span>`
-                              : ev.isRescheduleCurrent && !ev.isTeacherChanged
-                              ? `<span class=\"ev-makeup\" title=\"Make-up Class\"><img src=\"./img/makeup.svg\" alt=\"\"></span>`
-                              : ev.classType === "one2one_weekly" ||
-                                ev.classType === "one2one_single"
-                              ? `<span class=\"ev-single\" title=\"Single Session\"><img src=\"./img/single-lesson.svg\" alt=\"\"></span>`
-                              : `<span class=\"ev-repeat\" title=\"Repeats\"><img src=\"./img/ev-repeat.svg\" alt=\"\"></span>`
+                                  !ev.isTeacherChanged &&
+                                  ev.repeat
+                                ? `<span class=\"ev-repeat\" title=\"Repeats\"><img src=\"./img/ev-repeat.svg\" alt=\"\"></span><span class=\"ev-makeup\" title=\"Make-up Class\"><img src=\"./img/makeup.svg\" alt=\"\"></span>`
+                                : ev.isRescheduleCurrent && !ev.isTeacherChanged
+                                  ? `<span class=\"ev-makeup\" title=\"Make-up Class\"><img src=\"./img/makeup.svg\" alt=\"\"></span>`
+                                  : ev.classType === "one2one_weekly" ||
+                                      ev.classType === "one2one_single"
+                                    ? `<span class=\"ev-single\" title=\"Single Session\"><img src=\"./img/single-lesson.svg\" alt=\"\"></span>`
+                                    : `<span class=\"ev-repeat\" title=\"Repeats\"><img src=\"./img/ev-repeat.svg\" alt=\"\"></span>`
                           }
                           ${
                             ev.isMidnightCrossing
@@ -4134,17 +4039,17 @@ $(function () {
                             ? typeof ev.start === "string"
                               ? minutes(ev.start)
                               : typeof ev.start === "number"
-                              ? ev.start
-                              : 0
-                            : 0
+                                ? ev.start
+                                : 0
+                            : 0,
                         )} – ${fmt12(
                           ev.end
                             ? typeof ev.end === "string"
                               ? minutes(ev.end)
                               : typeof ev.end === "number"
-                              ? ev.end
-                              : 0
-                            : 0
+                                ? ev.end
+                                : 0
+                            : 0,
                         )}</div>`
                       : ""
                   }
@@ -4264,8 +4169,8 @@ $(function () {
                   ev.classType === "one2one_single"
                     ? '<span class="tooltip-badge">1:1 Class</span>'
                     : ev.classType === "tutoring"
-                    ? '<span class="tooltip-badge">Tutoring</span>'
-                    : '<span class="tooltip-badge">Main Class</span>'
+                      ? '<span class="tooltip-badge">Tutoring</span>'
+                      : '<span class="tooltip-badge">Main Class</span>'
                 }
               </div>
             </div>
@@ -4305,7 +4210,7 @@ $(function () {
             });
           });
         }
-        debugger;
+
         // Add hover tooltip for teacher change icon
         // Updated selector: data attributes are now on inner span, not on .ev-status-icon
         const teacherChangeIcon = $ev.find("[data-teacher-pic]");
@@ -4315,10 +4220,10 @@ $(function () {
               <div class="notification-content">
                 <h3 class="notification-title">Session Reassigned</h3>
                 <p class="notification-body">This session has been reassigned from <strong>${teacherChangeIcon.attr(
-                  "data-prev-teacher"
+                  "data-prev-teacher",
                 )}</strong> to <strong>${teacherChangeIcon.attr(
-            "data-new-teacher"
-          )}</strong></p>
+                  "data-new-teacher",
+                )}</strong></p>
               </div>
               <svg class="notification-arrow" width="18" height="12" viewBox="0 0 18 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M9 12L0 0H18L9 12Z" fill="#121117"/>
@@ -4378,7 +4283,7 @@ $(function () {
             ".teacher-change-tooltip-card",
             function () {
               $teacherTooltip.stop(true, true).fadeIn(200);
-            }
+            },
           );
 
           $(document).on(
@@ -4388,7 +4293,7 @@ $(function () {
               $teacherTooltip.fadeOut(200, function () {
                 $teacherTooltip.remove();
               });
-            }
+            },
           );
         }
 
@@ -4407,10 +4312,10 @@ $(function () {
                 <p class="notification-body">Old timing : ${fmt12(
                   typeof prevStart === "string"
                     ? minutes(prevStart)
-                    : prevStart || 0
+                    : prevStart || 0,
                 )} – ${fmt12(
-            typeof prevEnd === "string" ? minutes(prevEnd) : prevEnd || 0
-          )}<br>New timing : ${fmt12(ev.start)} – ${fmt12(ev.end)}</p>
+                  typeof prevEnd === "string" ? minutes(prevEnd) : prevEnd || 0,
+                )}<br>New timing : ${fmt12(ev.start)} – ${fmt12(ev.end)}</p>
               </div>
               <svg class="notification-arrow" width="18" height="12" viewBox="0 0 18 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M9 12L0 0H18L9 12Z" fill="#121117"/>
@@ -4496,7 +4401,7 @@ $(function () {
     // Restore highlighted slot if it existed before render
     if (highlightedSlotInfo) {
       const $dayInner = $(
-        `.day-inner[data-date="${highlightedSlotInfo.date}"]`
+        `.day-inner[data-date="${highlightedSlotInfo.date}"]`,
       );
       if ($dayInner.length) {
         const $slots = $dayInner.find(".slots > div");
@@ -4824,7 +4729,7 @@ $(function () {
       const period = parts[3].toUpperCase();
 
       console.log(
-        "Extracted: hours=" + h + ", minutes=" + m + ", period=" + period
+        "Extracted: hours=" + h + ", minutes=" + m + ", period=" + period,
       );
 
       // Convert to 24-hour format
@@ -5077,8 +4982,8 @@ document.addEventListener("DOMContentLoaded", () => {
                         <img class="teacher-avatar" src="${
                           t.avatar || ""
                         }" alt="${
-      t.name
-    }" style="border-color: ${teacherColor};">
+                          t.name
+                        }" style="border-color: ${teacherColor};">
                     </div>
                     <span class="teacher-name">${
                       t.name
@@ -5118,12 +5023,12 @@ document.addEventListener("DOMContentLoaded", () => {
         sessionStorage.setItem("selectedTeacherId", selectedTeacherIds[0]);
         console.log(
           "Single teacher selected. Saved to session storage:",
-          selectedTeacherIds[0]
+          selectedTeacherIds[0],
         );
       } else {
         sessionStorage.removeItem("selectedTeacherId");
         console.log(
-          "Multiple or no teachers selected. Cleared session storage."
+          "Multiple or no teachers selected. Cleared session storage.",
         );
       }
 
@@ -5143,7 +5048,7 @@ document.addEventListener("DOMContentLoaded", () => {
     clear(teacherPillsContainer);
 
     const selectedTeachersContainer = document.getElementById(
-      "selected-teachers-container"
+      "selected-teachers-container",
     );
     clear(selectedTeachersContainer);
 
@@ -5168,7 +5073,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     selectedTeacherIds.forEach((id) => {
       const opt = teacherFieldset.querySelector(
-        `.teacher-option[data-teacher-id="${id}"]`
+        `.teacher-option[data-teacher-id="${id}"]`,
       );
       if (!opt) return;
 
@@ -5202,7 +5107,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
           // Update the checkbox in the current list immediately
           const currentOption = teacherFieldset.querySelector(
-            `.teacher-option[data-teacher-id="${id}"]`
+            `.teacher-option[data-teacher-id="${id}"]`,
           );
           if (currentOption) {
             const checkbox = currentOption.querySelector(".teacher-checkbox");
@@ -5231,7 +5136,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     visibleTeachers.forEach((id, idx) => {
       const opt = teacherFieldset.querySelector(
-        `.teacher-option[data-teacher-id="${id}"]`
+        `.teacher-option[data-teacher-id="${id}"]`,
       );
       if (!opt) return;
 
@@ -5304,10 +5209,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (cohortPillsContainer) clear(cohortPillsContainer);
 
     const selectedCohortsContainer = document.getElementById(
-      "selected-cohorts-container"
+      "selected-cohorts-container",
     );
     const selectedOneOnOneContainer = document.getElementById(
-      "oneonone-selected-container"
+      "oneonone-selected-container",
     );
 
     if (selectedCohortsContainer) clear(selectedCohortsContainer);
@@ -5327,13 +5232,13 @@ document.addEventListener("DOMContentLoaded", () => {
     selectedCohortIds.forEach((id) => {
       // Find cohort in either group or 1:1 fieldset
       let opt = cohortFieldset.querySelector(
-        `.cohort-option[data-cohort-id="${id}"]`
+        `.cohort-option[data-cohort-id="${id}"]`,
       );
       let isOneOnOne = false;
 
       if (!opt && oneOnOneFieldset) {
         opt = oneOnOneFieldset.querySelector(
-          `.cohort-option[data-cohort-id="${id}"]`
+          `.cohort-option[data-cohort-id="${id}"]`,
         );
         isOneOnOne = true;
       }
@@ -5405,11 +5310,11 @@ document.addEventListener("DOMContentLoaded", () => {
       const namesList = selectedCohortIds
         .map((id) => {
           let opt = cohortFieldset.querySelector(
-            `.cohort-option[data-cohort-id="${id}"]`
+            `.cohort-option[data-cohort-id="${id}"]`,
           );
           if (!opt && oneOnOneFieldset) {
             opt = oneOnOneFieldset.querySelector(
-              `.cohort-option[data-cohort-id="${id}"]`
+              `.cohort-option[data-cohort-id="${id}"]`,
             );
           }
           if (!opt) return "";
@@ -5580,7 +5485,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (groupCohorts.length === 0) {
       $peertalkDropdownList.append(
-        '<li style="pointer-events:none;opacity:.6;">No cohorts available</li>'
+        '<li style="pointer-events:none;opacity:.6;">No cohorts available</li>',
       );
       return;
     }
@@ -5591,13 +5496,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const cohortId = cohort.id;
       const cohortIdnumber = cohort.idnumber || "";
       const $li = $(
-        `<li class="peertalk_cohort_item" data-id="${cohortId}" data-idnumber="${cohortIdnumber}" data-name="${cohortName}">${cohortName}</li>`
+        `<li class="peertalk_cohort_item" data-id="${cohortId}" data-idnumber="${cohortIdnumber}" data-name="${cohortName}">${cohortName}</li>`,
       );
       $peertalkDropdownList.append($li);
     });
 
     console.log(
-      `Populated ${groupCohorts.length} cohorts in peertalk dropdown`
+      `Populated ${groupCohorts.length} cohorts in peertalk dropdown`,
     );
   }
 
@@ -5612,7 +5517,7 @@ document.addEventListener("DOMContentLoaded", () => {
       data = await fetchJSON(`${API_BASE}?action=cohorts`);
     } else if (role === "teacher") {
       data = await fetchJSON(
-        `${API_BASE}?action=cohorts&teacherId=${teacherId}`
+        `${API_BASE}?action=cohorts&teacherId=${teacherId}`,
       );
     } else if (role === "student") {
       data = await fetchJSON(`${API_BASE}?action=cohorts`);
@@ -5642,12 +5547,14 @@ document.addEventListener("DOMContentLoaded", () => {
     // Separate cohorts by type
     const groupCohorts = uniqueList.filter((c) => c.cohorttype !== "one1one");
     const oneOnOneCohorts = uniqueList.filter(
-      (c) => c.cohorttype === "one1one"
+      (c) => c.cohorttype === "one1one",
     );
 
     // For 1:1 cohorts, also deduplicate by student name to avoid showing same student multiple times
     const uniqueOneOnOne = Array.from(
-      new Map(oneOnOneCohorts.map((c) => [c.studentname || c.name, c])).values()
+      new Map(
+        oneOnOneCohorts.map((c) => [c.studentname || c.name, c]),
+      ).values(),
     );
 
     // Add group cohorts to Cohorts tab
@@ -5705,7 +5612,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const url = `${API_BASE}?action=cohorts&teacherids=${encodeURIComponent(
-      teacherIds.join(",")
+      teacherIds.join(","),
     )}`;
     const data = await fetchJSON(url);
 
@@ -5727,12 +5634,14 @@ document.addEventListener("DOMContentLoaded", () => {
     // Separate cohorts by type
     const groupCohorts = uniqueList.filter((c) => c.cohorttype !== "one1one");
     const oneOnOneCohorts = uniqueList.filter(
-      (c) => c.cohorttype === "one1one"
+      (c) => c.cohorttype === "one1one",
     );
 
     // For 1:1 cohorts, also deduplicate by student name to avoid showing same student multiple times
     const uniqueOneOnOne = Array.from(
-      new Map(oneOnOneCohorts.map((c) => [c.studentname || c.name, c])).values()
+      new Map(
+        oneOnOneCohorts.map((c) => [c.studentname || c.name, c]),
+      ).values(),
     );
 
     // Add group cohorts to Cohorts tab
@@ -5815,8 +5724,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const cohortShortName = s.cohortsname
       ? s.cohortsname.substring(0, 4)
       : s.cohortname
-      ? s.cohortname.substring(0, 4)
-      : "";
+        ? s.cohortname.substring(0, 4)
+        : "";
 
     // Check if this is a 1:1 cohort student
     const isOneOnOne = s.group === "1:1";
@@ -5897,7 +5806,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Update inside the dropdown list
     const selectedStudentsContainer = document.getElementById(
-      "selected-students-container"
+      "selected-students-container",
     );
     clear(selectedStudentsContainer);
 
@@ -5912,7 +5821,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     selectedStudentIds.forEach((id) => {
       const opt = studentFieldset.querySelector(
-        `.student-option[data-student-id="${id}"]`
+        `.student-option[data-student-id="${id}"]`,
       );
       if (!opt) return;
 
@@ -5973,7 +5882,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     visibleStudents.forEach((id, idx) => {
       const opt = studentFieldset.querySelector(
-        `.student-option[data-student-id="${id}"]`
+        `.student-option[data-student-id="${id}"]`,
       );
       if (!opt) return;
 
@@ -6025,7 +5934,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     sortedList.forEach((s) =>
-      studentFieldset.appendChild(createStudentOption(s))
+      studentFieldset.appendChild(createStudentOption(s)),
     );
   }
 
@@ -6046,7 +5955,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const url = `${API_BASE}?action=students&cohortids=${encodeURIComponent(
-      cohortIds.join(",")
+      cohortIds.join(","),
     )}`;
     const data = await fetchJSON(url);
     if (!data.ok) {
@@ -6215,7 +6124,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // We'll do this by loading students for each 1:1 cohort and checking if any event students are in it
         if (eventStudentIds.size > 0) {
           const oneOnOneCohorts = cohorts.filter(
-            (c) => c.cohorttype === "one1one"
+            (c) => c.cohorttype === "one1one",
           );
           // For now, we'll select all 1:1 cohorts and let the student filtering handle it
           // A better approach would be to fetch students for each 1:1 cohort first, but that would be too many API calls
@@ -6444,12 +6353,12 @@ document.addEventListener("DOMContentLoaded", () => {
   async function updateStudentsForCohortChange() {
     console.log(
       "updateStudentsForCohortChange: Selected cohorts:",
-      selectedCohortIds
+      selectedCohortIds,
     );
 
     if (!selectedCohortIds.length) {
       console.log(
-        "updateStudentsForCohortChange: No cohorts selected, clearing students"
+        "updateStudentsForCohortChange: No cohorts selected, clearing students",
       );
       selectedStudentIds = [];
       clear(studentFieldset);
@@ -6475,7 +6384,7 @@ document.addEventListener("DOMContentLoaded", () => {
         selectedCohortIds.forEach((cid) => {
           // Check if this cohort is in the 1:1 fieldset
           const option = oneOnOneFieldset?.querySelector(
-            `.cohort-option[data-cohort-id="${cid}"]`
+            `.cohort-option[data-cohort-id="${cid}"]`,
           );
           if (option) {
             selected1to1CohortIds.push(cid);
@@ -6484,7 +6393,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         console.log(
           "updateStudentsForCohortChange: Selected 1:1 cohorts:",
-          selected1to1CohortIds
+          selected1to1CohortIds,
         );
 
         eventsData.forEach((ev) => {
@@ -6513,7 +6422,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // Auto-select students that have events
         eventStudentIds.forEach((sid) => {
           const option = studentFieldset.querySelector(
-            `.student-option[data-student-id="${sid}"]`
+            `.student-option[data-student-id="${sid}"]`,
           );
           if (option) {
             // Only add to selectedStudentIds if the option exists
@@ -6569,7 +6478,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function resetActiveCohortTab() {
     try {
       const activeBtn = document.querySelector(
-        ".cohort-tab-btn.cohort-tab-active"
+        ".cohort-tab-btn.cohort-tab-active",
       );
       const tab =
         (activeBtn && activeBtn.dataset && activeBtn.dataset.tab) || "cohort";
@@ -6600,10 +6509,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         // Remove 1:1 cohort IDs from selectedCohortIds
         const oneOnOneIds = Array.from(
-          oneOnOneFieldset?.querySelectorAll(".cohort-option") || []
+          oneOnOneFieldset?.querySelectorAll(".cohort-option") || [],
         ).map((opt) => parseInt(opt.dataset.cohortId, 10));
         selectedCohortIds = selectedCohortIds.filter(
-          (id) => !oneOnOneIds.includes(id)
+          (id) => !oneOnOneIds.includes(id),
         );
         if (cohortHidden) cohortHidden.value = "";
         if (cohortDisplayText) cohortDisplayText.textContent = "Select Cohort";
@@ -6804,8 +6713,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // Fallback: get from teacher options
     const selected = Array.from(
       document.querySelectorAll(
-        ".teacher-option.selected, .teacher-option input.teacher-checkbox:checked"
-      )
+        ".teacher-option.selected, .teacher-option input.teacher-checkbox:checked",
+      ),
     )
       .map((el) => {
         const li = el.classList.contains("teacher-option")
@@ -6831,8 +6740,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // Fallback: get from cohort options
     const selected = Array.from(
       document.querySelectorAll(
-        ".cohort-option.selected, .cohort-option input.cohort-checkbox:checked"
-      )
+        ".cohort-option.selected, .cohort-option input.cohort-checkbox:checked",
+      ),
     )
       .map((el) => {
         const li = el.classList.contains("cohort-option")
@@ -6858,8 +6767,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // Fallback: get from student options
     const selected = Array.from(
       document.querySelectorAll(
-        ".student-option.selected, .student-option input.student-checkbox:checked"
-      )
+        ".student-option.selected, .student-option input.student-checkbox:checked",
+      ),
     )
       .map((el) => {
         const li = el.classList.contains("student-option")
@@ -6916,7 +6825,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function updateWhiteSlotRules(
     availabilityMap = {},
     extraSlotMap = {},
-    activeTeacherIds = []
+    activeTeacherIds = [],
   ) {
     whiteSlotRules = [];
     const teachers =
@@ -7008,7 +6917,7 @@ document.addEventListener("DOMContentLoaded", () => {
     availabilityMap = {},
     activeTeacherIds = [],
     weekStart,
-    weekEnd
+    weekEnd,
   ) {
     const events = [];
     const addedIds = new Set(); // Track added availability IDs to prevent duplicates
@@ -7088,7 +6997,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const actualDay = dayNames[dateObj.getDay()];
           if (actualDay !== slot.day) {
             console.warn(
-              `Availability slot day mismatch: dateStr=${dateStr} is ${actualDay}, but slot.day=${slot.day}`
+              `Availability slot day mismatch: dateStr=${dateStr} is ${actualDay}, but slot.day=${slot.day}`,
             );
           }
         }
@@ -7121,7 +7030,7 @@ document.addEventListener("DOMContentLoaded", () => {
     extraSlotMap = {},
     activeTeacherIds = [],
     weekStart,
-    weekEnd
+    weekEnd,
   ) {
     const events = [];
     const teachers =
@@ -7233,7 +7142,7 @@ document.addEventListener("DOMContentLoaded", () => {
         updateWhiteSlotRules(
           data.teacher_availability || {},
           data.teacher_extra_slots || {},
-          teacherid
+          teacherid,
         );
       } else {
         whiteSlotRules = [];
@@ -7246,7 +7155,7 @@ document.addEventListener("DOMContentLoaded", () => {
       document.dispatchEvent(
         new CustomEvent("extraSlotsUpdated", {
           detail: { map: window.teacherExtraSlots },
-        })
+        }),
       );
 
       // Merge regular events, peertalk events, conference events, teacher time off, availability, and extra slots
@@ -7291,7 +7200,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!endTime) {
               console.warn(
                 "Event missing end_time and duration_minutes:",
-                eventData
+                eventData,
               );
               return item; // Return original item if invalid
             }
@@ -7408,13 +7317,13 @@ document.addEventListener("DOMContentLoaded", () => {
           data.teacher_availability || {},
           teacherid,
           currentStart,
-          currentEnd
+          currentEnd,
         );
         const extraSlotEvents = buildExtraSlotEvents(
           data.teacher_extra_slots || {},
           teacherid,
           currentStart,
-          currentEnd
+          currentEnd,
         );
         allEvents = [...allEvents, ...availabilityEvents, ...extraSlotEvents];
       }
@@ -7444,10 +7353,10 @@ document.addEventListener("DOMContentLoaded", () => {
           let eventTeacherIds = Array.isArray(ev.teacherids)
             ? ev.teacherids
             : ev.teacher_id
-            ? [ev.teacher_id]
-            : ev.teacherid
-            ? [ev.teacherid]
-            : [];
+              ? [ev.teacher_id]
+              : ev.teacherid
+                ? [ev.teacherid]
+                : [];
           for (let tid of eventTeacherIds) {
             if (teacherIdSet.has(tid)) {
               teacherId = tid;
@@ -7535,10 +7444,14 @@ document.addEventListener("DOMContentLoaded", () => {
           meetingurl: ev.meetingurl || "",
           viewurl: ev.viewurl || ev.meetingurl || "",
           avatar:
-            ev.avatar ||
+            // Prefer CURRENT teacher avatar so reassigned lessons show new tutor
             ev.summary?.current?.teacher?.avatar ||
             ev.summary?.current?.teacher_pic ||
             ev.rescheduled?.current?.teacher_pic ||
+            ev.teacher_pic ||
+            ev.teacherpic ||
+            ev.teacher?.avatar ||
+            ev.avatar ||
             "",
           teacherId:
             typeof teacherId !== "undefined" && teacherId !== null
@@ -7570,8 +7483,8 @@ document.addEventListener("DOMContentLoaded", () => {
             typeof ev.timeoffid !== "undefined"
               ? ev.timeoffid
               : typeof ev.id !== "undefined"
-              ? ev.id
-              : null,
+                ? ev.id
+                : null,
           cmid: ev.cmid || 0,
           googlemeetid:
             typeof ev.googlemeetid !== "undefined" ? ev.googlemeetid : 0,
@@ -7592,6 +7505,7 @@ document.addEventListener("DOMContentLoaded", () => {
         };
 
         // Ensure teacherId is set from summary current teacher if missing
+
         if (!eventObj.teacherId) {
           if (eventObj.summary?.current?.teacher?.id) {
             eventObj.teacherId = eventObj.summary.current.teacher.id;
@@ -7625,6 +7539,34 @@ document.addEventListener("DOMContentLoaded", () => {
         if (prevTid && currTid && prevTid !== currTid) {
           eventObj.isTeacherChanged = true;
         }
+        if (eventObj.isTeacherChanged) {
+          const statusWithDetails = Array.isArray(ev.statuses)
+            ? ev.statuses.find((s) => s.details && s.details.current)
+            : null;
+          const currentFromStatus =
+            statusWithDetails?.details?.current?.teacher?.avatar ||
+            statusWithDetails?.details?.current?.teacher_pic ||
+            statusWithDetails?.details?.current?.teacherpic ||
+            statusWithDetails?.details?.current?.teacheravatar ||
+            null;
+          if (currentFromStatus) {
+            eventObj.avatar = currentFromStatus;
+            if (eventObj.summary && eventObj.summary.current) {
+              if (!eventObj.summary.current.teacher) {
+                eventObj.summary.current.teacher = {};
+              }
+              if (!eventObj.summary.current.teacher.avatar) {
+                eventObj.summary.current.teacher.avatar = currentFromStatus;
+              }
+              if (!eventObj.summary.current.teacher_pic) {
+                eventObj.summary.current.teacher_pic = currentFromStatus;
+              }
+              if (!eventObj.summary.current.teacherpic) {
+                eventObj.summary.current.teacherpic = currentFromStatus;
+              }
+            }
+          }
+        }
         // If event is reschedule_instant, check if time has changed
         let shouldAddMainEvent = true;
         if (
@@ -7632,7 +7574,7 @@ document.addEventListener("DOMContentLoaded", () => {
           ev.statuses.some((s) => s.code === "reschedule_instant" && s.previous)
         ) {
           const statusObj = ev.statuses.find(
-            (s) => s.code === "reschedule_instant" && (s.previous || null)
+            (s) => s.code === "reschedule_instant" && (s.previous || null),
           );
           if (statusObj && statusObj.previous) {
             // Convert times to minutes for comparison
@@ -7700,16 +7642,20 @@ document.addEventListener("DOMContentLoaded", () => {
               teachernames: [ev.previous_teachername || ""],
             };
 
-            // When teacher changed: previous event (Teacher A) shows NEW teacher (Teacher B) image
-            if (teacherChanged && currTeacherPic) {
-              prevEvent.avatar = currTeacherPic;
-              // Update summary/rescheduled data to reflect swapped image
-              if (prevEvent.summary && prevEvent.summary.previous) {
-                prevEvent.summary.previous.teacher_pic = prevEvent.avatar;
-                prevEvent.summary.previous.teacherpic = prevEvent.avatar;
-                if (prevEvent.summary.previous.teacher) {
-                  prevEvent.summary.previous.teacher.avatar = prevEvent.avatar;
+            // When teacher changed, previous event keeps previous teacher image
+            if (teacherChanged) {
+              if (prevTeacherPic) {
+                prevEvent.avatar = prevTeacherPic;
+                if (prevEvent.summary && prevEvent.summary.previous) {
+                  prevEvent.summary.previous.teacher_pic = prevEvent.avatar;
+                  prevEvent.summary.previous.teacherpic = prevEvent.avatar;
+                  if (prevEvent.summary.previous.teacher) {
+                    prevEvent.summary.previous.teacher.avatar =
+                      prevEvent.avatar;
+                  }
                 }
+              } else if (!prevEvent.avatar && currTeacherPic) {
+                prevEvent.avatar = currTeacherPic;
               }
             } else if (!prevEvent.avatar && prevTeacherPic) {
               // If no teacher change, use previous teacher's image for previous event
@@ -7727,10 +7673,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Only add main event if time has changed (or if not a reschedule_instant)
         if (shouldAddMainEvent) {
-          // If both time and teacher changed: current event shows new time/date + PREVIOUS teacher image
+          // If both time and teacher changed: current event shows new time/date + current teacher image
           if (Array.isArray(ev.statuses)) {
             const statusObj = ev.statuses.find(
-              (s) => s.code === "reschedule_instant" && (s.previous || null)
+              (s) => s.code === "reschedule_instant" && (s.previous || null),
             );
             if (statusObj && statusObj.previous) {
               const prevTeacherId = statusObj.previous.teacher;
@@ -7758,14 +7704,8 @@ document.addEventListener("DOMContentLoaded", () => {
                   ? minutes(eventObj.end)
                   : eventObj.end;
 
-              // When teacher changed: current event (Teacher B) shows PREVIOUS teacher (Teacher A) image
+              // When teacher changed, current event keeps current teacher image
               if (teacherChanged) {
-                const prevTeacherPic =
-                  statusObj.previous.teacher_pic ||
-                  statusObj.previous.teacherpic ||
-                  statusObj.previous?.teacher?.avatar ||
-                  eventObj.summary?.previous?.teacher?.avatar ||
-                  null;
                 const currTeacherPic =
                   statusObj.current?.teacher_pic ||
                   statusObj.current?.teacherpic ||
@@ -7773,22 +7713,23 @@ document.addEventListener("DOMContentLoaded", () => {
                   eventObj.avatar ||
                   null;
 
-                // Store current teacher's avatar before swapping
-                if (currTeacherPic && !eventObj.avatar) {
+                if (currTeacherPic) {
                   eventObj.avatar = currTeacherPic;
-                }
-
-                // Swap: show previous teacher's image in avatar field
-                if (prevTeacherPic) {
-                  eventObj.avatar = prevTeacherPic;
-                  // Update summary/rescheduled data
                   if (eventObj.summary && eventObj.summary.current) {
-                    eventObj.summary.current.teacher_pic = prevTeacherPic;
-                    eventObj.summary.current.teacherpic = prevTeacherPic;
+                    if (!eventObj.summary.current.teacher_pic) {
+                      eventObj.summary.current.teacher_pic = currTeacherPic;
+                    }
+                    if (!eventObj.summary.current.teacherpic) {
+                      eventObj.summary.current.teacherpic = currTeacherPic;
+                    }
                   }
                   if (eventObj.rescheduled && eventObj.rescheduled.current) {
-                    eventObj.rescheduled.current.teacher_pic = prevTeacherPic;
-                    eventObj.rescheduled.current.teacherpic = prevTeacherPic;
+                    if (!eventObj.rescheduled.current.teacher_pic) {
+                      eventObj.rescheduled.current.teacher_pic = currTeacherPic;
+                    }
+                    if (!eventObj.rescheduled.current.teacherpic) {
+                      eventObj.rescheduled.current.teacherpic = currTeacherPic;
+                    }
                   }
                 }
               }
@@ -7843,7 +7784,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Debounce: if already refetching, wait for it to complete
     if (__isRefetching) {
       console.log(
-        `Refetch already in progress, skipping duplicate call (${reason})`
+        `Refetch already in progress, skipping duplicate call (${reason})`,
       );
       return;
     }
@@ -7890,14 +7831,14 @@ document.addEventListener("DOMContentLoaded", () => {
         typeof loadCohortsForTeachers === "function"
           ? loadCohortsForTeachers
           : typeof loadAllCohorts === "function"
-          ? loadAllCohorts
-          : () => Promise.resolve();
+            ? loadAllCohorts
+            : () => Promise.resolve();
       const loadStudentsForCohortsFn =
         typeof loadStudentsForCohorts === "function"
           ? loadStudentsForCohorts
           : typeof loadAllStudents === "function"
-          ? loadAllStudents
-          : () => Promise.resolve();
+            ? loadAllStudents
+            : () => Promise.resolve();
 
       const safeSelectedTeachers =
         typeof selectedTeacherIds !== "undefined" &&
@@ -8098,7 +8039,7 @@ document.addEventListener("DOMContentLoaded", () => {
             (ev) =>
               ev.eventid == evtId ||
               ev.id === evtId ||
-              String(ev.eventid) === String(evtId)
+              String(ev.eventid) === String(evtId),
           );
         }
 
@@ -8145,7 +8086,7 @@ document.addEventListener("DOMContentLoaded", () => {
           // Format history items (show at least 4, up to 10)
           const historyToShow = history.slice(
             0,
-            Math.max(4, Math.min(10, history.length))
+            Math.max(4, Math.min(10, history.length)),
           );
           const historyHtml = historyToShow
             .map((hist, idx) => {
@@ -8156,8 +8097,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 idx < historyToShow.length - 1 ? "1px solid #f0f1f5" : "none"
               };">
                 <img src="${histIcon.icon}" alt="${
-                histIcon.label
-              }" style="width:14px;height:14px;opacity:0.7;flex-shrink:0;margin-top:2px;">
+                  histIcon.label
+                }" style="width:14px;height:14px;opacity:0.7;flex-shrink:0;margin-top:2px;">
                 <div style="flex:1;font-size:12px;color:#4b5563;line-height:1.4;">
                   <div style="font-weight:500;color:#111827;margin-bottom:2px;">${
                     histIcon.label
@@ -8290,7 +8231,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const relatedTarget = e.relatedTarget;
       if (!relatedTarget || !historyTooltip.contains(relatedTarget)) {
         const statusIcon = document.querySelector(
-          `.ev-status-icon[data-tooltip-id="${historyTooltip.id}"]`
+          `.ev-status-icon[data-tooltip-id="${historyTooltip.id}"]`,
         );
         if (!statusIcon || !statusIcon.matches(":hover")) {
           historyTooltip.style.display = "none";
@@ -8317,7 +8258,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const tooltip = e.target.closest(".teacher-change-tooltip");
       const tooltipId = tooltip.id;
       const statusIcon = document.querySelector(
-        `.ev-status-icon[data-tooltip-id="${tooltipId}"]`
+        `.ev-status-icon[data-tooltip-id="${tooltipId}"]`,
       );
       if (!statusIcon || !statusIcon.matches(":hover")) {
         tooltip.style.display = "none";

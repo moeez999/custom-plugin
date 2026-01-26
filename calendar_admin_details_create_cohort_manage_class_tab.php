@@ -1,6 +1,9 @@
-<link rel="stylesheet" href="<?php echo $CFG->wwwroot; ?>/local/customplugin/css/calendar_admin_details_create_cohort_manage_class_tab.css">
+<link rel="stylesheet"
+    href="<?php echo $CFG->wwwroot; ?>/local/customplugin/css/calendar_admin_details_create_cohort_manage_class_tab.css">
 
 <div class="calendar_admin_details_create_cohort_content tab-content" id="manageclassTabContent" style="display:none;">
+
+    <form id="manageOneToOneForm" class="manage-one2one-form" novalidate>
 
     <div class="calendar_admin_details_create_cohort_manage_class_tab_wrap"
         id="calendar_admin_details_create_cohort_manage_class_tab_widget">
@@ -463,7 +466,35 @@ echo $studentsItemsHtml;
         </div>
     </div>
 
-    <button class="calendar_admin_details_create_cohort_schedule_btn_manage" disabled>Update 1:1 class</button>
+    <div class="manage-one2one-hidden-fields" aria-hidden="true" style="display:none;">
+        <input type="hidden" name="teacherid" id="manageTeacherIdInput">
+        <input type="hidden" name="studentid" id="manageStudentIdInput">
+        <input type="hidden" name="lessontype" id="manageLessonTypeInput">
+        <input type="hidden" name="cmid" id="manageCmidInput">
+        <input type="hidden" name="eventid" id="manageEventIdInput">
+        <input type="hidden" name="changeteacher" id="manageChangeTeacherInput">
+        <input type="hidden" name="newteacherid" id="manageNewTeacherIdInput">
+        <input type="hidden" name="singledate" id="manageSingleDateInput">
+        <input type="hidden" name="singletime" id="manageSingleTimeInput">
+        <input type="hidden" name="singleduration" id="manageSingleDurationInput">
+        <input type="hidden" name="singlefulldatetime" id="manageSingleFullDateTimeInput">
+        <input type="hidden" name="weeklystartdate" id="manageWeeklyStartDateInput">
+        <input type="hidden" name="weeklyinterval" id="manageWeeklyIntervalInput">
+        <input type="hidden" name="weeklyperiod" id="manageWeeklyPeriodInput">
+        <input type="hidden" name="weeklyendoption" id="manageWeeklyEndOptionInput">
+        <input type="hidden" name="weeklyendson" id="manageWeeklyEndsOnInput">
+        <input type="hidden" name="weeklyoccurrences" id="manageWeeklyOccurrencesInput">
+        <input type="hidden" name="weeklydays" id="manageWeeklyDaysInput">
+        <input type="hidden" name="updatescope" id="manageUpdateScopeInput">
+        <input type="hidden" name="allevents" id="manageAllEventsInput">
+        <input type="hidden" name="reschedulereason" id="manageRescheduleReasonInput">
+        <input type="hidden" name="reschedulemessage" id="manageRescheduleMessageInput">
+        <input type="hidden" name="timestamp" id="manageTimestampInput">
+    </div>
+
+    <button type="submit" class="calendar_admin_details_create_cohort_schedule_btn_manage" disabled>Update 1:1
+        class</button>
+    </form>
 </div>
 
 <!-- Loader Overlay -->
@@ -525,8 +556,8 @@ echo $studentsItemsHtml;
             </div>
         </div>
         <div class="manage-update-scope-buttons">
-            <button class="manage-update-scope-cancel-btn" id="manageUpdateScopeCancelBtn">Cancel</button>
-            <button class="manage-update-scope-ok-btn" id="manageUpdateScopeOkBtn">Ok</button>
+            <button type="button" class="manage-update-scope-cancel-btn" id="manageUpdateScopeCancelBtn">Cancel</button>
+            <button type="button" class="manage-update-scope-ok-btn" id="manageUpdateScopeOkBtn">Ok</button>
         </div>
     </div>
 </div>
@@ -609,6 +640,10 @@ echo $studentsItemsHtml;
 <script src="js/date_utils.js"></script>
 <script src="js/toast_utils.js"></script>
 <script src="js/api_utils.js"></script>
+<!-- One2One Form Management Utilities -->
+<script src="js/one2one_form_state_manager.js"></script>
+<script src="js/one2one_form_populator.js"></script>
+<script src="js/one2one_form_reset.js"></script>
 
 <script>
 // ====== TOAST NOTIFICATION FUNCTION ======
@@ -964,6 +999,51 @@ function validateForm() {
     }
 }
 
+// Keep a real form in sync with the custom UI selections
+function syncManageHiddenInputs(formData, extras = {}) {
+    const form = document.getElementById('manageOneToOneForm');
+    if (!form) return;
+
+    const setValue = (id, value) => {
+        const el = form.querySelector(`#${id}`);
+        if (el) {
+            el.value = value ?? '';
+        }
+    };
+
+    setValue('manageTeacherIdInput', formData.teacherId ?? '');
+    setValue('manageStudentIdInput', formData.studentId ?? '');
+    setValue('manageLessonTypeInput', formData.lessonType ?? '');
+    setValue('manageCmidInput', formData.cmid ?? '');
+    setValue('manageEventIdInput', formData.eventId ?? '');
+    setValue('manageChangeTeacherInput', formData.changeTeacher ? '1' : '0');
+    setValue('manageNewTeacherIdInput', formData.newTeacherId ?? '');
+
+    const singleLesson = formData.singleLesson || {};
+    setValue('manageSingleDateInput', singleLesson.date ?? '');
+    setValue('manageSingleTimeInput', singleLesson.time ?? '');
+    setValue('manageSingleDurationInput', singleLesson.duration ?? '');
+    setValue('manageSingleFullDateTimeInput', singleLesson.fullDateTime ?? '');
+
+    const weeklyLesson = formData.weeklyLesson || {};
+    setValue('manageWeeklyStartDateInput', weeklyLesson.startDate ?? '');
+    setValue('manageWeeklyIntervalInput', weeklyLesson.interval ?? '');
+    setValue('manageWeeklyPeriodInput', weeklyLesson.period ?? '');
+    setValue('manageWeeklyEndOptionInput', weeklyLesson.endOption ?? weeklyLesson.endOptionLabel ?? '');
+    setValue('manageWeeklyEndsOnInput', weeklyLesson.endsOn ?? '');
+    setValue('manageWeeklyOccurrencesInput', weeklyLesson.occurrences ?? '');
+    setValue('manageWeeklyDaysInput', weeklyLesson.days ? JSON.stringify(weeklyLesson.days) : '');
+
+    const scopeValue = extras.scope ?? formData.updateScope ?? '';
+    setValue('manageUpdateScopeInput', scopeValue);
+    const allEventsValue = extras.allEvents ?? formData.allEvents ?? false;
+    setValue('manageAllEventsInput', allEventsValue ? '1' : '0');
+
+    setValue('manageRescheduleReasonInput', formData.rescheduleReason ?? '');
+    setValue('manageRescheduleMessageInput', formData.rescheduleMessage ?? '');
+    setValue('manageTimestampInput', formData.timestamp ?? '');
+}
+
 // ====== CORRECTED SINGLE LESSON DROPDOWN ======
 function populateSingleLessonDropdown(jsonData) {
     const dropdownCard = document.querySelector('.single-lesson-dropdown-card');
@@ -1291,6 +1371,19 @@ function calculateDateForDay(dayText, baseDate) {
 function populateWeeklyModalWithData(googleMeet, selectedDay, activityIndex, startTime, endTime) {
     console.log(`Populating modal for activity ${activityIndex}, day: ${selectedDay}, time: ${startTime} - ${endTime}`);
 
+    // Store original googlemeet data for later comparison
+    window.originalGoogleMeetData = {
+        id: googleMeet.id,
+        days: googleMeet.days || '{}',
+        starthour: googleMeet.starthour,
+        startminute: googleMeet.startminute,
+        endhour: googleMeet.endhour,
+        endminute: googleMeet.endminute,
+        period: googleMeet.period || 1,
+        eventdate: googleMeet.eventdate,
+        eventenddate: googleMeet.eventenddate
+    };
+
     // ---- Get "Ends" section elements ----
     const endNeverRadio = document.getElementById('weeklyLessonEndNeverManage');
     const endOnRadio = document.getElementById('weeklyLessonEndOnManage');
@@ -1309,13 +1402,16 @@ function populateWeeklyModalWithData(googleMeet, selectedDay, activityIndex, sta
     if (startDateEl) {
         if (clickedEventDate) {
             // Use clicked event date instead of start date from googleMeet
-            const [year, month, day] = clickedEventDate.split('-').map(Number);
-            const dateObj = new Date(year, month - 1, day, 0, 0, 0);
-            startDateEl.textContent = window.formatDate(dateObj);
+            // Parse date in UTC to avoid timezone issues
+            const dateObj = new Date(clickedEventDate + 'T00:00:00Z');
+            // Convert to local date for display (but keep UTC for calculations)
+            const localDateObj = new Date(dateObj.getUTCFullYear(), dateObj.getUTCMonth(), dateObj.getUTCDate(), 0, 0,
+                0);
+            startDateEl.textContent = window.formatDate(localDateObj);
             startDateEl.dataset.fullDate = clickedEventDate;
-            window.weeklyLessonStartDate = dateObj;
+            window.weeklyLessonStartDate = dateObj; // Store UTC date for consistency
             console.log('Set start date to clicked event date:', clickedEventDate, '→ formatted:', window.formatDate(
-                dateObj));
+                localDateObj), '→ UTC date:', dateObj);
         } else if (startDateStr) {
             // Fallback to start date from googleMeet if no clicked event date
             const startDate = window.parseUnixTimestamp(startDateStr);
@@ -1393,22 +1489,33 @@ function populateWeeklyModalWithData(googleMeet, selectedDay, activityIndex, sta
 
         if (clickedEventDate) {
             // Parse the date in UTC to avoid timezone issues
-            const dateObj = new Date(clickedEventDate + 'T00:00:00Z');
+            // Ensure date string is in YYYY-MM-DD format
+            let dateStr = clickedEventDate;
+            if (dateStr.includes('T')) {
+                dateStr = dateStr.split('T')[0];
+            }
+            const dateObj = new Date(dateStr + 'T00:00:00Z');
             clickedDayOfWeek = dateObj.getUTCDay();
-            console.log('Clicked event date:', clickedEventDate, '→ UTC day of week:', clickedDayOfWeek,
-                '→ Date object:', dateObj);
+
+            // Debug logging
+            console.log('🔍 Day calculation:', {
+                clickedEventDate: clickedEventDate,
+                cleanedDate: dateStr,
+                utcDate: dateObj.toISOString(),
+                utcDayOfWeek: clickedDayOfWeek,
+                dayName: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][clickedDayOfWeek]
+            });
         }
 
-        // Apply active days - only select the clicked day if available, otherwise all days
-        if (clickedDayOfWeek !== null) {
-            // Only select the specific day that was clicked
-            const widget = widgetRow.querySelector(
-                `.weekly_lesson_scroll_widget_manage[data-key="${clickedDayOfWeek}"]`
-            );
-            if (widget) {
-                // Check if this day is in the pattern
-                const dayName = Object.keys(dayMap).find(k => dayMap[k] === clickedDayOfWeek);
-                if (dayName && daysPattern[dayName] === "1") {
+        // Apply active days - select all days from the pattern
+        // Always populate all days from the pattern, regardless of which day was clicked
+        Object.keys(daysPattern).forEach(day => {
+            if (daysPattern[day] === "1" && dayMap[day] !== undefined) {
+                const dayKey = dayMap[day];
+                const widget = widgetRow.querySelector(
+                    `.weekly_lesson_scroll_widget_manage[data-key="${dayKey}"]`
+                );
+                if (widget) {
                     widget.classList.add('selected');
                     widget.setAttribute('aria-pressed', 'true');
 
@@ -1417,71 +1524,25 @@ function populateWeeklyModalWithData(googleMeet, selectedDay, activityIndex, sta
 
                     if (!window.weeklyLessonDayTimes) window.weeklyLessonDayTimes = {};
 
-                    // Store the clicked event's date for this specific day
-                    window.weeklyLessonDayTimes[clickedDayOfWeek] = {
+                    // If this is the clicked day, store its date
+                    const dayData = {
                         start: start24h,
                         end: end24h,
-                        activityIndex,
-                        date: clickedEventDate // Store the date for this specific day
+                        activityIndex
                     };
 
-                    renderWidgetTimeManage(clickedDayOfWeek, start24h, end24h);
-                    console.log('Selected only clicked day:', clickedDayOfWeek, '(', dayName, ')', 'with date:',
-                        clickedEventDate);
-                } else {
-                    console.warn('Clicked day', dayName, 'is not in the weekly lesson pattern');
-                    // Fallback to all days if clicked day is not in pattern
-                    Object.keys(daysPattern).forEach(day => {
-                        if (daysPattern[day] === "1" && dayMap[day] !== undefined) {
-                            const widget = widgetRow.querySelector(
-                                `.weekly_lesson_scroll_widget_manage[data-key="${dayMap[day]}"]`
-                            );
-                            if (widget) {
-                                widget.classList.add('selected');
-                                widget.setAttribute('aria-pressed', 'true');
+                    if (clickedDayOfWeek !== null && dayKey === clickedDayOfWeek && clickedEventDate) {
+                        dayData.date = clickedEventDate;
+                    }
 
-                                const start24h = convert12hTo24h(startTime);
-                                const end24h = convert12hTo24h(endTime);
+                    window.weeklyLessonDayTimes[dayKey] = dayData;
 
-                                if (!window.weeklyLessonDayTimes) window.weeklyLessonDayTimes = {};
-                                window.weeklyLessonDayTimes[dayMap[day]] = {
-                                    start: start24h,
-                                    end: end24h,
-                                    activityIndex
-                                };
-
-                                renderWidgetTimeManage(dayMap[day], start24h, end24h);
-                            }
-                        }
-                    });
+                    renderWidgetTimeManage(dayKey, start24h, end24h);
+                    console.log('✅ Selected day:', dayKey, '(', day, ')', clickedDayOfWeek !== null &&
+                        dayKey === clickedDayOfWeek ? 'with date: ' + clickedEventDate : '');
                 }
             }
-        } else {
-            // Fallback: select all days from pattern if no clicked day info
-            Object.keys(daysPattern).forEach(day => {
-                if (daysPattern[day] === "1" && dayMap[day] !== undefined) {
-                    const widget = widgetRow.querySelector(
-                        `.weekly_lesson_scroll_widget_manage[data-key="${dayMap[day]}"]`
-                    );
-                    if (widget) {
-                        widget.classList.add('selected');
-                        widget.setAttribute('aria-pressed', 'true');
-
-                        const start24h = convert12hTo24h(startTime);
-                        const end24h = convert12hTo24h(endTime);
-
-                        if (!window.weeklyLessonDayTimes) window.weeklyLessonDayTimes = {};
-                        window.weeklyLessonDayTimes[dayMap[day]] = {
-                            start: start24h,
-                            end: end24h,
-                            activityIndex
-                        };
-
-                        renderWidgetTimeManage(dayMap[day], start24h, end24h);
-                    }
-                }
-            });
-        }
+        });
     }
 }
 
@@ -1575,6 +1636,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const studentDropdownWrap = $('#one2oneStudentDropdownManage');
     const addStudentBtn = $('#one2oneAddStudentBtnManage');
     const studentDropdownWrapper = $('#studentDropdownWrapper');
+    const manageForm = $('#manageOneToOneForm');
     const scheduleBtn = $('.calendar_admin_details_create_cohort_schedule_btn_manage');
     const lessonTypeBtns = $$('.one2one-lesson-type-btn-manage');
     const loaderOverlay = $('#loaderOverlay');
@@ -1591,12 +1653,16 @@ document.addEventListener('DOMContentLoaded', function() {
     window.rescheduleMessage = null;
     // flag to skip the reschedule modal once the user already chose a reason
     window.singleReadyToSubmit = false;
+    // flag indicating we are waiting for scope selection after reschedule (single lessons)
+    window.pendingSingleScopeAfterReschedule = false;
     const singleSection = $('#custom-single-lesson-manage');
     const weeklySection = $('#custom-weekly-lesson-manage');
 
-    // When the Update button is clicked, build a minimal payload and log the cmid (if any)
-    if (scheduleBtn) {
-        scheduleBtn.addEventListener('click', () => {
+    // When the Update button is submitted, build a minimal payload and log the cmid (if any)
+    if (manageForm && scheduleBtn) {
+        scheduleBtn.setAttribute('type', 'submit');
+        manageForm.addEventListener('submit', (event) => {
+            event.preventDefault();
             // Validate before submission
             const teacherId = teacherTrigger?.dataset.userid;
             const selectedStudent = $('.one2one-student-list-item.selected', studentDropdownWrap);
@@ -2051,8 +2117,16 @@ document.addEventListener('DOMContentLoaded', function() {
                         // Get the date to use as base - prefer clicked event date, then start date
                         const currentEventData = window.currentEventData || null;
                         const clickedEventDate = currentEventData?.date || null;
-                        const clickedDayOfWeek = clickedEventDate ? new Date(clickedEventDate +
-                            'T00:00:00Z').getUTCDay() : null;
+                        let clickedDayOfWeek = null;
+                        if (clickedEventDate) {
+                            // Ensure date string is in YYYY-MM-DD format
+                            let dateStr = clickedEventDate;
+                            if (dateStr.includes('T')) {
+                                dateStr = dateStr.split('T')[0];
+                            }
+                            const dateObj = new Date(dateStr + 'T00:00:00Z');
+                            clickedDayOfWeek = dateObj.getUTCDay();
+                        }
                         const startDateEl = document.getElementById(
                             'weeklyLessonStartDateTextManage');
                         const startDate = startDateEl?.dataset?.fullDate || null;
@@ -2076,7 +2150,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             // Fallback to start date
                             dayDate = calculateDateForDay(dayName, startDate);
                             console.log('Calculated date from start date:', startDate, '→',
-                            dayDate);
+                                dayDate);
                         }
 
                         if (dayDate) {
@@ -2141,7 +2215,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (!modalBackdrop) return;
 
-        // Cancel button - close modal without saving
+        // Cancel button - close modal without saving (with form reset)
+        // Check for unsaved changes before closing
+        if (window.getOne2OneStateManager) {
+            const stateManager = window.getOne2OneStateManager('one2oneForm');
+            if (stateManager && stateManager.hasUnsavedChanges()) {
+                if (!confirm('You have unsaved changes. Are you sure you want to cancel?')) {
+                    return; // Don't close if user cancels
+                }
+            }
+        }
+        // Reset form on cancel
+        if (typeof resetOne2OneForm === 'function') {
+            resetOne2OneForm({
+                formPrefix: 'manage',
+                clearState: false, // Keep state in case user reopens
+                onComplete: () => {
+                    console.log('Form reset on cancel');
+                }
+            });
+        }
         cancelBtn?.addEventListener('click', () => {
             modalBackdrop.classList.remove('active');
             window.pendingWeeklyTimeChange = null;
@@ -2177,45 +2270,36 @@ document.addEventListener('DOMContentLoaded', function() {
                 window.pendingWeeklyTimeChange = null;
             }
 
-            // Handle pending submission (when Update button was clicked)
+            // Handle pending submission (when Update button was clicked) for WEEKLY lessons
+            // Just save the scope selection - don't submit the form
+            // The form will submit when the user clicks "Update 1:1 Class" button
             if (window.pendingWeeklySubmission) {
-                // Set the ready flag FIRST before clearing pending
+                // Set the ready flag so the form knows scope has been selected
                 // This ensures the main handler knows to proceed without showing modal again
                 window.weeklyReadyToSubmit = true;
-                
-                const {
-                    selectedElement
-                } = window.pendingWeeklySubmission;
-                const cmid = window.selectedCmidManage ?? selectedElement?.dataset?.cmid ?? null;
-                const originalEventData = window.currentEventData || null;
-                const payload = {
-                    lessonType: 'weekly',
-                    cmid,
-                    activityIndex: selectedElement?.dataset?.activityIndex ?? null,
-                    eventId: originalEventData ? originalEventData.id : null,
-                    updateScope: window.weeklyUpdateScope
-                };
 
-                // Log the payload
-                console.log('Update 1:1 class payload (manage):', payload);
-
-                // Clear the pending submission
+                // Clear the pending submission flag
                 window.pendingWeeklySubmission = null;
 
-                // Close modal
+                // Close modal - form submission will happen when user clicks "Update 1:1 Class" button
                 modalBackdrop.classList.remove('active');
-
-                // Trigger submission by clicking the button again
-                // The flag window.weeklyReadyToSubmit = true will prevent modal from showing again
-                setTimeout(() => {
-                    const submitButton = document.querySelector(
-                        '.calendar_admin_details_create_cohort_schedule_btn_manage');
-                    if (submitButton) {
-                        submitButton.click();
-                    }
-                }, 50);
                 
+                console.log('✅ Scope selected:', window.weeklyUpdateScope, '- Ready to submit when Update button is clicked');
+
                 return; // Exit early to prevent modal from closing again below
+            }
+
+            // Handle pending scope selection for SINGLE lessons (after reschedule modal)
+            // Just save the scope selection - don't submit the form
+            // The form will submit when the user clicks "Update 1:1 Class" button
+            if (window.pendingSingleScopeAfterReschedule) {
+                // Clear the flag and close the modal
+                window.pendingSingleScopeAfterReschedule = false;
+                modalBackdrop.classList.remove('active');
+                
+                console.log('✅ Scope selected for single lesson:', window.weeklyUpdateScope, '- Ready to submit when Update button is clicked');
+
+                return;
             }
 
             // Close modal
@@ -2233,6 +2317,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 window.weeklyReadyToSubmit = false;
                 window.weeklyUpdateScope = 'this';
                 window.allEvents = false;
+                window.pendingSingleScopeAfterReschedule = false;
             }
         });
     })();
@@ -2304,7 +2389,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Confirm button - store values, close modal, and trigger submission
+        // Confirm button - store values, close modal, and then ask for scope
         confirmBtn?.addEventListener('click', () => {
             if (!window.rescheduleReason) {
                 showToastManage('❌ Please select a reschedule reason.');
@@ -2312,7 +2397,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // Store the reschedule reason and message (already stored via input handlers above)
-            // Close the modal
+            // Close the reschedule modal
             modalBackdrop.classList.remove('active');
             window.pendingSingleSubmission = null;
 
@@ -2322,13 +2407,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 message: window.rescheduleMessage
             });
 
-            // Set the flag to allow direct submission
+            // Set the flag to allow direct submission after scope selection
             window.singleReadyToSubmit = true;
+            window.pendingSingleScopeAfterReschedule = true;
 
-            // Immediately trigger the main submit handler
-            const submitButton = document.querySelector(
-                '.calendar_admin_details_create_cohort_schedule_btn_manage');
-            if (submitButton) submitButton.click();
+            // Show the update scope modal (This event / This and all following)
+            const scopeModal = document.getElementById('manageUpdateScopeModalBackdrop');
+            if (scopeModal) {
+                scopeModal.classList.add('active');
+            }
         });
     })();
 
@@ -2852,6 +2939,22 @@ document.addEventListener('DOMContentLoaded', function() {
     ========================================== */
 
     scheduleBtn?.addEventListener('click', async () => {
+        // Determine current lesson type
+        const currentLessonType = document.querySelector('.one2one-lesson-type-btn-manage.selected')
+            ?.dataset.type || 'single';
+
+        // For weekly lessons, always require scope selection BEFORE submitting
+        if (currentLessonType === 'weekly' && !window.weeklyReadyToSubmit) {
+            console.log('⏸️ Waiting for scope selection for weekly lesson, skipping direct submission');
+            return;
+        }
+
+        // For single lessons, always require reschedule + scope selection BEFORE submitting
+        if (currentLessonType === 'single' && !window.singleReadyToSubmit) {
+            console.log('⏸️ Waiting for reschedule/scope selection for single lesson, skipping direct submission');
+            return;
+        }
+
         // Check if we're waiting for modal input (reschedule or update scope)
         if (window.pendingSingleSubmission || window.pendingWeeklySubmission) {
             console.log('⏸️ Waiting for modal input, skipping direct submission');
@@ -2937,6 +3040,10 @@ document.addEventListener('DOMContentLoaded', function() {
             } : null,
             // Add new data will be populated below after getting all form values
             newData: {},
+            updateScope: window.weeklyUpdateScope || 'this',
+            allEvents: window.allEvents || false,
+            rescheduleReason: window.rescheduleReason || '',
+            rescheduleMessage: window.rescheduleMessage || '',
             // Add change teacher info if checkbox is checked
             changeTeacher: window.isChangeTeacherChecked ? window.isChangeTeacherChecked() :
                 false,
@@ -3066,10 +3173,17 @@ document.addEventListener('DOMContentLoaded', function() {
             let dayToUpdateForThisEvent = null;
 
             if (clickedEventDate && !isAllEvents) {
-                const dateObj = new Date(clickedEventDate + 'T00:00:00Z');
+                // Ensure date string is in YYYY-MM-DD format
+                let dateStr = clickedEventDate;
+                if (dateStr.includes('T')) {
+                    dateStr = dateStr.split('T')[0];
+                }
+                const dateObj = new Date(dateStr + 'T00:00:00Z');
                 clickedDayOfWeek = dateObj.getUTCDay();
-                console.log('Updating only this event - clicked day:', clickedDayOfWeek, 'date:',
-                    clickedEventDate);
+                console.log('Updating only this event - clicked day:', clickedDayOfWeek,
+                    '(', ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][clickedDayOfWeek],
+                    ')',
+                    'date:', clickedEventDate, '→ cleaned:', dateStr);
 
                 // Determine which day to update:
                 // 1. If user has selected days, use the first selected day
@@ -3083,7 +3197,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     // No days selected - will use clicked day
                     dayToUpdateForThisEvent = clickedDayOfWeek;
                     console.log('No days selected - will use clicked day:',
-                    dayToUpdateForThisEvent);
+                        dayToUpdateForThisEvent);
                 }
             }
 
@@ -3121,7 +3235,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     // Get stored date from weeklyLessonDayTimes if available
                     if (window.weeklyLessonDayTimes && window.weeklyLessonDayTimes[
-                        dayKey] && window.weeklyLessonDayTimes[dayKey].date) {
+                            dayKey] && window.weeklyLessonDayTimes[dayKey].date) {
                         dayDate = window.weeklyLessonDayTimes[dayKey].date;
                         console.log('Using stored date for day', dayText, ':', dayDate);
                     } else if (isAllEvents) {
@@ -3144,7 +3258,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 dayDate = calculateDateForDay(dayText, clickedEventDate);
                                 console.log('Calculated date for changed day', dayText,
                                     'from clicked date:', clickedEventDate, '→', dayDate
-                                    );
+                                );
                             }
                         } else if (baseDate) {
                             dayDate = calculateDateForDay(dayText, baseDate);
@@ -3260,6 +3374,9 @@ document.addEventListener('DOMContentLoaded', function() {
             };
         }
 
+        // Keep hidden form fields aligned with the latest selections
+        syncManageHiddenInputs(formData);
+
         // Populate newData with only the changed/updated form values
         formData.newData = {};
 
@@ -3297,6 +3414,13 @@ document.addEventListener('DOMContentLoaded', function() {
             scope = 'THIS_AND_FOLLOWING';
         }
 
+        // Persist scope/allEvents selections into the hidden form inputs
+        formData.scope = scope;
+        syncManageHiddenInputs(formData, {
+            scope,
+            allEvents: window.allEvents
+        });
+
         // Get googlemeetid (cmid)
         const googlemeetid = parseInt(cmid || formData.cmid || 0);
 
@@ -3315,7 +3439,7 @@ document.addEventListener('DOMContentLoaded', function() {
         let timeChanged = false;
         let newStartTime = null;
         let newEndTime = null;
-        
+
         if (formData.lessonType === 'single' && formData.singleLesson) {
             // Single lesson: check if time changed
             const timeStr = formData.singleLesson.time || '';
@@ -3327,21 +3451,26 @@ document.addEventListener('DOMContentLoaded', function() {
                     const endMin = startMin + duration;
                     const endHour = startHour + Math.floor(endMin / 60);
                     const endMinFinal = endMin % 60;
-                    
-                    newStartTime = `${String(startHour).padStart(2, '0')}:${String(startMin).padStart(2, '0')}`;
-                    newEndTime = `${String(endHour).padStart(2, '0')}:${String(endMinFinal).padStart(2, '0')}`;
-                    
+
+                    newStartTime =
+                        `${String(startHour).padStart(2, '0')}:${String(startMin).padStart(2, '0')}`;
+                    newEndTime =
+                        `${String(endHour).padStart(2, '0')}:${String(endMinFinal).padStart(2, '0')}`;
+
                     // Compare with original times (convert original to 24h if needed)
                     if (originalStart && originalEnd) {
-                        const origStart24h = originalStart.includes(' ') ? convert12hTo24h(originalStart) : originalStart;
-                        const origEnd24h = originalEnd.includes(' ') ? convert12hTo24h(originalEnd) : originalEnd;
+                        const origStart24h = originalStart.includes(' ') ? convert12hTo24h(
+                            originalStart) : originalStart;
+                        const origEnd24h = originalEnd.includes(' ') ? convert12hTo24h(
+                            originalEnd) : originalEnd;
                         timeChanged = (origStart24h !== newStartTime || origEnd24h !== newEndTime);
                     } else {
                         timeChanged = true; // No original time, so it's a change
                     }
                 }
             }
-        } else if (formData.lessonType === 'weekly' && formData.weeklyLesson && formData.weeklyLesson.days && formData.weeklyLesson.days.length > 0) {
+        } else if (formData.lessonType === 'weekly' && formData.weeklyLesson && formData
+            .weeklyLesson.days && formData.weeklyLesson.days.length > 0) {
             // Weekly lesson: get time from first day
             const firstDay = formData.weeklyLesson.days[0];
             if (firstDay.start && firstDay.end) {
@@ -3350,11 +3479,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (start24h && end24h) {
                     newStartTime = start24h;
                     newEndTime = end24h;
-                    
+
                     // Compare with original times
                     if (originalStart && originalEnd) {
-                        const origStart24h = originalStart.includes(' ') ? convert12hTo24h(originalStart) : originalStart;
-                        const origEnd24h = originalEnd.includes(' ') ? convert12hTo24h(originalEnd) : originalEnd;
+                        const origStart24h = originalStart.includes(' ') ? convert12hTo24h(
+                            originalStart) : originalStart;
+                        const origEnd24h = originalEnd.includes(' ') ? convert12hTo24h(
+                            originalEnd) : originalEnd;
                         timeChanged = (origStart24h !== newStartTime || origEnd24h !== newEndTime);
                     } else {
                         timeChanged = true;
@@ -3363,106 +3494,361 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        const teacherChanged = formData.changeTeacher && formData.newTeacherId && 
+        const teacherChanged = formData.changeTeacher && formData.newTeacherId &&
             parseInt(formData.newTeacherId) !== parseInt(originalTeacherId);
-        
+
         console.log('👤 Teacher change detection:', {
             changeTeacher: formData.changeTeacher,
             newTeacherId: formData.newTeacherId,
             originalTeacherId,
             teacherChanged
         });
-        
+
         // Detect date change for both single and weekly lessons
+        // IMPORTANT:
+        // - For THIS_AND_FOLLOWING scope with only time changes, skip date detection
+        // - If ONLY the teacher changed (no time change), do NOT treat date as changed
         let dateChanged = false;
         let newDate = null;
-        
-        if (formData.lessonType === 'single' && formData.singleLesson && formData.singleLesson.date) {
-            newDate = formData.singleLesson.date;
-            // Normalize date to YYYY-MM-DD format
-            if (newDate && newDate.includes('T')) {
-                newDate = newDate.split('T')[0];
-            }
-            dateChanged = newDate !== originalDate;
-            console.log('📅 Date change detection (single):', {
-                originalDate,
-                newDate,
-                dateChanged
-            });
-        } else if (formData.lessonType === 'weekly' && formData.weeklyLesson && 
-                   formData.weeklyLesson.days && formData.weeklyLesson.days.length > 0) {
-            // For weekly lessons, check if the first selected day's date is different from original
-            const firstDay = formData.weeklyLesson.days[0];
-            if (firstDay.date) {
-                newDate = firstDay.date;
+
+        // For THIS_AND_FOLLOWING with time-only changes, skip date change detection entirely
+        // Only check for date changes if:
+        // 1. Scope is THIS_OCCURRENCE, OR
+        // 2. User explicitly changed the date (not just time)
+        const teacherOnlyChange = teacherChanged && !timeChanged;
+        const shouldCheckDate = !teacherOnlyChange && (scope === 'THIS_OCCURRENCE' ||
+            (scope === 'THIS_AND_FOLLOWING' && !timeChanged));
+
+        if (shouldCheckDate) {
+            if (formData.lessonType === 'single' && formData.singleLesson && formData.singleLesson
+                .date) {
+                newDate = formData.singleLesson.date;
                 // Normalize date to YYYY-MM-DD format
                 if (newDate && newDate.includes('T')) {
                     newDate = newDate.split('T')[0];
                 }
                 dateChanged = newDate !== originalDate;
-                console.log('📅 Date change detection (weekly):', {
+                console.log('📅 Date change detection (single):', {
                     originalDate,
                     newDate,
-                    firstDayDate: firstDay.date,
                     dateChanged
                 });
+            } else if (formData.lessonType === 'weekly' && formData.weeklyLesson &&
+                formData.weeklyLesson.days && formData.weeklyLesson.days.length > 0) {
+                // For weekly lessons, only check date if scope is THIS_OCCURRENCE
+                // For THIS_AND_FOLLOWING, we don't check date changes when only time is changing
+                if (scope === 'THIS_OCCURRENCE') {
+                    const firstDay = formData.weeklyLesson.days[0];
+                    if (firstDay.date) {
+                        newDate = firstDay.date;
+                        // Normalize date to YYYY-MM-DD format
+                        if (newDate && newDate.includes('T')) {
+                            newDate = newDate.split('T')[0];
+                        }
+                        dateChanged = newDate !== originalDate;
+                        console.log('📅 Date change detection (weekly):', {
+                            originalDate,
+                            newDate,
+                            firstDayDate: firstDay.date,
+                            dateChanged
+                        });
+                    }
+                } else {
+                    // For THIS_AND_FOLLOWING, don't check date changes
+                    dateChanged = false;
+                    console.log('📅 Skipping date change detection for THIS_AND_FOLLOWING scope');
+                }
             }
+        } else {
+            // THIS_AND_FOLLOWING with time-only change - explicitly no date change
+            dateChanged = false;
+            console.log('📅 THIS_AND_FOLLOWING time-only change - skipping date detection');
         }
 
-        // Build payload
-        const payload = {
-            scope: scope,
-            eventId: parseInt(eventId || formData.eventId || 0),
-            googlemeetid: googlemeetid,
-            apply: {
-                time: timeChanged,
-                teacher: teacherChanged,
-                status: false,
-                days: false,
-                period: false,
-                end: false,
-                date: dateChanged
-            }
-        };
+        // Build payload - use new format for THIS_AND_FOLLOWING, old format for THIS_OCCURRENCE
+        let payload;
 
-        // Add anchorDate if date changed (original date)
-        // Normalize anchorDate to YYYY-MM-DD format
-        if (dateChanged && originalDate) {
-            let normalizedAnchorDate = originalDate;
-            if (normalizedAnchorDate && normalizedAnchorDate.includes('T')) {
-                normalizedAnchorDate = normalizedAnchorDate.split('T')[0];
-            }
-            payload.anchorDate = normalizedAnchorDate;
-            console.log('📌 Setting anchorDate:', payload.anchorDate);
-        }
+        if (scope === 'THIS_AND_FOLLOWING') {
+            // New payload format for THIS_AND_FOLLOWING
+            const anchorEventId = parseInt(eventId || formData.eventId || 0);
+            const anchorEventDate = originalDate || (originalEventData?.date ? originalEventData
+                .date.split('T')[0] : null);
 
-        // Add time data if time changed
-        if (timeChanged && newStartTime && newEndTime) {
-            payload.time = {
-                start: newStartTime,
-                end: newEndTime
+            // Validate that we have a valid event ID
+            if (!anchorEventId || anchorEventId === 0) {
+                showToastManage(
+                    '❌ Error: No event selected. Please click on an event in the calendar first to edit it.'
+                );
+                if (loaderOverlay) loaderOverlay.classList.remove('active');
+                return;
+            }
+
+            if (!anchorEventDate) {
+                showToastManage('❌ Error: Missing event date for THIS_AND_FOLLOWING update');
+                if (loaderOverlay) loaderOverlay.classList.remove('active');
+                return;
+            }
+
+            payload = {
+                scope: 'THIS_AND_FOLLOWING',
+                anchorEvent: {
+                    eventId: anchorEventId,
+                    eventDate: anchorEventDate,
+                    googlemeetid: googlemeetid
+                },
+                changes: []
             };
-        }
 
-        // Add teacher data if teacher changed
-        if (teacherChanged && originalTeacherId && formData.newTeacherId) {
-            payload.teacher = {
-                old: parseInt(originalTeacherId),
-                new: parseInt(formData.newTeacherId)
-            };
-        }
-
-        // Add date data if date changed
-        // Normalize newDate to YYYY-MM-DD format
-        if (dateChanged && newDate) {
-            let normalizedNewDate = newDate;
-            if (normalizedNewDate && normalizedNewDate.includes('T')) {
-                normalizedNewDate = normalizedNewDate.split('T')[0];
+            // Get original days from stored googlemeet data
+            let originalDays = [];
+            if (window.originalGoogleMeetData && window.originalGoogleMeetData.days) {
+                try {
+                    const daysObj = JSON.parse(window.originalGoogleMeetData.days || '{}');
+                    originalDays = Object.keys(daysObj).filter(d => daysObj[d] === "1");
+                } catch (e) {
+                    console.warn('Failed to parse original days:', e);
+                }
             }
-            payload.date = {
-                new: normalizedNewDate
+
+            // Get selected days from form data
+            let selectedDaysList = [];
+            if (formData.lessonType === 'weekly' && formData.weeklyLesson && formData.weeklyLesson
+                .days) {
+                selectedDaysList = formData.weeklyLesson.days.map(d => d.day).filter(Boolean);
+            }
+
+            // Normalize day names to 3-letter format (Mon, Tue, etc.)
+            const normalizeDay = (day) => {
+                const dayMap = {
+                    'Sun': 'Sun',
+                    'Sunday': 'Sun',
+                    'Mon': 'Mon',
+                    'Monday': 'Mon',
+                    'Tue': 'Tue',
+                    'Tuesday': 'Tue',
+                    'Wed': 'Wed',
+                    'Wednesday': 'Wed',
+                    'Thu': 'Thu',
+                    'Thursday': 'Thu',
+                    'Fri': 'Fri',
+                    'Friday': 'Fri',
+                    'Sat': 'Sat',
+                    'Saturday': 'Sat'
+                };
+                return dayMap[day] || day;
             };
-            console.log('📅 Setting date.new:', payload.date.new);
+
+            originalDays = originalDays.map(normalizeDay);
+            selectedDaysList = selectedDaysList.map(normalizeDay);
+
+            // Detect new days (days in selected but not in original)
+            const newDays = selectedDaysList.filter(d => !originalDays.includes(d));
+            const hasNewDays = newDays.length > 0;
+
+            // Build changes array
+            // 1. Time update (if time changed)
+            if (timeChanged && newStartTime && newEndTime) {
+                // Get original time from stored data or event
+                let originalStartTime = null;
+                let originalEndTime = null;
+
+                if (window.originalGoogleMeetData) {
+                    const origSh = window.originalGoogleMeetData.starthour || 0;
+                    const origSm = window.originalGoogleMeetData.startminute || 0;
+                    const origEh = window.originalGoogleMeetData.endhour || 0;
+                    const origEm = window.originalGoogleMeetData.endminute || 0;
+                    originalStartTime =
+                        `${String(origSh).padStart(2, '0')}:${String(origSm).padStart(2, '0')}`;
+                    originalEndTime =
+                        `${String(origEh).padStart(2, '0')}:${String(origEm).padStart(2, '0')}`;
+                } else if (originalStart && originalEnd) {
+                    originalStartTime = originalStart.includes(' ') ? convert12hTo24h(
+                        originalStart) : originalStart;
+                    originalEndTime = originalEnd.includes(' ') ? convert12hTo24h(originalEnd) :
+                        originalEnd;
+                }
+
+                payload.changes.push({
+                    action: 'UPDATE_EXISTING',
+                    googlemeetid: googlemeetid,
+                    type: 'recurring',
+                    diff: {
+                        time: {
+                            from: {
+                                start: originalStartTime || newStartTime,
+                                end: originalEndTime || newEndTime
+                            },
+                            to: {
+                                start: newStartTime,
+                                end: newEndTime
+                            }
+                        }
+                    }
+                });
+            }
+
+            // 2. Teacher update (if teacher changed)
+            if (teacherChanged && originalTeacherId && formData.newTeacherId) {
+                payload.changes.push({
+                    action: 'UPDATE_TEACHER_RECURRING',
+                    googlemeetid: googlemeetid,
+                    type: 'recurring',
+                    diff: {
+                        teacher: {
+                            from: parseInt(originalTeacherId),
+                            to: parseInt(formData.newTeacherId),
+                            reason: 'Teacher switched'
+                        }
+                    }
+                });
+            }
+
+            // 3. New days creation (if new days selected)
+            if (hasNewDays && formData.lessonType === 'weekly' && formData.weeklyLesson) {
+                // Get schedule data for new days - use time from first new day or from time change
+                let newDayStart24h = newStartTime || '09:00';
+                let newDayEnd24h = newEndTime || '10:00';
+
+                // Try to get time from first new day
+                const firstNewDay = formData.weeklyLesson.days.find(d => {
+                    const normalizedDay = normalizeDay(d.day);
+                    return newDays.includes(normalizedDay);
+                });
+
+                if (firstNewDay && firstNewDay.start && firstNewDay.end) {
+                    const dayStart24h = convert12hTo24h(firstNewDay.start);
+                    const dayEnd24h = convert12hTo24h(firstNewDay.end);
+                    if (dayStart24h && dayEnd24h) {
+                        newDayStart24h = dayStart24h;
+                        newDayEnd24h = dayEnd24h;
+                    }
+                }
+
+                // Get start date (use start date from form or anchor date)
+                let scheduleStartDate = formData.weeklyLesson.startDate || anchorEventDate;
+                if (scheduleStartDate && scheduleStartDate.includes('T')) {
+                    scheduleStartDate = scheduleStartDate.split('T')[0];
+                }
+
+                // Get end rule
+                let endRule = {
+                    type: 'NEVER'
+                };
+                if (formData.weeklyLesson.endOption === 'weeklyLessonEndOnManage' && formData
+                    .weeklyLesson.endsOn && formData.weeklyLesson.endsOn !== 'Never') {
+                    let endDate = formData.weeklyLesson.endsOn;
+                    if (endDate && endDate.includes('T')) {
+                        endDate = endDate.split('T')[0];
+                    }
+                    if (endDate && endDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                        endRule = {
+                            type: 'ON_DATE',
+                            value: endDate
+                        };
+                    }
+                }
+
+                // Get period
+                const period = formData.weeklyLesson.period || 1;
+
+                payload.changes.push({
+                    action: 'CREATE_NEW',
+                    type: 'recurring',
+                    schedule: {
+                        start: newDayStart24h,
+                        end: newDayEnd24h,
+                        days: newDays,
+                        period: period,
+                        startDate: scheduleStartDate,
+                        endRule: endRule
+                    }
+                });
+
+                console.log('📅 Creating new googlemeet for new days:', newDays, 'schedule:', {
+                    start: newDayStart24h,
+                    end: newDayEnd24h,
+                    days: newDays,
+                    period: period,
+                    startDate: scheduleStartDate,
+                    endRule: endRule
+                });
+            }
+
+            // Validate that we have at least one change
+            if (payload.changes.length === 0) {
+                showToastManage('❌ No changes detected');
+                if (loaderOverlay) loaderOverlay.classList.remove('active');
+                return;
+            }
+
+        } else {
+            // Old payload format for THIS_OCCURRENCE
+            const payloadEventId = parseInt(eventId || formData.eventId || 0);
+
+            // Validate that we have a valid event ID
+            if (!payloadEventId || payloadEventId === 0) {
+                showToastManage(
+                    '❌ Error: No event selected. Please click on an event in the calendar first to edit it.'
+                    );
+                if (loaderOverlay) loaderOverlay.classList.remove('active');
+                return;
+            }
+
+            payload = {
+                scope: scope,
+                eventId: payloadEventId,
+                googlemeetid: googlemeetid,
+                apply: {
+                    time: timeChanged,
+                    teacher: teacherChanged,
+                    status: false,
+                    days: false,
+                    period: false,
+                    end: false,
+                    date: dateChanged
+                }
+            };
+
+            // Add anchorDate if date changed
+            if (dateChanged && originalDate) {
+                let normalizedAnchorDate = originalDate;
+                if (normalizedAnchorDate && normalizedAnchorDate.includes('T')) {
+                    normalizedAnchorDate = normalizedAnchorDate.split('T')[0];
+                }
+                payload.anchorDate = normalizedAnchorDate;
+            }
+
+            // Add time data if time changed
+            if (timeChanged && newStartTime && newEndTime) {
+                payload.time = {
+                    start: newStartTime,
+                    end: newEndTime
+                };
+                // Also add current object for explicit time change
+                payload.current = {
+                    start: newStartTime,
+                    end: newEndTime
+                };
+            }
+
+            // Add teacher data if teacher changed
+            if (teacherChanged && originalTeacherId && formData.newTeacherId) {
+                payload.teacher = {
+                    old: parseInt(originalTeacherId),
+                    new: parseInt(formData.newTeacherId)
+                };
+            }
+
+            // Add date data if date changed
+            if (dateChanged && newDate) {
+                let normalizedNewDate = newDate;
+                if (normalizedNewDate && normalizedNewDate.includes('T')) {
+                    normalizedNewDate = normalizedNewDate.split('T')[0];
+                }
+                payload.date = {
+                    new: normalizedNewDate
+                };
+            }
         }
 
         console.log('📦 Sending Payload:', payload);
@@ -3488,14 +3874,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Hide loader on error
                 if (loaderOverlay) loaderOverlay.classList.remove('active');
                 if (window.hideGlobalLoader) window.hideGlobalLoader();
-                
+
                 // Handle error message - check multiple possible error fields
-                const errorMessage = result.message || result.error || result.msg || 'An unknown error occurred';
+                const errorMessage = result.message || result.error || result.msg ||
+                    'An unknown error occurred';
                 showToastManage('❌ Error: ' + errorMessage);
                 return;
             }
 
-            showToastManage('✅ Session updated successfully!');
+            // Show success message with details for THIS_AND_FOLLOWING
+            if (scope === 'THIS_AND_FOLLOWING' && result.result && result.result.actions) {
+                const actionCount = result.result.actions.length;
+                const actionTypes = result.result.actions.map(a => a.action).join(', ');
+                showToastManage(
+                    `✅ Updated successfully! (${actionCount} action(s): ${actionTypes})`);
+            } else {
+                showToastManage('✅ Session updated successfully!');
+            }
 
             // Keep loader visible during calendar refresh
             // Switch from overlay loader to global loader for calendar fetch
@@ -3542,7 +3937,31 @@ document.addEventListener('DOMContentLoaded', function() {
     /* =======================================================
        RESET FORM FUNCTION
     ======================================================== */
-    function resetManageClassForm() {
+    function resetManageClassForm(clearState = false) {
+        // Use new form reset utility if available
+        if (typeof resetOne2OneForm === 'function') {
+            resetOne2OneForm({
+                formPrefix: 'manage',
+                clearState: clearState,
+                onComplete: (success) => {
+                    if (success) {
+                        console.log('✅ Form reset successfully using utility');
+                    } else {
+                        console.warn('⚠️ Form reset had issues, falling back to manual method');
+                        // Fall back to manual reset
+                        resetManageClassFormManual();
+                    }
+                }
+            });
+            return;
+        }
+
+        // Fallback to manual reset
+        resetManageClassFormManual();
+    }
+
+    // Manual reset method (fallback)
+    function resetManageClassFormManual() {
         // Reset teacher selection (keep first teacher if available)
         const firstTeacher = teacherList?.querySelector(
             '.calendar_admin_details_create_cohort_manage_class_tab_item[role="option"]');
@@ -3724,6 +4143,10 @@ document.addEventListener('DOMContentLoaded', function() {
         window.rescheduleReason = null;
         window.rescheduleMessage = null;
         window.allEvents = false;
+        window.weeklyReadyToSubmit = false;
+        window.weeklyUpdateScope = 'this';
+        window.singleReadyToSubmit = false;
+        window.pendingSingleScopeAfterReschedule = false;
         if (window.weeklyLessonDayTimes) {
             window.weeklyLessonDayTimes = {};
         }
@@ -3738,6 +4161,57 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         console.log('Form reset successfully');
+    }
+
+    // Expose reset so other scripts (modal/tab handlers) can call it safely
+    window.resetManageClassForm = resetManageClassForm;
+
+    /* =======================================================
+       MODAL CLOSE HANDLER - Reset form on close
+    ======================================================== */
+    $(document).ready(function() {
+        // Handle modal close - reset form and clear state
+        $('#calendar_admin_details_create_cohort_modal_backdrop').on('hidden.bs.modal', function() {
+            console.log('Modal closed, resetting form');
+            resetManageClassForm(true); // Clear state on close
+        });
+
+        // Also handle backdrop click and escape key
+        $('#calendar_admin_details_create_cohort_modal_backdrop').on('click', function(e) {
+            if (e.target === this) {
+                // Check for unsaved changes
+                if (window.getOne2OneStateManager) {
+                    const stateManager = window.getOne2OneStateManager('one2oneForm');
+                    if (stateManager && stateManager.hasUnsavedChanges()) {
+                        if (!confirm('You have unsaved changes. Are you sure you want to close?')) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            return false;
+                        }
+                    }
+                }
+                resetManageClassForm(true);
+            }
+        });
+    });
+
+    // Helper function to normalize event data for state management
+    function normalizeEventDataForState(eventData) {
+        if (!eventData) return null;
+
+        return {
+            eventId: eventData.eventid || eventData.eventId || eventData.id,
+            googlemeetid: eventData.googlemeetid || eventData.googlemeetId,
+            teacherId: eventData.teacherId || eventData.teacher?.id || eventData.teacherid,
+            studentId: eventData.studentId || eventData.student?.id || eventData.studentid || (eventData.studentids && eventData.studentids[0]),
+            date: eventData.date || eventData.eventdate || eventData.eventDate,
+            start: eventData.start || eventData.start_time,
+            end: eventData.end || eventData.end_time,
+            duration: eventData.duration_minutes || eventData.duration,
+            lessonType: eventData.classType === 'weekly' || eventData.class_type === 'weekly' || eventData.is_recurring ? 'weekly' : 'single',
+            status: eventData.status,
+            classType: eventData.classType || eventData.class_type
+        };
     }
 });
 

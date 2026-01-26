@@ -581,19 +581,111 @@ function gm_update_recurring_series(
                 );
             }
 
-            $DB->execute(
-                "UPDATE {googlemeet_events}
-                    SET duration = :duration,
-                        timemodified = :tm
-                WHERE googlemeetid = :gid",
-                [
-                    'duration' => $newduration,
-                    'tm'       => time(),
-                    'gid'      => $gm->id
-                ]
+            // $DB->execute(
+            //     "UPDATE {googlemeet_events}
+            //         SET duration = :duration,
+            //             timemodified = :tm
+            //     WHERE googlemeetid = :gid",
+            //     [
+            //         'duration' => $newduration,
+            //         'tm'       => time(),
+            //         'gid'      => $gm->id
+            //     ]
+            // );
+
+             // --------------------------------------------------
+            // 3️⃣ EVENT-LEVEL HISTORY (ONLY FUTURE EVENTS)
+            // --------------------------------------------------
+            $events = $DB->get_records_select(
+                'googlemeet_events',
+                'googlemeetid = :gid AND eventdate >= :anch',
+                ['gid' => $gm->id, 'anch' => $anchorTs],
+                'eventdate ASC'
             );
 
-            return; // 🔥 STOP HERE — NO SPLIT
+            foreach ($events as $ev) {
+
+            $oldstart = (int)$ev->eventdate;
+            $oldend   = $oldstart + (int)$ev->duration;
+
+            $eventDate = date('Y-m-d', $oldstart);
+
+            $newstart = strtotime($eventDate . sprintf(' %02d:%02d', $sh, $sm));
+            $newend   = strtotime($eventDate . sprintf(' %02d:%02d', $eh, $em));
+
+            if ($newend <= $newstart) {
+                $newend += DAYSECS;
+            }
+
+            $newduration = (int)($newend - $newstart); // seconds
+
+            // --------------------------------------------------
+            // TIME HISTORY
+            // --------------------------------------------------
+            $DB->insert_record('local_gm_event_time_history', (object)[
+                'eventid'      => $ev->id,
+                'googlemeetid' => $gm->id,
+                'oldstart'     => $oldstart,
+                'oldend'       => $oldend,
+                'newstart'     => $newstart,
+                'newend'       => $newend,
+                'scope'        => 'THIS_AND_FOLLOWING',
+                'timecreated'  => time(),
+                'createdby'    => $USER->id ?? 0
+            ]);
+
+            // --------------------------------------------------
+            // CURRENT STATUS (UPSERT)
+            // --------------------------------------------------
+            $statusrec = $DB->get_record(
+                'local_gm_event_status',
+                ['eventid' => $ev->id],
+                '*',
+                IGNORE_MISSING
+            );
+
+            $currentstatus = $statusrec->status ?? 'rescheduled';
+
+            if ($statusrec) {
+                $statusrec->timemodified = time();
+                $DB->update_record('local_gm_event_status', $statusrec);
+            } else {
+                $DB->insert_record('local_gm_event_status', (object)[
+                    'eventid'      => $ev->id,
+                    'googlemeetid' => $gm->id,
+                    'status'       => $currentstatus,
+                    'scope'        => 'THIS_AND_FOLLOWING',
+                    'timecreated'  => time(),
+                    'createdby'    => $USER->id ?? 0
+                ]);
+            }
+
+            // --------------------------------------------------
+            // 🔥 STATUS HISTORY (ALWAYS INSERT)
+            // --------------------------------------------------
+             $DB->insert_record('local_gm_event_status_history', (object)[
+                'eventid'      => $ev->id,
+                'googlemeetid' => $gm->id,
+                'oldstatus'    => $currentstatus,
+                'newstatus'    => 'rescheduled',
+                'scope'        => '',
+                'reason'       => null,
+                'timecreated'  => time(),
+                'createdby'    => $USER->id ?? 0
+            ]);
+
+            // --------------------------------------------------
+            // UPDATE EVENT ITSELF
+            // --------------------------------------------------
+            $ev->eventdate    = $newstart;
+            $ev->duration     = $newduration;
+            $ev->timemodified = time();
+
+            $DB->update_record('googlemeet_events', $ev);
+        }
+
+        return; // 🔥 STOP HERE — NO SPLIT
+
         }
 
 
@@ -865,7 +957,22 @@ function gm_create_recurring_series(
     // ----------------------------
     $course = $DB->get_record('course', ['id' => $origgm->course], '*', MUST_EXIST);
 
+    $coursecontext = context_course::instance($origgm->course);
+
+   // --------------------------------------------------
+    // TEMPORARILY EXECUTE AS ADMIN
+    // --------------------------------------------------
+    $admin = get_admin();
+    $originaluser = $USER;
+
+    \core\session\manager::set_user($admin);
+
+    try {
     $newcm = add_moduleinfo($moduleinfo, $course);
+} finally {
+    // ALWAYS restore original user
+    \core\session\manager::set_user($originaluser);
+}
 
     if (empty($newcm->instance)) {
         throw new moodle_exception('error', 'error', '', 'GoogleMeet creation failed');

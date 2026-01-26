@@ -88,72 +88,62 @@ function get_single_event_history(
     $datehistory    = $DB->get_records('local_gm_event_date_history', ['eventid' => $eventid], 'timecreated ASC');
 
     // --------------------------------------------------
-    // Resolve CURRENT STATUS from history (AUTHORITATIVE)
+    // Resolve CURRENT STATUS
     // --------------------------------------------------
     $currentStatusValue = 'scheduled';
-
     if (!empty($statushistory)) {
         $lastStatus = end($statushistory);
         $currentStatusValue = $lastStatus->newstatus ?? 'scheduled';
     }
 
 
-    $gmTimeHistory = $DB->get_records(
-        'local_gm_googlemeet_time_history',
-        ['googlemeetid' => $googlemeet->id],
-        'timecreated ASC'
-    );
-
     // --------------------------------------------------
-    // Normalize histories
-    // --------------------------------------------------
-    $teacherBySecond = [];
-    foreach ($teacherhistory as $th) {
-        $teacherBySecond[(int)$th->timecreated] = [
-            'from' => $th->oldteacherid,
-            'to'   => $th->newteacherid,
-            'scope'=> $th->scope
-        ];
-    }
+// GoogleMeet TIME history (series-level)
+// --------------------------------------------------
+$gmTimeHistory = $DB->get_records(
+    'local_gm_googlemeet_time_history',
+    ['googlemeetid' => $googlemeet->id],
+    'timecreated ASC'
+);
 
-    $timeBySecond = [];
-    foreach ($timehistory as $t) {
-        $timeBySecond[(int)$t->timecreated] = [
-            'from' => date('H:i', $t->oldstart) . ' - ' . date('H:i', $t->oldend),
-            'to'   => date('H:i', $t->newstart) . ' - ' . date('H:i', $t->newend),
-            'scope'=> $t->scope
-        ];
-    }
+// --------------------------------------------------
+// Normalize histories
+// --------------------------------------------------
+$teacherBySecond = [];
+foreach ($teacherhistory as $th) {
+    $teacherBySecond[(int)$th->timecreated] = [
+        'from' => $th->oldteacherid,
+        'to'   => $th->newteacherid,
+        'scope'=> $th->scope
+    ];
+}
 
-    $dateBySecond = [];
-    foreach ($datehistory as $d) {
-        $dateBySecond[(int)$d->timecreated] = [
-            'from' => $d->olddate,
-            'to'   => $d->newdate,
-            'scope'=> $d->scope
-        ];
-    }
+$timeBySecond = [];
+foreach ($timehistory as $t) {
+    $timeBySecond[(int)$t->timecreated] = [
+        'from' => date('H:i', $t->oldstart) . ' - ' . date('H:i', $t->oldend),
+        'to'   => date('H:i', $t->newstart) . ' - ' . date('H:i', $t->newend),
+        'scope'=> $t->scope
+    ];
+}
 
-    $gmTimeBySecond = [];
-    // foreach ($gmTimeHistory as $gth) {
-    //     $gmTimeBySecond[(int)$gth->timecreated] = [
-    //         'from' => date('H:i', $gth->oldstart) . ' - ' . date('H:i', $gth->oldend),
-    //         'to'   => date('H:i', $gth->newstart) . ' - ' . date('H:i', $gth->newend),
-    //         'scope'=> 'THIS_AND_FOLLOWING'
-    //     ];
-    // }
+$dateBySecond = [];
+foreach ($datehistory as $d) {
+    $dateBySecond[(int)$d->timecreated] = [
+        'from' => $d->olddate,
+        'to'   => $d->newdate,
+        'scope'=> $d->scope
+    ];
+}
 
-
-    $normalize = function($t) {
-    if ($t === null || $t === '') {
-        return '';
-    }
+$gmTimeBySecond = [];
+$normalize = function($t) {
+    if ($t === null || $t === '') return '';
     [$h, $m] = array_map('intval', explode(':', (string)$t));
     return sprintf('%02d:%02d', $h, $m);
 };
 
 foreach ($gmTimeHistory as $gth) {
-
     $gmTimeBySecond[(int)$gth->timecreated] = [
         'from'  => $normalize($gth->oldstart) . ' - ' . $normalize($gth->oldend),
         'to'    => $normalize($gth->newstart) . ' - ' . $normalize($gth->newend),
@@ -161,127 +151,69 @@ foreach ($gmTimeHistory as $gth) {
     ];
 }
 
+// --------------------------------------------------
+// Build timeline
+// --------------------------------------------------
+$timelineSeconds = array_unique(array_merge(
+    array_keys($teacherBySecond),
+    array_keys($timeBySecond),
+    array_keys($dateBySecond),
+    array_keys($gmTimeBySecond),
+    array_map(fn($s) => (int)$s->timecreated, $statushistory)
+));
+sort($timelineSeconds);
 
-    
+$timeline = [];
 
-    // --------------------------------------------------
-    // Build timeline
-    // --------------------------------------------------
-    $timelineSeconds = array_unique(array_merge(
-        array_keys($teacherBySecond),
-        array_keys($timeBySecond),
-        array_keys($dateBySecond),
-        array_keys($gmTimeBySecond), // ✅ ADD THIS
-        array_map(fn($s) => (int)$s->timecreated, $statushistory)
-    ));
-    sort($timelineSeconds);
+foreach ($timelineSeconds as $ts) {
 
-    $timeline = [];
-
-    foreach ($timelineSeconds as $ts) {
-
-        $s = null;
-        foreach ($statushistory as $sh) {
-            if ((int)$sh->timecreated === $ts) {
-                $s = $sh;
-                break;
-            }
+    $s = null;
+    foreach ($statushistory as $sh) {
+        if ((int)$sh->timecreated === $ts) {
+            $s = $sh;
+            break;
         }
-
-        if (
-            !$s &&
-            empty($teacherBySecond[$ts]) &&
-            empty($timeBySecond[$ts]) &&
-            empty($dateBySecond[$ts]) &&
-            empty($gmTimeBySecond[$ts])   
-        ) {
-            continue;
-        }
-
-        $entry = [
-            'type'        => $s ? $s->newstatus : 'updated',
-            'scope'       => $s->scope ?? 'THIS_OCCURRENCE',
-            'changedAt'   => date('Y-m-d H:i', $ts),
-            'changedAtTs'=> $ts,
-            'changedBy'   => $s->createdby ?? null,
-            'status'      => $s ? ['from' => $s->oldstatus, 'to' => $s->newstatus] : null
-        ];
-
-        if (!empty($teacherBySecond[$ts])) $entry['teacher'] = $teacherBySecond[$ts];
-        if (!empty($timeBySecond[$ts]))    $entry['time']    = $timeBySecond[$ts];
-        if (!empty($dateBySecond[$ts]))    $entry['date']    = $dateBySecond[$ts];
-
-        // if (
-        //     $s &&
-        //     $s->newstatus === 'rescheduled' &&
-        //     empty($entry['time']) &&
-        //     !empty($gmTimeBySecond[$ts])
-        // ) {
-        //     $entry['time'] = $gmTimeBySecond[$ts];
-        // }
-
-        if (
-    empty($entry['time']) &&
-    !empty($gmTimeBySecond[$ts])
-) {
-    $entry['time'] = $gmTimeBySecond[$ts];
-}
-
-
-        $timeline[] = $entry;
     }
 
-    // --------------------------------------------------
-    // CURRENT TIME RESOLUTION (FIXED LOGIC)
-    // --------------------------------------------------
-    $eventdateymd = date('Y-m-d', (int)$event->eventdate);
-
-    $gmStart = sprintf('%02d:%02d', $googlemeet->starthour, $googlemeet->startminute);
-    $gmEnd   = sprintf('%02d:%02d', $googlemeet->endhour,   $googlemeet->endminute);
-
-    $latestEventTime = null;
-    if (!empty($timehistory)) {
-        $last = end($timehistory);
-        $latestEventTime = [
-            'start' => date('H:i', $last->newstart),
-            'end'   => date('H:i', $last->newend)
-        ];
+    if (
+        !$s &&
+        empty($teacherBySecond[$ts]) &&
+        empty($timeBySecond[$ts]) &&
+        empty($dateBySecond[$ts]) &&
+        empty($gmTimeBySecond[$ts])
+    ) {
+        continue;
     }
 
-
-    $normalize = function(string $t): string {
-    [$h, $m] = array_map('intval', explode(':', $t));
-    return sprintf('%02d:%02d', $h, $m);
-};
-
-$latestGmTime = null;
-if (!empty($gmTimeHistory)) {
-    $last = end($gmTimeHistory);
-    $latestGmTime = [
-        'start' => $normalize($last->newstart),
-        'end'   => $normalize($last->newend)
+    $entry = [
+        'type'        => $s ? $s->newstatus : 'updated',
+        'scope'       => $s->scope ?? 'THIS_OCCURRENCE',
+        'changedAt'   => date('Y-m-d H:i', $ts),
+        'changedAtTs'=> $ts,
+        'changedBy'   => $s->createdby ?? null,
+        'status'      => $s ? ['from' => $s->oldstatus, 'to' => $s->newstatus] : null
     ];
+
+    if (!empty($teacherBySecond[$ts])) $entry['teacher'] = $teacherBySecond[$ts];
+    if (!empty($timeBySecond[$ts]))    $entry['time']    = $timeBySecond[$ts];
+    if (!empty($dateBySecond[$ts]))    $entry['date']    = $dateBySecond[$ts];
+
+    if (empty($entry['time']) && !empty($gmTimeBySecond[$ts])) {
+        $entry['time'] = $gmTimeBySecond[$ts];
+    }
+
+    $timeline[] = $entry;
 }
 
 
-    if ($latestEventTime) {
-        $currentStart = $latestEventTime['start'];
-        $currentEnd   = $latestEventTime['end'];
-    } elseif ($latestGmTime) {
-        $currentStart = $latestGmTime['start'];
-        $currentEnd   = $latestGmTime['end'];
-    } else {
-        $currentStart = $gmStart;
-        $currentEnd   = $gmEnd;
-    }
+    // --------------------------------------------------
+    // CURRENT STATE (EVENT TABLE)
+    // --------------------------------------------------
+    $eventStartTs = (int)$event->eventdate;
+    $eventEndTs   = $eventStartTs + (int)$event->duration;
 
-    $currentStartTs = strtotime("$eventdateymd $currentStart");
-    $currentEndTs   = strtotime("$eventdateymd $currentEnd");
-    if ($currentEndTs <= $currentStartTs) {
-        $currentEndTs += DAYSECS;
-    }
-
-    $durationMinutes = (int)(($currentEndTs - $currentStartTs) / 60);
+    $currentStart = date('H:i', $eventStartTs);
+    $currentEnd   = date('H:i', $eventEndTs);
 
     $current = [
         'status'     => $currentStatusValue,
@@ -291,36 +223,66 @@ if (!empty($gmTimeHistory)) {
     ];
 
     // --------------------------------------------------
-    // PREVIOUS STATE
+    // PREVIOUS STATE (FIXED LOGIC)
     // --------------------------------------------------
     $previous = null;
 
-    for ($i = count($timeline) - 1; $i >= 0; $i--) {
-        $t = $timeline[$i];
-        //if (!empty($t['time']['from']) || !empty($t['teacher']['from']) || !empty($t['status']['from'])) {
-            if (
-    !empty($t['time']['from']) ||
-    !empty($t['teacher']['from']) ||
-    !empty($t['status']['from'])
-) {
+    if (!empty($statushistory) || !empty($timehistory) || !empty($teacherhistory)) {
 
+        $previous = [
+            'status'     => null,
+            'start_time' => null,
+            'end_time'   => null,
+            'teacher'    => null
+        ];
 
-            $prevStart = null;
-            $prevEnd   = null;
+        // ---------------- STATUS ----------------
+        if (!empty($statushistory)) {
+            $values = array_values($statushistory);
+            $last   = end($values);
 
-            if (!empty($t['time']['from'])) {
-                [$prevStart, $prevEnd] = array_map('trim', explode(' - ', $t['time']['from']));
+            if (count($values) >= 2) {
+                $previous['status'] = $values[count($values) - 2]->newstatus;
+            } else {
+                $previous['status'] = 'scheduled';
             }
+        }
 
-            $previous = [
-                'status'     => $t['status']['from'] ?? $current['status'],
-                'start_time' => $prevStart ?? $currentStart,
-                'end_time'   => $prevEnd   ?? $currentEnd,
-                'teacher'    => $build_teacher_info(
-                    !empty($t['teacher']['from']) ? (int)$t['teacher']['from'] : $resolvedTeacherId
-                )
-            ];
-            break;
+        // ---------------- TIME ----------------
+        // if (!empty($timehistory)) {
+        //     $lastTime = end($timehistory);
+        //     $previous['start_time'] = date('H:i', $lastTime->oldstart);
+        //     $previous['end_time']   = date('H:i', $lastTime->oldend);
+        // }
+
+        // ---------------- TIME ----------------
+        if (!empty($timehistory)) {
+            // Time was changed → use old values
+            $lastTime = end($timehistory);
+            $previous['start_time'] = date('H:i', $lastTime->oldstart);
+            $previous['end_time']   = date('H:i', $lastTime->oldend);
+        } else {
+            // Time was NOT changed → fallback to current event time
+            $previous['start_time'] = $currentStart;
+            $previous['end_time']   = $currentEnd;
+        }
+
+
+        // ---------------- TEACHER ----------------
+        if (!empty($teacherhistory)) {
+            $lastTeacher = end($teacherhistory);
+            $previous['teacher'] = $build_teacher_info((int)$lastTeacher->oldteacherid);
+        } else {
+            $previous['teacher'] = $build_teacher_info($resolvedTeacherId);
+        }
+
+        // If literally nothing resolved → null
+        if (
+            $previous['status'] === null &&
+            $previous['start_time'] === null &&
+            $previous['teacher'] === null
+        ) {
+            $previous = null;
         }
     }
 
@@ -329,10 +291,10 @@ if (!empty($gmTimeHistory)) {
         'event' => [
             'eventid'          => $eventid,
             'googlemeetid'     => $event->googlemeetid,
-            'eventdate'        => $eventdateymd,
+            'eventdate'        => date('Y-m-d', $eventStartTs),
             'start_time'       => $currentStart,
             'end_time'         => $currentEnd,
-            'duration_minutes' => $durationMinutes,
+            'duration_minutes' => (int)(($eventEndTs - $eventStartTs) / 60),
             'student'          => $student,
             'classType'        => $classType
         ],
@@ -341,7 +303,7 @@ if (!empty($gmTimeHistory)) {
             'previous' => $previous
         ],
         'history' => [
-            'timeline' => $timeline
-        ]
+    'timeline' => $timeline
+]
     ];
 }

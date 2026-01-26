@@ -1389,6 +1389,14 @@
                     break;
                 case 'manage_class':
                     $('#manageclassTabContent').show();
+                    // When opening Manage 1:1 tab, ensure it starts clean
+                    if (window.resetManageClassForm && typeof window.resetManageClassForm === 'function') {
+                        try {
+                            window.resetManageClassForm();
+                        } catch (e) {
+                            console.warn('resetManageClassForm failed on openTab(manage_class):', e);
+                        }
+                    }
                     break;
                 case 'merge':
                     $('#mergeTabContent').show();
@@ -2004,13 +2012,25 @@
         }
     }
 
+    // Helper: reset Manage 1:1 tab when the main modal is closed
+    function resetManageTabIfLoaded() {
+        if (window.resetManageClassForm && typeof window.resetManageClassForm === 'function') {
+            try {
+                window.resetManageClassForm();
+            } catch (e) {
+                console.warn('resetManageClassForm failed:', e);
+            }
+        }
+    }
+
     // Modal close functionality
     // Close button click handler
     $('.calendar_admin_details_create_cohort_close').click(function() {
         resetCohortFields();
+        resetManageTabIfLoaded();
         // Also close the recurrence modal if it's open
         $('.calendar_admin_details_create_cohort_customrec_modal').removeClass('open').attr('aria-hidden',
-            'true');
+        'true');
         // Remove slot highlight when closing modal
         $(".day-inner .slots > div").removeClass("cohort-slot-highlight");
         if (window._lastCohortSlot) {
@@ -2026,6 +2046,7 @@
     $('#calendar_admin_details_create_cohort_modal_backdrop').click(function(e) {
         if (e.target === this) {
             resetCohortFields();
+            resetManageTabIfLoaded();
             // Also close the recurrence modal if it's open
             $('.calendar_admin_details_create_cohort_customrec_modal').removeClass('open').attr('aria-hidden',
                 'true');
@@ -2037,6 +2058,7 @@
     $(document).keydown(function(e) {
         if (e.key === "Escape") {
             resetCohortFields();
+            resetManageTabIfLoaded();
             // Also close the recurrence modal if it's open
             $('.calendar_admin_details_create_cohort_customrec_modal').removeClass('open').attr('aria-hidden',
                 'true');

@@ -124,6 +124,25 @@
                 </label>
             </div>
 
+            <!-- Scope selection: this event vs this and following -->
+            <div class="mb-3">
+                <label class="form-label fw-semibold mb-2 d-block">Apply cancellation to</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="calendar_admin_cancel_scope"
+                        id="calendar_admin_cancel_scope_this" value="THIS_OCCURRENCE" checked>
+                    <label class="form-check-label" for="calendar_admin_cancel_scope_this">
+                        This lesson only
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="calendar_admin_cancel_scope"
+                        id="calendar_admin_cancel_scope_this_following" value="THIS_AND_FOLLOWING">
+                    <label class="form-check-label" for="calendar_admin_cancel_scope_this_following">
+                        This and following lessons
+                    </label>
+                </div>
+            </div>
+
             <button type="button" class="btn calendar_admin_cancel_resched w-100 mb-3"
                 id="calendar_admin_cancel_reschedule_btn">
                 Reschedule lesson
@@ -2613,17 +2632,50 @@ let closeAll;
             showToast('Cancel failed', 'Missing event information', 'Error');
             return;
         }
-        
-        // Build payload according to update_one_on_one.php format
-        const payload = {
-            scope: 'THIS_OCCURRENCE',
-            eventId: parseInt(eventId),
-            googlemeetid: parseInt(googlemeetid),
-            cancel: {
-                reason: reason,
-                message: message
+
+        // Determine scope from radio buttons
+        const selectedScope = $('input[name="calendar_admin_cancel_scope"]:checked').val() || 'THIS_OCCURRENCE';
+
+        let payload;
+
+        if (selectedScope === 'THIS_AND_FOLLOWING') {
+            // Build week-popup style payload to cancel this and following
+            // Ensure we have a proper YYYY-MM-DD date for the anchor
+            let eventDate = currentEventData.date || currentEventData.eventDate || '';
+            if (eventDate && eventDate.indexOf('T') !== -1) {
+                eventDate = eventDate.split('T')[0];
             }
-        };
+
+            payload = {
+                scope: 'THIS_AND_FOLLOWING',
+                anchorEvent: {
+                    eventId: parseInt(eventId, 10),
+                    eventDate: eventDate,
+                    googlemeetid: parseInt(googlemeetid, 10)
+                },
+                changes: [
+                    {
+                        action: 'CANCEL',
+                        googlemeetid: parseInt(googlemeetid, 10),
+                        scope: 'THIS_AND_FOLLOWING',
+                        reason: {
+                            message: reason
+                        }
+                    }
+                ]
+            };
+        } else {
+            // Default: cancel this occurrence only (existing behaviour)
+            payload = {
+                scope: 'THIS_OCCURRENCE',
+                eventId: parseInt(eventId, 10),
+                googlemeetid: parseInt(googlemeetid, 10),
+                cancel: {
+                    reason: reason,
+                    message: message
+                }
+            };
+        }
 
         console.log('=== CANCEL LESSON PAYLOAD ===');
         console.log('Payload:', payload);
