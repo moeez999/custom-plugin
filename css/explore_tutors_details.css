@@ -69,6 +69,59 @@
       z-index: 999;
     }
 /* video */
+
+/* pagination */
+  .pagination {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    font-family: Arial, sans-serif;
+  }
+
+  .pagination a:not(a.first):not(a.last) {
+    border: 1px solid #ccc;
+  }
+  .pagination a,
+  .pagination span {
+      width: 40px;
+      height: 40px;
+      line-height: 40px;
+      text-align: center;
+      border-radius: 4px;
+      color: #000;
+      text-decoration: none;
+      cursor: pointer;
+      
+      user-select: none;
+  }
+
+  .pagination a:not(a.first):not(a.last):not(a.active):hover {
+      background: #f0f0f0;
+  }
+  .pagination a.active:hover {
+      background: rgba(255, 88, 60, 1) !important;
+  }
+
+  .pagination a.first {margin-right: 10px;}
+  .pagination a.last {margin-left: 10px;}
+
+  .pagination .active {
+      background: #ff2500;
+      color: #fff;
+      cursor: default;
+  }
+
+  .pagination .disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+  }
+
+  .pagination .ellipsis {
+      border: none;
+      cursor: default;
+  }
+
+  /* pagination */
     .what-would-you-like-to-do-modal {
         /* display: none !important; */
     }
