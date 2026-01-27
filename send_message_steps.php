@@ -311,12 +311,23 @@
         </div>
         <div class="checkout_right">
           <h3 class="super_heading" style="margin-bottom: 48px;">Payment Method</h3>
-          <div class="payment-selector mb-3" id="yui_3_18_1_1_1769011004028_47">
+          <div class="payment-selector mb-3 relative" id="yui_3_18_1_1_1769011004028_47">
             <div class="card-info">
                 <img class="card-icon" src="img/visa.png" alt="Visa card icon">
-                <span class="card-details">Visa ****7583</span>
+                <span class="card-details" id="card-value">Visa ****7583</span>
             </div>
             <img class="dropdown-icon" src="img/down-arrow.svg" alt="Dropdown arrow">
+            <div class="payment-optionz absolute top-0 w-100 d-none" id="payment-optionz">
+              <div class="payment-option">
+                <span class="card-details pay-by">Visa ****7583</span>
+              </div>
+              <div class="payment-option">
+                <span class="card-details pay-by">MasterCard ****7583</span>
+              </div>
+              <div class="payment-option">
+                <span class="card-details pay-by">Paypal ****7583</span>
+              </div>
+            </div>
           </div>
           <button id="send_message_confirm" class="confirm_button" style="margin-bottom: 18px;">Confirm monthly subscription</button>
           <p class="text-left" style="margin-bottom: 24px;font-size: 14px; color: #4D4C5C; font-family: 'Figtree', sans-serif;">By pressing the "Confirm payment · $7.50" button, you agree to <span style="color: #121117;text-decoration: underline;">Latingles Refund and Payment Policy</span></p>
@@ -335,23 +346,48 @@
             
               </div>
               <!-- first -->
-              <div class="d-flex items-center" style="border-radius: 8px; border:2px solid #DCDCE5; height: 44px; width: 118px;">
-                <div class="arrowz" style="border-right: 2px solid #DCDCE5;"><img src="img/left-arroww.svg"></div>
-                <div class="arrowz">
-                <img src="img/right-arro.svg"></div>
-              </div>
+              <div class="d-flex items-center" style="width: 118px;">
+                <div class="arrowz arrow-left" style="border: 2px solid #DCDCE5; height: 44px; border-top-left-radius: 8px;border-bottom-left-radius: 8px;"><img src="img/left-arroww.svg"></div>
+                <div class="arrowz arrow-right" style="border: 2px solid #DCDCE5; border-left:0; height: 44px; border-top-right-radius: 8px;border-bottom-right-radius: 8px;"><img src="img/right-arro.svg">
+                  </div>
+                </div>
             </div>
             <div class="checkout-review-window mt-3">
-              <div class="d-flex items-center gap-3">
-                <img src="img/pcz.svg">
-                <span  style="font-size: 16px; font-family: 'Figtree', sans-serif; font-weight: 600;">Wassim</span>
+              <div id="review-1" class="review-content-item">
+                <div class="d-flex items-center gap-3">
+                  <img src="img/pcz.svg">
+                  <span  style="font-size: 16px; font-family: 'Figtree', sans-serif; font-weight: 600;">Wassim</span>
+                </div>
+                <p class="mt-3 text-left" style="font-size: 16px; font-family: 'Figtree', sans-serif; font-weight: 400;">I would love to have the chance to express my high appreciation
+                  and gratitude to this respectable and respectful tutor, Mr
+                  Jonathan.
+                  <span class="d-none" id="review-x-1">extra-ordinary capable and super</span>
+                </p>
+                <p class="reveal-review text-left mt-3 pointer"  style="font-size: 16px; font-family: 'Figtree', sans-serif; font-weight: 600; text-decoration: underline" data-target="review-x-1" >Read more</p>
               </div>
-              <p class="mt-3 text-left" style="font-size: 16px; font-family: 'Figtree', sans-serif; font-weight: 400;">I would love to have the chance to express my high appreciation
-                and gratitude to this respectable and respectful tutor, Mr
-                Jonathan. There is much to say but in brief, he is very professional,
-                <span class="d-none" id="review-x-1">extra-ordinary capable and super</span>
-              </p>
-              <p class="reveal-review text-left mt-3 pointer" data-target="review-x-1" style="font-size: 16px; font-family: 'Figtree', sans-serif; font-weight: 600; text-decoration: underline" class="mt-3 text-left">Read more</p>
+               <div id="review-2" class="review-content-item hidden">
+                <div class="d-flex items-center gap-3">
+                  <img src="img/pcz.svg">
+                  <span  style="font-size: 16px; font-family: 'Figtree', sans-serif; font-weight: 600;">Atisam</span>
+                </div>
+                <p class="mt-3 text-left" style="font-size: 16px; font-family: 'Figtree', sans-serif; font-weight: 400;">love to have the chance to express my high appreciation
+                  and gratitude to this respectable and respectful tutor,
+                  <span class="d-none" id="review-x-2">extra-ordinary capable and super</span>
+                </p>
+                <p class="reveal-review text-left mt-3 pointer"  style="font-size: 16px; font-family: 'Figtree', sans-serif; font-weight: 600; text-decoration: underline" data-target="review-x-2">Read more</p>
+              </div>
+              <div id="review-3" class="review-content-item hidden">
+                <div class="d-flex items-center gap-3">
+                  <img src="img/pcz.svg">
+                  <span  style="font-size: 16px; font-family: 'Figtree', sans-serif; font-weight: 600;">Zunair</span>
+                </div>
+                <p class="mt-3 text-left" style="font-size: 16px; font-family: 'Figtree', sans-serif; font-weight: 400;">I would love to have the chance to express my high appreciation
+                  and gratitude to this respectable and respectful tutor, Mr
+                  Jonathan. There is much to say but in brief, he is very professional,
+                  <span class="d-none" id="review-x-3">extra-ordinary capable and super</span>
+                </p>
+                <p class="reveal-review text-left mt-3 pointer" style="font-size: 16px; font-family: 'Figtree', sans-serif; font-weight: 600; text-decoration: underline" data-target="review-x-3">Read more</p>
+              </div>
             </div>
             <!-- arrow -->
           </div>
