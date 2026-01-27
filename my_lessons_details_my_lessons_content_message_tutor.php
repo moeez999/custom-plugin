@@ -22,6 +22,9 @@
     border-radius: 8px;
     color: #121117;
     font-family: "Poppins", sans-serif;
+    top: 50% !important;
+    right: 10% !important;
+    transform: translateY(-50%) !important;
   }
   .my_lessons_details_my_lessons_content_message_tutor_panel,
   .my_lessons_details_my_lessons_content_message_tutor_panel *{
@@ -39,11 +42,24 @@
     padding-inline: 24px;
     box-shadow: 0px -3px 22.1px 0px #12111726;
   }
+  .message-header-first {
+    box-shadow: 0px -3px 22.1px 0px #12111726;
+  }
   .my_lessons_details_my_lessons_content_message_tutor_feed  {
     padding-inline: 24px;
     padding-top: 12px;
     margin-bottom: 40px;
   }
+  .msg-list:hover  {
+    background: #F4F5F6;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  .msg-box::-webkit-scrollbar{ width:0; height:0; }
+
+  .tab-active {
+  border-bottom: 4px solid #FF2500;
+}
 </style>
 </head>
 
@@ -56,7 +72,7 @@
 </button> -->
 
 <!-- Panel -->
-<div id="message_tutor_panel_screen_1" class="hidden my_lessons_details_my_lessons_content_message_tutor_panel fixed bottom-6 right-6 z-[2147483647]
+<div id="message_tutor_panel_screen_1" class="hidden my_lessons_details_my_lessons_content_message_tutor_panel fixed  z-[2147483647]
             w-[494px] max-w-[95vw] max-h-[79vh] h-[671px] bg-white border border-gray-200 
             my_lessons_details_my_lessons_content_message_tutor_shadow
             flex flex-col overflow-hidden justify-between">
@@ -216,7 +232,7 @@
     </div>
 </div>
 <!-- Panel -->
-<div id="message_tutor_panel_screen_2" class="hidden my_lessons_details_my_lessons_content_message_tutor_panel fixed bottom-6 right-6 z-[2147483647]
+<div id="message_tutor_panel_screen_2" class="hidden my_lessons_details_my_lessons_content_message_tutor_panel fixed  z-[2147483647]
             w-[494px] max-w-[95vw] max-h-[79vh] h-[671px] bg-white border border-gray-200 
             my_lessons_details_my_lessons_content_message_tutor_shadow
              flex-col overflow-hidden justify-between">
@@ -291,6 +307,232 @@
 
 </div>
 
+<!-- Panel -->
+<div id="message_tutor_panel_screen_0" class="hidden my_lessons_details_my_lessons_content_message_tutor_panel fixed  z-[2147483647]
+            w-[494px] max-w-[95vw] max-h-[79vh] h-[671px] bg-white border border-gray-200 
+            my_lessons_details_my_lessons_content_message_tutor_shadow
+             flex-col overflow-hidden justify-between">
+    
+    <!-- Header -->
+    <div class="message-header-first message-header-first pt-[28px] pb-[8px]">
+      <div class="flex items-center justify-between h-[40px] mb-3" style="height: 32px;
+          padding-inline: 24px;">
+        <div class="flex items-center justify-between w-100">
+          <p class="text-[24px] font-[600] hover:text-[#121117]">Messages</p>
+          <div class="d-flex gap-[22px] items-center">
+            <a href="my_lessons_tutor_profile_send_message_details.php">
+            <svg class="pointer" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M13.9344 2.05128H9.74359V0H17.4359V7.69231H15.3846V3.50154L10.9815 7.90462L9.53128 6.45436L13.9344 2.05128ZM3.50154 15.3846H7.69231V17.4359H0V9.74359H2.05128V13.9344L6.45436 9.53128L7.90462 10.9815L3.50154 15.3846Z" fill="#121117"/>
+            </svg>
+            </a>
+            <svg class="my_lessons_details_my_lessons_content_message_tutor_close pointer" style="flex: 1" class="pointer flex justify-end min-w-[40px]" width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M15.414 14L14 15.414L18.95 20.364L14 25.314L15.414 26.728L20.364 21.778L25.314 26.728L26.728 25.314L21.778 20.364L26.728 15.414L25.314 14L20.364 18.95L15.414 14Z" fill="#121117"/>
+            </svg>
+          </div>  
+        </div>  
+      </div>  
+      <div class="px-[24px] flex items-center">
+      <div id="tabs" class="flex">
+        <button class="tab-btn h-[45px] flex items-center justify-center min-w-[80px] px-[10px] text-[#000000] font-[500] tab-active" data-target="msg-list-1">
+          <span class="mb-[-5px]">All</span>
+        </button>
+
+        <button class="tab-btn h-[45px] flex items-center justify-center min-w-[80px] px-[10px] text-[#000000] font-[500]"  data-target="msg-list-2">
+          <span>Unread</span>
+          <div class="w-[18px] h-[18px] bg-[#f4f5f7] rounded-full font-[500] text-[10px] text-[#000000] flex items-center ml-[10px] justify-center">2</div>
+        </button>
+
+        <button class="tab-btn h-[45px] flex items-center justify-center min-w-[80px] px-[10px] text-[#000000] font-[500]"  data-target="msg-list-3">
+          <span>Archived</span>
+        </button>
+      </div>
+      </div>
+
+    </div>
+
+    <!-- list -->
+     <div style="overflow: auto !important; height: 542px;" class="msg-box" id="msg-list-1">
+      <div class="msg-list h-[86px] mx-[24px] flex items-center gap-[12px]" style="border-bottom: 1px solid #DCDCE5;">
+        <img src="https://i.pravatar.cc/80?img=5" alt="Daniela" class="w-[48px] h-[48px] rounded-full"/>
+        <div>
+            <p class="font-[600] text-[16px] text-[#121117]">Daniela</p>
+            <p class="font-[300] text-[14px] text-[#4D4C5C]">But I must explain to you how all this mistaken...</p>
+        </div>
+        <div class="msg-day-label ml-[8px] text-[#6A697C] font-[300] text-[12px] text-[#6A697C] flex justify-end" style='flex:1; font-family: "Figtree", serif; margin-top: -30px'>
+          Sat
+        </div>
+        <svg class="msg-dots hidden" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M3 10H7V14H3V10ZM10 10H14V14H10V10ZM21 10H17V14H21V10Z" fill="#121117"/>
+        </svg>
+      </div>
+
+      <div class="msg-list h-[86px] mx-[24px] flex items-center gap-[12px]" style="border-bottom: 1px solid #DCDCE5;">
+        <img src="https://i.pravatar.cc/80?img=4" alt="Daniela" class="w-[48px] h-[48px] rounded-full"/>
+        <div>
+            <p class="font-[600] text-[16px] text-[#121117]">Wade Warren</p>
+            <p class="font-[300] text-[14px] text-[#4D4C5C]">But I must explain to you how all this mistaken...</p>
+        </div>
+        <div class="msg-day-label ml-[8px] text-[#6A697C] font-[300] text-[12px] text-[#6A697C] flex justify-end" style='flex:1; font-family: "Figtree", serif; margin-top: -30px'>
+          Sat
+        </div>
+        <svg class="msg-dots hidden" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M3 10H7V14H3V10ZM10 10H14V14H10V10ZM21 10H17V14H21V10Z" fill="#121117"/>
+        </svg>
+      </div>
+      
+      <div class="msg-list h-[86px] mx-[24px] flex items-center gap-[12px]" style="border-bottom: 1px solid #DCDCE5;">
+        <img src="https://i.pravatar.cc/80?img=2" alt="Daniela" class="w-[48px] h-[48px] rounded-full"/>
+        <div>
+            <p class="font-[600] text-[16px] text-[#121117]">Camila</p>
+            <p class="font-[300] text-[14px] text-[#4D4C5C]">But I must explain to you how all this mistaken...</p>
+        </div>
+        <div class="msg-day-label ml-[8px] text-[#6A697C] font-[300] text-[12px] text-[#6A697C] flex justify-end" style='flex:1; font-family: "Figtree", serif; margin-top: -30px'>
+          Sat
+        </div>
+        <svg class="msg-dots hidden" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M3 10H7V14H3V10ZM10 10H14V14H10V10ZM21 10H17V14H21V10Z" fill="#121117"/>
+        </svg>
+      </div>
+
+      <div class="msg-list h-[86px] mx-[24px] flex items-center gap-[12px]" style="border-bottom: 1px solid #DCDCE5;">
+        <img src="https://i.pravatar.cc/80?img=1" alt="Daniela" class="w-[48px] h-[48px] rounded-full"/>
+        <div>
+            <p class="font-[600] text-[16px] text-[#121117]">Karen</p>
+            <p class="font-[300] text-[14px] text-[#4D4C5C]">But I must explain to you how all this mistaken...</p>
+        </div>
+        <div class="msg-day-label ml-[8px] text-[#6A697C] font-[300] text-[12px] text-[#6A697C] flex justify-end" style='flex:1; font-family: "Figtree", serif; margin-top: -30px'>
+          Sat
+        </div>
+        <svg class="msg-dots hidden" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M3 10H7V14H3V10ZM10 10H14V14H10V10ZM21 10H17V14H21V10Z" fill="#121117"/>
+        </svg>
+      </div>
+
+      <div class="msg-list h-[86px] mx-[24px] flex items-center gap-[12px]" style="border-bottom: 1px solid #DCDCE5;">
+        <img src="https://i.pravatar.cc/80?img=5" alt="Daniela" class="w-[48px] h-[48px] rounded-full"/>
+        <div>
+            <p class="font-[600] text-[16px] text-[#121117]">Mare B</p>
+            <p class="font-[300] text-[14px] text-[#4D4C5C]">But I must explain to you how all this mistaken...</p>
+        </div>
+        <div class="msg-day-label ml-[8px] text-[#6A697C] font-[300] text-[12px] text-[#6A697C] flex justify-end" style='flex:1; font-family: "Figtree", serif; margin-top: -30px'>
+          Sat
+        </div>
+        <svg class="msg-dots hidden" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M3 10H7V14H3V10ZM10 10H14V14H10V10ZM21 10H17V14H21V10Z" fill="#121117"/>
+        </svg>
+      </div>
+
+      <div class="msg-list h-[86px] mx-[24px] flex items-center gap-[12px]" style="border-bottom: 1px solid #DCDCE5;">
+        <img src="https://i.pravatar.cc/80?img=5" alt="Daniela" class="w-[48px] h-[48px] rounded-full"/>
+        <div>
+            <p class="font-[600] text-[16px] text-[#121117]">Anne S.</p>
+            <p class="font-[300] text-[14px] text-[#4D4C5C]">But I must explain to you how all this mistaken...</p>
+        </div>
+        <div class="msg-day-label ml-[8px] text-[#6A697C] font-[300] text-[12px] text-[#6A697C] flex justify-end" style='flex:1; font-family: "Figtree", serif; margin-top: -30px'>
+          Sat
+        </div>
+        <svg class="msg-dots hidden" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M3 10H7V14H3V10ZM10 10H14V14H10V10ZM21 10H17V14H21V10Z" fill="#121117"/>
+        </svg>
+      </div>
+
+      <div class="msg-list h-[86px] mx-[24px] flex items-center gap-[12px]" style="border-bottom: 1px solid #DCDCE5;">
+        <img src="https://i.pravatar.cc/80?img=5" alt="Daniela" class="w-[48px] h-[48px] rounded-full"/>
+        <div>
+            <p class="font-[600] text-[16px] text-[#121117]">Daniela</p>
+            <p class="font-[300] text-[14px] text-[#4D4C5C]">But I must explain to you how all this mistaken...</p>
+        </div>
+        <div class="msg-day-label ml-[8px] text-[#6A697C] font-[300] text-[12px] text-[#6A697C] flex justify-end" style='flex:1; font-family: "Figtree", serif; margin-top: -30px'>
+          Sat
+        </div>
+        <svg class="msg-dots hidden" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M3 10H7V14H3V10ZM10 10H14V14H10V10ZM21 10H17V14H21V10Z" fill="#121117"/>
+        </svg>
+      </div>
+    
+     </div>
+
+    <div style="overflow: auto !important; height: 542px;" class="msg-box hidden" id="msg-list-2">
+      <div class="msg-list h-[86px] mx-[24px] flex items-center gap-[12px]" style="border-bottom: 1px solid #DCDCE5;">
+        <img src="https://i.pravatar.cc/80?img=5" alt="Daniela" class="w-[48px] h-[48px] rounded-full"/>
+        <div>
+            <p class="font-[600] text-[16px] text-[#121117]">Daniela</p>
+            <p class="font-[300] text-[14px] text-[#4D4C5C]">But I must explain to you how all this mistaken...</p>
+        </div>
+        <div class="msg-day-label ml-[8px] text-[#6A697C] font-[300] text-[12px] text-[#6A697C] flex justify-end" style='flex:1; font-family: "Figtree", serif;  flex-direction: column;
+          align-items: center;
+          justify-content: center;' >
+          <div>Sat</div>
+          <div class="mt-[6px] w-[24px] h-[24px] bg-[#FF2500] rounded-[50%] flex items-center justify-center text-[15px] font-[600] text-[#fff]">2</div>
+        </div>
+        <svg class="msg-dots hidden" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M3 10H7V14H3V10ZM10 10H14V14H10V10ZM21 10H17V14H21V10Z" fill="#121117"/>
+        </svg>
+        
+      </div>
+      <div class="msg-list h-[86px] mx-[24px] flex items-center gap-[12px]" style="border-bottom: 1px solid #DCDCE5;">
+        <img src="https://i.pravatar.cc/80?img=5" alt="Daniela" class="w-[48px] h-[48px] rounded-full"/>
+        <div>
+            <p class="font-[600] text-[16px] text-[#121117]">Warren</p>
+            <p class="font-[300] text-[14px] text-[#4D4C5C]">But I must explain to you how all this mistaken...</p>
+        </div>
+        <div class="msg-day-label ml-[8px] text-[#6A697C] font-[300] text-[12px] text-[#6A697C] flex justify-end" style='flex:1; font-family: "Figtree", serif;  flex-direction: column;
+          align-items: center;
+          justify-content: center;' >
+          <div>Sat</div>
+          <div class="mt-[6px] w-[24px] h-[24px] bg-[#FF2500] rounded-[50%] flex items-center justify-center text-[15px] font-[600] text-[#fff]">2</div>
+        </div>
+        <svg class="msg-dots hidden" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M3 10H7V14H3V10ZM10 10H14V14H10V10ZM21 10H17V14H21V10Z" fill="#121117"/>
+        </svg>
+        
+      </div>
+      
+    </div>
+              <!--  -->
+    <div style="overflow: auto !important; height: 542px;" class="msg-box hidden" id="msg-list-3">
+      <div class="msg-list h-[86px] mx-[24px] flex items-center gap-[12px]" style="border-bottom: 1px solid #DCDCE5;">
+        <img src="https://i.pravatar.cc/80?img=5" alt="Daniela" class="w-[48px] h-[48px] rounded-full"/>
+        <div>
+            <p class="font-[600] text-[16px] text-[#121117]">Daniela</p>
+            <p class="font-[300] text-[14px] text-[#4D4C5C]">But I must explain to you how all this mistaken...</p>
+        </div>
+        <div class="msg-day-label ml-[8px] text-[#6A697C] font-[300] text-[12px] text-[#6A697C] flex justify-end" style='flex:1; font-family: "Figtree", serif; margin-top: -30px'>
+          Sat
+        </div>
+        <svg class="msg-dots hidden" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M3 10H7V14H3V10ZM10 10H14V14H10V10ZM21 10H17V14H21V10Z" fill="#121117"/>
+        </svg>
+      </div>
+  
+
+      <div class="msg-list h-[86px] mx-[24px] flex items-center gap-[12px]" style="border-bottom: 1px solid #DCDCE5;">
+        <img src="https://i.pravatar.cc/80?img=5" alt="Daniela" class="w-[48px] h-[48px] rounded-full"/>
+        <div>
+            <p class="font-[600] text-[16px] text-[#121117]">Warren</p>
+            <p class="font-[300] text-[14px] text-[#4D4C5C]">But I must explain to you how all this mistaken...</p>
+        </div>
+        <div class="msg-day-label ml-[8px] text-[#6A697C] font-[300] text-[12px] text-[#6A697C] flex justify-end" style='flex:1; font-family: "Figtree", serif; margin-top: -30px'>
+          Sat
+        </div>
+        <svg class="msg-dots hidden" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M3 10H7V14H3V10ZM10 10H14V14H10V10ZM21 10H17V14H21V10Z" fill="#121117"/>
+        </svg>
+      </div>
+    
+    </div>
+              <!--  -->
+    
+
+
+
+
+  
+
+</div>
+
+
+
 <script>
 $(function(){
   // Use long, namespaced vars per your request
@@ -309,11 +551,21 @@ $(function(){
   // CLOSE (back & close)
 $my_lessons_details_my_lessons_content_message_tutor_document.on(
   'click',
-  '.my_lessons_details_my_lessons_content_message_tutor_panel #message_tutor_panel_screen_back_1, \
-   .my_lessons_details_my_lessons_content_message_tutor_panel .my_lessons_details_my_lessons_content_message_tutor_close',
+  '.my_lessons_details_my_lessons_content_message_tutor_panel .my_lessons_details_my_lessons_content_message_tutor_close',
   function () {
     $('#message_tutor_panel_screen_1').addClass('hidden');
     $('#message_tutor_panel_screen_2').addClass('hidden');
+    $('#message_tutor_panel_screen_0').addClass('hidden');
+  }
+);
+
+$my_lessons_details_my_lessons_content_message_tutor_document.on(
+  'click',
+  '.my_lessons_details_my_lessons_content_message_tutor_panel #message_tutor_panel_screen_back_1',
+  function () {
+    $('#message_tutor_panel_screen_1').addClass('hidden');
+    $('#message_tutor_panel_screen_2').addClass('hidden');
+    $('#message_tutor_panel_screen_0').removeClass('hidden');
   }
 );
 
@@ -326,6 +578,18 @@ $my_lessons_details_my_lessons_content_message_tutor_document.on(
       $('#message_tutor_panel_screen_1') .removeClass('hidden')
     }
   );
+
+  $my_lessons_details_my_lessons_content_message_tutor_document.on(
+    'click',
+    '.my_lessons_details_my_lessons_content_message_tutor_panel .msg-list',
+    function(){
+      $('#message_tutor_panel_screen_0') .addClass('hidden')
+      $('#message_tutor_panel_screen_2') .addClass('hidden')
+      $('#message_tutor_panel_screen_1') .removeClass('hidden')
+    }
+  );
+
+ 
 
    $my_lessons_details_my_lessons_content_message_tutor_document.on(
     'click',
@@ -422,7 +686,58 @@ $my_lessons_details_my_lessons_content_message_tutor_document.on(
     my_lessons_details_my_lessons_content_message_tutor_stripInjectedNumbers($(this));
   });
 });
+
+// three dots show
+ $('.msg-list').hover(
+    function () {
+      // mouse enter
+      $(this).find('.msg-dots').removeClass('hidden');
+      $(this).find('.msg-day-label').addClass('hidden');
+    },
+    function () {
+      // mouse leave
+      $(this).find('.msg-dots').addClass('hidden');
+      $(this).find('.msg-day-label').removeClass('hidden');
+    }
+  );
+
+  // tabs
+const tabs = document.querySelectorAll('.tab-btn');
+const contents = document.querySelectorAll('.msg-box');
+
+tabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+
+    const targetId = tab.dataset.target;
+    const targetEl = document.getElementById(targetId);
+
+    // reset tabs
+    tabs.forEach(t => {
+      t.classList.remove('tab-active');
+      const span = t.querySelector('span');
+      if (span) span.classList.remove('mb-[-5px]');
+    });
+
+    // hide all message lists
+    contents.forEach(c => c.classList.add('hidden'));
+
+    // activate clicked tab
+    tab.classList.add('tab-active');
+    const activeSpan = tab.querySelector('span');
+    if (activeSpan) activeSpan.classList.add('mb-[-5px]');
+
+    // show matching list
+    if (targetEl) targetEl.classList.remove('hidden');
+  });
+});
+
+// sync default active tab on load
+const defaultTab = document.querySelector('.tab-btn.tab-active');
+if (defaultTab) defaultTab.click();
+
+
 </script>
+
 
 </body>
 </html>
