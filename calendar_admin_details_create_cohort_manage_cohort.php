@@ -305,7 +305,8 @@
     <button class="calendar_admin_details_create_cohort_btn">Update Cohort</button>
 </div>
 
-<link rel="stylesheet" href="<?php echo $CFG->wwwroot; ?>/local/customplugin/css/calendar_admin_details_create_cohort_manage_cohort.css">
+<link rel="stylesheet"
+    href="<?php echo $CFG->wwwroot; ?>/local/customplugin/css/calendar_admin_details_create_cohort_manage_cohort.css">
 
 <!-- Time Picker Modal -->
 <div class="calendar_admin_details_create_cohort_time_modal_backdrop timeModalBackdrop" id="timeModalBackdrop">
@@ -1722,7 +1723,8 @@ $(document).ready(function() {
                 };
             };
             const flagsFromScheduleArr = (arr = []) => {
-                const set = new Set(arr.map(d => d.day));
+                // Normalise day labels (e.g. trim spaces) so flags update correctly
+                const set = new Set(arr.map(d => (d.day || '').trim()));
                 return {
                     cohortmonday: set.has('Mon') ? 1 : 0,
                     cohorttuesday: set.has('Tue') ? 1 : 0,
@@ -1749,7 +1751,8 @@ $(document).ready(function() {
 
             const mainDays = flagsFromScheduleArr(main.schedule?.scheduleArray || []);
             const tutorDays = (() => {
-                const set = new Set((tutor.schedule?.scheduleArray || []).map(d => d.day));
+                // Normalise tutor day labels too
+                const set = new Set((tutor.schedule?.scheduleArray || []).map(d => (d.day || '').trim()));
                 return {
                     cohorttutormonday: set.has('Mon') ? 1 : 0,
                     cohorttutortuesday: set.has('Tue') ? 1 : 0,
