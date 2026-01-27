@@ -270,7 +270,7 @@
                 </svg>
 
               </button>
-              <div id="find_groups_book_trail_lesson_step2_week" class="text-[20px] font-semibold text-[#121117]">September 16–22 , 2024</div>
+              <div id="find_groups_book_trail_lesson_step2_week" class="text-[20px] font-semibold text-[#121117]">March 16–22 , 2024</div>
               <button style="width: 60px; height: 51px; border-radius: 11px" id="find_groups_book_trail_lesson_step2_btn_next" class=" rounded-md border border-[#E4E7EE] flex items-center justify-center" aria-label="Next week">
                 <svg width="10" height="18" viewBox="0 0 10 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M9.71731 8.90754C9.71742 8.80119 9.69652 8.69586 9.6558 8.59761C9.61508 8.49936 9.55536 8.41013 9.48005 8.33503L1.38233 0.237314C1.06591 -0.0791046 0.55353 -0.0791046 0.237314 0.237314C-0.0789021 0.553732 -0.0791045 1.06611 0.237314 1.38233L7.76252 8.90754L0.237314 16.4328C-0.0791038 16.7492 -0.0791038 17.2616 0.237315 17.5778C0.553733 17.894 1.06612 17.8942 1.38233 17.5778L9.48005 9.48005C9.55536 9.40495 9.61508 9.31571 9.6558 9.21747C9.69652 9.11922 9.71742 9.01389 9.71731 8.90754Z" fill="black"/>
@@ -489,7 +489,7 @@
               <span style="margin-left: 8px;" class="find_groups_details_available_btn_book"> Book trial lesson</span>
               </button>
 
-              <button class="my_lessons_tutor_profile_btn my_lessons_tutor_profile_btn_outline" id="open_step1" style="display: flex; align-items: center; justify-content: center;">
+              <button class="my_lessons_tutor_profile_btn my_lessons_tutor_profile_btn_outline" id="open-message-popup" style="display: flex; align-items: center; justify-content: center;">
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                   <rect width="20" height="20" fill="url(#pattern0_22337_27599)"/>
                   <defs>
@@ -528,6 +528,7 @@
 <?php require_once("find_groups_book_trail_lesson.php");?>
 <?php require_once('find_group_profile_page_details_show_more.php');?>
 <?php require_once('find_group_profile_page_details_post_reviews.php');?>
+ <?php require_once('my_lessons_details_my_lessons_content_message_tutor.php');?>
 
 <!-- js -->
 <script src="js/find_group_profile_page_details.js"></script>
