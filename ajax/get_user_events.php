@@ -13,12 +13,80 @@ try {
     // --------------------------------------------------
     // Read JSON payload
     // --------------------------------------------------
-    $raw  = file_get_contents('php://input');
-    $data = json_decode($raw, true);
+    // $raw  = file_get_contents('php://input');
+    // $data = json_decode($raw, true);
 
-    if (!is_array($data)) {
-        throw new moodle_exception('invaliddata', 'error', '', 'Invalid JSON');
+    // if (!is_array($data)) {
+    //     throw new moodle_exception('invaliddata', 'error', '', 'Invalid JSON');
+    // }
+
+
+
+
+global $USER;
+
+// --------------------------------------------------
+// FORCE ADMIN LOGIN (only if not logged in)
+// --------------------------------------------------
+if (!isloggedin() || isguestuser()) {
+    $admin = get_admin();
+    if ($admin) {
+        \core\session\manager::set_user($admin);
+    } else {
+        throw new moodle_exception('adminusernotfound');
     }
+}
+
+
+    $raw  = file_get_contents('php://input');
+$data = json_decode($raw, true);
+
+if (!is_array($data)) {
+    throw new moodle_exception('invaliddata', 'error', '', 'Invalid JSON');
+}
+
+// --------------------------------------------------
+// Map JSON payload → file2 expected params
+// --------------------------------------------------
+$_GET['start'] = $data['startDate'];
+$_GET['end']   = $data['endDate'];
+
+if (!empty($data['teacherId']) && is_array($data['teacherId'])) {
+    $_GET['teacherids'] = implode(',', array_map('intval', $data['teacherId']));
+}
+
+// Optional defaults
+$_GET['cohortid']     = $_GET['cohortid']     ?? 0;
+$_GET['studentid']    = $_GET['studentid']    ?? 0;
+$_GET['studentids']   = $_GET['studentids']   ?? '';
+$_GET['one2one_gmid'] = $_GET['one2one_gmid'] ?? 0;
+
+
+
+// ----------------------------------------
+// Call file2 internally
+// ----------------------------------------
+define('INTERNAL_API_CALL', true);
+
+$calendarResult = require(__DIR__ . '/calendar_admin_get_events.php');
+
+// ----------------------------------------
+// Validate response
+// ----------------------------------------
+if (!is_array($calendarResult) || empty($calendarResult['ok'])) {
+    throw new moodle_exception('invaliddata', 'error', '', 'Calendar API failed');
+}
+
+
+
+// Example usage:
+$events               = $calendarResult['events'];
+$peertalkEvents       = $calendarResult['peertalk'];
+$conferenceEvents     = $calendarResult['conference'];
+$teacherTimeoff       = $calendarResult['teacher_timeoff'];
+$teacherExtraSlots    = $calendarResult['teacher_extra_slots'];
+$teacherAvailability  = $calendarResult['teacher_availability'];
+
 
     // --------------------------------------------------
     // Date window (MANDATORY)
@@ -299,7 +367,14 @@ foreach ($allEvents as $e) {
             'teachers' => $teacherids,
             'students' => $studentids
         ],
-        'events' => $results
+        'events_one_on_one' => $results,
+        'events_group' => $calendarResult['events'] ?? [],
+        'peertalk' => $calendarResult['peertalk'] ?? [],
+        'conference' => $calendarResult['conference'] ?? [],
+        'teacher_timeoff' => $calendarResult['teacher_timeoff'] ?? [],
+        'teacher_extra_slots' => $calendarResult['teacher_extra_slots'] ?? [],
+        'teacher_availability'=> $calendarResult['teacher_availability'] ?? [],
+
     ]);
     exit;
 

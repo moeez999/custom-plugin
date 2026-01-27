@@ -158,6 +158,47 @@ function isWhiteSlotFor(dayIndex, isoDate, minuteOfDay) {
 // Will be determined dynamically based on teacher selection
 let SHOW_WHITE_SLOTS = false;
 
+// Helper function to format time to 12h with AM/PM
+// Returns an object with {time, period} or a string based on returnString parameter
+function formatTime12h(time24, returnString = false) {
+  let timeStr = String(time24).trim();
+  let hours, minutes;
+
+  // Check if already in 12-hour format (contains AM/PM)
+  if (timeStr.match(/\s*(am|pm)\s*$/i)) {
+    // Already 12-hour format, extract hours and period
+    const match = timeStr.match(/^(\d+):?(\d{2})\s*(am|pm)$/i);
+    if (match) {
+      hours = parseInt(match[1], 10);
+      minutes = parseInt(match[2], 10);
+      const inputPeriod = match[3].toUpperCase();
+      // Convert to 24-hour internally, then back
+      if (inputPeriod === "PM" && hours !== 12) {
+        hours = hours + 12;
+      } else if (inputPeriod === "AM" && hours === 12) {
+        hours = 0;
+      }
+    } else {
+      // Can't parse, return as-is
+      return returnString ? timeStr : { time: timeStr, period: "AM" };
+    }
+  } else {
+    // 24-hour format
+    const parts = timeStr.split(":").map(Number);
+    hours = parts[0];
+    minutes = parts[1] || 0;
+  }
+
+  const period = hours >= 12 ? "PM" : "AM";
+  const hours12 = hours % 12 || 12;
+  const formattedTime = `${String(hours12).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+  
+  if (returnString) {
+    return `${formattedTime} ${period}`;
+  }
+  return { time: formattedTime, period: period };
+}
+
 /* ====== STATE ====== */
 let currentWeekStart = window.mondayOf(new Date());
 
@@ -463,14 +504,12 @@ $(function () {
         // minutesToTime() is now in js/time_utils.js
         // Using: minutesToTime() from time_utils.js
 
-        // Convert timestamp to HH:MM format
-        function timestampToTime(ts) {
+        // Helper to convert timestamp to HH:MM format
+        const timestampToTime = (ts) => {
           if (!ts) return "00:00";
           const date = new Date(ts * 1000); // Convert seconds to milliseconds
-          const h = date.getHours();
-          const m = date.getMinutes();
-          return String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0");
-        }
+          return `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
+        };
 
         // Get date from timestamp or existing date
         // Using timestampToDate() from date_utils.js
@@ -553,42 +592,6 @@ $(function () {
       // Update the repeat button text in the format: "Weekly on Mon(09:00 AM - 10:00 AM), Tue(09:00 AM - 10:00 AM)"
       const $repeatBtn = $(".peertalk_repeat_btn");
       if ($repeatBtn.length > 0) {
-        // Convert 24h time to 12h format with AM/PM
-        function formatTime12h(time24) {
-          let timeStr = String(time24).trim();
-          let hours, minutes;
-
-          // Check if already in 12-hour format (contains AM/PM)
-          if (timeStr.match(/\s*(am|pm)\s*$/i)) {
-            // Already 12-hour format, extract hours and period
-            const match = timeStr.match(/^(\d+):?(\d{2})\s*(am|pm)$/i);
-            if (match) {
-              hours = parseInt(match[1], 10);
-              minutes = parseInt(match[2], 10);
-              const inputPeriod = match[3].toUpperCase();
-              // Convert to 24-hour internally, then back
-              if (inputPeriod === "PM" && hours !== 12) {
-                hours = hours + 12;
-              } else if (inputPeriod === "AM" && hours === 12) {
-                hours = 0;
-              }
-            } else {
-              return time24; // Return as-is if can't parse
-            }
-          } else {
-            // 24-hour format
-            const parts = timeStr.split(":").map(Number);
-            hours = parts[0];
-            minutes = parts[1];
-          }
-
-          const period = hours >= 12 ? "PM" : "AM";
-          const hours12 = hours % 12 || 12;
-          return `${String(hours12).padStart(2, "0")}:${String(
-            minutes,
-          ).padStart(2, "0")} ${period}`;
-        }
-
         // Get short day names
         const shortDays = {
           Sunday: "Sun",
@@ -603,8 +606,8 @@ $(function () {
         // Build the text: "Weekly on Mon(time), Tue(time), ..."
         const dayTimeParts = customRecurrenceArray.map(function (item) {
           const shortDay = shortDays[item.day];
-          const startTime12 = formatTime12h(item.start_time);
-          const endTime12 = formatTime12h(item.end_time);
+          const startTime12 = formatTime12h(item.start_time, true);
+          const endTime12 = formatTime12h(item.end_time, true);
           return `${shortDay}(<span class="time-range">${startTime12} - ${endTime12}</span>)`;
         });
 
@@ -724,46 +727,6 @@ $(function () {
     });
 
     console.log("Day times map:", dayTimesMap);
-
-    // Helper function to format time to 12h with AM/PM
-    function formatTime12h(time24) {
-      let timeStr = String(time24).trim();
-      let hours, minutes, hourStr, minStr;
-
-      // Check if already in 12-hour format (contains AM/PM)
-      if (timeStr.match(/\s*(am|pm)\s*$/i)) {
-        // Already 12-hour format, extract components
-        const match = timeStr.match(/^(\d+):?(\d{2})\s*(am|pm)$/i);
-        if (match) {
-          hours = parseInt(match[1], 10);
-          minutes = parseInt(match[2], 10);
-          const inputPeriod = match[3].toUpperCase();
-          // Convert to 24-hour internally for proper AM/PM logic
-          if (inputPeriod === "PM" && hours !== 12) {
-            hours = hours + 12;
-          } else if (inputPeriod === "AM" && hours === 12) {
-            hours = 0;
-          }
-        } else {
-          // Can't parse, return as-is
-          return { time: timeStr, period: "AM" };
-        }
-      } else {
-        // 24-hour format
-        const parts = timeStr.split(":");
-        hourStr = parts[0];
-        minStr = parts[1];
-        hours = parseInt(hourStr, 10);
-        minutes = parseInt(minStr, 10);
-      }
-
-      const ampm = hours >= 12 ? "PM" : "AM";
-      let h = hours % 12 || 12;
-      const formattedTime =
-        (h < 10 ? "0" + h : h) + ":" + (minutes < 10 ? "0" + minutes : minutes);
-      console.log(`formatTime12h: ${time24} -> ${formattedTime} ${ampm}`);
-      return { time: formattedTime, period: ampm };
-    }
 
     // Select and set times for each day widget
     Object.keys(dayTimesMap).forEach(function (dayKey) {
@@ -2656,13 +2619,6 @@ $(function () {
   let originalEventEnd = 0;
   let originalEventDuration = 0;
 
-  // Helper function to convert minutes to time string (HH:MM format for API)
-  function minutesToHHMM(minutes) {
-    const h = Math.floor(minutes / 60) % 24;
-    const m = minutes % 60;
-    return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
-  }
-
   // Helper function to calculate time from Y position in day column
   function calculateTimeFromY(y, dayInner) {
     const dayInnerTop = dayInner.getBoundingClientRect().top;
@@ -2863,38 +2819,56 @@ $(function () {
           const dateChanged = normalizedNewDate !== normalizedOldDate;
           const timeChanged = newStartMinutes !== oldStartMinutes;
 
+          // Build payload with exact structure matching provided examples
           payload = {
             scope: "THIS_OCCURRENCE",
             eventId: parseInt(eventId, 10),
             googlemeetid: parseInt(googlemeetId || $event.data("cm-id"), 10),
             apply: {
-              time: timeChanged,
+              time: false,
               teacher: false,
               status: false,
               days: false,
               period: false,
               end: false,
-              date: dateChanged,
-            },
+              date: false
+            }
           };
 
-          if (dateChanged && normalizedOldDate) {
-            payload.anchorDate = normalizedOldDate;
-          }
+          // Determine if this is ONLY time change or time + date change
+          const isOnlyTimeChange = timeChanged && !dateChanged;
+          const hasMultipleChanges = timeChanged && dateChanged;
 
+          // Add time data
           if (timeChanged) {
-            payload.time = {
-              start: newStartTime,
-              end: newEndTime,
-            };
-            payload.current = {
-              start: newStartTime,
-              end: newEndTime,
-            };
+            payload.apply.time = true;
+            
+            // If ONLY time changes, use "current" object
+            // If time changes WITH date, use "time" object
+            if (isOnlyTimeChange) {
+              payload.current = {
+                start: newStartTime,
+                end: newEndTime
+              };
+            } else {
+              payload.time = {
+                start: newStartTime,
+                end: newEndTime
+              };
+            }
           }
 
+          // Add date data
           if (dateChanged && normalizedNewDate) {
-            payload.date = { new: normalizedNewDate };
+            payload.apply.date = true;
+            payload.date = { 
+              new: normalizedNewDate 
+            };
+            
+            // Add anchorDate (original date) when date changes
+            if (normalizedOldDate) {
+              payload.anchorDate = normalizedOldDate;
+            }
           }
         }
 
@@ -4574,27 +4548,6 @@ $(function () {
   window.applyFilters = applyFilters;
 
   // Function to filter events by selected date
-  // function filterEventsByDates(dates) {
-  //   // No date selected → show everything
-  //   if (!dates || dates.length === 0) {
-  //     $(".event").show();
-  //     $(".time-row").show();
-  //     selectedDateFilters = [];
-  //     $("#head .day-h").removeClass("date-filter-active");
-  //     return;
-  //   }
-
-  //   $(".event").hide();
-
-  //   $(".event").each(function () {
-  //     const eventDate = $(this).data("event-date");
-
-  //     if (dates.includes(eventDate)) {
-  //       $(this).show();
-  //     }
-  //   });
-  // }
-
   // Function to reset date filter
   function clearDateFilter() {
     selectedDateFilters = [];
@@ -4607,58 +4560,6 @@ $(function () {
     }
   }
 
-  //   // Function to filter events by selected time slot
-  //  function filterEventsByTimeSlots(slotStarts) {
-  //      clearDateFilter();
-  //      if (!slotStarts || slotStarts.length === 0) {
-  //         $(".event").show();
-  //         $(".time-row").removeClass("time-slot-filter-active");
-  //         selectedTimeSlotFilters.clear();
-  //         return;
-  //     }
-
-  //      const SLOT_DURATION = 60;
-
-  //     $(".event").hide();
-  //     let matchedCount = 0;
-
-  //     $(".event").each(function () {
-  //         const eventStart = parseInt($(this).data("start"), 10);
-  //         const eventEnd   = parseInt($(this).data("end"), 10);
-  //         if (isNaN(eventStart) || isNaN(eventEnd)) return;
-
-  //         let matches = false;
-
-  //         for (const slotStart of slotStarts) {
-  //             const slotEnd = slotStart + SLOT_DURATION;
-  //             // ✅ STRICT overlap check
-  //             if (eventStart < slotEnd && eventEnd > slotStart) {
-  //                 matches = true;
-  //                 break;
-  //             }
-  //         }
-
-  //         if (matches) {
-  //             $(this).show();
-  //             matchedCount++;
-  //         }
-  //     });
-
-  //     console.log("Total events matched:", matchedCount);
-  // }
-  // Function to clear time slot filter
-  // function clearTimeSlotFilter() {
-  //   filterEventsByTimeSlots(null);
-  // }
-
-  // function selectTimeSlots(slotStarts) {
-  //   selectedTimeSlotFilters.clear();
-  //   for (const slot of slotStarts) {
-  //     selectedTimeSlotFilters.add(slot);
-  //   }
-
-  //   applyFilters();
-  // }
   function clearTimeSlotFilter() {
     selectedTimeSlotFilters.clear();
     window.selectedTimeSlotFilters = selectedTimeSlotFilters;
@@ -7075,6 +6976,379 @@ document.addEventListener("DOMContentLoaded", () => {
     return events;
   }
 
+  // ---------------- API Response Parsing Functions ----------------
+
+  /**
+   * Parse and transform events_one_on_one from API response
+   * @param {Array} eventsOneOnOne - Array of one-on-one event objects from API
+   * @returns {Array} - Transformed events array compatible with calendar rendering
+   */
+  function parseOneOnOneEvents(eventsOneOnOne) {
+    if (!Array.isArray(eventsOneOnOne)) {
+      console.warn("parseOneOnOneEvents: Invalid input, expected array");
+      return [];
+    }
+
+    const transformedEvents = [];
+
+    eventsOneOnOne.forEach((item) => {
+      // Skip items that don't have the expected structure
+      if (!item || !item.ok || !item.event || !item.summary) {
+        console.warn("parseOneOnOneEvents: Skipping invalid item:", item);
+        return;
+      }
+
+      const eventData = item.event;
+      const summary = item.summary.current || item.summary;
+
+      // Validate required fields
+      if (!eventData.eventdate || !eventData.start_time) {
+        console.warn("parseOneOnOneEvents: Event missing required fields:", eventData);
+        return;
+      }
+
+      // Calculate end time from start_time + duration_minutes
+      let endTime = eventData.end_time || null;
+      if (eventData.duration_minutes) {
+        const durationMinutes = parseInt(eventData.duration_minutes, 10);
+        if (!isNaN(durationMinutes) && durationMinutes > 0) {
+          const startMinutes = timeToMinutes(eventData.start_time);
+          if (!isNaN(startMinutes)) {
+            const endMinutes = startMinutes + durationMinutes;
+            endTime = minutesToTime(endMinutes);
+          }
+        }
+      }
+
+      // Fallback to end_time if duration calculation didn't work
+      if (!endTime) {
+        endTime = eventData.end_time;
+      }
+
+      // Final validation
+      if (!endTime) {
+        console.warn(
+          "parseOneOnOneEvents: Event missing end_time and duration_minutes:",
+          eventData,
+        );
+        return;
+      }
+
+      // Build start and end times in ISO format
+      const startISO = `${eventData.eventdate}T${eventData.start_time}`;
+      const endISO = `${eventData.eventdate}T${endTime}`;
+
+      // Map classType: "weekly" to "one2one_weekly", "single" to "one2one_single"
+      let classType = "1:1";
+      let class_type = "one2one_single";
+      if (eventData.classType === "weekly") {
+        classType = "one2one_weekly";
+        class_type = "one2one_weekly";
+      } else if (eventData.classType === "single") {
+        classType = "one2one_single";
+        class_type = "one2one_single";
+      }
+
+      // Build student arrays for compatibility
+      const studentids = eventData.student
+        ? [Number(eventData.student.id)]
+        : [];
+      const studentnames = eventData.student
+        ? [eventData.student.name]
+        : [];
+      const studentavatar =
+        eventData.student && eventData.student.avatar
+          ? [eventData.student.avatar]
+          : [];
+
+      // Build title
+      let title = "";
+      if (summary && summary.teacher && eventData.student) {
+        title = `${summary.teacher.name} - ${eventData.student.name}`;
+      } else if (eventData.student) {
+        title = eventData.student.name;
+      } else if (summary && summary.teacher) {
+        title = summary.teacher.name;
+      }
+
+      // Extract status information
+      const statuses = [];
+      if (summary && summary.status) {
+        statuses.push({
+          code: summary.status,
+          isactive: true,
+          details: null,
+          time: Date.now() / 1000, // Current timestamp as fallback
+        });
+      }
+
+      // Build the transformed event object
+      const transformedEvent = {
+        eventid: eventData.eventid,
+        start: startISO,
+        end: endISO,
+        date: eventData.eventdate,
+        title: title,
+        teacherids:
+          summary && summary.teacher ? [Number(summary.teacher.id)] : [],
+        teacherid:
+          summary && summary.teacher ? Number(summary.teacher.id) : null,
+        teacher_id:
+          summary && summary.teacher ? Number(summary.teacher.id) : null,
+        studentid: eventData.student
+          ? Number(eventData.student.id)
+          : null,
+        student: eventData.student || null,
+        studentids: studentids,
+        studentnames: studentnames,
+        studentavatar: studentavatar,
+        status: summary ? summary.status : null,
+        statuses: statuses,
+        classType: classType,
+        class_type: class_type,
+        googlemeetid: eventData.googlemeetid,
+        duration_minutes: eventData.duration_minutes,
+        teacher: summary && summary.teacher ? summary.teacher : null,
+        history:
+          item.history && item.history.timeline
+            ? item.history.timeline
+            : [],
+        summary: item.summary || null,
+        source: "one_on_one",
+        // Add previous status information for reschedule detection
+        previous: item.summary && item.summary.previous ? item.summary.previous : null,
+      };
+
+      transformedEvents.push(transformedEvent);
+    });
+
+    return transformedEvents;
+  }
+
+  /**
+   * Parse and transform events_group from API response
+   * @param {Array} eventsGroup - Array of group event objects from API
+   * @returns {Array} - Transformed events array compatible with calendar rendering
+   */
+  function parseGroupEvents(eventsGroup) {
+    if (!Array.isArray(eventsGroup)) {
+      console.warn("parseGroupEvents: Invalid input, expected array");
+      return [];
+    }
+
+    const transformedEvents = [];
+
+    eventsGroup.forEach((item) => {
+      // Skip invalid items
+      if (!item || !item.eventid) {
+        console.warn("parseGroupEvents: Skipping invalid item:", item);
+        return;
+      }
+
+      // Extract date from start timestamp or start string
+      let eventDate = null;
+      if (item.start) {
+        if (typeof item.start === "string") {
+          // Extract date from ISO string (YYYY-MM-DDTHH:mm:ss-TZ:00)
+          const dateMatch = item.start.match(/^(\d{4}-\d{2}-\d{2})/);
+          if (dateMatch) {
+            eventDate = dateMatch[1];
+          }
+        }
+      } else if (item.start_ts) {
+        // Convert timestamp to date string
+        const date = new Date(item.start_ts * 1000);
+        eventDate = formatYMD(date);
+      }
+
+      if (!eventDate) {
+        console.warn("parseGroupEvents: Could not extract date from item:", item);
+        return;
+      }
+
+      // Build the transformed event object
+      const transformedEvent = {
+        id: item.id || `group-${item.eventid}`,
+        eventid: item.eventid,
+        main_event_id: item.main_event_id || item.eventid,
+        is_parent: item.is_parent || false,
+        sequence: item.sequence || 1,
+        source: item.source || "group",
+        courseid: item.courseid || null,
+        cmid: item.cmid || null,
+        googlemeetid: item.googlemeetid || null,
+        title: item.title || "Untitled Event",
+        start_ts: item.start_ts || null,
+        end_ts: item.end_ts || null,
+        start: item.start || null,
+        end: item.end || null,
+        date: eventDate,
+        teacherids: Array.isArray(item.teacherids) ? item.teacherids : [],
+        teacherpic: item.teacherpic || null,
+        teachernames: Array.isArray(item.teachernames) ? item.teachernames : [],
+        studentids: Array.isArray(item.studentids) ? item.studentids : [],
+        studentnames: Array.isArray(item.studentnames) ? item.studentnames : [],
+        cohortids: Array.isArray(item.cohortids) ? item.cohortids : [],
+        class_type: item.class_type || "main",
+        classType: item.class_type || "main",
+        is_recurring: item.is_recurring || false,
+        meetingurl: item.meetingurl || null,
+        viewurl: item.viewurl || null,
+        statuses: Array.isArray(item.statuses) ? item.statuses : [],
+        rescheduled: item.rescheduled || { status: "no" },
+      };
+
+      // Extract teacher ID for compatibility
+      if (transformedEvent.teacherids.length > 0) {
+        transformedEvent.teacherid = transformedEvent.teacherids[0];
+        transformedEvent.teacher_id = transformedEvent.teacherids[0];
+      }
+
+      transformedEvents.push(transformedEvent);
+    });
+
+    return transformedEvents;
+  }
+
+  /**
+   * Parse API response structure and return all events in unified format
+   * @param {Object} data - API response object
+   * @returns {Array} - Array of all transformed events
+   */
+  function parseApiResponse(data) {
+    if (!data || !data.ok) {
+      console.warn("parseApiResponse: Invalid or unsuccessful response:", data);
+      return [];
+    }
+
+    let allEvents = [];
+
+    // Parse one-on-one events
+    if (Array.isArray(data.events_one_on_one)) {
+      console.log("Parsing events_one_on_one:", data.events_one_on_one.length);
+      const oneOnOneEvents = parseOneOnOneEvents(data.events_one_on_one);
+      allEvents = [...allEvents, ...oneOnOneEvents];
+    }
+
+    // Parse group events
+    if (Array.isArray(data.events_group)) {
+      console.log("Parsing events_group:", data.events_group.length);
+      const groupEvents = parseGroupEvents(data.events_group);
+      allEvents = [...allEvents, ...groupEvents];
+    }
+
+    // Also handle legacy data.events format for backward compatibility
+    if (Array.isArray(data.events)) {
+      console.log("Parsing legacy data.events:", data.events.length);
+      // Process events with nested structure (existing logic)
+      const legacyEvents = data.events.map((item) => {
+        if (item.event && item.summary) {
+          // This is already handled by parseOneOnOneEvents, but keep for compatibility
+          const eventData = item.event;
+          const summary = item.summary.current || item.summary;
+
+          if (!eventData.eventdate || !eventData.start_time) {
+            console.warn("Event missing required fields:", eventData);
+            return item;
+          }
+
+          let endTime = eventData.end_time || null;
+          if (eventData.duration_minutes) {
+            const durationMinutes = parseInt(eventData.duration_minutes, 10);
+            if (!isNaN(durationMinutes) && durationMinutes > 0) {
+              const startMinutes = timeToMinutes(eventData.start_time);
+              if (!isNaN(startMinutes)) {
+                const endMinutes = startMinutes + durationMinutes;
+                endTime = minutesToTime(endMinutes);
+              }
+            }
+          }
+
+          if (!endTime) {
+            endTime = eventData.end_time;
+          }
+
+          if (!endTime) {
+            console.warn(
+              "Event missing end_time and duration_minutes:",
+              eventData,
+            );
+            return item;
+          }
+
+          const startISO = `${eventData.eventdate}T${eventData.start_time}`;
+          const endISO = `${eventData.eventdate}T${endTime}`;
+
+          let classType = "1:1";
+          let class_type = "one2one_single";
+          if (eventData.classType === "weekly") {
+            classType = "one2one_weekly";
+            class_type = "one2one_weekly";
+          } else if (eventData.classType === "single") {
+            classType = "one2one_single";
+            class_type = "one2one_single";
+          }
+
+          const studentids = eventData.student
+            ? [Number(eventData.student.id)]
+            : [];
+          const studentnames = eventData.student
+            ? [eventData.student.name]
+            : [];
+          const studentavatar =
+            eventData.student && eventData.student.avatar
+              ? [eventData.student.avatar]
+              : [];
+
+          let title = "";
+          if (summary && summary.teacher && eventData.student) {
+            title = `${summary.teacher.name} - ${eventData.student.name}`;
+          } else if (eventData.student) {
+            title = eventData.student.name;
+          } else if (summary && summary.teacher) {
+            title = summary.teacher.name;
+          }
+
+          return {
+            eventid: eventData.eventid,
+            start: startISO,
+            end: endISO,
+            date: eventData.eventdate,
+            title: title,
+            teacherids:
+              summary && summary.teacher ? [Number(summary.teacher.id)] : [],
+            teacherid:
+              summary && summary.teacher ? Number(summary.teacher.id) : null,
+            teacher_id:
+              summary && summary.teacher ? Number(summary.teacher.id) : null,
+            studentid: eventData.student
+              ? Number(eventData.student.id)
+              : null,
+            student: eventData.student || null,
+            studentids: studentids,
+            studentnames: studentnames,
+            studentavatar: studentavatar,
+            status: summary ? summary.status : null,
+            classType: classType,
+            class_type: class_type,
+            googlemeetid: eventData.googlemeetid,
+            duration_minutes: eventData.duration_minutes,
+            teacher: summary && summary.teacher ? summary.teacher : null,
+            history:
+              item.history && item.history.timeline
+                ? item.history.timeline
+                : [],
+            summary: item.summary || null,
+          };
+        }
+        return item;
+      });
+      allEvents = [...allEvents, ...legacyEvents];
+    }
+
+    return allEvents;
+  }
+
   // ---------------- API call ----------------
 
   async function fetchCalendarEvents(skipLoaderShow = false) {
@@ -7158,126 +7432,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }),
       );
 
-      // Merge regular events, peertalk events, conference events, teacher time off, availability, and extra slots
-      let allEvents = [];
-      if (data.ok && Array.isArray(data.events)) {
-        // Process events with new nested structure
-        allEvents = data.events.map((item) => {
-          if (item.event && item.summary) {
-            // New nested format (1:1 lessons - both single and weekly)
-            const eventData = item.event;
-            const summary = item.summary.current || item.summary;
-
-            // Validate required fields
-            if (!eventData.eventdate || !eventData.start_time) {
-              console.warn("Event missing required fields:", eventData);
-              return item; // Return original item if invalid
-            }
-
-            // Calculate end time from start_time + duration_minutes
-            // This ensures correct end time even if end_time in API is incorrect
-            let endTime = eventData.end_time || null;
-            if (eventData.duration_minutes) {
-              const durationMinutes = parseInt(eventData.duration_minutes, 10);
-              if (!isNaN(durationMinutes) && durationMinutes > 0) {
-                // Convert start_time to minutes from midnight
-                const startMinutes = timeToMinutes(eventData.start_time);
-                if (!isNaN(startMinutes)) {
-                  // Calculate end time in minutes from midnight
-                  const endMinutes = startMinutes + durationMinutes;
-                  // Convert back to HH:MM format
-                  endTime = minutesToTime(endMinutes);
-                }
-              }
-            }
-
-            // Fallback to end_time if duration calculation didn't work
-            if (!endTime) {
-              endTime = eventData.end_time;
-            }
-
-            // Final validation
-            if (!endTime) {
-              console.warn(
-                "Event missing end_time and duration_minutes:",
-                eventData,
-              );
-              return item; // Return original item if invalid
-            }
-
-            // Build start and end times in ISO format
-            const startISO = `${eventData.eventdate}T${eventData.start_time}`;
-            const endISO = `${eventData.eventdate}T${endTime}`;
-
-            // Map classType: "weekly" to "one2one_weekly", "single" to "one2one_single"
-            let classType = "1:1";
-            let class_type = "one2one_single";
-            if (eventData.classType === "weekly") {
-              classType = "one2one_weekly";
-              class_type = "one2one_weekly";
-            } else if (eventData.classType === "single") {
-              classType = "one2one_single";
-              class_type = "one2one_single";
-            }
-
-            // Build student arrays for compatibility
-            const studentids = eventData.student
-              ? [Number(eventData.student.id)]
-              : [];
-            const studentnames = eventData.student
-              ? [eventData.student.name]
-              : [];
-            const studentavatar =
-              eventData.student && eventData.student.avatar
-                ? [eventData.student.avatar]
-                : [];
-
-            // Build title
-            let title = "";
-            if (summary && summary.teacher && eventData.student) {
-              title = `${summary.teacher.name} - ${eventData.student.name}`;
-            } else if (eventData.student) {
-              title = eventData.student.name;
-            } else if (summary && summary.teacher) {
-              title = summary.teacher.name;
-            }
-
-            return {
-              eventid: eventData.eventid,
-              start: startISO,
-              end: endISO,
-              date: eventData.eventdate, // Add date field for compatibility
-              title: title,
-              teacherids:
-                summary && summary.teacher ? [Number(summary.teacher.id)] : [],
-              teacherid:
-                summary && summary.teacher ? Number(summary.teacher.id) : null,
-              teacher_id:
-                summary && summary.teacher ? Number(summary.teacher.id) : null,
-              studentid: eventData.student
-                ? Number(eventData.student.id)
-                : null,
-              student: eventData.student || null,
-              studentids: studentids,
-              studentnames: studentnames,
-              studentavatar: studentavatar,
-              status: summary ? summary.status : null,
-              classType: classType,
-              class_type: class_type,
-              googlemeetid: eventData.googlemeetid,
-              duration_minutes: eventData.duration_minutes,
-              teacher: summary && summary.teacher ? summary.teacher : null,
-              history:
-                item.history && item.history.timeline
-                  ? item.history.timeline
-                  : [], // Include history timeline
-              summary: item.summary || null, // Include summary with current and previous
-            };
-          }
-          // Existing flat format - return as is
-          return item;
-        });
-      }
+      // Parse API response structure (events_one_on_one, events_group, and legacy data.events)
+      let allEvents = parseApiResponse(data);
       if (data.ok && Array.isArray(data.peertalk)) {
         console.log("Adding peertalk events:", data.peertalk);
         allEvents = [...allEvents, ...data.peertalk];
@@ -8265,4 +8421,29 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   });
+
+  // Expose parsing functions globally for testing and debugging
+  window.parseOneOnOneEvents = parseOneOnOneEvents;
+  window.parseGroupEvents = parseGroupEvents;
+  window.parseApiResponse = parseApiResponse;
+
+  /**
+   * Utility function to load and test API response from text file
+   * Usage: loadApiResponseFromFile().then(data => { const events = parseApiResponse(data); console.log(events); });
+   */
+  window.loadApiResponseFromFile = async function(filePath = 'apiresponse.txt') {
+    try {
+      const response = await fetch(filePath);
+      if (!response.ok) {
+        throw new Error(`Failed to load file: ${response.status}`);
+      }
+      const text = await response.text();
+      const data = JSON.parse(text);
+      console.log('Loaded API response from file:', data);
+      return data;
+    } catch (error) {
+      console.error('Error loading API response from file:', error);
+      throw error;
+    }
+  };
 })();
