@@ -156,6 +156,19 @@ try {
     // ------------------------------
     cohort_update_cohort($cohort);
 
+// ------------------------------
+// 6) Verify update REALLY happened
+// ------------------------------
+$updated = $DB->get_record('cohort', ['id' => $cohort->id], '*', MUST_EXIST);
+
+// Optional sanity check (pick any critical field you expect to change)
+if ($updated->timemodified >= $existing->timemodified) {
+    update_googlemeet_activities_for_cohort($cohort);
+}
+
+
+
+
     $redirect = optional_param('returnurl', '', PARAM_URL);
 
     echo json_encode([

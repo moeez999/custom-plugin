@@ -1167,7 +1167,11 @@ $(document).ready(function() {
     const parseDateLabelToUnix = (label) => {
         if (!label || /select date/i.test(label)) return null;
         const d = new Date(label);
-        return isNaN(d.getTime()) ? null : Math.floor(d.getTime() / 1000);
+        if (isNaN(d.getTime())) return null;
+        // Anchor at local noon so timezone conversions (e.g. to
+        // America/New_York) do not push the date back a day.
+        d.setHours(12, 0, 0, 0);
+        return Math.floor(d.getTime() / 1000);
     };
 
     const highlight = (node) => {
@@ -1733,6 +1737,9 @@ $(document).ready(function() {
             const name = shortname || idnumber || 'Cohort';
 
             const startdate = main.startDateUnix || tutor.startDateUnix || 0;
+            // Use tutor's date (teacher 2) as cohort end date if present,
+            // otherwise fall back to main's date so we never silently force 0.
+            const enddate = tutor.startDateUnix || main.startDateUnix || 0;
 
             const mainFirst = (main.schedule?.scheduleArray && main.schedule.scheduleArray[0]) || null;
             const tutorFirst = (tutor.schedule?.scheduleArray && tutor.schedule.scheduleArray[0]) || null;
@@ -1765,7 +1772,7 @@ $(document).ready(function() {
                 descriptionformat: 1,
                 cohortcolor: main.colorHex || tutor.colorHex || null,
                 startdate,
-                enddate: 0,
+                enddate,
                 cohorthours: mainHM.hours,
                 cohortminutes: mainHM.minutes,
                 cohorttutorhours: tutorHM.hours,
