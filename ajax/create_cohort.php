@@ -56,8 +56,10 @@ try {
         $cohort->idnumber    = clean_param($c->idnumber    ?? '', PARAM_TEXT);
         $cohort->description = clean_param($c->description ?? '', PARAM_RAW); // keep as RAW if you want HTML
         $cohort->descriptionformat = (int)($c->descriptionformat ?? 1);
-        $cohort->visible     = (int)($c->visible ?? 1);
-        $cohort->enabled     = (int)($c->enabled ?? 1);
+        // $cohort->visible     = (int)($c->visible ?? 1);
+        // $cohort->enabled     = (int)($c->enabled ?? 1);
+        $cohort->visible     = 1;
+        $cohort->enabled     = 1;
 
         // Dates
         $cohort->startdate   = !empty($c->startdate) ? (int)$c->startdate : 0;

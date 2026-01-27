@@ -477,7 +477,12 @@
                 const parseDateLabelToUnix = (label) => {
                     if (!label || /select date/i.test(label)) return null;
                     const d = new Date(label);
-                    return isNaN(d.getTime()) ? null : Math.floor(d.getTime() / 1000);
+                    if (isNaN(d.getTime())) return null;
+                    // Anchor at local noon so converting between timezones
+                    // (e.g. to America/New_York) does not roll the calendar
+                    // date backward due to midnight offsets.
+                    d.setHours(12, 0, 0, 0);
+                    return Math.floor(d.getTime() / 1000);
                 };
                 const highlight = (node) => {
                     if (!node) return;
