@@ -29,7 +29,7 @@
                 <div id="find_groups_details_available_avatar_col">
                   <div id="find_groups_details_available_avatar_wrap" class="relative w-[160px] h-[160px]">
                     <img id="find_groups_details_available_avatar_img"
-                        src="https://images.unsplash.com/photo-1544006659-f0b21884ce1d?q=80&w=800&auto=format&fit=crop"
+                        src="img/daniela.svg"
                         alt="Profile" class="w-full h-full object-cover rounded-[4px]">
                     <span id="find_groups_details_available_online_dot"
                           class="absolute bottom-2 right-2 w-[18px] h-[18px] bg-[#14C38E] rounded-[4px] border-2 border-white"></span>
