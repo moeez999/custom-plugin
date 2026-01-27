@@ -96,4 +96,39 @@ $(document).on('click', '.save_list', function () {
 })
 
 
+// active 1 2 slider
+// image elements
+const lessonImg = document.querySelector('.my_lessons_tutor_profile_card_img');
+const avatarImg = document.getElementById('find_groups_details_available_avatar_img');
+
+// pager buttons
+const pagerBtns = document.querySelectorAll('.find_groups_details_available_num');
+
+// image source map (index-based)
+const imageSources = [
+  'img/daniela.svg', // page 1
+  'img/axley.svg'    // page 2
+];
+
+// function to activate page
+function activatePage(index) {
+  // update images
+  lessonImg.src = imageSources[index];
+  avatarImg.src = imageSources[index];
+
+  // update active ring
+  pagerBtns.forEach(btn => {
+    btn.classList.remove('ring-2', 'ring-black');
+  });
+
+  pagerBtns[index].classList.add('ring-2', 'ring-black');
+}
+
+// click handlers
+pagerBtns.forEach((btn, index) => {
+  btn.addEventListener('click', () => {
+    activatePage(index);
+  });
+});
+
 

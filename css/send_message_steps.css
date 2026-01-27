@@ -21,6 +21,9 @@
   width: 505px !important;
 }
 
+.send_message_container.fullscreen::-webkit-scrollbar {
+  width:0; height:0;
+}
 .send_message_container.fullscreen {
   width:100vw !important;
   height:100vh !important;
@@ -383,6 +386,30 @@
 .pointer {
   cursor: pointer;
 }
-/* .arrowz:hover {
+.arrowz:hover {
   background: #f5f5f5;
-} */
+}
+
+.payment-option:hover {
+  background: #F4F4F8;
+  cursor: pointer;
+}
+.payment-option {
+  display: flex;
+  gap: 10px;
+  padding-block: 10px;
+    padding-inline: 24px;
+    border-radius: 8px;
+}
+.payment-optionz:hover {
+  background: white !important;
+}
+.payment-optionz {
+  top: 52px;
+  left: 0px;
+  border-radius: 8px;
+  border: 1px solid black;
+  background: white;
+  padding: 0 !important;
+  z-index: 3;
+}

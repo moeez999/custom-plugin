@@ -99,5 +99,61 @@ $(function() {
     $(this).addClass('d-none');
     $("#"+$(this).data('target')).removeClass('d-none');
   });
+
+  // payment dropdown and arrow functionality
+  let currentIndex = 0;
+  const reviews = $(".review-content-item");
+  const totalReviews = reviews.length;
+
+  function showReview(index) {
+    debugger;
+    if (index<0 || index>totalReviews-1) {
+      return;
+    }
+    reviews.addClass("hidden");
+    document.getElementsByClassName("review-content-item")[index].classList.remove("hidden");
+
+    // reviews.eq(index).removeClass("hidden");
+  }
+
+  // Right arrow
+  $(".arrow-right").on("click", function () {
+    if (currentIndex < totalReviews - 1) {
+      currentIndex++;
+      showReview(currentIndex);
+    }
+  });
+
+  // Left arrow
+  $(".arrow-left").on("click", function () {
+    if (currentIndex > 0) {
+      currentIndex--;
+      showReview(currentIndex);
+    }
+  });
+
+  // Toggle dropdown on click
+  $('.payment-selector').on('click', function (e) {
+    e.stopPropagation(); // prevent body click from firing
+    $('#payment-optionz').toggleClass('d-none');
+  });
+
+  // Select payment option
+  $('.payment-option').on('click', function (e) {
+    e.stopPropagation();
+
+    const selectedText = $(this).find('.pay-by').text();
+    $('#card-value').text(selectedText);
+
+    $('#payment-optionz').addClass('d-none');
+  });
+
+  // Close dropdown when clicking outside
+  $(document).on('click', function () {
+    $('#payment-optionz').addClass('d-none');
+  });
+
+  // payment dropdown and arrow functionality
+  // 
 });
 
