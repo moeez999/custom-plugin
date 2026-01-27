@@ -84,6 +84,16 @@ $(document).on('click', '.save_list', function () {
       });
 
 
+      $(function () {
+   $(document).on(
+    'click',
+    '#open-message-popup',
+    function(){
+      $('#message_tutor_panel_screen_1')
+        .removeClass('hidden')
+    }
+  );
+})
 
 
 
